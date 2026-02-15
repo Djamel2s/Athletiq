@@ -1,106 +1,143 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-primary-900">
-    <!-- Header -->
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-primary-900 bg-opacity-95 backdrop-blur-lg border-b border-primary-700">
+  <div class="min-h-screen">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
       <div class="max-w-7xl mx-auto px-6 py-5">
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-4">
-            <button @click="navigateTo('/dashboard')" class="text-white hover:text-primary-300">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-              </svg>
-            </button>
-            <h1 class="text-2xl font-bold text-white">Lancer un entrainement</h1>
+            <NuxtLink to="/dashboard">
+              <img src="/athletiq-icon.svg" alt="Athletiq" class="h-14 w-auto transition-transform duration-300 hover:scale-105" />
+            </NuxtLink>
+            <div class="flex items-center space-x-3">
+              <span class="text-2xl text-primary-400 font-light">|</span>
+              <h1 class="text-2xl font-bold text-display bg-gradient-to-l from-[#d4c4b0] to-[#9d8569] bg-clip-text text-transparent">Lancer un entraînement</h1>
+            </div>
           </div>
+
+          <button @click="navigateTo('/dashboard')" class="btn-outline">
+            Retour
+          </button>
         </div>
       </div>
     </nav>
 
     <!-- Content -->
-    <div class="pt-28 px-6 pb-20 max-w-5xl mx-auto">
+    <div class="pt-32 px-6 pb-20 max-w-7xl mx-auto">
       <!-- Loading -->
       <div v-if="workoutStore.isLoading" class="text-center py-20">
-        <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary-300 border-t-white"></div>
-        <p class="mt-4 text-white text-lg">Chargement...</p>
+        <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary-200 border-t-primary-600"></div>
+        <p class="mt-4 text-primary-600 text-lg">Chargement...</p>
       </div>
 
       <!-- No workouts -->
-      <div v-else-if="availableWorkouts.length === 0" class="text-center py-20">
-        <div class="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl p-12 max-w-md mx-auto">
-          <svg class="w-20 h-20 text-white mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div v-else-if="availableWorkouts.length === 0" class="text-center py-20 fade-in">
+        <div class="card-glass max-w-2xl mx-auto py-16">
+          <svg class="w-24 h-24 mx-auto mb-6 text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
           </svg>
-          <h2 class="text-2xl font-bold text-white mb-4">Aucun workout disponible</h2>
-          <p class="text-primary-200 mb-6">Crée d'abord des workouts chez toi avant de venir à la salle!</p>
-          <button @click="navigateTo('/workouts/builder')" class="btn-primary w-full">
+          <h2 class="text-3xl font-bold text-primary-900 mb-4">Aucun workout disponible</h2>
+          <p class="text-lg text-primary-600 mb-8">Crée d'abord des workouts avant de venir à la salle!</p>
+          <button @click="navigateTo('/workouts/builder')" class="btn-primary px-8 py-4">
             Créer un workout
           </button>
         </div>
       </div>
 
       <!-- Workouts list -->
-      <div v-else class="space-y-4">
-        <div
-          v-for="workout in availableWorkouts"
-          :key="workout.id"
-          @click="launchWorkout(workout)"
-          class="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl p-6 hover:bg-opacity-20 hover:scale-[1.02] transition-all border border-white border-opacity-20 cursor-pointer"
-        >
-          <div class="flex items-center space-x-3 mb-3">
-            <h2 class="text-2xl font-bold text-white">{{ workout.name }}</h2>
-            <span v-if="workout.isTemplate" class="px-3 py-1 bg-primary-400 bg-opacity-30 text-white text-xs font-semibold rounded-full">
-              TEMPLATE
-            </span>
-          </div>
-
-          <p v-if="workout.description" class="text-primary-200 mb-4">
-            {{ workout.description }}
+      <div v-else class="space-y-6">
+        <!-- Header -->
+        <div class="fade-in text-center mb-8">
+          <h2 class="text-4xl md:text-5xl font-bold text-primary-900 mb-4 text-display">
+            Choisis ton entraînement
+          </h2>
+          <p class="text-lg text-primary-600">
+            Sélectionne un workout pour commencer ta séance
           </p>
+        </div>
 
-          <!-- Exercise preview -->
-          <div v-if="workout.exercises && workout.exercises.length > 0" class="flex flex-wrap gap-2 mb-4">
-            <div
-              v-for="exercise in workout.exercises.slice(0, 5)"
-              :key="exercise.id"
-              class="px-3 py-1 bg-white bg-opacity-20 text-white text-sm rounded-lg"
-            >
-              {{ exercise.exerciseLibrary?.name || exercise.name }}
+        <!-- Workouts Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 slide-up">
+          <div
+            v-for="workout in availableWorkouts"
+            :key="workout.id"
+            @click="launchWorkout(workout)"
+            class="card-glass hover:shadow-2xl hover:scale-[1.02] transition-all cursor-pointer group"
+          >
+            <div class="flex items-center space-x-3 mb-4">
+              <div class="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center icon-container">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+              </div>
+              <div class="flex-1">
+                <h3 class="text-2xl font-bold text-primary-900 group-hover:text-primary-700 transition-colors">
+                  {{ workout.name }}
+                </h3>
+              </div>
+              <span v-if="workout.isTemplate" class="px-3 py-1 bg-primary-200 text-primary-700 text-xs font-semibold rounded-full">
+                TEMPLATE
+              </span>
             </div>
-            <div v-if="workout.exercises.length > 5" class="px-3 py-1 bg-white bg-opacity-20 text-white text-sm rounded-lg">
-              +{{ workout.exercises.length - 5 }} autres
+
+            <p v-if="workout.description" class="text-primary-600 mb-4">
+              {{ workout.description }}
+            </p>
+
+            <!-- Exercise preview -->
+            <div v-if="workout.exercises && workout.exercises.length > 0" class="flex flex-wrap gap-2 mb-4">
+              <div
+                v-for="exercise in workout.exercises.slice(0, 5)"
+                :key="exercise.id"
+                class="px-3 py-1 bg-primary-100 text-primary-700 text-sm rounded-lg font-medium"
+              >
+                {{ exercise.exerciseLibrary?.name || exercise.name }}
+              </div>
+              <div v-if="workout.exercises.length > 5" class="px-3 py-1 bg-primary-200 text-primary-700 text-sm rounded-lg font-medium">
+                +{{ workout.exercises.length - 5 }} autres
+              </div>
             </div>
-          </div>
 
-          <!-- Stats -->
-          <div class="flex flex-wrap gap-4 text-sm text-primary-200">
-            <span v-if="workout.exercises?.length" class="flex items-center space-x-1">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-              </svg>
-              <span>{{ workout.exercises.length }} exercices</span>
-            </span>
+            <!-- Stats -->
+            <div class="flex flex-wrap gap-4 text-sm text-primary-600 pt-4 border-t border-primary-200">
+              <span v-if="workout.exercises?.length" class="flex items-center space-x-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                <span class="font-semibold">{{ workout.exercises.length }} exercices</span>
+              </span>
 
-            <span v-if="getEstimatedDuration(workout)" class="flex items-center space-x-1">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
-              <span>~{{ getEstimatedDuration(workout) }} min</span>
-            </span>
+              <span v-if="getEstimatedDuration(workout)" class="flex items-center space-x-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span class="font-semibold">~{{ getEstimatedDuration(workout) }} min</span>
+              </span>
+            </div>
+
+            <!-- Action hint -->
+            <div class="mt-4 pt-4 border-t border-primary-200">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-primary-500">Clique pour démarrer</span>
+                <svg class="w-5 h-5 text-primary-400 group-hover:text-primary-600 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Quick action: create new -->
-      <div class="mt-8 text-center">
-        <button
-          @click="navigateTo('/workouts/builder')"
-          class="text-white hover:text-primary-300 font-semibold flex items-center space-x-2 mx-auto"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-          </svg>
-          <span>Créer un nouveau workout</span>
-        </button>
+        <!-- Quick action: create new -->
+        <div class="text-center pt-8 slide-up">
+          <button
+            @click="navigateTo('/workouts/builder')"
+            class="btn-outline inline-flex items-center space-x-2"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            <span>Créer un nouveau workout</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -150,11 +187,10 @@ const launchWorkout = async (workout: Workout) => {
           targetSets: exercise.targetSets,
           targetReps: exercise.targetReps,
           targetWeight: exercise.targetWeight,
-          restTime: exercise.restTime,  // ✅ Copier le temps de repos
-          plannedSets: exercise.plannedSets,  // ✅ Copier les séries personnalisées
+          restTime: exercise.restTime,
+          plannedSets: exercise.plannedSets,
           orderIndex: exercise.orderIndex
         }
-        console.log('Adding exercise:', exerciseData)
         await workoutStore.addExerciseToWorkout(workoutToStart.id, exerciseData)
       }
     }

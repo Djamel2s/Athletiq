@@ -28,24 +28,6 @@
 
     <!-- Contenu principal -->
     <div class="pt-32 px-6 pb-20 max-w-7xl mx-auto">
-      <!-- Workout actif -->
-      <div v-if="workoutStore.activeWorkout" class="mb-8 fade-in">
-        <div class="card-glass border-2 border-primary-500">
-          <div class="flex items-center justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-primary-900 mb-2">Entraînement en cours</h2>
-              <p class="text-lg font-semibold text-primary-700">{{ workoutStore.activeWorkout.name }}</p>
-            </div>
-            <button @click="continueWorkout(workoutStore.activeWorkout.id)" class="btn-primary">
-              Continuer
-            </button>
-          </div>
-          <p class="text-sm text-primary-600">
-            Commencé {{ formatDate(workoutStore.activeWorkout.startedAt!) }}
-          </p>
-        </div>
-      </div>
-
       <!-- Tabs -->
       <div class="mb-8 slide-up">
         <div class="flex space-x-4 border-b border-primary-200">
@@ -87,52 +69,71 @@
       </div>
 
       <!-- Mes workouts -->
-      <div v-else-if="activeTab === 'workouts'" class="space-y-6 slide-up">
-        <div v-if="workoutStore.templates.length === 0" class="card-glass text-center py-12">
-          <p class="text-primary-500 text-lg mb-4">Aucun workout créé</p>
-          <button @click="navigateTo('/workouts/builder')" class="btn-primary">
+      <div v-else-if="activeTab === 'workouts'" class="slide-up">
+        <div v-if="workoutStore.templates.length === 0" class="card-glass text-center py-16">
+          <svg class="w-20 h-20 mx-auto mb-6 text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+          <p class="text-xl text-primary-600 mb-6">Aucun workout créé</p>
+          <button @click="navigateTo('/workouts/builder')" class="btn-primary px-8 py-4">
             Créer mon premier workout
           </button>
         </div>
 
-        <div
-          v-for="workout in workoutStore.templates"
-          :key="workout.id"
-          class="card-glass hover:shadow-xl transition-all group"
-        >
-          <div class="flex items-start justify-between">
-            <div class="flex-1">
-              <h3 class="text-xl font-bold text-primary-900 mb-2">
-                {{ workout.name }}
-              </h3>
-
-              <p v-if="workout.description" class="text-primary-600 mb-3">{{ workout.description }}</p>
-
-              <div class="flex flex-wrap gap-4 text-sm text-primary-600">
-                <span v-if="workout.exercises?.length" class="flex items-center space-x-1">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Grid de cartes -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div
+            v-for="workout in workoutStore.templates"
+            :key="workout.id"
+            class="card-glass hover:shadow-2xl hover:scale-[1.02] transition-all group cursor-pointer relative"
+          >
+            <!-- Contenu de la carte -->
+            <div @click="editWorkout(workout.id)">
+              <div class="flex items-center space-x-3 mb-4">
+                <div class="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center icon-container">
+                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                   </svg>
-                  <span>{{ workout.exercises.length }} exercices</span>
+                </div>
+                <h3 class="text-xl font-bold text-primary-900 group-hover:text-primary-700 transition-colors flex-1">
+                  {{ workout.name }}
+                </h3>
+              </div>
+
+              <p v-if="workout.description" class="text-primary-600 mb-4 line-clamp-2">
+                {{ workout.description }}
+              </p>
+
+              <div class="flex items-center space-x-2 text-sm text-primary-600 pt-4 border-t border-primary-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                <span class="font-semibold">
+                  {{ workout.exercises?.length || 0 }} exercice{{ (workout.exercises?.length || 0) > 1 ? 's' : '' }}
                 </span>
               </div>
             </div>
 
-            <div class="flex space-x-2 ml-4">
+            <!-- Actions -->
+            <div class="flex space-x-2 mt-4 pt-4 border-t border-primary-200">
               <button
-                @click="editWorkout(workout.id)"
-                class="btn-outline"
+                @click.stop="editWorkout(workout.id)"
+                class="btn-outline flex-1 text-sm"
                 title="Modifier"
               >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                 </svg>
+                Modifier
               </button>
               <button
-                @click="deleteTemplate(workout.id)"
-                class="btn-outline text-red-600 hover:bg-red-50"
+                @click.stop="deleteTemplate(workout.id)"
+                class="btn-outline text-red-600 hover:bg-red-50 text-sm px-3"
+                title="Supprimer"
               >
-                Supprimer
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
               </button>
             </div>
           </div>
@@ -141,9 +142,12 @@
 
       <!-- Historique -->
       <div v-else-if="activeTab === 'history'" class="space-y-6 slide-up">
-        <div v-if="workoutStore.workoutHistory.length === 0" class="card-glass text-center py-12">
-          <p class="text-primary-500 text-lg mb-4">Aucun entraînement terminé</p>
-          <button @click="navigateTo('/workouts/builder')" class="btn-primary">
+        <div v-if="workoutStore.workoutHistory.length === 0" class="card-glass text-center py-16">
+          <svg class="w-20 h-20 mx-auto mb-6 text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <p class="text-xl text-primary-600 mb-6">Aucun entraînement terminé</p>
+          <button @click="navigateTo('/workouts/builder')" class="btn-primary px-8 py-4">
             Créer mon premier workout
           </button>
         </div>
@@ -246,17 +250,13 @@ const viewWorkout = (id: number) => {
   navigateTo(`/workouts/${id}`)
 }
 
-const continueWorkout = (id: number) => {
-  navigateTo(`/workouts/${id}/live`)
-}
-
 const startFromHistory = async (workout: Workout) => {
   try {
     // Create a new workout based on the historical one
     const newWorkout = await workoutStore.createWorkout({
       name: workout.name,
       description: workout.description,
-      isTemplate: false  // Session instance, not a template
+      isTemplate: false
     })
 
     // Copy exercises from the historical workout
@@ -269,8 +269,8 @@ const startFromHistory = async (workout: Workout) => {
           targetSets: exercise.targetSets,
           targetReps: exercise.targetReps,
           targetWeight: exercise.targetWeight,
-          restTime: exercise.restTime,  // ✅ Copier le temps de repos
-          plannedSets: exercise.plannedSets,  // ✅ Copier les séries personnalisées
+          restTime: exercise.restTime,
+          plannedSets: exercise.plannedSets,
           orderIndex: exercise.orderIndex
         })
       }
