@@ -1,0 +1,142 @@
+// Prisma schema for Athletiq
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ========================================
+// UTILISATEURS
+// ========================================
+
+model User {
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  password      String
+  firstName     String?
+  lastName      String?
+  avatarUrl     String?
+  goal          Goal?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  workouts      Workout[]
+  bodyStats     BodyStat[]
+  measurements  Measurement[]
+
+  @@map("users")
+}
+
+enum Goal {
+  BULK          // Prise de masse
+  STRENGTH      // Force
+  RECOMP        // Recomposition
+  CUT           // Perte de poids
+}
+
+// ========================================
+// ENTRAÎNEMENTS
+// ========================================
+
+model Workout {
+  id          Int             @id @default(autoincrement())
+  userId      Int
+  name        String
+  date        DateTime        @default(now())
+  duration    Int?
+  notes       String?
+  createdAt   DateTime        @default(now())
+
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercises   Exercise[]
+  photos      WorkoutPhoto[]
+
+  @@index([userId, date])
+  @@map("workouts")
+}
+
+model Exercise {
+  id          Int       @id @default(autoincrement())
+  workoutId   Int
+  name        String
+  category    String?
+  notes       String?
+
+  workout     Workout   @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  sets        Set[]
+
+  @@index([workoutId])
+  @@map("exercises")
+}
+
+model Set {
+  id          Int       @id @default(autoincrement())
+  exerciseId  Int
+  setNumber   Int
+  reps        Int
+  weight      Float
+  rpe         Int?
+  notes       String?
+
+  exercise    Exercise  @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@index([exerciseId])
+  @@map("sets")
+}
+
+// ========================================
+// PHOTOS DE PROGRESSION (TIMELAPSE)
+// ========================================
+
+model WorkoutPhoto {
+  id          Int       @id @default(autoincrement())
+  workoutId   Int
+  photoUrl    String
+  isPrimary   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+
+  workout     Workout   @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+
+  @@index([workoutId, isPrimary])
+  @@index([createdAt])
+  @@map("workout_photos")
+}
+
+// ========================================
+// SUIVI PHYSIQUE
+// ========================================
+
+model BodyStat {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  date      DateTime  @default(now())
+  weight    Float
+  bodyFat   Float?
+  notes     String?
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+  @@map("body_stats")
+}
+
+model Measurement {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  date        DateTime  @default(now())
+  chest       Float?
+  waist       Float?
+  hips        Float?
+  biceps      Float?
+  thighs      Float?
+  calves      Float?
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+  @@map("measurements")
+}
