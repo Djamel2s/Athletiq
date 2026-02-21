@@ -9,9 +9,8 @@
               <img src="/athletiq-icon.svg" alt="Athletiq" class="h-14 w-auto" />
             </NuxtLink>
             <h1 class="text-2xl font-bold text-primary-900 dark:text-primary-100">
-              🏠 Préparer un Workout
+              Préparer un Workout
             </h1>
-            <p class="text-sm text-primary-600 dark:text-primary-400 mt-1">Mode préparation - À faire chez soi avant d'aller à la salle</p>
           </div>
 
           <button @click="navigateTo('/workouts')" class="btn-outline">

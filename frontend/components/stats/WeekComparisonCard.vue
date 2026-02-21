@@ -23,7 +23,7 @@ interface Props {
   title: string
   value: number
   change: number | null
-  format?: 'number' | 'weight' | 'duration'
+  format?: 'number' | 'weight' | 'duration' | 'calories'
 }
 
 const props = withDefaults(defineProps<Props>(), { format: 'number' })
@@ -32,6 +32,8 @@ const formattedValue = computed(() => {
   switch (props.format) {
     case 'weight':
       return `${props.value.toLocaleString('fr-FR')} kg`
+    case 'calories':
+      return `${props.value.toLocaleString('fr-FR')} kcal`
     case 'duration':
       return `${Math.round(props.value / 60)} min`
     default:

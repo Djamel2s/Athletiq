@@ -88,6 +88,21 @@
                 </span>
               </button>
 
+              <!-- Calendrier / Activité Button -->
+              <button
+                @click="navigateTo('/calendar')"
+                class="flex items-center space-x-3 transition-all"
+              >
+                <div class="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                </div>
+                <span class="text-primary-900 dark:text-primary-100 font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  Activité
+                </span>
+              </button>
+
               <!-- Suivi Corporel Button -->
               <button
                 @click="navigateTo('/body')"
@@ -176,16 +191,16 @@
           <WorkoutHeatmap
             v-if="workoutStore.workoutHistory"
             :workouts="workoutStore.workoutHistory"
-            @click="navigateTo('/statistics')"
+            @click="navigateTo('/calendar')"
           />
         </div>
       </div>
 
-      <!-- Entraînements récents -->
+      <!-- Activité récente -->
       <div class="card-glass">
-        <div class="flex items-center justify-between mb-4 md:mb-6">
-          <h2 class="text-xl md:text-3xl font-bold text-primary-900 dark:text-primary-100">Entraînements récents</h2>
-          <button @click="navigateTo('/workouts')" class="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-200 font-semibold">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl md:text-3xl font-bold text-primary-900 dark:text-primary-100">Activité récente</h2>
+          <button @click="navigateTo('/workouts')" class="text-sm text-primary-500 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-200 font-semibold transition-colors">
             Voir tout →
           </button>
         </div>
@@ -202,45 +217,62 @@
           </button>
         </div>
 
-        <div v-else class="space-y-4">
+        <div v-else class="space-y-0">
           <div
-            v-for="workout in workoutStore.recentWorkouts"
+            v-for="(workout, index) in workoutStore.recentWorkouts"
             :key="workout.id"
-            class="p-4 bg-primary-50 dark:bg-primary-800 rounded-xl border border-primary-200 dark:border-primary-700 hover:border-primary-400 dark:hover:border-primary-500 hover:shadow-lg transition-all cursor-pointer"
+            class="flex gap-4 cursor-pointer group"
             @click="navigateTo(`/workouts/${workout.id}`)"
           >
-            <div class="flex items-start justify-between">
-              <div class="flex-1">
-                <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-1">{{ workout.name }}</h3>
-                <div class="flex flex-wrap gap-3 text-sm text-primary-600 dark:text-primary-400">
-                  <span class="flex items-center space-x-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <!-- Timeline line + dot -->
+            <div class="flex flex-col items-center">
+              <div class="w-3 h-3 rounded-full bg-gradient-primary flex-shrink-0 mt-1.5 group-hover:scale-125 transition-transform"></div>
+              <div v-if="index < workoutStore.recentWorkouts.length - 1" class="w-0.5 flex-1 bg-primary-200 dark:bg-primary-700 my-1"></div>
+            </div>
+
+            <!-- Content -->
+            <div :class="['flex-1 pb-6', index < workoutStore.recentWorkouts.length - 1 ? '' : 'pb-0']">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="font-semibold text-primary-900 dark:text-primary-100 group-hover:text-[#b8a48f] transition-colors truncate">{{ workout.name }}</p>
+                  <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
+                    {{ formatFullDate(workout.completedAt!) }}
+                  </p>
+                </div>
+                <div class="flex items-center gap-3 text-xs text-primary-500 dark:text-primary-400 flex-shrink-0">
+                  <span v-if="workout.duration" class="flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    <span>{{ formatDate(workout.completedAt!) }}</span>
+                    {{ formatDuration(workout.duration) }}
                   </span>
-
-                  <span v-if="workout.duration" class="flex items-center space-x-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                  <span v-if="workout.duration" class="flex items-center gap-1 font-semibold text-primary-700 dark:text-primary-300">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/>
                     </svg>
-                    <span>{{ formatDuration(workout.duration) }}</span>
+                    {{ estimateCalories(workout.duration) }} kcal
                   </span>
-
-                  <span v-if="workout.exercises?.length" class="flex items-center space-x-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                    </svg>
-                    <span>{{ workout.exercises.length }} exercices</span>
-                  </span>
-
-                  <span v-if="workout.totalVolume" class="flex items-center space-x-1 font-semibold text-primary-700 dark:text-primary-300">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                    </svg>
-                    <span>{{ workout.totalVolume.toLocaleString() }} kg</span>
+                  <span v-if="workout.exercises?.length" class="hidden md:flex items-center gap-1">
+                    {{ workout.exercises.length }} ex.
                   </span>
                 </div>
+              </div>
+
+              <!-- Exercise pills -->
+              <div v-if="workout.exercises?.length" class="flex flex-wrap gap-1.5 mt-2">
+                <span
+                  v-for="exercise in workout.exercises.slice(0, 4)"
+                  :key="exercise.id"
+                  class="px-2 py-0.5 bg-primary-100 dark:bg-primary-800 rounded-full text-xs text-primary-600 dark:text-primary-400"
+                >
+                  {{ exercise.exerciseLibrary?.name || exercise.name }}
+                </span>
+                <span
+                  v-if="workout.exercises.length > 4"
+                  class="px-2 py-0.5 bg-primary-100 dark:bg-primary-800 rounded-full text-xs text-primary-500 dark:text-primary-400"
+                >
+                  +{{ workout.exercises.length - 4 }}
+                </span>
               </div>
             </div>
           </div>
@@ -260,11 +292,11 @@
           <span class="text-xs mt-1 font-medium">Accueil</span>
         </button>
 
-        <button @click="navigateTo('/statistics')" class="flex flex-col items-center p-2 text-primary-600 dark:text-primary-400">
+        <button @click="navigateTo('/calendar')" class="flex flex-col items-center p-2 text-primary-600 dark:text-primary-400">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
           </svg>
-          <span class="text-xs mt-1">Stats</span>
+          <span class="text-xs mt-1">Activité</span>
         </button>
 
         <button @click="navigateTo('/workouts/start')" class="flex flex-col items-center -mt-6">
@@ -321,14 +353,16 @@ const handleLogout = () => {
   authStore.logout()
 }
 
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
+const estimateCalories = (seconds: number) => Math.round((seconds / 60) * 6)
+
+const formatFullDate = (dateString: string) => {
   return new Intl.DateTimeFormat('fr-FR', {
+    weekday: 'long',
     day: 'numeric',
-    month: 'short',
+    month: 'long',
     hour: '2-digit',
     minute: '2-digit'
-  }).format(date)
+  }).format(new Date(dateString))
 }
 
 const formatDuration = (seconds: number) => {

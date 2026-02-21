@@ -293,6 +293,12 @@
           <BodyTimelapseViewer v-if="showTimelapse" :photos="timelapsePhotos" />
         </div>
 
+        <!-- Comparaison Avant / Après -->
+        <BodyPhotoComparison
+          v-if="bodyStore.photos.length >= 2"
+          :photos="bodyStore.photos"
+        />
+
         <!-- Photo Grid -->
         <div v-if="bodyStore.photos.length > 0" class="card-glass">
           <h3 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">Galerie</h3>

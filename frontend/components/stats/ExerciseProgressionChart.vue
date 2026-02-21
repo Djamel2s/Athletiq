@@ -56,7 +56,7 @@ const chartOptions = computed(() => ({
       borderColor: isDark.value ? '#44403c' : '#d4c4b0',
       borderWidth: 1,
       padding: 12,
-      displayColors: false,
+      displayColors: true,
       callbacks: {
         label: (context: any) => `${context.parsed.y} kg`
       }

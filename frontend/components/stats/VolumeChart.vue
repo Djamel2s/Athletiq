@@ -56,7 +56,7 @@ const chartOptions = computed(() => ({
       padding: 12,
       displayColors: false,
       callbacks: {
-        label: (context: any) => `${context.parsed.y.toLocaleString('fr-FR')} kg`
+        label: (context: any) => `${context.parsed.y.toLocaleString('fr-FR')} kcal`
       }
     }
   },
@@ -69,7 +69,7 @@ const chartOptions = computed(() => ({
           family: 'system-ui',
           size: 12
         },
-        callback: (value: any) => `${value} kg`
+        callback: (value: any) => `${value} kcal`
       },
       grid: {
         color: isDark.value ? 'rgba(68, 64, 60, 0.3)' : 'rgba(212, 196, 176, 0.2)'

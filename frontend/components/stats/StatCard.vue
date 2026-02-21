@@ -15,7 +15,7 @@ interface Props {
   value: number | string | undefined
   icon: string
   subtitle?: string
-  format?: 'number' | 'time' | 'weight' | 'duration'
+  format?: 'number' | 'time' | 'weight' | 'duration' | 'calories'
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -36,6 +36,8 @@ const formattedValue = computed(() => {
   switch (props.format) {
     case 'weight':
       return `${numValue.toLocaleString('fr-FR')} kg`
+    case 'calories':
+      return `${numValue.toLocaleString('fr-FR')} kcal`
     case 'time':
       return formatTime(numValue)
     case 'duration':

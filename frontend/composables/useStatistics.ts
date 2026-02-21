@@ -74,7 +74,7 @@ export function useStatistics(workouts: Ref<Workout[]>, timeRange: Ref<TimeRange
     return streak
   }
 
-  // Get volume over time for line chart
+  // Get calories over time for line chart (~6 kcal/min)
   const volumeData = computed((): ChartData => {
     const grouped = groupByDate(filteredWorkouts.value)
     const labels: string[] = []
@@ -87,14 +87,14 @@ export function useStatistics(workouts: Ref<Workout[]>, timeRange: Ref<TimeRange
 
     sortedEntries.forEach(([date, workoutList]) => {
       labels.push(formatDate(date))
-      const totalVolume = workoutList.reduce((sum, w) => sum + (w.totalVolume || 0), 0)
-      data.push(Math.round(totalVolume))
+      const totalDuration = workoutList.reduce((sum, w) => sum + (w.duration || 0), 0)
+      data.push(Math.round((totalDuration / 60) * 6))
     })
 
     return {
       labels,
       datasets: [{
-        label: 'Volume (kg)',
+        label: 'Calories (kcal)',
         data,
         borderColor: '#b8a48f',
         backgroundColor: 'rgba(184, 164, 143, 0.1)',
@@ -305,6 +305,7 @@ export function useStatistics(workouts: Ref<Workout[]>, timeRange: Ref<TimeRange
     const calcStats = (list: Workout[]) => ({
       workouts: list.length,
       volume: Math.round(list.reduce((s, w) => s + (w.totalVolume || 0), 0)),
+      totalTime: Math.round(list.reduce((s, w) => s + (w.duration || 0), 0)),
       avgDuration: list.length > 0 ? Math.round(list.reduce((s, w) => s + (w.duration || 0), 0) / list.length) : 0
     })
 
@@ -322,6 +323,7 @@ export function useStatistics(workouts: Ref<Workout[]>, timeRange: Ref<TimeRange
       changes: {
         workouts: pctChange(current.workouts, previous.workouts),
         volume: pctChange(current.volume, previous.volume),
+        totalTime: pctChange(current.totalTime, previous.totalTime),
         avgDuration: pctChange(current.avgDuration, previous.avgDuration)
       }
     }

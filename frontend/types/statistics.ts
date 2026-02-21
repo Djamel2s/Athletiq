@@ -15,12 +15,15 @@ export interface ChartData {
   labels: string[]
   datasets: {
     label: string
-    data: number[]
+    data: (number | null)[]
     backgroundColor?: string | string[]
     borderColor?: string
     borderWidth?: number
     fill?: boolean
     tension?: number
+    spanGaps?: boolean
+    pointRadius?: number
+    pointHoverRadius?: number
   }[]
 }
 
@@ -48,9 +51,9 @@ export interface MuscleGroupStats {
 }
 
 export interface WeekComparison {
-  currentWeek: { workouts: number; volume: number; avgDuration: number }
-  previousWeek: { workouts: number; volume: number; avgDuration: number }
-  changes: { workouts: number | null; volume: number | null; avgDuration: number | null }
+  currentWeek: { workouts: number; volume: number; totalTime: number; avgDuration: number }
+  previousWeek: { workouts: number; volume: number; totalTime: number; avgDuration: number }
+  changes: { workouts: number | null; volume: number | null; totalTime: number | null; avgDuration: number | null }
 }
 
 export type TimeRange = 7 | 30 | 90 | null

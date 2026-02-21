@@ -26,7 +26,7 @@
           </div>
 
           <button
-            @click="completeWorkout"
+            @click="confirmComplete"
             class="btn-primary text-sm py-2 px-4"
           >
             Terminer
@@ -224,6 +224,122 @@
         </div>
       </div>
     </div>
+
+    <!-- Écran de fin d'entraînement -->
+    <Transition name="fade">
+      <div v-if="showCompletionScreen" class="fixed inset-0 z-50 bg-white dark:bg-primary-900 overflow-y-auto">
+        <div class="min-h-full flex items-center justify-center py-12 px-4">
+          <div class="max-w-md w-full text-center space-y-8">
+            <!-- Check icon -->
+            <div class="w-24 h-24 mx-auto bg-gradient-primary rounded-full flex items-center justify-center">
+              <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+
+            <div>
+              <h2 class="text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2">Bravo !</h2>
+              <p class="text-primary-600 dark:text-primary-400">Entraînement terminé avec succès</p>
+            </div>
+
+            <!-- Résumé -->
+            <div class="grid grid-cols-3 gap-4">
+              <div class="card-glass !p-4">
+                <p class="text-2xl font-bold text-primary-900 dark:text-primary-100">{{ formattedTime }}</p>
+                <p class="text-xs text-primary-500 dark:text-primary-400 mt-1">Durée</p>
+              </div>
+              <div class="card-glass !p-4">
+                <p class="text-2xl font-bold text-primary-900 dark:text-primary-100">{{ completionCalories }}</p>
+                <p class="text-xs text-primary-500 dark:text-primary-400 mt-1">kcal</p>
+              </div>
+              <div class="card-glass !p-4">
+                <p class="text-2xl font-bold text-primary-900 dark:text-primary-100">{{ workout?.exercises?.length || 0 }}</p>
+                <p class="text-xs text-primary-500 dark:text-primary-400 mt-1">Exercices</p>
+              </div>
+            </div>
+
+            <!-- Upload photo -->
+            <div class="card-glass !p-6 space-y-4">
+              <div class="flex items-center justify-center gap-3">
+                <svg class="w-6 h-6 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100">Photo de progression</h3>
+              </div>
+              <p class="text-sm text-primary-500 dark:text-primary-400">
+                Prends une photo pour suivre ta transformation
+              </p>
+
+              <!-- Preview -->
+              <div v-if="photoPreview" class="relative">
+                <img :src="photoPreview" class="w-full h-48 object-cover rounded-xl" alt="Preview" />
+                <button
+                  @click="removePhoto"
+                  class="absolute top-2 right-2 w-8 h-8 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Upload button -->
+              <div v-if="!photoPreview">
+                <input
+                  ref="photoInput"
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  class="hidden"
+                  @change="onPhotoSelected"
+                />
+                <button @click="photoInput?.click()" class="btn-outline w-full flex items-center justify-center gap-2">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                  Prendre une photo
+                </button>
+              </div>
+
+              <!-- Primary toggle -->
+              <label v-if="photoPreview" class="flex items-center gap-3 cursor-pointer">
+                <input v-model="photoIsPrimary" type="checkbox" class="w-5 h-5 rounded border-primary-300 dark:border-primary-600 text-[#b8a48f] focus:ring-[#b8a48f]" />
+                <span class="text-sm text-primary-700 dark:text-primary-300">Photo principale (timelapse)</span>
+              </label>
+            </div>
+
+            <!-- Actions -->
+            <div class="space-y-3">
+              <button
+                v-if="photoPreview"
+                @click="savePhotoAndExit"
+                :disabled="isUploadingPhoto"
+                class="btn-primary w-full py-4 text-lg flex items-center justify-center gap-2"
+              >
+                <div v-if="isUploadingPhoto" class="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                {{ isUploadingPhoto ? 'Envoi en cours...' : 'Sauvegarder et terminer' }}
+              </button>
+              <button
+                v-else
+                @click="exitCompletion"
+                class="btn-primary w-full py-4 text-lg"
+              >
+                Terminer
+              </button>
+              <button
+                v-if="photoPreview"
+                @click="exitCompletion"
+                class="text-primary-500 dark:text-primary-400 text-sm hover:text-primary-700 dark:hover:text-primary-200 transition-colors"
+              >
+                Passer sans sauvegarder la photo
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -508,19 +624,76 @@ const formatRestTime = (seconds: number) => {
 
 const toast = useToast()
 
+// === Completion screen state ===
+const showCompletionScreen = ref(false)
+const photoInput = ref<HTMLInputElement | null>(null)
+const photoPreview = ref<string | null>(null)
+const photoFile = ref<File | null>(null)
+const photoIsPrimary = ref(true)
+const isUploadingPhoto = ref(false)
+
+const completionCalories = computed(() => Math.round((elapsedTime.value / 60) * 6))
+
 const completeWorkout = async () => {
   if (!workout.value) return
 
-  if (confirm('Terminer cet entraînement?')) {
-    try {
-      await workoutStore.completeWorkout(workout.value.id)
-      await workoutStore.fetchWorkouts()
-      toast.success('Entraînement terminé !')
-      router.push('/workouts')
-    } catch (error) {
-      toast.error('Erreur lors de la complétion')
-      console.error('Failed to complete workout:', error)
-    }
+  try {
+    await workoutStore.completeWorkout(workout.value.id)
+    await workoutStore.fetchWorkouts()
+    // Stop the timer
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null }
+    if (restInterval) { clearInterval(restInterval); restInterval = null }
+    showRestTimer.value = false
+    // Show completion screen instead of navigating away
+    showCompletionScreen.value = true
+  } catch (error) {
+    toast.error('Erreur lors de la complétion')
+    console.error('Failed to complete workout:', error)
+  }
+}
+
+const onPhotoSelected = (event: Event) => {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+
+  photoFile.value = file
+  photoPreview.value = URL.createObjectURL(file)
+}
+
+const removePhoto = () => {
+  if (photoPreview.value) URL.revokeObjectURL(photoPreview.value)
+  photoPreview.value = null
+  photoFile.value = null
+  if (photoInput.value) photoInput.value.value = ''
+}
+
+const savePhotoAndExit = async () => {
+  if (!photoFile.value || !workout.value) return
+
+  isUploadingPhoto.value = true
+  try {
+    const bodyApi = useBodyApi()
+    await bodyApi.uploadPhoto(workout.value.id, photoFile.value, photoIsPrimary.value)
+    toast.success('Photo sauvegardée !')
+  } catch (error) {
+    console.error('Failed to upload photo:', error)
+    toast.error('Erreur lors de l\'envoi de la photo')
+  } finally {
+    isUploadingPhoto.value = false
+    if (photoPreview.value) URL.revokeObjectURL(photoPreview.value)
+    router.push('/dashboard')
+  }
+}
+
+const exitCompletion = () => {
+  if (photoPreview.value) URL.revokeObjectURL(photoPreview.value)
+  router.push('/dashboard')
+}
+
+const confirmComplete = () => {
+  if (confirm('Terminer cet entraînement ?')) {
+    completeWorkout()
   }
 }
 
