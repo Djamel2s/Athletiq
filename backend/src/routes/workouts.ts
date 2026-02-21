@@ -6,6 +6,7 @@ import { Exercise } from '../entities/Exercise.js'
 import { Set } from '../entities/Set.js'
 import { WorkoutPhoto } from '../entities/WorkoutPhoto.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
+import { checkAndCreatePRNotifications, checkStreakMilestone } from '../services/notificationService.js'
 
 const router = express.Router()
 
@@ -256,6 +257,10 @@ router.post('/:id/complete', authenticate, async (req: AuthRequest, res) => {
       where: { id: workout.id },
       relations: ['exercises', 'exercises.sets', 'exercises.exerciseLibrary']
     })
+
+    // Fire-and-forget: check for PR and streak notifications
+    checkAndCreatePRNotifications(req.user!.id, workout.id).catch(() => {})
+    checkStreakMilestone(req.user!.id).catch(() => {})
 
     res.json({ message: 'Workout completed', workout: updatedWorkout })
   } catch (error) {

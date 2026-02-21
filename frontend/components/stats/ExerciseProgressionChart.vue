@@ -1,28 +1,31 @@
 <template>
-  <Bar :data="chartData" :options="chartOptions" />
+  <Line :data="chartData" :options="chartOptions" />
 </template>
 
 <script setup lang="ts">
-import { Bar } from 'vue-chartjs'
+import { Line } from 'vue-chartjs'
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  BarElement,
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 } from 'chart.js'
 import type { ChartData } from '~/types/statistics'
 
-// Register Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  BarElement,
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 )
 
 interface Props {
@@ -39,10 +42,12 @@ const isDark = computed(() => colorMode.value === 'dark')
 const chartOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
-  indexAxis: 'y' as const,
   plugins: {
     legend: {
-      display: false
+      display: true,
+      labels: {
+        color: isDark.value ? '#a8a29e' : '#57534e'
+      }
     },
     tooltip: {
       backgroundColor: isDark.value ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.9)',
@@ -53,35 +58,29 @@ const chartOptions = computed(() => ({
       padding: 12,
       displayColors: false,
       callbacks: {
-        label: (context: any) => `${context.parsed.x.toLocaleString('fr-FR')} kg`
+        label: (context: any) => `${context.parsed.y} kg`
       }
     }
   },
   scales: {
-    x: {
-      beginAtZero: true,
+    y: {
+      beginAtZero: false,
       ticks: {
         color: isDark.value ? '#a8a29e' : '#57534e',
-        font: {
-          family: 'system-ui',
-          size: 12
-        },
+        font: { family: 'system-ui', size: 12 },
         callback: (value: any) => `${value} kg`
       },
       grid: {
         color: isDark.value ? 'rgba(68, 64, 60, 0.3)' : 'rgba(212, 196, 176, 0.2)'
       }
     },
-    y: {
+    x: {
       ticks: {
         color: isDark.value ? '#a8a29e' : '#57534e',
-        font: {
-          family: 'system-ui',
-          size: 12
-        }
+        font: { family: 'system-ui', size: 12 }
       },
       grid: {
-        display: false
+        color: isDark.value ? 'rgba(68, 64, 60, 0.15)' : 'rgba(212, 196, 176, 0.1)'
       }
     }
   }

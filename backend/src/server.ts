@@ -9,9 +9,13 @@ import { initializeDatabase } from './config/database.js'
 import authRoutes from './routes/auth.js'
 import workoutRoutes from './routes/workouts.js'
 import exerciseRoutes from './routes/exercises.js'
-// TODO: Migrer ces routes vers TypeORM
-// import photoRoutes from './routes/photos.js'
-// import userRoutes from './routes/users.js'
+import userRoutes from './routes/users.js'
+import bodyStatRoutes from './routes/bodyStats.js'
+import measurementRoutes from './routes/measurements.js'
+import photoRoutes from './routes/photos.js'
+import recordRoutes from './routes/records.js'
+import goalRoutes from './routes/goals.js'
+import notificationRoutes from './routes/notifications.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -36,9 +40,13 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes)
 app.use('/api/workouts', workoutRoutes)
 app.use('/api/exercises', exerciseRoutes)
-// TODO: Réactiver après migration TypeORM
-// app.use('/api/photos', photoRoutes)
-// app.use('/api/users', userRoutes)
+app.use('/api/users', userRoutes)
+app.use('/api/body-stats', bodyStatRoutes)
+app.use('/api/measurements', measurementRoutes)
+app.use('/api/photos', photoRoutes)
+app.use('/api/records', recordRoutes)
+app.use('/api/goals', goalRoutes)
+app.use('/api/notifications', notificationRoutes)
 
 // 404 handler
 app.use((req, res) => {

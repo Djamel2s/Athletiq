@@ -2,8 +2,8 @@
   <div class="card-glass cursor-pointer hover:shadow-2xl transition-all" @click="$emit('click')">
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h3 class="text-2xl font-semibold text-primary-900 mb-1">Suivi d'activité</h3>
-        <p class="text-sm text-primary-600">{{ workoutsThisWeek }} entraînement{{ workoutsThisWeek > 1 ? 's' : '' }} cette semaine</p>
+        <h3 class="text-2xl font-semibold text-primary-900 dark:text-primary-100 mb-1">Suivi d'activité</h3>
+        <p class="text-sm text-primary-600 dark:text-primary-400">{{ workoutsThisWeek }} entraînement{{ workoutsThisWeek > 1 ? 's' : '' }} cette semaine</p>
       </div>
       <svg class="w-6 h-6 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -13,42 +13,42 @@
     <!-- Heatmap des 7 derniers jours -->
     <div class="space-y-3">
       <div class="flex justify-between items-center">
-        <span class="text-xs text-primary-500 font-medium">7 derniers jours</span>
-        <span class="text-xs text-primary-500">Aujourd'hui</span>
+        <span class="text-xs text-primary-500 dark:text-primary-400 font-medium">7 derniers jours</span>
+        <span class="text-xs text-primary-500 dark:text-primary-400">Aujourd'hui</span>
       </div>
       <div class="grid grid-cols-7 gap-2">
         <div
           v-for="(day, index) in last7Days"
           :key="index"
           class="aspect-square rounded-lg transition-all relative group"
-          :class="day.hasWorkout ? 'bg-gradient-primary shadow-sm' : 'bg-primary-100'"
+          :class="day.hasWorkout ? 'bg-gradient-primary shadow-sm' : 'bg-primary-100 dark:bg-primary-800'"
         >
           <!-- Tooltip au hover -->
-          <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-primary-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+          <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-primary-900 dark:bg-primary-100 text-white dark:text-primary-900 text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
             {{ day.label }}
-            <div class="text-primary-300">{{ day.hasWorkout ? '✓ Entraînement' : 'Repos' }}</div>
+            <div class="text-primary-300 dark:text-primary-600">{{ day.hasWorkout ? '✓ Entraînement' : 'Repos' }}</div>
           </div>
         </div>
       </div>
-      <div class="flex justify-between text-xs text-primary-500">
+      <div class="flex justify-between text-xs text-primary-500 dark:text-primary-400">
         <span>{{ last7Days[0]?.dayName }}</span>
         <span>{{ last7Days[6]?.dayName }}</span>
       </div>
     </div>
 
     <!-- Stats rapides -->
-    <div class="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-primary-200">
+    <div class="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-primary-200 dark:border-primary-700">
       <div class="text-center">
-        <p class="text-2xl font-bold text-primary-900">{{ currentStreak }}</p>
-        <p class="text-xs text-primary-600">Série</p>
+        <p class="text-2xl font-bold text-primary-900 dark:text-primary-100">{{ currentStreak }}</p>
+        <p class="text-xs text-primary-600 dark:text-primary-400">Série</p>
       </div>
       <div class="text-center">
-        <p class="text-2xl font-bold text-primary-900">{{ workoutsThisMonth }}</p>
-        <p class="text-xs text-primary-600">Ce mois</p>
+        <p class="text-2xl font-bold text-primary-900 dark:text-primary-100">{{ workoutsThisMonth }}</p>
+        <p class="text-xs text-primary-600 dark:text-primary-400">Ce mois</p>
       </div>
       <div class="text-center">
-        <p class="text-2xl font-bold text-primary-900">{{ totalWorkouts }}</p>
-        <p class="text-xs text-primary-600">Total</p>
+        <p class="text-2xl font-bold text-primary-900 dark:text-primary-100">{{ totalWorkouts }}</p>
+        <p class="text-xs text-primary-600 dark:text-primary-400">Total</p>
       </div>
     </div>
   </div>

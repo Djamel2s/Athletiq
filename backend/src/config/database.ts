@@ -21,6 +21,8 @@ import { WorkoutPhoto } from '../entities/WorkoutPhoto.js'
 import { BodyStat } from '../entities/BodyStat.js'
 import { Measurement } from '../entities/Measurement.js'
 import { ExerciseLibrary } from '../entities/ExerciseLibrary.js'
+import { UserGoal } from '../entities/UserGoal.js'
+import { Notification } from '../entities/Notification.js'
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -32,7 +34,7 @@ export const AppDataSource = new DataSource({
   schema: 'public',
   synchronize: true, // Synchroniser automatiquement (DEVELOPMENT ONLY)
   logging: process.env.NODE_ENV === 'development',
-  entities: [User, Workout, Exercise, Set, WorkoutPhoto, BodyStat, Measurement, ExerciseLibrary],
+  entities: [User, Workout, Exercise, Set, WorkoutPhoto, BodyStat, Measurement, ExerciseLibrary, UserGoal, Notification],
 })
 
 // Initialiser la connexion

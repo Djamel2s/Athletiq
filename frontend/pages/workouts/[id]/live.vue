@@ -1,12 +1,12 @@
 <template>
   <div class="min-h-screen">
     <!-- Countdown 3-2-1-GO -->
-    <div v-if="showCountdown" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
+    <div v-if="showCountdown" class="fixed inset-0 bg-white dark:bg-primary-900 z-50 flex items-center justify-center">
       <div class="text-center">
-        <div class="text-9xl font-bold text-primary-900 animate-pulse">
+        <div class="text-9xl font-bold text-primary-900 dark:text-primary-100 animate-pulse">
           {{ countdownNumber }}
         </div>
-        <p class="text-2xl text-primary-600 mt-4">Prépare-toi...</p>
+        <p class="text-2xl text-primary-600 dark:text-primary-400 mt-4">Prépare-toi...</p>
       </div>
     </div>
 
@@ -14,15 +14,15 @@
     <div class="fixed top-0 left-0 right-0 z-50 nav-blur">
       <div class="max-w-3xl mx-auto px-4 py-4">
         <div class="flex items-center justify-between">
-          <button @click="confirmExit" class="text-primary-700 p-2 hover:text-primary-900">
+          <button @click="confirmExit" class="text-primary-700 dark:text-primary-300 p-2 hover:text-primary-900 dark:hover:text-primary-100">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
             </svg>
           </button>
 
           <div class="text-center">
-            <div class="text-2xl font-bold text-primary-900 font-mono">{{ formattedTime }}</div>
-            <p class="text-xs text-primary-600">{{ workout?.name }}</p>
+            <div class="text-2xl font-bold text-primary-900 dark:text-primary-100 font-mono">{{ formattedTime }}</div>
+            <p class="text-xs text-primary-600 dark:text-primary-400">{{ workout?.name }}</p>
           </div>
 
           <button
@@ -38,22 +38,22 @@
     <!-- Contenu principal -->
     <div class="pt-24 pb-20 px-4 max-w-3xl mx-auto">
       <div v-if="isLoading" class="text-center py-20">
-        <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary-200 border-t-primary-600"></div>
-        <p class="mt-4 text-primary-600 text-lg">Chargement...</p>
+        <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary-200 dark:border-primary-700 border-t-primary-600 dark:border-t-primary-400"></div>
+        <p class="mt-4 text-primary-600 dark:text-primary-400 text-lg">Chargement...</p>
       </div>
 
       <div v-else-if="!workout || !currentExercise" class="text-center py-20">
-        <p class="text-primary-900 text-lg">Workout introuvable</p>
+        <p class="text-primary-900 dark:text-primary-100 text-lg">Workout introuvable</p>
       </div>
 
       <div v-else class="space-y-4">
         <!-- Progress -->
         <div class="text-center mb-6">
-          <p class="text-sm text-primary-600 mb-2">
+          <p class="text-sm text-primary-600 dark:text-primary-400 mb-2">
             Exercice {{ currentExerciseIndex + 1 }} / {{ workout.exercises?.length || 0 }}
             · Série {{ currentSetNumber }} / {{ currentExercise.targetSets || 3 }}
           </p>
-          <div class="w-full bg-primary-200 rounded-full h-2">
+          <div class="w-full bg-primary-200 dark:bg-primary-700 rounded-full h-2">
             <div
               class="bg-gradient-primary h-2 rounded-full transition-all duration-300"
               :style="{ width: `${progress}%` }"
@@ -62,7 +62,7 @@
         </div>
 
         <!-- Nom exercice -->
-        <h1 class="text-3xl font-bold text-primary-900 text-center mb-4">
+        <h1 class="text-3xl font-bold text-primary-900 dark:text-primary-100 text-center mb-4">
           {{ currentExercise.exerciseLibrary?.name || currentExercise.name }}
         </h1>
 
@@ -70,7 +70,7 @@
         <div class="card-glass overflow-hidden mb-4">
           <!-- Timer de repos intégré -->
           <div v-if="showRestTimer" class="h-64 flex flex-col items-center justify-center p-8">
-            <h3 class="text-2xl font-bold text-primary-900 mb-6">Repos</h3>
+            <h3 class="text-2xl font-bold text-primary-900 dark:text-primary-100 mb-6">Repos</h3>
 
             <!-- Cercle de progression avec timer -->
             <div class="relative mb-8">
@@ -81,7 +81,7 @@
                   cy="80"
                   r="70"
                   stroke="currentColor"
-                  class="text-primary-200"
+                  class="text-primary-200 dark:text-primary-700"
                   stroke-width="8"
                   fill="none"
                 />
@@ -144,38 +144,38 @@
           </div>
 
           <!-- Placeholder si pas de média -->
-          <div v-else class="h-64 flex items-center justify-center bg-primary-100">
-            <p class="text-primary-500">Aucune image disponible</p>
+          <div v-else class="h-64 flex items-center justify-center bg-primary-100 dark:bg-primary-800">
+            <p class="text-primary-500 dark:text-primary-400">Aucune image disponible</p>
           </div>
         </div>
 
         <!-- Série actuelle (en haut maintenant) -->
         <div class="card-glass space-y-6">
           <div class="text-center">
-            <p class="text-primary-900 font-bold text-xl mb-2">Série {{ currentSetNumber }}</p>
-            <p class="text-primary-600 text-sm">Entre tes performances</p>
+            <p class="text-primary-900 dark:text-primary-100 font-bold text-xl mb-2">Série {{ currentSetNumber }}</p>
+            <p class="text-primary-600 dark:text-primary-400 text-sm">Entre tes performances</p>
           </div>
 
           <div class="flex gap-4">
             <div class="flex-1">
-              <label class="block text-primary-900 text-sm mb-2 text-center font-semibold">Répétitions</label>
+              <label class="block text-primary-900 dark:text-primary-100 text-sm mb-2 text-center font-semibold">Répétitions</label>
               <input
                 v-model.number="currentSetData.reps"
                 type="number"
                 :disabled="showRestTimer"
-                class="w-full px-4 py-6 input text-center text-primary-900 text-3xl font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                class="w-full px-4 py-6 input text-center text-primary-900 dark:text-primary-100 text-3xl font-bold disabled:opacity-50 disabled:cursor-not-allowed"
                 placeholder="10"
               />
             </div>
 
             <div class="flex-1">
-              <label class="block text-primary-900 text-sm mb-2 text-center font-semibold">Poids (kg)</label>
+              <label class="block text-primary-900 dark:text-primary-100 text-sm mb-2 text-center font-semibold">Poids (kg)</label>
               <input
                 v-model.number="currentSetData.weight"
                 type="number"
                 step="0.5"
                 :disabled="showRestTimer"
-                class="w-full px-4 py-6 input text-center text-primary-900 text-3xl font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                class="w-full px-4 py-6 input text-center text-primary-900 dark:text-primary-100 text-3xl font-bold disabled:opacity-50 disabled:cursor-not-allowed"
                 placeholder="20"
               />
             </div>
@@ -193,22 +193,22 @@
         <!-- Historique -->
         <div v-if="exerciseHistory?.lastSets && exerciseHistory.lastSets.length > 0"
              class="card-glass bg-opacity-60">
-          <p class="text-sm text-primary-900 font-semibold mb-3">Dernière fois:</p>
+          <p class="text-sm text-primary-900 dark:text-primary-100 font-semibold mb-3">Dernière fois:</p>
           <div class="flex gap-2 overflow-x-auto">
             <div
               v-for="(set, idx) in exerciseHistory.lastSets"
               :key="idx"
-              class="flex-shrink-0 bg-primary-100 rounded-lg p-3 text-center border border-primary-200 min-w-[80px]"
+              class="flex-shrink-0 bg-primary-100 dark:bg-primary-800 rounded-lg p-3 text-center border border-primary-200 dark:border-primary-700 min-w-[80px]"
             >
-              <p class="text-xs text-primary-600 mb-1">S{{ set.setNumber || (idx + 1) }}</p>
-              <p class="text-primary-900 font-bold">{{ set.reps }}×{{ set.weight }}kg</p>
+              <p class="text-xs text-primary-600 dark:text-primary-400 mb-1">S{{ set.setNumber || (idx + 1) }}</p>
+              <p class="text-primary-900 dark:text-primary-100 font-bold">{{ set.reps }}×{{ set.weight }}kg</p>
             </div>
           </div>
         </div>
 
         <!-- Séries complétées -->
         <div v-if="completedSets.length > 0" class="space-y-2">
-          <p class="text-sm text-primary-900 font-semibold">Séries complétées:</p>
+          <p class="text-sm text-primary-900 dark:text-primary-100 font-semibold">Séries complétées:</p>
           <div
             v-for="(set, idx) in completedSets"
             :key="idx"
@@ -218,7 +218,7 @@
               <div class="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center text-white font-bold text-sm">
                 {{ idx + 1 }}
               </div>
-              <span class="text-primary-900 font-bold">{{ set.reps }} reps × {{ set.weight }} kg</span>
+              <span class="text-primary-900 dark:text-primary-100 font-bold">{{ set.reps }} reps × {{ set.weight }} kg</span>
             </div>
           </div>
         </div>
@@ -506,16 +506,19 @@ const formatRestTime = (seconds: number) => {
   return `${mins}:${secs.toString().padStart(2, '0')}`
 }
 
+const toast = useToast()
+
 const completeWorkout = async () => {
   if (!workout.value) return
 
   if (confirm('Terminer cet entraînement?')) {
     try {
       await workoutStore.completeWorkout(workout.value.id)
-      // Recharger les workouts pour mettre à jour le store
       await workoutStore.fetchWorkouts()
+      toast.success('Entraînement terminé !')
       router.push('/workouts')
     } catch (error) {
+      toast.error('Erreur lors de la complétion')
       console.error('Failed to complete workout:', error)
     }
   }

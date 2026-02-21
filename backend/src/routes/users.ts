@@ -1,26 +1,23 @@
 import express from 'express'
 import { z } from 'zod'
-import { prisma } from '../config/database.js'
+import { AppDataSource } from '../config/database.js'
+import { User } from '../entities/User.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
 
 const router = express.Router()
+const userRepository = AppDataSource.getRepository(User)
 
 // Get current user profile
 router.get('/me', authenticate, async (req: AuthRequest, res) => {
   try {
-    const user = await prisma.user.findUnique({
+    const user = await userRepository.findOne({
       where: { id: req.user!.id },
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        avatarUrl: true,
-        goal: true,
-        createdAt: true,
-        updatedAt: true
-      }
+      select: ['id', 'email', 'firstName', 'lastName', 'avatarUrl', 'goal', 'createdAt', 'updatedAt']
     })
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' })
+    }
 
     res.json(user)
   } catch (error) {
@@ -40,18 +37,11 @@ router.put('/me', authenticate, async (req: AuthRequest, res) => {
 
     const data = updateSchema.parse(req.body)
 
-    const user = await prisma.user.update({
+    await userRepository.update(req.user!.id, data)
+
+    const user = await userRepository.findOne({
       where: { id: req.user!.id },
-      data,
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        avatarUrl: true,
-        goal: true,
-        updatedAt: true
-      }
+      select: ['id', 'email', 'firstName', 'lastName', 'avatarUrl', 'goal', 'updatedAt']
     })
 
     res.json(user)
@@ -60,6 +50,16 @@ router.put('/me', authenticate, async (req: AuthRequest, res) => {
       return res.status(400).json({ error: 'Validation error', details: error.errors })
     }
     res.status(500).json({ error: 'Failed to update profile' })
+  }
+})
+
+// Delete user account
+router.delete('/me', authenticate, async (req: AuthRequest, res) => {
+  try {
+    await userRepository.delete(req.user!.id)
+    res.json({ message: 'Account deleted successfully' })
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete account' })
   }
 })
 

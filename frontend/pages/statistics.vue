@@ -16,7 +16,7 @@
 
           <div class="flex items-center space-x-4">
             <!-- Time Range Selector -->
-            <div class="hidden md:flex space-x-2 bg-white bg-opacity-50 backdrop-blur-lg rounded-xl p-1">
+            <div class="hidden md:flex space-x-2 bg-white dark:bg-primary-900 bg-opacity-50 dark:bg-opacity-50 backdrop-blur-lg rounded-xl p-1">
               <button
                 v-for="range in timeRanges"
                 :key="range.value || 'all'"
@@ -25,7 +25,7 @@
                   'px-4 py-2 rounded-lg text-sm font-semibold transition-all',
                   selectedTimeRange === range.value
                     ? 'bg-gradient-primary text-white shadow-sm'
-                    : 'text-primary-600 hover:text-primary-900'
+                    : 'text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100'
                 ]"
               >
                 {{ range.label }}
@@ -44,20 +44,20 @@
     <div class="pt-32 px-6 pb-20 max-w-7xl mx-auto">
       <!-- Loading State -->
       <div v-if="workoutStore.isLoading" class="text-center py-20">
-        <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary-300 border-t-primary-600"></div>
-        <p class="mt-4 text-primary-600 text-lg">Chargement des statistiques...</p>
+        <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary-300 dark:border-primary-600 border-t-primary-600 dark:border-t-primary-400"></div>
+        <p class="mt-4 text-primary-600 dark:text-primary-400 text-lg">Chargement des statistiques...</p>
       </div>
 
       <!-- Empty State - No Workouts -->
       <div v-else-if="!hasData && !selectedTimeRange" class="fade-in">
         <div class="card-glass text-center py-20 max-w-2xl mx-auto">
-          <svg class="w-24 h-24 mx-auto mb-6 text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-24 h-24 mx-auto mb-6 text-primary-300 dark:text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
           </svg>
-          <h2 class="text-3xl font-bold text-primary-900 mb-4">
+          <h2 class="text-3xl font-bold text-primary-900 dark:text-primary-100 mb-4">
             Aucune statistique disponible
           </h2>
-          <p class="text-lg text-primary-600 mb-8">
+          <p class="text-lg text-primary-600 dark:text-primary-400 mb-8">
             Commencez votre premier entraînement pour voir vos statistiques
           </p>
           <button @click="navigateTo('/workouts/start')" class="btn-primary px-8 py-4">
@@ -69,7 +69,7 @@
       <!-- Empty State - No Workouts in Time Range -->
       <div v-else-if="!hasData && selectedTimeRange" class="fade-in">
         <div class="card-glass text-center py-16">
-          <p class="text-xl text-primary-600 mb-6">
+          <p class="text-xl text-primary-600 dark:text-primary-400 mb-6">
             Aucun entraînement dans cette période
           </p>
           <button @click="selectedTimeRange = null" class="btn-outline">
@@ -82,10 +82,10 @@
       <div v-else class="space-y-12">
         <!-- Page Header -->
         <div class="fade-in text-center">
-          <h2 class="text-4xl md:text-5xl font-bold text-primary-900 mb-4 text-display">
+          <h2 class="text-4xl md:text-5xl font-bold text-primary-900 dark:text-primary-100 mb-4 text-display">
             Vos Statistiques
           </h2>
-          <p class="text-lg text-primary-600">
+          <p class="text-lg text-primary-600 dark:text-primary-400">
             {{ timeRangeLabel }}
           </p>
         </div>
@@ -100,7 +100,7 @@
               'px-4 py-2 rounded-lg text-sm font-semibold transition-all',
               selectedTimeRange === range.value
                 ? 'bg-gradient-primary text-white'
-                : 'bg-white bg-opacity-50 text-primary-600'
+                : 'bg-white dark:bg-primary-900 bg-opacity-50 dark:bg-opacity-50 text-primary-600 dark:text-primary-400'
             ]"
           >
             {{ range.label }}
@@ -140,12 +140,36 @@
           />
         </div>
 
+        <!-- Week Comparison -->
+        <div class="space-y-6 slide-up">
+          <h3 class="text-3xl font-bold text-primary-900 dark:text-primary-100">Cette semaine</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <StatsWeekComparisonCard
+              title="Entraînements"
+              :value="weekComparison.currentWeek.workouts"
+              :change="weekComparison.changes.workouts"
+            />
+            <StatsWeekComparisonCard
+              title="Volume total"
+              :value="weekComparison.currentWeek.volume"
+              :change="weekComparison.changes.volume"
+              format="weight"
+            />
+            <StatsWeekComparisonCard
+              title="Durée moyenne"
+              :value="weekComparison.currentWeek.avgDuration"
+              :change="weekComparison.changes.avgDuration"
+              format="duration"
+            />
+          </div>
+        </div>
+
         <!-- Progression Charts -->
         <div class="space-y-6 slide-up">
-          <h3 class="text-3xl font-bold text-primary-900">Progression</h3>
+          <h3 class="text-3xl font-bold text-primary-900 dark:text-primary-100">Progression</h3>
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div class="card-glass">
-              <h4 class="text-xl font-semibold text-primary-900 mb-6">Volume au fil du temps</h4>
+              <h4 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">Volume au fil du temps</h4>
               <div class="h-[300px]">
                 <StatsVolumeChart v-if="stats.volumeData && stats.volumeData.datasets" :data="stats.volumeData" />
                 <div v-else class="flex items-center justify-center h-full text-primary-400">
@@ -154,7 +178,7 @@
               </div>
             </div>
             <div class="card-glass">
-              <h4 class="text-xl font-semibold text-primary-900 mb-6">Fréquence par jour</h4>
+              <h4 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">Fréquence par jour</h4>
               <div class="h-[300px]">
                 <StatsFrequencyChart v-if="stats.frequencyData && stats.frequencyData.datasets" :data="stats.frequencyData" />
                 <div v-else class="flex items-center justify-center h-full text-primary-400">
@@ -165,12 +189,37 @@
           </div>
         </div>
 
+        <!-- Exercise Progression -->
+        <div v-if="allExerciseNames.length > 0" class="space-y-6 slide-up">
+          <h3 class="text-3xl font-bold text-primary-900 dark:text-primary-100">Progression par exercice</h3>
+          <div class="card-glass">
+            <div class="mb-6">
+              <select
+                v-model="selectedExercise"
+                class="input-primary !w-auto min-w-[250px]"
+              >
+                <option :value="null" disabled>Sélectionner un exercice</option>
+                <option v-for="name in allExerciseNames" :key="name" :value="name">{{ name }}</option>
+              </select>
+            </div>
+            <div v-if="exerciseProgressionData" class="h-[300px]">
+              <StatsExerciseProgressionChart :data="exerciseProgressionData" />
+            </div>
+            <div v-else-if="selectedExercise" class="flex items-center justify-center h-[200px] text-primary-400">
+              Aucune donnée pour cet exercice
+            </div>
+            <div v-else class="flex items-center justify-center h-[200px] text-primary-400">
+              Sélectionnez un exercice pour voir sa progression
+            </div>
+          </div>
+        </div>
+
         <!-- Exercise Analysis -->
         <div class="space-y-6 slide-up">
-          <h3 class="text-3xl font-bold text-primary-900">Analyse des exercices</h3>
+          <h3 class="text-3xl font-bold text-primary-900 dark:text-primary-100">Analyse des exercices</h3>
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div class="card-glass">
-              <h4 class="text-xl font-semibold text-primary-900 mb-6">Volume par groupe musculaire</h4>
+              <h4 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">Volume par groupe musculaire</h4>
               <div class="h-[300px]">
                 <StatsMuscleGroupChart v-if="stats.muscleGroupData && stats.muscleGroupData.datasets" :data="stats.muscleGroupData" />
                 <div v-else class="flex items-center justify-center h-full text-primary-400">
@@ -179,7 +228,7 @@
               </div>
             </div>
             <div class="card-glass">
-              <h4 class="text-xl font-semibold text-primary-900 mb-6">Distribution des exercices</h4>
+              <h4 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">Distribution des exercices</h4>
               <div class="h-[300px]">
                 <StatsExerciseDistributionChart v-if="stats.exerciseDistributionData && stats.exerciseDistributionData.datasets" :data="stats.exerciseDistributionData" />
                 <div v-else class="flex items-center justify-center h-full text-primary-400">
@@ -192,65 +241,130 @@
 
         <!-- Top Exercises -->
         <div v-if="stats.topExercises && stats.topExercises.length > 0" class="card-glass slide-up">
-          <h3 class="text-2xl font-bold text-primary-900 mb-6">Top 5 Exercices</h3>
+          <h3 class="text-2xl font-bold text-primary-900 dark:text-primary-100 mb-6">Top 5 Exercices</h3>
           <div class="space-y-4">
             <div
               v-for="(exercise, index) in stats.topExercises"
               :key="exercise?.name || index"
-              class="flex items-center justify-between p-4 bg-primary-50 rounded-xl"
+              class="flex items-center justify-between p-4 bg-primary-50 dark:bg-primary-800 rounded-xl"
             >
               <div class="flex items-center space-x-4">
                 <span class="flex items-center justify-center w-8 h-8 bg-gradient-primary text-white font-bold rounded-lg text-sm">
                   {{ index + 1 }}
                 </span>
                 <div>
-                  <p class="font-semibold text-primary-900">{{ exercise?.name || 'Exercice inconnu' }}</p>
-                  <p class="text-sm text-primary-600">{{ exercise?.count || 0 }} fois réalisé</p>
+                  <p class="font-semibold text-primary-900 dark:text-primary-100">{{ exercise?.name || 'Exercice inconnu' }}</p>
+                  <p class="text-sm text-primary-600 dark:text-primary-400">{{ exercise?.count || 0 }} fois réalisé</p>
                 </div>
               </div>
               <div class="text-right">
-                <p class="font-bold text-primary-900">{{ (exercise?.totalVolume || 0).toLocaleString() }} kg</p>
-                <p class="text-sm text-primary-600">volume total</p>
+                <p class="font-bold text-primary-900 dark:text-primary-100">{{ (exercise?.totalVolume || 0).toLocaleString() }} kg</p>
+                <p class="text-sm text-primary-600 dark:text-primary-400">volume total</p>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Personal Records -->
-        <div v-if="stats.personalRecords && stats.personalRecords.length > 0" class="card-glass slide-up">
-          <h3 class="text-2xl font-bold text-primary-900 mb-6">Records Personnels</h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div v-if="personalRecords && personalRecords.length > 0" class="space-y-6 slide-up">
+          <h3 class="text-3xl font-bold text-primary-900 dark:text-primary-100">Records Personnels</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div
-              v-for="record in stats.personalRecords"
+              v-for="record in personalRecords"
               :key="record?.exerciseName || record?.exerciseId"
-              class="flex items-center justify-between p-4 bg-primary-50 rounded-xl"
+              class="card-glass !p-6 flex items-start space-x-4"
             >
-              <div>
-                <p class="font-semibold text-primary-900">{{ record?.exerciseName || 'Exercice inconnu' }}</p>
-                <p class="text-sm text-primary-600">{{ record?.date ? formatDate(record.date) : 'Date inconnue' }}</p>
+              <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
               </div>
-              <div class="text-right">
-                <p class="font-bold text-xl text-primary-900">{{ record?.maxWeight || 0 }} kg</p>
-                <p class="text-sm text-primary-600">{{ record?.reps || 0 }} reps</p>
+              <div class="flex-1 min-w-0">
+                <p class="font-bold text-primary-900 dark:text-primary-100 truncate">{{ record?.exerciseName || 'Exercice inconnu' }}</p>
+                <p class="text-2xl font-bold bg-gradient-to-r from-[#d4c4b0] to-[#9d8569] bg-clip-text text-transparent">
+                  {{ record?.maxWeight || 0 }} kg
+                </p>
+                <div class="flex items-center space-x-3 text-sm text-primary-600 dark:text-primary-400 mt-1">
+                  <span>{{ record?.reps || 0 }} reps</span>
+                  <span>·</span>
+                  <span>{{ record?.date ? formatDate(record.date) : 'Date inconnue' }}</span>
+                </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Goals / Objectifs -->
+        <div class="space-y-6 slide-up">
+          <div class="flex items-center justify-between">
+            <h3 class="text-3xl font-bold text-primary-900 dark:text-primary-100">Mes Objectifs</h3>
+            <button @click="showGoalModal = true" class="btn-primary !py-2 !px-4 text-sm">
+              + Nouvel objectif
+            </button>
+          </div>
+
+          <!-- Active Goals -->
+          <div v-if="goalStore.activeGoals.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <GoalsGoalCard
+              v-for="goal in goalStore.activeGoals"
+              :key="goal.id"
+              :goal="goal"
+              @delete="handleDeleteGoal"
+            />
+          </div>
+          <div v-else class="card-glass text-center py-10">
+            <p class="text-primary-500 dark:text-primary-400 mb-4">Aucun objectif en cours</p>
+            <button @click="showGoalModal = true" class="btn-outline text-sm">
+              Créer mon premier objectif
+            </button>
+          </div>
+
+          <!-- Achieved Goals -->
+          <div v-if="goalStore.achievedGoals.length > 0">
+            <h4 class="text-lg font-semibold text-primary-700 dark:text-primary-300 mb-3">Objectifs atteints</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <GoalsGoalCard
+                v-for="goal in goalStore.achievedGoals"
+                :key="goal.id"
+                :goal="goal"
+                @delete="handleDeleteGoal"
+              />
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Goal Create Modal -->
+    <GoalsGoalCreateModal
+      :show="showGoalModal"
+      :exercise-names="allExerciseNames"
+      :current-weight="currentWeight"
+      :current-body-fat="currentBodyFat"
+      @close="showGoalModal = false"
+      @created="handleCreateGoal"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { useWorkoutStore } from '~/stores/workout'
 import { useAuthStore } from '~/stores/auth'
+import { useGoalStore } from '~/stores/goals'
+import { useBodyStore } from '~/stores/body'
 import type { TimeRange } from '~/types/statistics'
+import type { CreateGoalPayload } from '~/types/goals'
 
 const workoutStore = useWorkoutStore()
 const authStore = useAuthStore()
+const goalStore = useGoalStore()
+const bodyStore = useBodyStore()
 const router = useRouter()
+const toast = useToast()
 
 const selectedTimeRange = ref<TimeRange>(null)
+const selectedExercise = ref<string | null>(null)
+const showGoalModal = ref(false)
 
 const timeRanges = [
   { label: '7j', value: 7 as TimeRange },
@@ -267,16 +381,21 @@ onMounted(async () => {
     return
   }
 
-  await workoutStore.fetchWorkouts()
+  await Promise.all([
+    workoutStore.fetchWorkouts(),
+    goalStore.fetchGoals(),
+    bodyStore.fetchBodyStats()
+  ])
 })
 
 // Calculate statistics
 const stats = useStatistics(
   computed(() => workoutStore.workoutHistory),
-  selectedTimeRange
+  selectedTimeRange,
+  selectedExercise
 )
 
-const { hasData } = stats
+const { hasData, personalRecords, weekComparison, allExerciseNames, exerciseProgressionData } = stats
 
 const timeRangeLabel = computed(() => {
   if (!selectedTimeRange.value) return 'Toutes les statistiques'
@@ -290,6 +409,30 @@ const formatDate = (dateString: string) => {
     month: 'long',
     year: 'numeric'
   }).format(date)
+}
+
+// Body data for goal creation
+const currentWeight = computed(() => bodyStore.latestWeight?.weight ?? null)
+const currentBodyFat = computed(() => bodyStore.latestWeight?.bodyFat ?? null)
+
+// Goal handlers
+const handleCreateGoal = async (payload: CreateGoalPayload) => {
+  try {
+    await goalStore.addGoal(payload)
+    showGoalModal.value = false
+    toast.success('Objectif créé')
+  } catch {
+    toast.error('Erreur lors de la création')
+  }
+}
+
+const handleDeleteGoal = async (id: number) => {
+  try {
+    await goalStore.removeGoal(id)
+    toast.success('Objectif supprimé')
+  } catch {
+    toast.error('Erreur lors de la suppression')
+  }
 }
 
 // Icons (inline SVG)

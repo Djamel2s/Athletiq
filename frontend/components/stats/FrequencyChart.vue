@@ -33,7 +33,10 @@ const props = defineProps<Props>()
 
 const chartData = computed(() => props.data)
 
-const chartOptions = {
+const colorMode = useColorMode()
+const isDark = computed(() => colorMode.value === 'dark')
+
+const chartOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
@@ -41,10 +44,10 @@ const chartOptions = {
       display: false
     },
     tooltip: {
-      backgroundColor: 'rgba(255, 255, 255, 0.9)',
-      titleColor: '#1c1917',
-      bodyColor: '#57534e',
-      borderColor: '#d4c4b0',
+      backgroundColor: isDark.value ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.9)',
+      titleColor: isDark.value ? '#f5f5f4' : '#1c1917',
+      bodyColor: isDark.value ? '#d6d3d1' : '#57534e',
+      borderColor: isDark.value ? '#44403c' : '#d4c4b0',
       borderWidth: 1,
       padding: 12,
       displayColors: false,
@@ -57,7 +60,7 @@ const chartOptions = {
     y: {
       beginAtZero: true,
       ticks: {
-        color: '#57534e',
+        color: isDark.value ? '#a8a29e' : '#57534e',
         font: {
           family: 'system-ui',
           size: 12
@@ -65,12 +68,12 @@ const chartOptions = {
         stepSize: 1
       },
       grid: {
-        color: 'rgba(212, 196, 176, 0.2)'
+        color: isDark.value ? 'rgba(68, 64, 60, 0.3)' : 'rgba(212, 196, 176, 0.2)'
       }
     },
     x: {
       ticks: {
-        color: '#57534e',
+        color: isDark.value ? '#a8a29e' : '#57534e',
         font: {
           family: 'system-ui',
           size: 12
@@ -81,5 +84,5 @@ const chartOptions = {
       }
     }
   }
-}
+}))
 </script>

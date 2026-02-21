@@ -15,9 +15,8 @@ import {
   Legend,
   Filler
 } from 'chart.js'
-import type { ChartData } from '~/types/statistics'
+import type { BodyStat } from '~/types/body'
 
-// Register Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -30,15 +29,36 @@ ChartJS.register(
 )
 
 interface Props {
-  data: ChartData
+  stats: BodyStat[]
 }
 
 const props = defineProps<Props>()
 
-const chartData = computed(() => props.data)
-
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
+
+const chartData = computed(() => {
+  const sorted = [...props.stats].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+
+  return {
+    labels: sorted.map(s => new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(new Date(s.date))),
+    datasets: [
+      {
+        label: 'Poids (kg)',
+        data: sorted.map(s => s.weight),
+        borderColor: '#d4c4b0',
+        backgroundColor: isDark.value ? 'rgba(212, 196, 176, 0.1)' : 'rgba(212, 196, 176, 0.2)',
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: '#d4c4b0',
+        pointBorderColor: isDark.value ? '#1c1c1c' : '#ffffff',
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6
+      }
+    ]
+  }
+})
 
 const chartOptions = computed(() => ({
   responsive: true,
@@ -56,19 +76,22 @@ const chartOptions = computed(() => ({
       padding: 12,
       displayColors: false,
       callbacks: {
-        label: (context: any) => `${context.parsed.y.toLocaleString('fr-FR')} kg`
+        label: (context: any) => {
+          const index = context.dataIndex
+          const sorted = [...props.stats].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+          const stat = sorted[index]
+          const lines = [`Poids: ${context.parsed.y} kg`]
+          if (stat?.bodyFat) lines.push(`Body fat: ${stat.bodyFat}%`)
+          return lines
+        }
       }
     }
   },
   scales: {
     y: {
-      beginAtZero: true,
       ticks: {
         color: isDark.value ? '#a8a29e' : '#57534e',
-        font: {
-          family: 'system-ui',
-          size: 12
-        },
+        font: { family: 'system-ui', size: 12 },
         callback: (value: any) => `${value} kg`
       },
       grid: {
@@ -78,10 +101,7 @@ const chartOptions = computed(() => ({
     x: {
       ticks: {
         color: isDark.value ? '#a8a29e' : '#57534e',
-        font: {
-          family: 'system-ui',
-          size: 12
-        }
+        font: { family: 'system-ui', size: 12 }
       },
       grid: {
         color: isDark.value ? 'rgba(68, 64, 60, 0.15)' : 'rgba(212, 196, 176, 0.1)'

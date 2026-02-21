@@ -25,8 +25,8 @@
     <div class="pt-32 px-6 pb-20 max-w-7xl mx-auto">
       <!-- Loading -->
       <div v-if="workoutStore.isLoading" class="text-center py-20">
-        <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary-200 border-t-primary-600"></div>
-        <p class="mt-4 text-primary-600 text-lg">Chargement...</p>
+        <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary-200 dark:border-primary-700 border-t-primary-600 dark:border-t-primary-400"></div>
+        <p class="mt-4 text-primary-600 dark:text-primary-400 text-lg">Chargement...</p>
       </div>
 
       <!-- No workouts -->
@@ -35,8 +35,8 @@
           <svg class="w-24 h-24 mx-auto mb-6 text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
           </svg>
-          <h2 class="text-3xl font-bold text-primary-900 mb-4">Aucun workout disponible</h2>
-          <p class="text-lg text-primary-600 mb-8">Crée d'abord des workouts avant de venir à la salle!</p>
+          <h2 class="text-3xl font-bold text-primary-900 dark:text-primary-100 mb-4">Aucun workout disponible</h2>
+          <p class="text-lg text-primary-600 dark:text-primary-400 mb-8">Crée d'abord des workouts avant de venir à la salle!</p>
           <button @click="navigateTo('/workouts/builder')" class="btn-primary px-8 py-4">
             Créer un workout
           </button>
@@ -47,10 +47,10 @@
       <div v-else class="space-y-6">
         <!-- Header -->
         <div class="fade-in text-center mb-8">
-          <h2 class="text-4xl md:text-5xl font-bold text-primary-900 mb-4 text-display">
+          <h2 class="text-4xl md:text-5xl font-bold text-primary-900 dark:text-primary-100 mb-4 text-display">
             Choisis ton entraînement
           </h2>
-          <p class="text-lg text-primary-600">
+          <p class="text-lg text-primary-600 dark:text-primary-400">
             Sélectionne un workout pour commencer ta séance
           </p>
         </div>
@@ -70,16 +70,16 @@
                 </svg>
               </div>
               <div class="flex-1">
-                <h3 class="text-2xl font-bold text-primary-900 group-hover:text-primary-700 transition-colors">
+                <h3 class="text-2xl font-bold text-primary-900 dark:text-primary-100 group-hover:text-primary-700 dark:group-hover:text-primary-300 transition-colors">
                   {{ workout.name }}
                 </h3>
               </div>
-              <span v-if="workout.isTemplate" class="px-3 py-1 bg-primary-200 text-primary-700 text-xs font-semibold rounded-full">
+              <span v-if="workout.isTemplate" class="px-3 py-1 bg-primary-200 dark:bg-primary-700 text-primary-700 dark:text-primary-300 text-xs font-semibold rounded-full">
                 TEMPLATE
               </span>
             </div>
 
-            <p v-if="workout.description" class="text-primary-600 mb-4">
+            <p v-if="workout.description" class="text-primary-600 dark:text-primary-400 mb-4">
               {{ workout.description }}
             </p>
 
@@ -88,17 +88,17 @@
               <div
                 v-for="exercise in workout.exercises.slice(0, 5)"
                 :key="exercise.id"
-                class="px-3 py-1 bg-primary-100 text-primary-700 text-sm rounded-lg font-medium"
+                class="px-3 py-1 bg-primary-100 dark:bg-primary-800 text-primary-700 dark:text-primary-300 text-sm rounded-lg font-medium"
               >
                 {{ exercise.exerciseLibrary?.name || exercise.name }}
               </div>
-              <div v-if="workout.exercises.length > 5" class="px-3 py-1 bg-primary-200 text-primary-700 text-sm rounded-lg font-medium">
+              <div v-if="workout.exercises.length > 5" class="px-3 py-1 bg-primary-200 dark:bg-primary-700 text-primary-700 dark:text-primary-300 text-sm rounded-lg font-medium">
                 +{{ workout.exercises.length - 5 }} autres
               </div>
             </div>
 
             <!-- Stats -->
-            <div class="flex flex-wrap gap-4 text-sm text-primary-600 pt-4 border-t border-primary-200">
+            <div class="flex flex-wrap gap-4 text-sm text-primary-600 dark:text-primary-400 pt-4 border-t border-primary-200 dark:border-primary-700">
               <span v-if="workout.exercises?.length" class="flex items-center space-x-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
@@ -115,10 +115,10 @@
             </div>
 
             <!-- Action hint -->
-            <div class="mt-4 pt-4 border-t border-primary-200">
+            <div class="mt-4 pt-4 border-t border-primary-200 dark:border-primary-700">
               <div class="flex items-center justify-between text-sm">
-                <span class="text-primary-500">Clique pour démarrer</span>
-                <svg class="w-5 h-5 text-primary-400 group-hover:text-primary-600 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <span class="text-primary-500 dark:text-primary-400">Clique pour démarrer</span>
+                <svg class="w-5 h-5 text-primary-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                 </svg>
               </div>

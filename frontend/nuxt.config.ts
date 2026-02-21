@@ -6,8 +6,15 @@ export default defineNuxtConfig({
   modules: [
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
-    '@nuxt/icon'
+    '@nuxt/icon',
+    '@nuxtjs/color-mode'
   ],
+
+  colorMode: {
+    classSuffix: '',
+    preference: 'system',
+    fallback: 'light'
+  },
 
   css: ['~/assets/css/main.css'],
 
@@ -23,6 +30,10 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/x-icon', href: '/athletiq-icon.svg' }
       ]
     }
+  },
+
+  devServer: {
+    host: '0.0.0.0'
   },
 
   runtimeConfig: {

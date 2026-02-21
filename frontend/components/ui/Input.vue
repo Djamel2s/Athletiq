@@ -64,7 +64,7 @@ const inputId = computed(() => `input-${Math.random().toString(36).substr(2, 9)}
 const inputClasses = computed(() => {
   const base = 'input'
   const withIcon = props.icon ? 'pl-12' : ''
-  const errorState = props.error ? 'ring-2 ring-primary-500' : ''
+  const errorState = props.error ? 'ring-2 ring-primary-500 dark:ring-primary-400' : ''
 
   return [base, withIcon, errorState].join(' ')
 })

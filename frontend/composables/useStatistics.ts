@@ -1,7 +1,7 @@
 import type { Workout } from '~/types/workout'
-import type { OverviewStats, ChartData, ExerciseStats, PersonalRecord, TimeRange } from '~/types/statistics'
+import type { OverviewStats, ChartData, ExerciseStats, PersonalRecord, TimeRange, WeekComparison } from '~/types/statistics'
 
-export function useStatistics(workouts: Ref<Workout[]>, timeRange: Ref<TimeRange>) {
+export function useStatistics(workouts: Ref<Workout[]>, timeRange: Ref<TimeRange>, selectedExercise?: Ref<string | null>) {
   // Filter workouts by date range
   const filteredWorkouts = computed(() => {
     if (!timeRange.value) return workouts.value
@@ -277,6 +277,109 @@ export function useStatistics(workouts: Ref<Workout[]>, timeRange: Ref<TimeRange
       .slice(0, 10)
   })
 
+  // Week-over-week comparison
+  const weekComparison = computed((): WeekComparison => {
+    const now = new Date()
+    const dayOfWeek = now.getDay() // 0=Sun, 1=Mon...
+    const mondayOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1
+
+    const currentWeekStart = new Date(now)
+    currentWeekStart.setHours(0, 0, 0, 0)
+    currentWeekStart.setDate(now.getDate() - mondayOffset)
+
+    const previousWeekStart = new Date(currentWeekStart)
+    previousWeekStart.setDate(currentWeekStart.getDate() - 7)
+
+    const completedWorkouts = workouts.value.filter(w => w.completedAt)
+
+    const currentWeekWorkouts = completedWorkouts.filter(w => {
+      const d = new Date(w.completedAt!)
+      return d >= currentWeekStart && d <= now
+    })
+
+    const previousWeekWorkouts = completedWorkouts.filter(w => {
+      const d = new Date(w.completedAt!)
+      return d >= previousWeekStart && d < currentWeekStart
+    })
+
+    const calcStats = (list: Workout[]) => ({
+      workouts: list.length,
+      volume: Math.round(list.reduce((s, w) => s + (w.totalVolume || 0), 0)),
+      avgDuration: list.length > 0 ? Math.round(list.reduce((s, w) => s + (w.duration || 0), 0) / list.length) : 0
+    })
+
+    const current = calcStats(currentWeekWorkouts)
+    const previous = calcStats(previousWeekWorkouts)
+
+    const pctChange = (cur: number, prev: number): number | null => {
+      if (prev === 0) return cur > 0 ? 100 : null
+      return Math.round(((cur - prev) / prev) * 100)
+    }
+
+    return {
+      currentWeek: current,
+      previousWeek: previous,
+      changes: {
+        workouts: pctChange(current.workouts, previous.workouts),
+        volume: pctChange(current.volume, previous.volume),
+        avgDuration: pctChange(current.avgDuration, previous.avgDuration)
+      }
+    }
+  })
+
+  // All unique exercise names (for dropdown)
+  const allExerciseNames = computed((): string[] => {
+    const names = new Set<string>()
+    workouts.value.forEach(w => {
+      w.exercises?.forEach(e => {
+        const name = e.exerciseLibrary?.name || e.name
+        if (name) names.add(name)
+      })
+    })
+    return Array.from(names).sort((a, b) => a.localeCompare(b, 'fr'))
+  })
+
+  // Exercise progression data (max weight per session for selected exercise)
+  const exerciseProgressionData = computed((): ChartData | null => {
+    if (!selectedExercise?.value) return null
+
+    const target = selectedExercise.value
+    const sessions: { date: string; maxWeight: number }[] = []
+
+    workouts.value
+      .filter(w => w.completedAt)
+      .sort((a, b) => new Date(a.completedAt!).getTime() - new Date(b.completedAt!).getTime())
+      .forEach(w => {
+        let maxWeight = 0
+        w.exercises?.forEach(e => {
+          const name = e.exerciseLibrary?.name || e.name
+          if (name === target) {
+            e.sets?.forEach(s => {
+              if ((s.weight || 0) > maxWeight) maxWeight = s.weight || 0
+            })
+          }
+        })
+        if (maxWeight > 0) {
+          sessions.push({ date: w.completedAt!, maxWeight })
+        }
+      })
+
+    if (sessions.length === 0) return null
+
+    return {
+      labels: sessions.map(s => formatDate(s.date)),
+      datasets: [{
+        label: target,
+        data: sessions.map(s => s.maxWeight),
+        borderColor: '#b8a48f',
+        backgroundColor: 'rgba(184, 164, 143, 0.1)',
+        borderWidth: 2,
+        fill: true,
+        tension: 0.4
+      }]
+    }
+  })
+
   // Helper: Group workouts by date
   function groupByDate(workoutList: Workout[]): Map<string, Workout[]> {
     const grouped = new Map<string, Workout[]>()
@@ -317,6 +420,9 @@ export function useStatistics(workouts: Ref<Workout[]>, timeRange: Ref<TimeRange
     exerciseDistributionData,
     topExercises,
     personalRecords,
+    weekComparison,
+    allExerciseNames,
+    exerciseProgressionData,
     hasData
   }
 }

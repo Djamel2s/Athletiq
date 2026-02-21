@@ -6,6 +6,7 @@ interface User {
   firstName?: string | null
   lastName?: string | null
   avatarUrl?: string | null
+  goal?: string | null
 }
 
 interface AuthState {
@@ -90,6 +91,27 @@ export const useAuthStore = defineStore('auth', {
         console.error('Token refresh error:', error)
         this.logout()
         return false
+      }
+    },
+
+    async updateProfile(data: { firstName?: string; lastName?: string; goal?: string }) {
+      try {
+        const config = useRuntimeConfig()
+        const response = await $fetch<User>(`${config.public.apiUrl}/users/me`, {
+          method: 'PUT',
+          headers: { Authorization: `Bearer ${this.token}` },
+          body: data
+        })
+
+        this.user = { ...this.user, ...response }
+        this.saveToLocalStorage()
+        return { success: true }
+      } catch (error: any) {
+        console.error('Update profile error:', error)
+        return {
+          success: false,
+          error: error.data?.error || 'Erreur lors de la mise à jour du profil'
+        }
       }
     },
 

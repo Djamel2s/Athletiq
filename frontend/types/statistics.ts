@@ -47,4 +47,10 @@ export interface MuscleGroupStats {
   percentage: number
 }
 
+export interface WeekComparison {
+  currentWeek: { workouts: number; volume: number; avgDuration: number }
+  previousWeek: { workouts: number; volume: number; avgDuration: number }
+  changes: { workouts: number | null; volume: number | null; avgDuration: number | null }
+}
+
 export type TimeRange = 7 | 30 | 90 | null

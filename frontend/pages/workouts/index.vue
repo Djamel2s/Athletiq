@@ -30,14 +30,14 @@
     <div class="pt-32 px-6 pb-20 max-w-7xl mx-auto">
       <!-- Tabs -->
       <div class="mb-8 slide-up">
-        <div class="flex space-x-4 border-b border-primary-200">
+        <div class="flex space-x-4 border-b border-primary-200 dark:border-primary-700">
           <button
             @click="activeTab = 'workouts'"
             :class="[
               'px-6 py-3 font-semibold transition-colors',
               activeTab === 'workouts'
-                ? 'text-primary-900 border-b-2 border-primary-600'
-                : 'text-primary-500 hover:text-primary-700'
+                ? 'text-primary-900 dark:text-primary-100 border-b-2 border-primary-600 dark:border-primary-400'
+                : 'text-primary-500 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300'
             ]"
           >
             Mes workouts
@@ -47,8 +47,8 @@
             :class="[
               'px-6 py-3 font-semibold transition-colors',
               activeTab === 'history'
-                ? 'text-primary-900 border-b-2 border-primary-600'
-                : 'text-primary-500 hover:text-primary-700'
+                ? 'text-primary-900 dark:text-primary-100 border-b-2 border-primary-600 dark:border-primary-400'
+                : 'text-primary-500 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300'
             ]"
           >
             Historique
@@ -58,13 +58,13 @@
 
       <!-- Loading state -->
       <div v-if="workoutStore.isLoading" class="text-center py-12">
-        <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary-200 border-t-primary-600"></div>
-        <p class="mt-4 text-primary-600">Chargement...</p>
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary-200 dark:border-primary-700 border-t-primary-600 dark:border-t-primary-400"></div>
+        <p class="mt-4 text-primary-600 dark:text-primary-400">Chargement...</p>
       </div>
 
       <!-- Error state -->
-      <div v-else-if="workoutStore.error" class="card-glass border-l-4 border-red-500 bg-red-50">
-        <p class="text-red-700">{{ workoutStore.error }}</p>
+      <div v-else-if="workoutStore.error" class="card-glass border-l-4 border-red-500 bg-red-50 dark:bg-red-900/30">
+        <p class="text-red-700 dark:text-red-400">{{ workoutStore.error }}</p>
         <button @click="loadWorkouts" class="btn-outline mt-4">Réessayer</button>
       </div>
 
@@ -74,7 +74,7 @@
           <svg class="w-20 h-20 mx-auto mb-6 text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
           </svg>
-          <p class="text-xl text-primary-600 mb-6">Aucun workout créé</p>
+          <p class="text-xl text-primary-600 dark:text-primary-400 mb-6">Aucun workout créé</p>
           <button @click="navigateTo('/workouts/builder')" class="btn-primary px-8 py-4">
             Créer mon premier workout
           </button>
@@ -95,16 +95,16 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                   </svg>
                 </div>
-                <h3 class="text-xl font-bold text-primary-900 group-hover:text-primary-700 transition-colors flex-1">
+                <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 group-hover:text-primary-700 dark:group-hover:text-primary-300 transition-colors flex-1">
                   {{ workout.name }}
                 </h3>
               </div>
 
-              <p v-if="workout.description" class="text-primary-600 mb-4 line-clamp-2">
+              <p v-if="workout.description" class="text-primary-600 dark:text-primary-400 mb-4 line-clamp-2">
                 {{ workout.description }}
               </p>
 
-              <div class="flex items-center space-x-2 text-sm text-primary-600 pt-4 border-t border-primary-200">
+              <div class="flex items-center space-x-2 text-sm text-primary-600 dark:text-primary-400 pt-4 border-t border-primary-200 dark:border-primary-700">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                 </svg>
@@ -115,7 +115,7 @@
             </div>
 
             <!-- Actions -->
-            <div class="flex space-x-2 mt-4 pt-4 border-t border-primary-200">
+            <div class="flex space-x-2 mt-4 pt-4 border-t border-primary-200 dark:border-primary-700">
               <button
                 @click.stop="editWorkout(workout.id)"
                 class="btn-outline flex-1 text-sm"
@@ -128,7 +128,7 @@
               </button>
               <button
                 @click.stop="deleteTemplate(workout.id)"
-                class="btn-outline text-red-600 hover:bg-red-50 text-sm px-3"
+                class="btn-outline text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 text-sm px-3"
                 title="Supprimer"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -146,7 +146,7 @@
           <svg class="w-20 h-20 mx-auto mb-6 text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
-          <p class="text-xl text-primary-600 mb-6">Aucun entraînement terminé</p>
+          <p class="text-xl text-primary-600 dark:text-primary-400 mb-6">Aucun entraînement terminé</p>
           <button @click="navigateTo('/workouts/builder')" class="btn-primary px-8 py-4">
             Créer mon premier workout
           </button>
@@ -160,12 +160,12 @@
         >
           <div class="flex items-start justify-between">
             <div class="flex-1">
-              <h3 class="text-xl font-bold text-primary-900 mb-2 group-hover:text-primary-700 transition-colors">
+              <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-2 group-hover:text-primary-700 dark:group-hover:text-primary-300 transition-colors">
                 {{ workout.name }}
               </h3>
-              <p v-if="workout.description" class="text-primary-600 mb-3">{{ workout.description }}</p>
+              <p v-if="workout.description" class="text-primary-600 dark:text-primary-400 mb-3">{{ workout.description }}</p>
 
-              <div class="flex flex-wrap gap-4 text-sm text-primary-600">
+              <div class="flex flex-wrap gap-4 text-sm text-primary-600 dark:text-primary-400">
                 <span class="flex items-center space-x-1">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -187,7 +187,7 @@
                   <span>{{ workout.exercises.length }} exercices</span>
                 </span>
 
-                <span v-if="workout.totalVolume" class="flex items-center space-x-1 font-semibold text-primary-700">
+                <span v-if="workout.totalVolume" class="flex items-center space-x-1 font-semibold text-primary-700 dark:text-primary-300">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
                   </svg>
@@ -205,7 +205,7 @@
               </button>
               <button
                 @click.stop="deleteFromHistory(workout.id)"
-                class="btn-outline text-red-600 hover:bg-red-50"
+                class="btn-outline text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30"
                 title="Supprimer"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

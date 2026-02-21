@@ -8,10 +8,10 @@
             <NuxtLink to="/dashboard">
               <img src="/athletiq-icon.svg" alt="Athletiq" class="h-14 w-auto" />
             </NuxtLink>
-            <h1 class="text-2xl font-bold text-primary-900">
+            <h1 class="text-2xl font-bold text-primary-900 dark:text-primary-100">
               🏠 Préparer un Workout
             </h1>
-            <p class="text-sm text-primary-600 mt-1">Mode préparation - À faire chez soi avant d'aller à la salle</p>
+            <p class="text-sm text-primary-600 dark:text-primary-400 mt-1">Mode préparation - À faire chez soi avant d'aller à la salle</p>
           </div>
 
           <button @click="navigateTo('/workouts')" class="btn-outline">
@@ -25,11 +25,11 @@
     <div class="pt-32 px-6 pb-20 max-w-5xl mx-auto">
       <!-- Formulaire du workout -->
       <div class="card-glass mb-8 fade-in">
-        <h2 class="text-2xl font-bold text-primary-900 mb-6">Informations générales</h2>
+        <h2 class="text-2xl font-bold text-primary-900 dark:text-primary-100 mb-6">Informations générales</h2>
 
         <div class="space-y-6">
           <div>
-            <label class="block text-sm font-semibold text-primary-700 mb-2">
+            <label class="block text-sm font-semibold text-primary-700 dark:text-primary-300 mb-2">
               Nom du workout *
             </label>
             <input
@@ -42,7 +42,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-semibold text-primary-700 mb-2">
+            <label class="block text-sm font-semibold text-primary-700 dark:text-primary-300 mb-2">
               Description (optionnel)
             </label>
             <textarea
@@ -69,7 +69,7 @@
         <!-- Exercices ajoutés -->
         <div class="card-glass">
           <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold text-primary-900">
+            <h2 class="text-2xl font-bold text-primary-900 dark:text-primary-100">
               Exercices ({{ selectedExercises.length }})
             </h2>
             <button @click="showExerciseLibrary = true" class="btn-primary">
@@ -78,7 +78,7 @@
           </div>
 
           <div v-if="selectedExercises.length === 0" class="text-center py-12">
-            <p class="text-primary-500 text-lg mb-4">Aucun exercice ajouté</p>
+            <p class="text-primary-500 dark:text-primary-400 text-lg mb-4">Aucun exercice ajouté</p>
             <button @click="showExerciseLibrary = true" class="btn-outline">
               Parcourir la bibliothèque
             </button>
@@ -88,7 +88,7 @@
             <div
               v-for="(exercise, index) in selectedExercises"
               :key="exercise.id"
-              class="p-4 bg-primary-50 rounded-xl border border-primary-200 hover:border-primary-400 transition-colors"
+              class="p-4 bg-primary-50 dark:bg-primary-800 rounded-xl border border-primary-200 dark:border-primary-700 hover:border-primary-400 dark:hover:border-primary-500 transition-colors"
             >
               <div class="flex items-start justify-between">
                 <div class="flex-1">
@@ -96,29 +96,29 @@
                     <span class="flex items-center justify-center w-8 h-8 bg-primary-600 text-white rounded-full font-bold text-sm">
                       {{ index + 1 }}
                     </span>
-                    <h3 class="text-lg font-bold text-primary-900">{{ exercise.exerciseLibrary?.name || exercise.name }}</h3>
+                    <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100">{{ exercise.exerciseLibrary?.name || exercise.name }}</h3>
                   </div>
 
-                  <p v-if="exercise.exerciseLibrary?.description" class="text-sm text-primary-600 mb-3 ml-11">
+                  <p v-if="exercise.exerciseLibrary?.description" class="text-sm text-primary-600 dark:text-primary-400 mb-3 ml-11">
                     {{ exercise.exerciseLibrary.description }}
                   </p>
 
                   <div class="flex flex-wrap gap-2 ml-11">
                     <span
                       v-if="exercise.exerciseLibrary?.primaryMuscle"
-                      class="px-2 py-1 bg-primary-200 text-primary-800 text-xs font-medium rounded"
+                      class="px-2 py-1 bg-primary-200 dark:bg-primary-700 text-primary-800 dark:text-primary-200 text-xs font-medium rounded"
                     >
                       {{ formatMuscleGroup(exercise.exerciseLibrary.primaryMuscle) }}
                     </span>
                     <span
                       v-if="exercise.exerciseLibrary?.equipment"
-                      class="px-2 py-1 bg-primary-100 text-primary-700 text-xs font-medium rounded"
+                      class="px-2 py-1 bg-primary-100 dark:bg-primary-800 text-primary-700 dark:text-primary-300 text-xs font-medium rounded"
                     >
                       {{ formatEquipment(exercise.exerciseLibrary.equipment) }}
                     </span>
                     <span
                       v-if="exercise.exerciseLibrary?.difficulty"
-                      class="px-2 py-1 bg-primary-100 text-primary-700 text-xs font-medium rounded"
+                      class="px-2 py-1 bg-primary-100 dark:bg-primary-800 text-primary-700 dark:text-primary-300 text-xs font-medium rounded"
                     >
                       {{ formatDifficulty(exercise.exerciseLibrary.difficulty) }}
                     </span>
@@ -127,42 +127,42 @@
                   <!-- Target values -->
                   <div class="mt-3 ml-11 flex flex-wrap gap-4 text-sm">
                     <div>
-                      <label class="text-primary-600 text-xs">Séries</label>
+                      <label class="text-primary-600 dark:text-primary-400 text-xs">Séries</label>
                       <input
                         v-model.number="exercise.targetSets"
                         type="number"
                         min="1"
-                        class="w-20 px-2 py-1 border border-primary-300 rounded text-center"
+                        class="w-20 px-2 py-1 border border-primary-300 dark:border-primary-600 rounded text-center bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100"
                         @change="updatePlannedSets(exercise)"
                       />
                     </div>
                     <div>
-                      <label class="text-primary-600 text-xs">Reps</label>
+                      <label class="text-primary-600 dark:text-primary-400 text-xs">Reps</label>
                       <input
                         v-model.number="exercise.targetReps"
                         type="number"
                         min="1"
-                        class="w-20 px-2 py-1 border border-primary-300 rounded text-center"
+                        class="w-20 px-2 py-1 border border-primary-300 dark:border-primary-600 rounded text-center bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100"
                       />
                     </div>
                     <div>
-                      <label class="text-primary-600 text-xs">Poids (kg)</label>
+                      <label class="text-primary-600 dark:text-primary-400 text-xs">Poids (kg)</label>
                       <input
                         v-model.number="exercise.targetWeight"
                         type="number"
                         min="0"
                         step="0.5"
-                        class="w-20 px-2 py-1 border border-primary-300 rounded text-center"
+                        class="w-20 px-2 py-1 border border-primary-300 dark:border-primary-600 rounded text-center bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100"
                       />
                     </div>
                     <div>
-                      <label class="text-primary-600 text-xs">Repos (s)</label>
+                      <label class="text-primary-600 dark:text-primary-400 text-xs">Repos (s)</label>
                       <input
                         v-model.number="exercise.restTime"
                         type="number"
                         min="0"
                         step="15"
-                        class="w-20 px-2 py-1 border border-primary-300 rounded text-center"
+                        class="w-20 px-2 py-1 border border-primary-300 dark:border-primary-600 rounded text-center bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100"
                       />
                     </div>
                   </div>
@@ -172,7 +172,7 @@
                     <button
                       @click="togglePlannedSets(exercise)"
                       type="button"
-                      class="text-xs text-primary-600 hover:text-primary-800 font-medium flex items-center gap-1"
+                      class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-200 font-medium flex items-center gap-1"
                     >
                       <svg
                         class="w-4 h-4 transition-transform"
@@ -186,32 +186,32 @@
                       Personnaliser les séries
                     </button>
 
-                    <div v-if="exercise.showPlannedSets" class="mt-3 bg-primary-50 rounded-lg p-3">
-                      <p class="text-xs text-primary-600 mb-2">Définissez les reps et poids pour chaque série:</p>
+                    <div v-if="exercise.showPlannedSets" class="mt-3 bg-primary-50 dark:bg-primary-800 rounded-lg p-3">
+                      <p class="text-xs text-primary-600 dark:text-primary-400 mb-2">Définissez les reps et poids pour chaque série:</p>
                       <div class="space-y-2">
                         <div
                           v-for="(set, setIndex) in exercise.plannedSets"
                           :key="setIndex"
                           class="flex items-center gap-2"
                         >
-                          <span class="text-xs text-primary-700 font-medium w-16">Série {{ setIndex + 1 }}:</span>
+                          <span class="text-xs text-primary-700 dark:text-primary-300 font-medium w-16">Série {{ setIndex + 1 }}:</span>
                           <input
                             v-model.number="set.targetReps"
                             type="number"
                             min="1"
                             placeholder="Reps"
-                            class="w-20 px-2 py-1 border border-primary-300 rounded text-center text-xs"
+                            class="w-20 px-2 py-1 border border-primary-300 dark:border-primary-600 rounded text-center text-xs bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100"
                           />
-                          <span class="text-xs text-primary-600">reps ×</span>
+                          <span class="text-xs text-primary-600 dark:text-primary-400">reps ×</span>
                           <input
                             v-model.number="set.targetWeight"
                             type="number"
                             min="0"
                             step="0.5"
                             placeholder="Poids"
-                            class="w-20 px-2 py-1 border border-primary-300 rounded text-center text-xs"
+                            class="w-20 px-2 py-1 border border-primary-300 dark:border-primary-600 rounded text-center text-xs bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100"
                           />
-                          <span class="text-xs text-primary-600">kg</span>
+                          <span class="text-xs text-primary-600 dark:text-primary-400">kg</span>
                         </div>
                       </div>
                     </div>
@@ -220,7 +220,7 @@
 
                 <button
                   @click="removeExercise(index)"
-                  class="text-red-600 hover:text-red-800 p-2"
+                  class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 p-2"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
@@ -235,8 +235,8 @@
         <div class="card-glass">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="text-lg font-semibold text-primary-900 mb-1">Workout prêt!</h3>
-              <p class="text-sm text-primary-600">
+              <h3 class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-1">Workout prêt!</h3>
+              <p class="text-sm text-primary-600 dark:text-primary-400">
                 {{ selectedExercises.length }} exercice(s) ajouté(s) • Ce workout sera disponible dans "Lancer un entrainement" à la salle
               </p>
             </div>
@@ -264,11 +264,11 @@
       class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-6"
       @click.self="showExerciseLibrary = false"
     >
-      <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-        <div class="p-6 border-b border-primary-200">
+      <div class="bg-white dark:bg-primary-900 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+        <div class="p-6 border-b border-primary-200 dark:border-primary-700">
           <div class="flex items-center justify-between mb-4">
-            <h2 class="text-2xl font-bold text-primary-900">Bibliothèque d'exercices</h2>
-            <button @click="showExerciseLibrary = false" class="text-primary-500 hover:text-primary-700">
+            <h2 class="text-2xl font-bold text-primary-900 dark:text-primary-100">Bibliothèque d'exercices</h2>
+            <button @click="showExerciseLibrary = false" class="text-primary-500 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
               </svg>
@@ -318,31 +318,31 @@
 
         <div class="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
           <div v-if="isLoadingExercises" class="text-center py-12">
-            <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary-200 border-t-primary-600"></div>
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary-200 dark:border-primary-700 border-t-primary-600 dark:border-t-primary-400"></div>
           </div>
 
           <div v-else-if="exerciseLibrary.length === 0" class="text-center py-12">
-            <p class="text-primary-500">Aucun exercice trouvé</p>
+            <p class="text-primary-500 dark:text-primary-400">Aucun exercice trouvé</p>
           </div>
 
           <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div
               v-for="exercise in exerciseLibrary"
               :key="exercise.id"
-              class="p-4 border border-primary-200 rounded-xl hover:border-primary-400 hover:shadow-lg transition-all cursor-pointer"
+              class="p-4 border border-primary-200 dark:border-primary-700 rounded-xl hover:border-primary-400 dark:hover:border-primary-500 hover:shadow-lg transition-all cursor-pointer"
               @click="addExercise(exercise)"
             >
-              <h3 class="font-bold text-primary-900 mb-2">{{ exercise.name }}</h3>
-              <p class="text-sm text-primary-600 mb-3">{{ exercise.description }}</p>
+              <h3 class="font-bold text-primary-900 dark:text-primary-100 mb-2">{{ exercise.name }}</h3>
+              <p class="text-sm text-primary-600 dark:text-primary-400 mb-3">{{ exercise.description }}</p>
 
               <div class="flex flex-wrap gap-2">
-                <span class="px-2 py-1 bg-primary-200 text-primary-800 text-xs font-medium rounded">
+                <span class="px-2 py-1 bg-primary-200 dark:bg-primary-700 text-primary-800 dark:text-primary-200 text-xs font-medium rounded">
                   {{ formatMuscleGroup(exercise.primaryMuscle) }}
                 </span>
-                <span class="px-2 py-1 bg-primary-100 text-primary-700 text-xs font-medium rounded">
+                <span class="px-2 py-1 bg-primary-100 dark:bg-primary-800 text-primary-700 dark:text-primary-300 text-xs font-medium rounded">
                   {{ formatEquipment(exercise.equipment) }}
                 </span>
-                <span class="px-2 py-1 bg-primary-100 text-primary-700 text-xs font-medium rounded">
+                <span class="px-2 py-1 bg-primary-100 dark:bg-primary-800 text-primary-700 dark:text-primary-300 text-xs font-medium rounded">
                   {{ formatDifficulty(exercise.difficulty) }}
                 </span>
               </div>
