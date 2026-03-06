@@ -8,7 +8,7 @@
         <label class="block text-xs font-semibold text-primary-500 dark:text-primary-400 mb-1">Avant</label>
         <select v-model="beforePhotoId" class="input-primary text-sm">
           <option v-for="photo in sortedPhotos" :key="photo.id" :value="photo.id">
-            {{ formatDate(photo.createdAt) }}
+            {{ formatDate(photo.workout?.date || photo.createdAt) }}{{ photo.workout?.name ? ` — ${photo.workout.name}` : '' }}
           </option>
         </select>
       </div>
@@ -16,7 +16,7 @@
         <label class="block text-xs font-semibold text-primary-500 dark:text-primary-400 mb-1">Après</label>
         <select v-model="afterPhotoId" class="input-primary text-sm">
           <option v-for="photo in sortedPhotos" :key="photo.id" :value="photo.id">
-            {{ formatDate(photo.createdAt) }}
+            {{ formatDate(photo.workout?.date || photo.createdAt) }}{{ photo.workout?.name ? ` — ${photo.workout.name}` : '' }}
           </option>
         </select>
       </div>
@@ -71,10 +71,10 @@
 
       <!-- Date Labels -->
       <div class="absolute top-3 left-3 px-2.5 py-1 bg-black/50 backdrop-blur-sm rounded-lg text-white text-xs font-medium pointer-events-none">
-        Avant · {{ formatDateShort(beforePhoto.createdAt) }}
+        Avant · {{ formatDateShort(beforePhoto.workout?.date || beforePhoto.createdAt) }}
       </div>
       <div class="absolute top-3 right-3 px-2.5 py-1 bg-black/50 backdrop-blur-sm rounded-lg text-white text-xs font-medium pointer-events-none">
-        Après · {{ formatDateShort(afterPhoto.createdAt) }}
+        Après · {{ formatDateShort(afterPhoto.workout?.date || afterPhoto.createdAt) }}
       </div>
     </div>
 
@@ -94,10 +94,12 @@ interface Props {
 
 const props = defineProps<Props>()
 
+const getPhotoDate = (photo: ProgressPhoto) => {
+  return new Date(photo.workout?.date || photo.createdAt).getTime()
+}
+
 const sortedPhotos = computed(() => {
-  return [...props.photos].sort((a, b) =>
-    new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-  )
+  return [...props.photos].sort((a, b) => getPhotoDate(a) - getPhotoDate(b))
 })
 
 const beforePhotoId = ref<number | null>(null)
@@ -106,9 +108,7 @@ const afterPhotoId = ref<number | null>(null)
 // Auto-select first and last photos
 watch(() => props.photos, (photos) => {
   if (photos.length >= 2) {
-    const sorted = [...photos].sort((a, b) =>
-      new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-    )
+    const sorted = [...photos].sort((a, b) => getPhotoDate(a) - getPhotoDate(b))
     if (!beforePhotoId.value) beforePhotoId.value = sorted[0].id
     if (!afterPhotoId.value) afterPhotoId.value = sorted[sorted.length - 1].id
   }
