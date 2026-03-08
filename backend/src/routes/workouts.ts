@@ -327,8 +327,15 @@ router.post('/:workoutId/exercises', authenticate, async (req: AuthRequest, res)
     }
 
     const exercise = exerciseRepo.create({
-      ...data,
-      workoutId
+      workoutId,
+      name: data.name,
+      exerciseLibraryId: data.exerciseLibraryId ?? undefined,
+      orderIndex: data.orderIndex ?? undefined,
+      notes: data.notes ?? undefined,
+      targetSets: data.targetSets ?? undefined,
+      targetReps: data.targetReps ?? undefined,
+      targetWeight: data.targetWeight ?? undefined,
+      restTime: data.restTime ?? undefined,
     })
 
     await exerciseRepo.save(exercise)

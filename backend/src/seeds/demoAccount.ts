@@ -212,7 +212,7 @@ export async function seedDemoAccount() {
 
       const exercise = exerciseRepo.create({
         workoutId: workout.id,
-        exerciseLibraryId: libMap.get(tmplEx.name) || null,
+        exerciseLibraryId: libMap.get(tmplEx.name) || undefined,
         name: tmplEx.name,
         orderIndex: eIdx,
         targetSets: tmplEx.sets,
@@ -312,10 +312,10 @@ export async function seedDemoAccount() {
       title: g.title,
       targetValue: g.targetValue,
       startValue: g.startValue,
-      exerciseName: g.exerciseName || null,
+      exerciseName: g.exerciseName || undefined,
       deadline: daysAgo(-60), // 60 days from now
       achieved: g.achieved,
-      achievedAt: g.achievedAt || null,
+      achievedAt: g.achievedAt || undefined,
     })
     await goalRepo.save(goal)
   }
@@ -359,7 +359,7 @@ export async function seedDemoAccount() {
       const ex = tmpl.exercises[i]
       const exercise = exerciseRepo.create({
         workoutId: templateWorkout.id,
-        exerciseLibraryId: libMap.get(ex.name) || null,
+        exerciseLibraryId: libMap.get(ex.name) || undefined,
         name: ex.name,
         orderIndex: i,
         targetSets: ex.sets,

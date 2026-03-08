@@ -30,13 +30,13 @@ export default defineNuxtConfig({
         { property: 'og:type', content: 'website' },
         { property: 'og:title', content: 'Athletiq — Suivi intelligent d\'entraînements' },
         { property: 'og:description', content: 'Suis tes entraînements, analyse tes progrès et atteins tes objectifs avec Athletiq.' },
-        { property: 'og:image', content: '/og-image.png' },
+        { property: 'og:image', content: '/athletiq-og.png' },
         { property: 'og:site_name', content: 'Athletiq' },
         // Twitter Card
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: 'Athletiq — Suivi intelligent d\'entraînements' },
         { name: 'twitter:description', content: 'Suis tes entraînements, analyse tes progrès et atteins tes objectifs.' },
-        { name: 'twitter:image', content: '/og-image.png' },
+        { name: 'twitter:image', content: '/athletiq-og.png' },
         // Theme
         { name: 'theme-color', content: '#d4c4b0' }
       ],
