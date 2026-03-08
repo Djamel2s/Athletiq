@@ -4,6 +4,7 @@ import { AppDataSource } from '../config/database.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { UserGoal, GoalType } from '../entities/UserGoal.js'
 import { BodyStat } from '../entities/BodyStat.js'
+import { checkGoalLimit } from '../services/limitService.js'
 
 const router = express.Router()
 
@@ -92,6 +93,17 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
 // POST /api/goals - Create a goal
 router.post('/', authenticate, async (req: AuthRequest, res) => {
   try {
+    // Vérifier la limite d'objectifs
+    const goalCheck = await checkGoalLimit(req.user!.id)
+    if (!goalCheck.allowed) {
+      return res.status(403).json({
+        error: 'Limite atteinte',
+        code: 'LIMIT_GOALS',
+        current: goalCheck.current,
+        limit: goalCheck.limit
+      })
+    }
+
     const data = createGoalSchema.parse(req.body)
     const repo = AppDataSource.getRepository(UserGoal)
 

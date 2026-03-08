@@ -2,39 +2,41 @@
   <div class="min-h-screen">
     <!-- Navigation -->
     <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
-      <div class="max-w-7xl mx-auto px-6 py-5">
+      <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-5">
         <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-2 md:space-x-4">
             <NuxtLink to="/dashboard">
-              <img src="/athletiq-icon.svg" alt="Athletiq" class="h-14 w-auto transition-transform duration-300 hover:scale-105" />
+              <img src="/athletiq-icon.svg" alt="Athletiq" class="h-10 md:h-14 w-auto transition-transform duration-300 hover:scale-105" />
             </NuxtLink>
-            <div class="flex items-center space-x-3">
-              <span class="text-2xl text-primary-400 font-light">|</span>
-              <h1 class="text-2xl font-bold text-display bg-gradient-to-l from-[#d4c4b0] to-[#9d8569] bg-clip-text text-transparent">Mes Entraînements</h1>
+            <div class="flex items-center space-x-2 md:space-x-3">
+              <span class="text-2xl text-[#d4c4b0] font-light hidden md:inline">|</span>
+              <h1 class="text-lg md:text-2xl font-bold text-display bg-gradient-to-r from-[#d4c4b0] to-white dark:to-primary-100 bg-clip-text text-transparent">Mes Entraînements</h1>
             </div>
           </div>
 
-          <div class="flex items-center space-x-4">
-            <button @click="navigateTo('/workouts/builder')" class="btn-primary">
-              + Créer un workout
+          <div class="flex items-center space-x-2 md:space-x-4">
+            <div v-if="!isPremium" class="hidden md:block text-xs text-primary-500 dark:text-primary-400">
+              Templates : {{ templateUsageText }}
+            </div>
+            <button @click="handleCreateWorkout" :disabled="!canCreateTemplate && !isPremium" class="btn-primary text-sm md:text-base disabled:opacity-50">
+              <span class="hidden md:inline">+ Créer un workout</span>
+              <span class="md:hidden">+ Créer</span>
             </button>
-            <button @click="navigateTo('/dashboard')" class="btn-outline">
-              Retour
-            </button>
+            <NavActions />
           </div>
         </div>
       </div>
     </nav>
 
     <!-- Contenu principal -->
-    <div class="pt-32 px-6 pb-20 max-w-7xl mx-auto">
+    <div class="pt-24 md:pt-32 px-4 md:px-6 pb-28 lg:pb-20 max-w-7xl mx-auto">
       <!-- Tabs -->
       <div class="mb-8 slide-up">
         <div class="flex space-x-4 border-b border-primary-200 dark:border-primary-700">
           <button
             @click="activeTab = 'workouts'"
             :class="[
-              'px-6 py-3 font-semibold transition-colors',
+              'px-3 md:px-6 py-2 md:py-3 font-semibold transition-colors text-sm md:text-base',
               activeTab === 'workouts'
                 ? 'text-primary-900 dark:text-primary-100 border-b-2 border-primary-600 dark:border-primary-400'
                 : 'text-primary-500 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300'
@@ -45,7 +47,7 @@
           <button
             @click="activeTab = 'history'"
             :class="[
-              'px-6 py-3 font-semibold transition-colors',
+              'px-3 md:px-6 py-2 md:py-3 font-semibold transition-colors text-sm md:text-base',
               activeTab === 'history'
                 ? 'text-primary-900 dark:text-primary-100 border-b-2 border-primary-600 dark:border-primary-400'
                 : 'text-primary-500 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300'
@@ -68,8 +70,16 @@
         <button @click="loadWorkouts" class="btn-outline mt-4">Réessayer</button>
       </div>
 
+      <!-- Upgrade banner templates -->
+      <div v-if="!isPremium && !canCreateTemplate && activeTab === 'workouts'" class="mb-6">
+        <UpgradeBanner
+          title="Limite de templates atteinte"
+          :message="`Vous avez ${templateUsageText} templates. Passez Pro pour en créer autant que vous voulez.`"
+        />
+      </div>
+
       <!-- Mes workouts -->
-      <div v-else-if="activeTab === 'workouts'" class="slide-up">
+      <div v-if="!workoutStore.isLoading && !workoutStore.error && activeTab === 'workouts'" class="slide-up">
         <div v-if="workoutStore.templates.length === 0" class="card-glass text-center py-16">
           <svg class="w-20 h-20 mx-auto mb-6 text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
@@ -81,7 +91,7 @@
         </div>
 
         <!-- Grid de cartes -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           <div
             v-for="workout in workoutStore.templates"
             :key="workout.id"
@@ -128,7 +138,8 @@
               </button>
               <button
                 @click.stop="deleteTemplate(workout.id)"
-                class="btn-outline text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 text-sm px-3"
+                :disabled="deletingId === workout.id"
+                class="btn-outline text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 text-sm px-3 disabled:opacity-50"
                 title="Supprimer"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -141,7 +152,7 @@
       </div>
 
       <!-- Historique -->
-      <div v-else-if="activeTab === 'history'" class="space-y-6 slide-up">
+      <div v-if="!workoutStore.isLoading && !workoutStore.error && activeTab === 'history'" class="space-y-6 slide-up">
         <div v-if="workoutStore.workoutHistory.length === 0" class="card-glass text-center py-16">
           <svg class="w-20 h-20 mx-auto mb-6 text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -196,16 +207,17 @@
               </div>
             </div>
 
-            <div class="flex space-x-2 ml-4">
+            <div class="flex space-x-2 ml-2 md:ml-4 flex-shrink-0">
               <button
                 @click.stop="startFromHistory(workout)"
-                class="btn-outline"
+                class="btn-outline text-sm"
               >
                 Refaire
               </button>
               <button
                 @click.stop="deleteFromHistory(workout.id)"
-                class="btn-outline text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30"
+                :disabled="deletingId === workout.id"
+                class="btn-outline text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 disabled:opacity-50"
                 title="Supprimer"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -217,33 +229,50 @@
         </div>
       </div>
     </div>
+
+    <MobileBottomNav active-path="/workouts" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { useWorkoutStore } from '~/stores/workout'
 import { useAuthStore } from '~/stores/auth'
+import { useSubscriptionStore } from '~/stores/subscription'
+import { useSubscriptionLimits } from '~/composables/useSubscriptionLimits'
 import type { Workout } from '~/types/workout'
 
 const workoutStore = useWorkoutStore()
 const authStore = useAuthStore()
-const router = useRouter()
+const subscriptionStore = useSubscriptionStore()
+const { isPremium, canCreateTemplate, templateUsageText, fetchUsage } = useSubscriptionLimits()
+const toast = useToast()
+const deletingId = ref<number | null>(null)
 
 const activeTab = ref<'workouts' | 'history'>('workouts')
 
 // Auth check
-onMounted(() => {
+onMounted(async () => {
   authStore.loadFromLocalStorage()
   if (!authStore.isAuthenticated) {
-    router.push('/login')
+    navigateTo('/login')
     return
   }
 
   loadWorkouts()
+  await subscriptionStore.fetchSubscription()
+  await fetchUsage()
 })
 
 const loadWorkouts = async () => {
   await workoutStore.fetchWorkouts()
+}
+
+const handleCreateWorkout = () => {
+  if (!canCreateTemplate.value) {
+    toast.error('Limite atteinte', 'Passez Pro pour créer plus de templates')
+    return
+  }
+  navigateTo('/workouts/builder')
 }
 
 const viewWorkout = (id: number) => {
@@ -289,22 +318,30 @@ const editWorkout = (id: number) => {
 }
 
 const deleteTemplate = async (id: number) => {
-  if (confirm('Êtes-vous sûr de vouloir supprimer ce template ?')) {
-    try {
-      await workoutStore.deleteWorkout(id)
-    } catch (error) {
-      console.error('Failed to delete template:', error)
-    }
+  if (!confirm('Êtes-vous sûr de vouloir supprimer ce template ?')) return
+  deletingId.value = id
+  try {
+    await workoutStore.deleteWorkout(id)
+    toast.success('Supprimé', 'Template supprimé avec succès')
+  } catch (error) {
+    console.error('Failed to delete template:', error)
+    toast.error('Erreur', 'Impossible de supprimer le template')
+  } finally {
+    deletingId.value = null
   }
 }
 
 const deleteFromHistory = async (id: number) => {
-  if (confirm('Supprimer cet entraînement de l\'historique ?')) {
-    try {
-      await workoutStore.deleteWorkout(id)
-    } catch (error) {
-      console.error('Failed to delete workout from history:', error)
-    }
+  if (!confirm('Supprimer cet entraînement de l\'historique ?')) return
+  deletingId.value = id
+  try {
+    await workoutStore.deleteWorkout(id)
+    toast.success('Supprimé', 'Entraînement supprimé de l\'historique')
+  } catch (error) {
+    console.error('Failed to delete workout from history:', error)
+    toast.error('Erreur', 'Impossible de supprimer l\'entraînement')
+  } finally {
+    deletingId.value = null
   }
 }
 

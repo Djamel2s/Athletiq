@@ -41,3 +41,7 @@ logs/
 
 # Uploads
 uploads/
+
+# Capacitor native projects
+frontend/android/
+frontend/ios/

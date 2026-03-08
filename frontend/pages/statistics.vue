@@ -2,19 +2,19 @@
   <div class="min-h-screen">
     <!-- Navigation -->
     <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
-      <div class="max-w-7xl mx-auto px-6 py-5">
+      <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-5">
         <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-2 md:space-x-4">
             <NuxtLink to="/dashboard">
-              <img src="/athletiq-icon.svg" alt="Athletiq" class="h-14 w-auto transition-transform duration-300 hover:scale-105" />
+              <img src="/athletiq-icon.svg" alt="Athletiq" class="h-10 md:h-14 w-auto transition-transform duration-300 hover:scale-105" />
             </NuxtLink>
             <div class="flex items-center space-x-3">
-              <span class="text-2xl text-primary-400 font-light">|</span>
-              <h1 class="text-2xl font-bold text-display bg-gradient-to-l from-[#d4c4b0] to-[#9d8569] bg-clip-text text-transparent">Statistiques</h1>
+              <span class="hidden md:inline text-2xl text-[#d4c4b0] font-light">|</span>
+              <h1 class="text-lg md:text-2xl font-bold text-display bg-gradient-to-r from-[#d4c4b0] to-white dark:to-primary-100 bg-clip-text text-transparent">Statistiques</h1>
             </div>
           </div>
 
-          <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-2 md:space-x-4">
             <!-- Time Range Selector -->
             <div class="hidden md:flex space-x-2 bg-white dark:bg-primary-900 bg-opacity-50 dark:bg-opacity-50 backdrop-blur-lg rounded-xl p-1">
               <button
@@ -32,16 +32,14 @@
               </button>
             </div>
 
-            <button @click="navigateTo('/dashboard')" class="btn-outline">
-              Retour
-            </button>
+            <NavActions />
           </div>
         </div>
       </div>
     </nav>
 
     <!-- Main Content -->
-    <div class="pt-32 px-6 pb-20 max-w-7xl mx-auto">
+    <div class="pt-24 md:pt-32 px-4 md:px-6 pb-28 lg:pb-20 max-w-7xl mx-auto">
       <!-- Loading State -->
       <div v-if="workoutStore.isLoading" class="text-center py-20">
         <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary-300 dark:border-primary-600 border-t-primary-600 dark:border-t-primary-400"></div>
@@ -79,7 +77,7 @@
       </div>
 
       <!-- Statistics Content -->
-      <div v-else class="space-y-12">
+      <div v-else class="space-y-8 md:space-y-12">
         <!-- Page Header -->
         <div class="fade-in text-center">
           <h2 class="text-4xl md:text-5xl font-bold text-primary-900 dark:text-primary-100 mb-4 text-display">
@@ -108,7 +106,14 @@
         </div>
 
         <!-- Overview Stats -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 slide-up">
+        <div class="flex justify-end -mb-6 slide-up">
+          <StatsShareButton
+            card-type="overview"
+            :data="shareOverviewData"
+            :user-name="authStore.fullName"
+          />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-6 slide-up">
           <StatsStatCard
             title="Entraînements"
             :value="overviewStats.totalWorkouts"
@@ -142,8 +147,8 @@
 
         <!-- Week Comparison -->
         <div class="space-y-6 slide-up">
-          <h3 class="text-3xl font-bold text-primary-900 dark:text-primary-100">Cette semaine</h3>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <h3 class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100">Cette semaine</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
             <StatsWeekComparisonCard
               title="Entraînements"
               :value="weekComparison.currentWeek.workouts"
@@ -166,11 +171,11 @@
 
         <!-- Progression Charts -->
         <div class="space-y-6 slide-up">
-          <h3 class="text-3xl font-bold text-primary-900 dark:text-primary-100">Progression</h3>
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <h3 class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100">Progression</h3>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
             <div class="card-glass">
               <h4 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">Calories au fil du temps</h4>
-              <div class="h-[300px]">
+              <div class="h-[250px] md:h-[300px]">
                 <StatsVolumeChart v-if="volumeData.datasets?.length" :data="volumeData" />
                 <div v-else class="flex items-center justify-center h-full text-primary-400">
                   Pas de données
@@ -179,7 +184,7 @@
             </div>
             <div class="card-glass">
               <h4 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">Fréquence par jour</h4>
-              <div class="h-[300px]">
+              <div class="h-[250px] md:h-[300px]">
                 <StatsFrequencyChart v-if="frequencyData.datasets?.length" :data="frequencyData" />
                 <div v-else class="flex items-center justify-center h-full text-primary-400">
                   Pas de données
@@ -191,18 +196,25 @@
 
         <!-- Exercise Progression -->
         <div v-if="allExerciseNames.length > 0" class="space-y-6 slide-up">
-          <h3 class="text-3xl font-bold text-primary-900 dark:text-primary-100">Progression par exercice</h3>
+          <div class="flex items-center justify-between">
+            <h3 class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100">Progression par exercice</h3>
+            <StatsShareButton
+              card-type="progression"
+              :data="shareProgressionData"
+              :user-name="authStore.fullName"
+            />
+          </div>
           <div class="card-glass">
             <div class="mb-6">
               <select
                 v-model="selectedExercise"
-                class="input-primary !w-auto min-w-[250px]"
+                class="input-primary !w-auto min-w-full md:min-w-[250px]"
               >
                 <option value="__ALL__">Tous les exercices</option>
                 <option v-for="name in allExerciseNames" :key="name" :value="name">{{ name }}</option>
               </select>
             </div>
-            <div v-if="activeProgressionData" class="h-[400px]">
+            <div v-if="activeProgressionData" class="h-[300px] md:h-[400px]">
               <StatsExerciseProgressionChart :data="activeProgressionData" />
             </div>
             <div v-else class="flex items-center justify-center h-[200px] text-primary-400">
@@ -213,11 +225,11 @@
 
         <!-- Exercise Analysis -->
         <div class="space-y-6 slide-up">
-          <h3 class="text-3xl font-bold text-primary-900 dark:text-primary-100">Analyse des exercices</h3>
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <h3 class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100">Analyse des exercices</h3>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
             <div class="card-glass">
               <h4 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">Séances par groupe musculaire</h4>
-              <div class="h-[300px]">
+              <div class="h-[250px] md:h-[300px]">
                 <StatsMuscleGroupChart v-if="muscleGroupData.datasets?.length" :data="muscleGroupData" />
                 <div v-else class="flex items-center justify-center h-full text-primary-400">
                   Pas de données
@@ -226,7 +238,7 @@
             </div>
             <div class="card-glass">
               <h4 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">Distribution des exercices</h4>
-              <div class="h-[300px]">
+              <div class="h-[250px] md:h-[300px]">
                 <StatsExerciseDistributionChart v-if="exerciseDistributionData.datasets?.length" :data="exerciseDistributionData" />
                 <div v-else class="flex items-center justify-center h-full text-primary-400">
                   Pas de données
@@ -238,7 +250,14 @@
 
         <!-- Top Exercises -->
         <div v-if="topExercises.length > 0" class="card-glass slide-up">
-          <h3 class="text-2xl font-bold text-primary-900 dark:text-primary-100 mb-6">Top 5 Exercices</h3>
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-bold text-primary-900 dark:text-primary-100">Top 5 Exercices</h3>
+            <StatsShareButton
+              card-type="top5"
+              :data="{ exercises: topExercises }"
+              :user-name="authStore.fullName"
+            />
+          </div>
           <div class="space-y-4">
             <div
               v-for="(exercise, index) in topExercises"
@@ -263,7 +282,14 @@
 
         <!-- Personal Records -->
         <div v-if="personalRecords && personalRecords.length > 0" class="space-y-6 slide-up">
-          <h3 class="text-3xl font-bold text-primary-900 dark:text-primary-100">Records Personnels</h3>
+          <div class="flex items-center justify-between">
+            <h3 class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100">Records Personnels</h3>
+            <StatsShareButton
+              card-type="records"
+              :data="{ records: personalRecords }"
+              :user-name="authStore.fullName"
+            />
+          </div>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div
               v-for="record in personalRecords"
@@ -290,13 +316,32 @@
           </div>
         </div>
 
+        <!-- Upgrade banner objectifs -->
+        <div v-if="!isPremium && !canCreateGoal" class="mb-6">
+          <UpgradeBanner
+            title="Limite d'objectifs atteinte"
+            :message="`Vous avez ${goalUsageText} objectif(s). Passez Pro pour en créer autant que vous voulez.`"
+          />
+        </div>
+
         <!-- Goals / Objectifs -->
         <div class="space-y-6 slide-up">
           <div class="flex items-center justify-between">
-            <h3 class="text-3xl font-bold text-primary-900 dark:text-primary-100">Mes Objectifs</h3>
-            <button @click="showGoalModal = true" class="btn-primary !py-2 !px-4 text-sm">
-              + Nouvel objectif
-            </button>
+            <h3 class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100">Mes Objectifs</h3>
+            <div class="flex items-center gap-2">
+              <StatsShareButton
+                v-if="goalStore.goals.length > 0"
+                card-type="goals"
+                :data="shareGoalsData"
+                :user-name="authStore.fullName"
+              />
+              <div class="flex items-center gap-2">
+                <span v-if="!isPremium" class="text-xs text-primary-500 dark:text-primary-400">{{ goalUsageText }}</span>
+                <button @click="handleNewGoal" :disabled="!canCreateGoal" class="btn-primary !py-2 !px-4 text-sm disabled:opacity-50">
+                  + Nouvel objectif
+                </button>
+              </div>
+            </div>
           </div>
 
           <!-- Active Goals -->
@@ -310,7 +355,7 @@
           </div>
           <div v-else class="card-glass text-center py-10">
             <p class="text-primary-500 dark:text-primary-400 mb-4">Aucun objectif en cours</p>
-            <button @click="showGoalModal = true" class="btn-outline text-sm">
+            <button @click="handleNewGoal" :disabled="!canCreateGoal" class="btn-outline text-sm disabled:opacity-50">
               Créer mon premier objectif
             </button>
           </div>
@@ -340,6 +385,8 @@
       @close="showGoalModal = false"
       @created="handleCreateGoal"
     />
+
+    <MobileBottomNav active-path="/statistics" />
   </div>
 </template>
 
@@ -348,6 +395,8 @@ import { useWorkoutStore } from '~/stores/workout'
 import { useAuthStore } from '~/stores/auth'
 import { useGoalStore } from '~/stores/goals'
 import { useBodyStore } from '~/stores/body'
+import { useSubscriptionStore } from '~/stores/subscription'
+import { useSubscriptionLimits } from '~/composables/useSubscriptionLimits'
 import type { TimeRange } from '~/types/statistics'
 import type { CreateGoalPayload } from '~/types/goals'
 
@@ -355,7 +404,8 @@ const workoutStore = useWorkoutStore()
 const authStore = useAuthStore()
 const goalStore = useGoalStore()
 const bodyStore = useBodyStore()
-const router = useRouter()
+const subscriptionStore = useSubscriptionStore()
+const { isPremium, canCreateGoal, goalUsageText, fetchUsage } = useSubscriptionLimits()
 const toast = useToast()
 
 const selectedTimeRange = ref<TimeRange>(null)
@@ -373,14 +423,16 @@ const timeRanges = [
 onMounted(async () => {
   authStore.loadFromLocalStorage()
   if (!authStore.isAuthenticated) {
-    router.push('/login')
+    navigateTo('/login')
     return
   }
 
   await Promise.all([
     workoutStore.fetchWorkouts(),
     goalStore.fetchGoals(),
-    bodyStore.fetchBodyStats()
+    bodyStore.fetchBodyStats(),
+    subscriptionStore.fetchSubscription(),
+    fetchUsage()
   ])
 })
 
@@ -472,6 +524,61 @@ const activeProgressionData = computed(() => {
   return exerciseProgressionData.value
 })
 
+// ── Share data computeds ──
+const formatTime = (seconds: number) => {
+  const h = Math.floor(seconds / 3600)
+  const m = Math.floor((seconds % 3600) / 60)
+  return h > 0 ? `${h}h${m}` : `${m}min`
+}
+
+const shareOverviewData = computed(() => ({
+  totalWorkouts: overviewStats.value.totalWorkouts,
+  calories: estimateCalories(overviewStats.value.totalTime).toLocaleString('fr-FR'),
+  totalTime: formatTime(overviewStats.value.totalTime),
+  avgDuration: formatTime(overviewStats.value.averageDuration),
+  streak: overviewStats.value.currentStreak,
+  totalVolume: Math.round((workoutStore.workoutHistory || []).reduce((s, w) => s + (w.totalVolume || 0), 0)).toLocaleString('fr-FR'),
+  period: timeRangeLabel.value,
+}))
+
+const shareProgressionData = computed(() => {
+  const workouts = workoutStore.workoutHistory || []
+  const exName = selectedExercise.value === '__ALL__' ? null : selectedExercise.value
+  const points: { date: string; weight: number }[] = []
+
+  for (const w of workouts) {
+    if (!w.completedAt) continue
+    const dateKey = new Date(w.completedAt).toISOString().split('T')[0]
+    w.exercises?.forEach(e => {
+      const name = e.exerciseLibrary?.name || e.name
+      if (exName && name !== exName) return
+      let maxW = 0
+      e.sets?.forEach(s => { if ((s.weight || 0) > maxW) maxW = s.weight || 0 })
+      if (maxW > 0) points.push({ date: dateKey, weight: maxW })
+    })
+  }
+
+  // Aggregate by date (keep max per date)
+  const byDate: Record<string, number> = {}
+  points.forEach(p => { byDate[p.date] = Math.max(byDate[p.date] || 0, p.weight) })
+  const sorted = Object.entries(byDate).sort(([a], [b]) => a.localeCompare(b)).map(([date, weight]) => ({ date, weight }))
+
+  return {
+    exerciseName: exName || 'Tous les exercices',
+    points: sorted,
+  }
+})
+
+const shareGoalsData = computed(() => ({
+  goals: goalStore.goals.map(g => ({
+    title: g.title,
+    achieved: g.achieved,
+    targetValue: g.targetValue,
+    progress: g.progress ?? 0,
+    unit: g.type === 'WEIGHT' ? 'kg' : g.type === 'BODY_FAT' ? '%' : 'kg',
+  }))
+}))
+
 const timeRangeLabel = computed(() => {
   if (!selectedTimeRange.value) return 'Toutes les statistiques'
   return `Statistiques des ${selectedTimeRange.value} derniers jours`
@@ -499,6 +606,14 @@ const handleCreateGoal = async (payload: CreateGoalPayload) => {
   } catch {
     toast.error('Erreur lors de la création')
   }
+}
+
+const handleNewGoal = () => {
+  if (!canCreateGoal.value) {
+    toast.error('Limite atteinte', 'Passez Pro pour créer plus d\'objectifs')
+    return
+  }
+  showGoalModal.value = true
 }
 
 const handleDeleteGoal = async (id: number) => {

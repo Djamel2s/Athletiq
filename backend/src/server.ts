@@ -5,7 +5,9 @@ dotenv.config()
 
 import express from 'express'
 import cors from 'cors'
+import helmet from 'helmet'
 import { initializeDatabase } from './config/database.js'
+import { globalLimiter, authLimiter } from './middlewares/rateLimiter.js'
 import authRoutes from './routes/auth.js'
 import workoutRoutes from './routes/workouts.js'
 import exerciseRoutes from './routes/exercises.js'
@@ -16,6 +18,10 @@ import photoRoutes from './routes/photos.js'
 import recordRoutes from './routes/records.js'
 import goalRoutes from './routes/goals.js'
 import notificationRoutes from './routes/notifications.js'
+import statsRoutes from './routes/stats.js'
+import subscriptionRoutes from './routes/subscription.js'
+import webhookRoutes from './routes/webhook.js'
+import emailRoutes from './routes/email.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -23,13 +29,27 @@ const PORT = process.env.PORT || 3001
 // Initialiser la base de données
 await initializeDatabase()
 
+// Sécurité — headers HTTP (XSS, clickjacking, MIME sniffing, etc.)
+app.use(helmet())
+
+// Rate limiting global — 100 req/min par IP
+app.use(globalLimiter)
+
 // Middlewares
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: (origin, callback) => {
+    const allowed = process.env.CORS_ORIGIN || 'http://localhost:3000'
+    // Allow requests with no origin (mobile apps, curl, etc) and any localhost/LAN IP in dev
+    if (!origin || allowed === origin || (!process.env.CORS_ORIGIN && (origin.match(/^https?:\/\/(localhost|127\.0\.0\.1|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+)(:\d+)?$/)))) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
   credentials: true
 }))
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+app.use(express.json({ limit: '10mb' }))
+app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
 // Health check
 app.get('/health', (req, res) => {
@@ -37,7 +57,7 @@ app.get('/health', (req, res) => {
 })
 
 // Routes
-app.use('/api/auth', authRoutes)
+app.use('/api/auth', authLimiter, authRoutes)
 app.use('/api/workouts', workoutRoutes)
 app.use('/api/exercises', exerciseRoutes)
 app.use('/api/users', userRoutes)
@@ -47,6 +67,10 @@ app.use('/api/photos', photoRoutes)
 app.use('/api/records', recordRoutes)
 app.use('/api/goals', goalRoutes)
 app.use('/api/notifications', notificationRoutes)
+app.use('/api/stats', statsRoutes)
+app.use('/api/subscription', subscriptionRoutes)
+app.use('/api/webhook', webhookRoutes)
+app.use('/api/email', authLimiter, emailRoutes)
 
 // 404 handler
 app.use((req, res) => {
@@ -56,7 +80,11 @@ app.use((req, res) => {
 // Error handler
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err.stack)
-  res.status(500).json({ error: 'Internal server error', message: err.message })
+  const isProduction = process.env.NODE_ENV === 'production'
+  res.status(500).json({
+    error: 'Internal server error',
+    ...(isProduction ? {} : { message: err.message })
+  })
 })
 
 app.listen(PORT, () => {

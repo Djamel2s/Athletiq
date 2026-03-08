@@ -9,14 +9,12 @@
               <img src="/athletiq-icon.svg" alt="Athletiq" class="h-10 md:h-14 w-auto transition-transform duration-300 hover:scale-105" />
             </NuxtLink>
             <div class="flex items-center space-x-3">
-              <span class="text-2xl text-primary-400 font-light hidden md:inline">|</span>
-              <h1 class="text-lg md:text-2xl font-bold text-display bg-gradient-to-l from-[#d4c4b0] to-[#9d8569] bg-clip-text text-transparent">Suivi d'activité</h1>
+              <span class="text-2xl text-[#d4c4b0] font-light hidden md:inline">|</span>
+              <h1 class="text-lg md:text-2xl font-bold text-display bg-gradient-to-r from-[#d4c4b0] to-white dark:to-primary-100 bg-clip-text text-transparent">Suivi d'activité</h1>
             </div>
           </div>
 
-          <button @click="navigateTo('/dashboard')" class="btn-outline text-sm md:text-base">
-            Retour
-          </button>
+          <NavActions />
         </div>
       </div>
     </nav>
@@ -35,7 +33,7 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8 fade-in">
           <!-- Streak -->
           <div class="card-glass text-center">
-            <div class="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center">
+            <div class="w-12 h-12 mx-auto mb-3 bg-gradient-primary rounded-xl flex items-center justify-center">
               <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/>
               </svg>
@@ -57,7 +55,7 @@
 
           <!-- This Month -->
           <div class="card-glass text-center">
-            <div class="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center">
+            <div class="w-12 h-12 mx-auto mb-3 bg-gradient-primary rounded-xl flex items-center justify-center">
               <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
               </svg>
@@ -68,7 +66,7 @@
 
           <!-- Total -->
           <div class="card-glass text-center">
-            <div class="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center">
+            <div class="w-12 h-12 mx-auto mb-3 bg-gradient-primary rounded-xl flex items-center justify-center">
               <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
@@ -191,124 +189,11 @@
           </div>
         </div>
 
-        <!-- Recent Activity Timeline -->
-        <div class="card-glass slide-up">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100">Activité récente</h3>
-            <button @click="navigateTo('/workouts')" class="text-sm text-primary-500 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-200 font-semibold transition-colors">
-              Voir tout →
-            </button>
-          </div>
-
-          <div v-if="recentWorkouts.length === 0" class="text-center py-8 text-primary-400 text-sm">
-            Aucune activité récente
-          </div>
-
-          <div v-else class="space-y-0">
-            <div
-              v-for="(workout, index) in recentWorkouts"
-              :key="workout.id"
-              class="flex gap-4 cursor-pointer group"
-              @click="navigateTo(`/workouts/${workout.id}`)"
-            >
-              <!-- Timeline line + dot -->
-              <div class="flex flex-col items-center">
-                <div class="w-3 h-3 rounded-full bg-gradient-primary flex-shrink-0 mt-1.5 group-hover:scale-125 transition-transform"></div>
-                <div v-if="index < recentWorkouts.length - 1" class="w-0.5 flex-1 bg-primary-200 dark:bg-primary-700 my-1"></div>
-              </div>
-
-              <!-- Content -->
-              <div :class="['flex-1 pb-6', index < recentWorkouts.length - 1 ? '' : 'pb-0']">
-                <div class="flex items-start justify-between gap-3">
-                  <div class="min-w-0">
-                    <p class="font-semibold text-primary-900 dark:text-primary-100 group-hover:text-[#b8a48f] transition-colors truncate">{{ workout.name }}</p>
-                    <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
-                      {{ formatFullDate(workout.completedAt!) }}
-                    </p>
-                  </div>
-                  <div class="flex items-center gap-3 text-xs text-primary-500 dark:text-primary-400 flex-shrink-0">
-                    <span v-if="workout.duration" class="flex items-center gap-1">
-                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                      </svg>
-                      {{ formatDuration(workout.duration) }}
-                    </span>
-                    <span v-if="workout.duration" class="flex items-center gap-1 font-semibold text-primary-700 dark:text-primary-300">
-                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/>
-                      </svg>
-                      {{ estimateCalories(workout.duration) }} kcal
-                    </span>
-                    <span v-if="workout.exercises?.length" class="hidden md:flex items-center gap-1">
-                      {{ workout.exercises.length }} ex.
-                    </span>
-                  </div>
-                </div>
-
-                <!-- Exercise pills -->
-                <div v-if="workout.exercises?.length" class="flex flex-wrap gap-1.5 mt-2">
-                  <span
-                    v-for="exercise in workout.exercises.slice(0, 4)"
-                    :key="exercise.id"
-                    class="px-2 py-0.5 bg-primary-100 dark:bg-primary-800 rounded-full text-xs text-primary-600 dark:text-primary-400"
-                  >
-                    {{ exercise.exerciseLibrary?.name || exercise.name }}
-                  </span>
-                  <span
-                    v-if="workout.exercises.length > 4"
-                    class="px-2 py-0.5 bg-primary-100 dark:bg-primary-800 rounded-full text-xs text-primary-500 dark:text-primary-400"
-                  >
-                    +{{ workout.exercises.length - 4 }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </template>
     </div>
 
     <!-- Mobile Bottom Navigation -->
-    <div class="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-white/90 dark:bg-primary-900/90 backdrop-blur-md border-t border-primary-200 dark:border-primary-700">
-      <div class="flex items-center justify-around py-2">
-        <button @click="navigateTo('/dashboard')" class="flex flex-col items-center p-2 text-primary-600 dark:text-primary-400">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-          </svg>
-          <span class="text-xs mt-1">Accueil</span>
-        </button>
-
-        <button @click="navigateTo('/calendar')" class="flex flex-col items-center p-2 text-primary-900 dark:text-primary-100">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-          </svg>
-          <span class="text-xs mt-1 font-medium">Activité</span>
-        </button>
-
-        <button @click="navigateTo('/workouts/start')" class="flex flex-col items-center -mt-6">
-          <div class="w-14 h-14 bg-gradient-primary rounded-full flex items-center justify-center shadow-lg">
-            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h8M6 9v6m12-6v6M4.5 10v4m15-4v4"/>
-            </svg>
-          </div>
-          <span class="text-xs mt-1 font-semibold text-primary-900 dark:text-primary-100">GO</span>
-        </button>
-
-        <button @click="navigateTo('/workouts')" class="flex flex-col items-center p-2 text-primary-600 dark:text-primary-400">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-          </svg>
-          <span class="text-xs mt-1">Workouts</span>
-        </button>
-
-        <button @click="navigateTo('/body')" class="flex flex-col items-center p-2 text-primary-600 dark:text-primary-400">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-          </svg>
-          <span class="text-xs mt-1">Suivi</span>
-        </button>
-      </div>
-    </div>
+    <MobileBottomNav active-path="/calendar" />
   </div>
 </template>
 
@@ -337,9 +222,6 @@ const completedWorkouts = computed(() =>
     .filter(w => w.completedAt)
     .sort((a, b) => new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime())
 )
-
-// Recent 10 workouts for timeline
-const recentWorkouts = computed(() => completedWorkouts.value.slice(0, 10))
 
 // Streak calculation
 const currentStreak = computed(() => {

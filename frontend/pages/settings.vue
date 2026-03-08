@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen px-6 py-12 geometric-bg">
+  <div class="min-h-screen px-4 md:px-6 py-8 md:py-12 geometric-bg">
     <div class="w-full max-w-lg mx-auto">
       <!-- Header -->
       <div class="text-center mb-10 fade-in">
         <NuxtLink to="/dashboard" class="inline-block">
-          <img src="/athletiq-icon.svg" alt="Athletiq" class="h-16 w-auto mx-auto mb-4 hover:scale-105 transition-transform duration-300" />
+          <img src="/athletiq-icon.svg" alt="Athletiq" class="h-10 md:h-14 w-auto mx-auto mb-4 hover:scale-105 transition-transform duration-300" />
         </NuxtLink>
-        <h1 class="text-3xl md:text-4xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-display">Parametres</h1>
+        <h1 class="text-lg md:text-2xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-display">Parametres</h1>
         <p class="text-primary-600 dark:text-primary-400 text-body-relaxed">Configurez votre experience</p>
       </div>
 
@@ -15,7 +15,7 @@
         <!-- Compte -->
         <div class="card-glass">
           <h2 class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-5 flex items-center gap-3">
-            <div class="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+            <div class="w-10 h-10 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
               <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
               </svg>
@@ -33,13 +33,19 @@
               <span class="text-primary-800 dark:text-primary-200">Email</span>
               <span class="text-primary-500 dark:text-primary-400 text-sm">{{ authStore.user?.email }}</span>
             </div>
+            <NuxtLink to="/subscription" class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors">
+              <span class="text-primary-800 dark:text-primary-200">Abonnement</span>
+              <svg class="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </NuxtLink>
           </div>
         </div>
 
         <!-- Preferences -->
         <div class="card-glass">
           <h2 class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-5 flex items-center gap-3">
-            <div class="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+            <div class="w-10 h-10 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
               <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
               </svg>
@@ -109,13 +115,13 @@
             <div class="flex items-center justify-between p-3">
               <span class="text-primary-800 dark:text-primary-200">Timer de repos par defaut</span>
               <div class="flex items-center gap-2">
-                <button @click="restTimer = Math.max(30, restTimer - 15)" class="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-800 hover:bg-primary-200 dark:hover:bg-primary-700 flex items-center justify-center transition-colors">
+                <button @click="restTimer = Math.max(30, restTimer - 15)" class="w-10 h-10 md:w-8 md:h-8 rounded-lg bg-primary-100 dark:bg-primary-800 hover:bg-primary-200 dark:hover:bg-primary-700 flex items-center justify-center transition-colors">
                   <svg class="w-4 h-4 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
                   </svg>
                 </button>
                 <span class="text-primary-900 dark:text-primary-100 font-medium w-12 text-center">{{ restTimer }}s</span>
-                <button @click="restTimer = Math.min(300, restTimer + 15)" class="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-800 hover:bg-primary-200 dark:hover:bg-primary-700 flex items-center justify-center transition-colors">
+                <button @click="restTimer = Math.min(300, restTimer + 15)" class="w-10 h-10 md:w-8 md:h-8 rounded-lg bg-primary-100 dark:bg-primary-800 hover:bg-primary-200 dark:hover:bg-primary-700 flex items-center justify-center transition-colors">
                   <svg class="w-4 h-4 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                   </svg>
@@ -128,7 +134,7 @@
         <!-- Notifications -->
         <div class="card-glass">
           <h2 class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-5 flex items-center gap-3">
-            <div class="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+            <div class="w-10 h-10 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
               <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
               </svg>
@@ -157,13 +163,44 @@
                 <div class="w-11 h-6 bg-primary-200 dark:bg-primary-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-[#d4c4b0] peer-checked:to-[#b8a48f]"></div>
               </label>
             </div>
+
+            <div class="border-t border-primary-100 dark:border-primary-800 my-2"></div>
+
+            <!-- Rappel d'inactivite -->
+            <div class="flex items-center justify-between p-3">
+              <div>
+                <span class="text-primary-800 dark:text-primary-200">Rappel d'inactivité</span>
+                <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">Notification si pas d'entraînement</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" v-model="reminderEnabled" class="sr-only peer" />
+                <div class="w-11 h-6 bg-primary-200 dark:bg-primary-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-[#d4c4b0] peer-checked:to-[#b8a48f]"></div>
+              </label>
+            </div>
+
+            <div v-if="reminderEnabled" class="flex items-center justify-between p-3 pl-6">
+              <span class="text-primary-600 dark:text-primary-400 text-sm">Après combien de jours</span>
+              <div class="flex items-center gap-2">
+                <button @click="inactivityDays = Math.max(1, inactivityDays - 1)" class="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-800 hover:bg-primary-200 dark:hover:bg-primary-700 flex items-center justify-center transition-colors">
+                  <svg class="w-3 h-3 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+                  </svg>
+                </button>
+                <span class="text-primary-900 dark:text-primary-100 font-medium w-10 text-center">{{ inactivityDays }}j</span>
+                <button @click="inactivityDays = Math.min(14, inactivityDays + 1)" class="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-800 hover:bg-primary-200 dark:hover:bg-primary-700 flex items-center justify-center transition-colors">
+                  <svg class="w-3 h-3 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- A propos -->
         <div class="card-glass">
           <h2 class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-5 flex items-center gap-3">
-            <div class="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+            <div class="w-10 h-10 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
               <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
@@ -234,7 +271,7 @@
 
       <!-- Retour au dashboard -->
       <div class="text-center mt-8">
-        <NuxtLink to="/dashboard" class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-colors inline-flex items-center gap-2">
+        <NuxtLink to="/dashboard" class="text-sm md:text-base text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-colors inline-flex items-center gap-2">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
           </svg>
@@ -254,7 +291,6 @@ definePageMeta({
 })
 
 const authStore = useAuthStore()
-const router = useRouter()
 const colorMode = useColorMode()
 
 const weightUnit = ref('kg')
@@ -262,6 +298,8 @@ const restTimer = ref(90)
 const notifPR = ref(true)
 const notifStreak = ref(true)
 const notifGoals = ref(true)
+const reminderEnabled = ref(true)
+const inactivityDays = ref(3)
 const showDeleteConfirm = ref(false)
 const deleting = ref(false)
 
@@ -271,7 +309,7 @@ const setTheme = (theme: string) => {
 
 const handleLogout = () => {
   authStore.logout()
-  router.push('/login')
+  navigateTo('/login')
 }
 
 const handleDeleteAccount = async () => {
@@ -283,17 +321,17 @@ const handleDeleteAccount = async () => {
       headers: { Authorization: `Bearer ${authStore.token}` }
     })
     authStore.logout()
-    router.push('/')
+    navigateTo('/')
   } catch (error) {
     console.error('Delete account error:', error)
     deleting.value = false
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   authStore.loadFromLocalStorage()
   if (!authStore.isAuthenticated) {
-    router.push('/login')
+    navigateTo('/login')
     return
   }
 
@@ -303,7 +341,19 @@ onMounted(() => {
     notifPR.value = localStorage.getItem('pref_notif_pr') !== 'false'
     notifStreak.value = localStorage.getItem('pref_notif_streak') !== 'false'
     notifGoals.value = localStorage.getItem('pref_notif_goals') !== 'false'
+    reminderEnabled.value = localStorage.getItem('pref_reminder_enabled') !== 'false'
+    inactivityDays.value = parseInt(localStorage.getItem('pref_inactivity_days') || '3')
   }
+
+  // Also sync with backend
+  try {
+    const config = useRuntimeConfig()
+    const user = await $fetch<any>(`${config.public.apiUrl}/users/me`, {
+      headers: { Authorization: `Bearer ${authStore.token}` }
+    })
+    if (user.reminderEnabled !== undefined) reminderEnabled.value = user.reminderEnabled
+    if (user.inactivityThresholdDays) inactivityDays.value = user.inactivityThresholdDays
+  } catch { /* ignore */ }
 })
 
 watch(weightUnit, (val) => {
@@ -325,4 +375,28 @@ watch(notifStreak, (val) => {
 watch(notifGoals, (val) => {
   if (process.client) localStorage.setItem('pref_notif_goals', String(val))
 })
+
+watch(reminderEnabled, (val) => {
+  if (process.client) localStorage.setItem('pref_reminder_enabled', String(val))
+  syncReminderSettings()
+})
+
+watch(inactivityDays, (val) => {
+  if (process.client) localStorage.setItem('pref_inactivity_days', String(val))
+  syncReminderSettings()
+})
+
+const syncReminderSettings = async () => {
+  try {
+    const config = useRuntimeConfig()
+    await $fetch(`${config.public.apiUrl}/users/me`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${authStore.token}` },
+      body: {
+        reminderEnabled: reminderEnabled.value,
+        inactivityThresholdDays: inactivityDays.value
+      }
+    })
+  } catch { /* ignore */ }
+}
 </script>

@@ -140,7 +140,6 @@ definePageMeta({
 })
 
 const authStore = useAuthStore()
-const router = useRouter()
 
 const firstName = ref('')
 const lastName = ref('')
@@ -175,7 +174,7 @@ const handleRegister = async () => {
     )
 
     if (result.success) {
-      router.push('/dashboard')
+      navigateTo('/dashboard')
     } else {
       error.value = result.error || 'Une erreur est survenue'
     }
@@ -190,7 +189,7 @@ const handleRegister = async () => {
 onMounted(() => {
   authStore.loadFromLocalStorage()
   if (authStore.isAuthenticated) {
-    router.push('/dashboard')
+    navigateTo('/dashboard')
   }
 })
 </script>

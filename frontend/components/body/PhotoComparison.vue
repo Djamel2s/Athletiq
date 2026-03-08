@@ -78,10 +78,46 @@
       </div>
     </div>
 
-    <!-- Empty state -->
-    <div v-else class="flex items-center justify-center h-48 text-primary-400 text-sm">
-      Sélectionnez deux photos pour comparer
+    <!-- Share Button -->
+    <div v-if="beforePhoto && afterPhoto" class="mt-4 flex justify-center">
+      <button @click="showShareModal = true" class="btn-primary inline-flex items-center gap-2 text-sm">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+        </svg>
+        Partager ma transformation
+      </button>
     </div>
+
+    <!-- Empty state -->
+    <div v-if="!beforePhoto || !afterPhoto" class="flex items-center justify-center h-48 text-primary-400 text-sm">
+      Selectionnez deux photos pour comparer
+    </div>
+
+    <!-- Share Modal -->
+    <Teleport to="body">
+      <div v-if="showShareModal && beforePhoto && afterPhoto" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showShareModal = false"></div>
+        <div class="relative bg-white dark:bg-primary-900 rounded-2xl p-4 md:p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-primary-200 dark:border-primary-700">
+          <button @click="showShareModal = false" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors z-10">
+            <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+          <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-4">Partager ma transformation</h3>
+          <ShareCard
+            type="beforeAfter"
+            title="Ma transformation Athletiq"
+            :before-image="beforePhoto.photoUrl"
+            :after-image="afterPhoto.photoUrl"
+            :data="{
+              beforeDate: formatDate(beforePhoto.workout?.date || beforePhoto.createdAt),
+              afterDate: formatDate(afterPhoto.workout?.date || afterPhoto.createdAt),
+              userName: userName
+            }"
+          />
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -90,9 +126,11 @@ import type { ProgressPhoto } from '~/types/body'
 
 interface Props {
   photos: ProgressPhoto[]
+  userName?: string
 }
 
 const props = defineProps<Props>()
+const showShareModal = ref(false)
 
 const getPhotoDate = (photo: ProgressPhoto) => {
   return new Date(photo.workout?.date || photo.createdAt).getTime()

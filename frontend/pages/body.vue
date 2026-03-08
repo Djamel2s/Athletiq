@@ -2,27 +2,25 @@
   <div class="min-h-screen">
     <!-- Navigation -->
     <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
-      <div class="max-w-7xl mx-auto px-6 py-5">
+      <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-5">
         <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-2 md:space-x-4">
             <NuxtLink to="/dashboard">
-              <img src="/athletiq-icon.svg" alt="Athletiq" class="h-14 w-auto transition-transform duration-300 hover:scale-105" />
+              <img src="/athletiq-icon.svg" alt="Athletiq" class="h-10 md:h-14 w-auto transition-transform duration-300 hover:scale-105" />
             </NuxtLink>
             <div class="flex items-center space-x-3">
-              <span class="text-2xl text-primary-400 font-light">|</span>
-              <h1 class="text-2xl font-bold text-display bg-gradient-to-l from-[#d4c4b0] to-[#9d8569] bg-clip-text text-transparent">Suivi Corporel</h1>
+              <span class="hidden md:inline text-2xl text-[#d4c4b0] font-light">|</span>
+              <h1 class="text-lg md:text-2xl font-bold text-display bg-gradient-to-r from-[#d4c4b0] to-white dark:to-primary-100 bg-clip-text text-transparent">Suivi Corporel</h1>
             </div>
           </div>
 
-          <button @click="navigateTo('/dashboard')" class="btn-outline">
-            Retour
-          </button>
+          <NavActions />
         </div>
       </div>
     </nav>
 
     <!-- Main Content -->
-    <div class="pt-32 px-6 pb-20 max-w-7xl mx-auto">
+    <div class="pt-24 md:pt-32 px-4 md:px-6 pb-28 lg:pb-20 max-w-7xl mx-auto">
       <!-- Page Header -->
       <div class="fade-in text-center mb-8">
         <h2 class="text-4xl md:text-5xl font-bold text-primary-900 dark:text-primary-100 mb-4 text-display">
@@ -41,7 +39,7 @@
             :key="tab.key"
             @click="activeTab = tab.key"
             :class="[
-              'px-6 py-2.5 rounded-lg text-sm font-semibold transition-all',
+              'px-3 md:px-6 py-2 md:py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all',
               activeTab === tab.key
                 ? 'bg-gradient-primary text-white shadow-sm'
                 : 'text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100'
@@ -109,29 +107,29 @@
         <div v-if="bodyStore.bodyStats.length > 0" class="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div class="card-glass !p-6 text-center">
             <p class="text-sm text-primary-600 dark:text-primary-400 mb-1">Poids actuel</p>
-            <p class="text-3xl font-bold text-primary-900 dark:text-primary-100">{{ bodyStore.latestWeight?.weight }} <span class="text-lg">kg</span></p>
+            <p class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100">{{ bodyStore.latestWeight?.weight }} <span class="text-lg">kg</span></p>
           </div>
           <div class="card-glass !p-6 text-center">
             <p class="text-sm text-primary-600 dark:text-primary-400 mb-1">Variation 30j</p>
-            <p :class="['text-3xl font-bold', weightChangeClass]">
+            <p :class="['text-2xl md:text-3xl font-bold', weightChangeClass]">
               {{ bodyStore.weightChange30d !== null ? (bodyStore.weightChange30d > 0 ? '+' : '') + bodyStore.weightChange30d : '—' }}
               <span class="text-lg">kg</span>
             </p>
           </div>
           <div class="card-glass !p-6 text-center">
             <p class="text-sm text-primary-600 dark:text-primary-400 mb-1">Min</p>
-            <p class="text-3xl font-bold text-primary-900 dark:text-primary-100">{{ minWeight }} <span class="text-lg">kg</span></p>
+            <p class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100">{{ minWeight }} <span class="text-lg">kg</span></p>
           </div>
           <div class="card-glass !p-6 text-center">
             <p class="text-sm text-primary-600 dark:text-primary-400 mb-1">Max</p>
-            <p class="text-3xl font-bold text-primary-900 dark:text-primary-100">{{ maxWeight }} <span class="text-lg">kg</span></p>
+            <p class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100">{{ maxWeight }} <span class="text-lg">kg</span></p>
           </div>
         </div>
 
         <!-- Weight Chart -->
         <div v-if="bodyStore.bodyStats.length > 1" class="card-glass">
           <h3 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">Évolution du poids</h3>
-          <div class="h-[300px]">
+          <div class="h-[250px] md:h-[300px]">
             <BodyWeightChart :stats="bodyStore.bodyStats" />
           </div>
         </div>
@@ -172,7 +170,7 @@
         <div class="card-glass">
           <h3 class="text-2xl font-bold text-primary-900 dark:text-primary-100 mb-6">Nouvelle mesure</h3>
           <form @submit.prevent="submitMeasurement" class="space-y-4">
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               <div v-for="field in measurementFields" :key="field.key">
                 <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1">{{ field.label }} (cm)</label>
                 <input
@@ -192,7 +190,7 @@
         </div>
 
         <!-- Latest Measurement -->
-        <div v-if="bodyStore.latestMeasurement" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div v-if="bodyStore.latestMeasurement" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           <div
             v-for="field in measurementFields"
             :key="field.key"
@@ -245,9 +243,19 @@
 
       <!-- ==================== ONGLET PHOTOS ==================== -->
       <div v-else-if="activeTab === 'photos'" class="space-y-8 slide-up">
+        <!-- Upgrade banner photos -->
+        <UpgradeBanner
+          v-if="!isPremium && !canUploadPhoto"
+          title="Limite de photos atteinte"
+          :message="`Vous avez ${photoUsageText} photos. Passez Pro pour en uploader autant que vous voulez.`"
+        />
+
         <!-- Upload Section -->
         <div class="card-glass">
-          <h3 class="text-2xl font-bold text-primary-900 dark:text-primary-100 mb-6">Ajouter une photo</h3>
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-bold text-primary-900 dark:text-primary-100">Ajouter une photo</h3>
+            <span v-if="!isPremium" class="text-xs text-primary-500 dark:text-primary-400">{{ photoUsageText }}</span>
+          </div>
           <div class="flex flex-col md:flex-row gap-4 items-end">
             <div class="flex-1">
               <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1">Workout associé</label>
@@ -297,6 +305,7 @@
         <BodyPhotoComparison
           v-if="bodyStore.photos.length >= 2"
           :photos="bodyStore.photos"
+          :user-name="authStore.user?.firstName || ''"
         />
 
         <!-- Photo Grid -->
@@ -362,6 +371,8 @@
         </Transition>
       </Teleport>
     </div>
+
+    <MobileBottomNav active-path="/body" />
   </div>
 </template>
 
@@ -369,13 +380,16 @@
 import { useAuthStore } from '~/stores/auth'
 import { useBodyStore } from '~/stores/body'
 import { useWorkoutStore } from '~/stores/workout'
+import { useSubscriptionStore } from '~/stores/subscription'
+import { useSubscriptionLimits } from '~/composables/useSubscriptionLimits'
 import type { ProgressPhoto, Measurement } from '~/types/body'
 
 const authStore = useAuthStore()
 const bodyStore = useBodyStore()
 const workoutStore = useWorkoutStore()
+const subscriptionStore = useSubscriptionStore()
+const { isPremium, canUploadPhoto, photoUsageText, fetchUsage } = useSubscriptionLimits()
 const toast = useToast()
-const router = useRouter()
 
 const activeTab = ref<'weight' | 'measurements' | 'photos'>('weight')
 
@@ -504,6 +518,12 @@ const handlePhotoUpload = async (event: Event) => {
   const file = input.files?.[0]
   if (!file || !photoForm.workoutId) return
 
+  if (!canUploadPhoto.value) {
+    toast.error('Limite atteinte', 'Passez Pro pour uploader plus de photos')
+    input.value = ''
+    return
+  }
+
   photoUploading.value = true
   try {
     await bodyStore.uploadPhoto(photoForm.workoutId, file, photoForm.isPrimary)
@@ -532,7 +552,7 @@ const deletePhoto = async (id: number) => {
 onMounted(async () => {
   authStore.loadFromLocalStorage()
   if (!authStore.isAuthenticated) {
-    router.push('/login')
+    navigateTo('/login')
     return
   }
 
@@ -540,7 +560,9 @@ onMounted(async () => {
     bodyStore.fetchBodyStats(),
     bodyStore.fetchMeasurements(),
     bodyStore.fetchPhotos(),
-    workoutStore.fetchWorkouts()
+    workoutStore.fetchWorkouts(),
+    subscriptionStore.fetchSubscription(),
+    fetchUsage()
   ])
 
   try {

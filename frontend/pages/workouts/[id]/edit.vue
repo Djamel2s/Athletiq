@@ -352,7 +352,7 @@ import type { ExerciseLibrary, Exercise } from '~/types/workout'
 
 const workoutStore = useWorkoutStore()
 const authStore = useAuthStore()
-const router = useRouter()
+const toast = useToast()
 const route = useRoute()
 
 const workoutForm = ref({
@@ -378,7 +378,7 @@ const filterDifficulty = ref('')
 onMounted(async () => {
   authStore.loadFromLocalStorage()
   if (!authStore.isAuthenticated) {
-    router.push('/login')
+    navigateTo('/login')
     return
   }
 
@@ -393,8 +393,8 @@ onMounted(async () => {
       selectedExercises.value = workout.exercises || []
     } catch (error) {
       console.error('Failed to load workout:', error)
-      alert('Erreur lors du chargement du workout')
-      router.push('/workouts')
+      toast.error('Erreur', 'Impossible de charger le workout')
+      navigateTo('/workouts')
     }
   }
 })
@@ -412,7 +412,7 @@ const createWorkout = async () => {
     workoutId.value = workout.id
   } catch (error) {
     console.error('Failed to create workout:', error)
-    alert('Erreur lors de la création du workout')
+    toast.error('Erreur', 'Impossible de créer le workout')
   } finally {
     isCreating.value = false
   }
@@ -459,7 +459,7 @@ const addExercise = async (exercise: ExerciseLibrary) => {
     showExerciseLibrary.value = false
   } catch (error) {
     console.error('Failed to add exercise:', error)
-    alert('Erreur lors de l\'ajout de l\'exercice')
+    toast.error('Erreur', 'Impossible d\'ajouter l\'exercice')
   }
 }
 
@@ -504,12 +504,12 @@ const updatePlannedSets = (exercise: any) => {
 
 const saveWorkout = async () => {
   if (!workoutId.value) {
-    alert('Veuillez d\'abord créer le workout')
+    toast.warning('Attention', 'Veuillez d\'abord créer le workout')
     return
   }
 
   if (selectedExercises.value.length === 0) {
-    alert('Ajoutez au moins un exercice avant de sauvegarder')
+    toast.warning('Attention', 'Ajoutez au moins un exercice')
     return
   }
 
@@ -546,11 +546,11 @@ const saveWorkout = async () => {
       await workoutStore.updateExercise(workoutId.value, exercise.id, updateData)
     }
 
-    alert('Workout modifié avec succès!')
+    toast.success('Sauvegardé', 'Workout modifié avec succès')
     navigateTo('/workouts')
   } catch (error) {
     console.error('Failed to save workout:', error)
-    alert('Erreur lors de la sauvegarde')
+    toast.error('Erreur', 'Impossible de sauvegarder')
   }
 }
 

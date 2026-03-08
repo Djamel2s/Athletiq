@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center px-6 py-12 geometric-bg">
+  <div class="min-h-screen flex items-center justify-center px-4 md:px-6 py-8 md:py-12 geometric-bg">
     <div class="w-full max-w-md">
       <!-- Logo -->
       <div class="text-center mb-10 fade-in">
         <NuxtLink to="/" class="inline-block">
-          <img src="/athletiq-icon.svg" alt="Athletiq" class="h-16 w-auto mx-auto mb-4 hover:scale-105 transition-transform duration-300" />
+          <img src="/athletiq-icon.svg" alt="Athletiq" class="h-12 md:h-16 w-auto mx-auto mb-4 hover:scale-105 transition-transform duration-300" />
         </NuxtLink>
-        <h1 class="text-4xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-display">Connexion</h1>
+        <h1 class="text-2xl md:text-4xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-display">Connexion</h1>
         <p class="text-primary-600 dark:text-primary-400 text-body-relaxed">Connectez-vous à votre compte</p>
       </div>
 
@@ -43,6 +43,11 @@
               class="input"
               placeholder="••••••••"
             />
+            <div class="mt-2 text-right">
+              <NuxtLink to="/forgot-password" class="text-sm text-sand-600 dark:text-sand-400 hover:text-sand-800 dark:hover:text-sand-300 transition-colors">
+                Mot de passe oublié ?
+              </NuxtLink>
+            </div>
           </div>
 
           <!-- Error message -->
@@ -93,7 +98,6 @@ definePageMeta({
 })
 
 const authStore = useAuthStore()
-const router = useRouter()
 
 const email = ref('')
 const password = ref('')
@@ -108,7 +112,7 @@ const handleLogin = async () => {
     const result = await authStore.login(email.value, password.value)
 
     if (result.success) {
-      router.push('/dashboard')
+      navigateTo('/dashboard')
     } else {
       error.value = result.error || 'Une erreur est survenue'
     }
@@ -123,7 +127,7 @@ const handleLogin = async () => {
 onMounted(() => {
   authStore.loadFromLocalStorage()
   if (authStore.isAuthenticated) {
-    router.push('/dashboard')
+    navigateTo('/dashboard')
   }
 })
 </script>

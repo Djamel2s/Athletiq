@@ -12,7 +12,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
           </svg>
         </button>
-        <span class="text-sm md:text-base font-semibold text-primary-800 dark:text-primary-200 min-w-[140px] text-center capitalize">
+        <span class="text-sm md:text-base font-semibold text-primary-800 dark:text-primary-200 min-w-[120px] md:min-w-[140px] text-center capitalize">
           {{ monthLabel }}
         </span>
         <button
@@ -27,7 +27,7 @@
     </div>
 
     <!-- Weekday Headers -->
-    <div class="grid grid-cols-7 gap-1 mb-2">
+    <div class="grid grid-cols-7 gap-0.5 md:gap-1 mb-2">
       <div
         v-for="day in weekDays"
         :key="day"
@@ -38,14 +38,14 @@
     </div>
 
     <!-- Calendar Grid -->
-    <div class="grid grid-cols-7 gap-1">
+    <div class="grid grid-cols-7 gap-0.5 md:gap-1">
       <button
         v-for="(cell, index) in calendarDays"
         :key="index"
         @click="cell.isCurrentMonth ? selectDay(cell) : null"
         :disabled="!cell.isCurrentMonth"
         :class="[
-          'relative flex flex-col items-center justify-center rounded-xl text-sm transition-all aspect-square',
+          'relative flex flex-col items-center justify-center rounded-xl text-xs md:text-sm transition-all aspect-square',
           cell.isCurrentMonth
             ? 'cursor-pointer hover:bg-primary-100 dark:hover:bg-primary-800'
             : 'opacity-0 cursor-default',
@@ -74,13 +74,13 @@
     <Transition name="slide">
       <div v-if="selectedWorkouts.length > 0" class="mt-4 space-y-3">
         <div class="h-px bg-primary-200 dark:bg-primary-700"></div>
-        <p class="text-sm font-semibold text-primary-600 dark:text-primary-400">
+        <p class="text-xs md:text-sm font-semibold text-primary-600 dark:text-primary-400">
           {{ selectedDateLabel }}
         </p>
         <div
           v-for="workout in selectedWorkouts"
           :key="workout.id"
-          class="flex items-center justify-between p-3 bg-primary-50 dark:bg-primary-800 rounded-xl cursor-pointer hover:bg-primary-100 dark:hover:bg-primary-700 transition-colors"
+          class="flex items-center justify-between p-2 md:p-3 bg-primary-50 dark:bg-primary-800 rounded-xl cursor-pointer hover:bg-primary-100 dark:hover:bg-primary-700 transition-colors"
           @click="navigateTo(`/workouts/${workout.id}`)"
         >
           <div class="flex items-center gap-3 min-w-0">
@@ -90,14 +90,14 @@
               </svg>
             </div>
             <div class="min-w-0">
-              <p class="font-semibold text-primary-900 dark:text-primary-100 text-sm truncate">{{ workout.name }}</p>
+              <p class="font-semibold text-primary-900 dark:text-primary-100 text-xs md:text-sm truncate">{{ workout.name }}</p>
               <p class="text-xs text-primary-500 dark:text-primary-400">
                 {{ workout.exercises?.length || 0 }} exercices
               </p>
             </div>
           </div>
           <div class="text-right flex-shrink-0 ml-2">
-            <p v-if="workout.duration" class="text-sm font-medium text-primary-800 dark:text-primary-200">
+            <p v-if="workout.duration" class="text-xs md:text-sm font-medium text-primary-800 dark:text-primary-200">
               {{ formatDuration(workout.duration) }}
             </p>
             <p v-if="workout.duration" class="text-xs text-primary-500 dark:text-primary-400">

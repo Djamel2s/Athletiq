@@ -33,6 +33,34 @@ export class User {
   @Column({ type: 'enum', enum: Goal, nullable: true })
   goal?: Goal
 
+  @Column({ type: 'int', default: 2 })
+  streakGoalPerWeek!: number
+
+  @Column({ type: 'int', default: 0 })
+  bestStreak!: number
+
+  @Column({ type: 'boolean', default: true })
+  reminderEnabled!: boolean
+
+  @Column({ type: 'varchar', default: '18:00' })
+  reminderTime!: string
+
+  @Column({ type: 'int', default: 3 })
+  inactivityThresholdDays!: number
+
+  // Email verification
+  @Column({ type: 'boolean', default: false })
+  emailVerified!: boolean
+
+  @Column({ type: 'varchar', nullable: true })
+  emailVerificationToken?: string
+
+  @Column({ type: 'varchar', nullable: true })
+  passwordResetToken?: string
+
+  @Column({ type: 'timestamp', nullable: true })
+  passwordResetExpires?: Date
+
   @CreateDateColumn()
   createdAt!: Date
 

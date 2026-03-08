@@ -1,29 +1,44 @@
 <template>
-  <div class="min-h-screen px-6 py-12 geometric-bg">
+  <div class="min-h-screen geometric-bg">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
+      <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-5">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2 md:space-x-4">
+            <NuxtLink to="/dashboard">
+              <img src="/athletiq-icon.svg" alt="Athletiq" class="h-10 md:h-14 w-auto transition-transform duration-300 hover:scale-105" />
+            </NuxtLink>
+            <div class="flex items-center space-x-3">
+              <span class="text-2xl text-[#d4c4b0] font-light hidden md:inline">|</span>
+              <h1 class="text-lg md:text-2xl font-bold text-display bg-gradient-to-r from-[#d4c4b0] to-white dark:to-primary-100 bg-clip-text text-transparent">Mon Profil</h1>
+            </div>
+          </div>
+          <NavActions />
+        </div>
+      </div>
+    </nav>
+
+    <div class="pt-24 md:pt-32 px-4 md:px-6 pb-8 md:pb-12">
     <div class="w-full max-w-lg mx-auto">
-      <!-- Header -->
-      <div class="text-center mb-10 fade-in">
-        <NuxtLink to="/dashboard" class="inline-block">
-          <img src="/athletiq-icon.svg" alt="Athletiq" class="h-16 w-auto mx-auto mb-4 hover:scale-105 transition-transform duration-300" />
-        </NuxtLink>
-        <h1 class="text-3xl md:text-4xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-display">Mon Profil</h1>
-        <p class="text-primary-600 dark:text-primary-400 text-body-relaxed">Gerez vos informations personnelles</p>
+      <!-- Avatar -->
+      <div class="text-center mb-2 fade-in">
+        <p class="text-sm md:text-base text-primary-600 dark:text-primary-400 text-body-relaxed">Gerez vos informations personnelles</p>
       </div>
 
       <!-- Avatar -->
-      <div class="flex justify-center mb-8 fade-in">
-        <div class="w-24 h-24 bg-gradient-primary rounded-full flex items-center justify-center shadow-lg">
-          <span class="text-white text-3xl font-bold">{{ initials }}</span>
+      <div class="flex justify-center mb-6 md:mb-8 fade-in">
+        <div class="w-20 h-20 md:w-24 md:h-24 bg-gradient-primary rounded-full flex items-center justify-center shadow-lg">
+          <span class="text-white text-2xl md:text-3xl font-bold">{{ initials }}</span>
         </div>
       </div>
 
       <!-- Formulaire -->
       <div class="card-glass slide-up">
-        <form @submit.prevent="handleSave" class="space-y-6">
+        <form @submit.prevent="handleSave" class="space-y-5">
           <!-- Prenom et Nom -->
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label for="firstName" class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-2">
+              <label for="firstName" class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1.5">
                 Prenom
               </label>
               <input
@@ -31,12 +46,12 @@
                 v-model="firstName"
                 type="text"
                 autocomplete="given-name"
-                class="input"
+                class="input-primary"
                 placeholder="Jean"
               />
             </div>
             <div>
-              <label for="lastName" class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-2">
+              <label for="lastName" class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1.5">
                 Nom
               </label>
               <input
@@ -44,7 +59,7 @@
                 v-model="lastName"
                 type="text"
                 autocomplete="family-name"
-                class="input"
+                class="input-primary"
                 placeholder="Dupont"
               />
             </div>
@@ -52,7 +67,7 @@
 
           <!-- Email (lecture seule) -->
           <div>
-            <label for="email" class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-2">
+            <label for="email" class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1.5">
               Email
             </label>
             <input
@@ -60,7 +75,7 @@
               :value="authStore.user?.email"
               type="email"
               disabled
-              class="input opacity-60 cursor-not-allowed"
+              class="input-primary opacity-60 cursor-not-allowed"
             />
           </div>
 
@@ -69,38 +84,38 @@
             <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-3">
               Objectif d'entrainement
             </label>
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-2 gap-2 md:gap-3">
               <button
                 v-for="goalOption in goals"
                 :key="goalOption.value"
                 type="button"
                 @click="selectedGoal = goalOption.value"
-                class="p-4 rounded-2xl border-2 transition-all duration-300 text-left flex items-start gap-3"
+                class="p-3 md:p-4 rounded-2xl border-2 transition-all duration-300 text-left flex items-start gap-2 md:gap-3"
                 :class="selectedGoal === goalOption.value
-                  ? 'border-sand-500 dark:border-sand-600 bg-sand-50 dark:bg-sand-900/30 shadow-md'
-                  : 'border-primary-200 dark:border-primary-700 bg-white/50 dark:bg-primary-800/50 hover:border-primary-300 dark:hover:border-primary-600 hover:bg-white/70 dark:hover:bg-primary-800/70'"
+                  ? 'border-[#d4c4b0] dark:border-[#b8a48f] bg-[#d4c4b0]/10 dark:bg-[#b8a48f]/15 shadow-md'
+                  : 'border-primary-200 dark:border-primary-700 bg-white/50 dark:bg-primary-800/50 hover:border-primary-300 dark:hover:border-primary-600'"
               >
-                <div class="w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center mt-0.5"
+                <div class="w-7 h-7 md:w-8 md:h-8 rounded-lg flex-shrink-0 flex items-center justify-center mt-0.5"
                   :class="selectedGoal === goalOption.value ? 'bg-gradient-primary' : 'bg-primary-200 dark:bg-primary-700'">
-                  <svg class="w-4 h-4" :class="selectedGoal === goalOption.value ? 'text-white' : 'text-primary-600 dark:text-primary-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-3.5 h-3.5 md:w-4 md:h-4" :class="selectedGoal === goalOption.value ? 'text-white' : 'text-primary-600 dark:text-primary-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="goalOption.iconPath"/>
                   </svg>
                 </div>
-                <div>
-                  <div class="font-semibold text-primary-900 dark:text-primary-100 text-sm">{{ goalOption.label }}</div>
-                  <div class="text-primary-500 dark:text-primary-400 text-xs mt-1">{{ goalOption.desc }}</div>
+                <div class="min-w-0">
+                  <div class="font-semibold text-primary-900 dark:text-primary-100 text-xs md:text-sm">{{ goalOption.label }}</div>
+                  <div class="text-primary-500 dark:text-primary-400 text-[10px] md:text-xs mt-0.5">{{ goalOption.desc }}</div>
                 </div>
               </button>
             </div>
           </div>
 
           <!-- Success message -->
-          <div v-if="success" class="p-4 rounded-2xl bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800">
-            <p class="text-sm text-green-600 dark:text-green-400">Profil mis a jour avec succes</p>
+          <div v-if="success" class="p-3 rounded-xl bg-[#d4c4b0]/15 dark:bg-[#b8a48f]/15 border border-[#d4c4b0]/40 dark:border-[#b8a48f]/30">
+            <p class="text-sm text-[#9d8569] font-medium">Profil mis a jour avec succes</p>
           </div>
 
           <!-- Error message -->
-          <div v-if="error" class="p-4 rounded-2xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800">
+          <div v-if="error" class="p-3 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800">
             <p class="text-sm text-red-600 dark:text-red-400">{{ error }}</p>
           </div>
 
@@ -108,23 +123,18 @@
           <button
             type="submit"
             :disabled="loading"
-            class="btn-primary w-full text-lg py-4"
+            class="btn-primary w-full text-base md:text-lg py-3 md:py-4"
           >
             <span v-if="!loading">Enregistrer</span>
-            <span v-else>Enregistrement...</span>
+            <span v-else class="flex items-center justify-center gap-2">
+              <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              Enregistrement...
+            </span>
           </button>
         </form>
       </div>
 
-      <!-- Retour au dashboard -->
-      <div class="text-center mt-8">
-        <NuxtLink to="/dashboard" class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-colors inline-flex items-center gap-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-          </svg>
-          Retour au dashboard
-        </NuxtLink>
-      </div>
+    </div>
     </div>
   </div>
 </template>
@@ -138,7 +148,6 @@ definePageMeta({
 })
 
 const authStore = useAuthStore()
-const router = useRouter()
 
 const firstName = ref('')
 const lastName = ref('')
@@ -189,7 +198,7 @@ const handleSave = async () => {
 onMounted(() => {
   authStore.loadFromLocalStorage()
   if (!authStore.isAuthenticated) {
-    router.push('/login')
+    navigateTo('/login')
     return
   }
   firstName.value = authStore.user?.firstName || ''

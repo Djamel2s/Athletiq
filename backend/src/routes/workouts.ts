@@ -7,6 +7,9 @@ import { Set } from '../entities/Set.js'
 import { WorkoutPhoto } from '../entities/WorkoutPhoto.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { checkAndCreatePRNotifications, checkStreakMilestone } from '../services/notificationService.js'
+import { checkWorkoutLimit, checkTemplateLimit, getUserPlanType } from '../services/limitService.js'
+import { PLAN_LIMITS } from '../config/planLimits.js'
+import { MoreThanOrEqual } from 'typeorm'
 
 const router = express.Router()
 
@@ -69,13 +72,25 @@ const addSetSchema = z.object({
 // Get all workouts for user
 router.get('/', authenticate, async (req: AuthRequest, res) => {
   try {
+    const planType = await getUserPlanType(req.user!.id)
+    const historyDays = PLAN_LIMITS[planType].historyDays
+
+    const where: any = { userId: req.user!.id }
+
+    // Limiter l'historique pour le plan gratuit
+    if (historyDays !== Infinity) {
+      const cutoff = new Date()
+      cutoff.setDate(cutoff.getDate() - historyDays)
+      where.date = MoreThanOrEqual(cutoff)
+    }
+
     const workouts = await workoutRepo.find({
-      where: { userId: req.user!.id },
+      where,
       relations: ['exercises', 'exercises.sets', 'exercises.exerciseLibrary', 'photos'],
       order: { date: 'DESC' }
     })
 
-    res.json({ workouts })
+    res.json({ workouts, historyLimited: historyDays !== Infinity })
   } catch (error) {
     console.error('Error fetching workouts:', error)
     res.status(500).json({ error: 'Failed to fetch workouts' })
@@ -108,6 +123,19 @@ router.get('/:id', authenticate, async (req: AuthRequest, res) => {
 router.post('/', authenticate, async (req: AuthRequest, res) => {
   try {
     const data = createWorkoutSchema.parse(req.body)
+
+    // Vérifier les limites du plan
+    if (data.isTemplate) {
+      const templateCheck = await checkTemplateLimit(req.user!.id)
+      if (!templateCheck.allowed) {
+        return res.status(403).json({
+          error: 'Limite atteinte',
+          code: 'LIMIT_TEMPLATES',
+          current: templateCheck.current,
+          limit: templateCheck.limit
+        })
+      }
+    }
 
     const workout = workoutRepo.create({
       ...data,
@@ -226,6 +254,17 @@ router.post('/:id/complete', authenticate, async (req: AuthRequest, res) => {
 
     if (!workout) {
       return res.status(404).json({ error: 'Workout not found' })
+    }
+
+    // Vérifier la limite de séances par semaine
+    const workoutCheck = await checkWorkoutLimit(req.user!.id)
+    if (!workoutCheck.allowed) {
+      return res.status(403).json({
+        error: 'Limite atteinte',
+        code: 'LIMIT_WORKOUTS_WEEK',
+        current: workoutCheck.current,
+        limit: workoutCheck.limit
+      })
     }
 
     workout.completedAt = new Date()

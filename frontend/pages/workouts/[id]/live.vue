@@ -3,7 +3,7 @@
     <!-- Countdown 3-2-1-GO -->
     <div v-if="showCountdown" class="fixed inset-0 bg-white dark:bg-primary-900 z-50 flex items-center justify-center">
       <div class="text-center">
-        <div class="text-9xl font-bold text-primary-900 dark:text-primary-100 animate-pulse">
+        <div class="text-7xl md:text-9xl font-bold text-primary-900 dark:text-primary-100 animate-pulse">
           {{ countdownNumber }}
         </div>
         <p class="text-2xl text-primary-600 dark:text-primary-400 mt-4">Prépare-toi...</p>
@@ -62,14 +62,14 @@
         </div>
 
         <!-- Nom exercice -->
-        <h1 class="text-3xl font-bold text-primary-900 dark:text-primary-100 text-center mb-4">
+        <h1 class="text-xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 text-center mb-4">
           {{ currentExercise.exerciseLibrary?.name || currentExercise.name }}
         </h1>
 
         <!-- GIF/Image OU Timer de repos -->
         <div class="card-glass overflow-hidden mb-4">
           <!-- Timer de repos intégré -->
-          <div v-if="showRestTimer" class="h-64 flex flex-col items-center justify-center p-8">
+          <div v-if="showRestTimer" class="h-48 md:h-64 flex flex-col items-center justify-center p-8">
             <h3 class="text-2xl font-bold text-primary-900 dark:text-primary-100 mb-6">Repos</h3>
 
             <!-- Cercle de progression avec timer -->
@@ -130,7 +130,7 @@
               v-if="currentExercise.exerciseLibrary.imageUrl"
               :src="currentExercise.exerciseLibrary.imageUrl"
               :alt="currentExercise.exerciseLibrary.name"
-              class="w-full h-64 object-cover rounded-2xl"
+              class="w-full h-48 md:h-64 object-cover rounded-2xl"
             />
             <video
               v-else-if="currentExercise.exerciseLibrary.videoUrl"
@@ -139,12 +139,12 @@
               autoplay
               muted
               playsinline
-              class="w-full h-64 object-cover rounded-2xl"
+              class="w-full h-48 md:h-64 object-cover rounded-2xl"
             />
           </div>
 
           <!-- Placeholder si pas de média -->
-          <div v-else class="h-64 flex items-center justify-center bg-primary-100 dark:bg-primary-800">
+          <div v-else class="h-48 md:h-64 flex items-center justify-center bg-primary-100 dark:bg-primary-800">
             <p class="text-primary-500 dark:text-primary-400">Aucune image disponible</p>
           </div>
         </div>
@@ -244,15 +244,15 @@
 
             <!-- Résumé -->
             <div class="grid grid-cols-3 gap-4">
-              <div class="card-glass !p-4">
+              <div class="card-glass !p-2 md:!p-4">
                 <p class="text-2xl font-bold text-primary-900 dark:text-primary-100">{{ formattedTime }}</p>
                 <p class="text-xs text-primary-500 dark:text-primary-400 mt-1">Durée</p>
               </div>
-              <div class="card-glass !p-4">
+              <div class="card-glass !p-2 md:!p-4">
                 <p class="text-2xl font-bold text-primary-900 dark:text-primary-100">{{ completionCalories }}</p>
                 <p class="text-xs text-primary-500 dark:text-primary-400 mt-1">kcal</p>
               </div>
-              <div class="card-glass !p-4">
+              <div class="card-glass !p-2 md:!p-4">
                 <p class="text-2xl font-bold text-primary-900 dark:text-primary-100">{{ workout?.exercises?.length || 0 }}</p>
                 <p class="text-xs text-primary-500 dark:text-primary-400 mt-1">Exercices</p>
               </div>
@@ -349,7 +349,6 @@ import { useAuthStore } from '~/stores/auth'
 import type { Workout, Exercise, Set } from '~/types/workout'
 
 const route = useRoute()
-const router = useRouter()
 const workoutStore = useWorkoutStore()
 const authStore = useAuthStore()
 
@@ -432,7 +431,7 @@ const formattedTime = computed(() => {
 onMounted(async () => {
   authStore.loadFromLocalStorage()
   if (!authStore.isAuthenticated) {
-    router.push('/login')
+    navigateTo('/login')
     return
   }
 
@@ -682,13 +681,13 @@ const savePhotoAndExit = async () => {
   } finally {
     isUploadingPhoto.value = false
     if (photoPreview.value) URL.revokeObjectURL(photoPreview.value)
-    router.push('/dashboard')
+    navigateTo('/dashboard')
   }
 }
 
 const exitCompletion = () => {
   if (photoPreview.value) URL.revokeObjectURL(photoPreview.value)
-  router.push('/dashboard')
+  navigateTo('/dashboard')
 }
 
 const confirmComplete = () => {
@@ -699,7 +698,7 @@ const confirmComplete = () => {
 
 const confirmExit = () => {
   if (confirm('Quitter sans terminer?')) {
-    router.push('/workouts')
+    navigateTo('/workouts')
   }
 }
 

@@ -12,7 +12,7 @@ router.get('/me', authenticate, async (req: AuthRequest, res) => {
   try {
     const user = await userRepository.findOne({
       where: { id: req.user!.id },
-      select: ['id', 'email', 'firstName', 'lastName', 'avatarUrl', 'goal', 'createdAt', 'updatedAt']
+      select: ['id', 'email', 'firstName', 'lastName', 'avatarUrl', 'goal', 'streakGoalPerWeek', 'bestStreak', 'reminderEnabled', 'reminderTime', 'inactivityThresholdDays', 'createdAt', 'updatedAt']
     })
 
     if (!user) {
@@ -32,16 +32,20 @@ router.put('/me', authenticate, async (req: AuthRequest, res) => {
       firstName: z.string().optional(),
       lastName: z.string().optional(),
       avatarUrl: z.string().url().optional(),
-      goal: z.enum(['BULK', 'STRENGTH', 'RECOMP', 'CUT']).optional()
+      goal: z.enum(['BULK', 'STRENGTH', 'RECOMP', 'CUT']).optional(),
+      streakGoalPerWeek: z.number().int().min(1).max(7).optional(),
+      reminderEnabled: z.boolean().optional(),
+      reminderTime: z.string().regex(/^\d{2}:\d{2}$/).optional(),
+      inactivityThresholdDays: z.number().int().min(1).max(14).optional()
     })
 
     const data = updateSchema.parse(req.body)
 
-    await userRepository.update(req.user!.id, data)
+    await userRepository.update(req.user!.id, data as any)
 
     const user = await userRepository.findOne({
       where: { id: req.user!.id },
-      select: ['id', 'email', 'firstName', 'lastName', 'avatarUrl', 'goal', 'updatedAt']
+      select: ['id', 'email', 'firstName', 'lastName', 'avatarUrl', 'goal', 'streakGoalPerWeek', 'bestStreak', 'reminderEnabled', 'reminderTime', 'inactivityThresholdDays', 'updatedAt']
     })
 
     res.json(user)

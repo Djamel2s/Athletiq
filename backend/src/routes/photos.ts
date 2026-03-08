@@ -5,6 +5,7 @@ import { AppDataSource } from '../config/database.js'
 import { WorkoutPhoto } from '../entities/WorkoutPhoto.js'
 import { Workout } from '../entities/Workout.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
+import { checkPhotoLimit } from '../services/limitService.js'
 
 const router = express.Router()
 const photoRepository = AppDataSource.getRepository(WorkoutPhoto)
@@ -27,6 +28,17 @@ router.post(
 
       if (!req.file) {
         return res.status(400).json({ error: 'No photo provided' })
+      }
+
+      // Vérifier la limite de photos
+      const photoCheck = await checkPhotoLimit(req.user!.id)
+      if (!photoCheck.allowed) {
+        return res.status(403).json({
+          error: 'Limite atteinte',
+          code: 'LIMIT_PHOTOS',
+          current: photoCheck.current,
+          limit: photoCheck.limit
+        })
       }
 
       // Verify workout belongs to user

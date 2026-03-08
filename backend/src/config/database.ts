@@ -23,18 +23,23 @@ import { Measurement } from '../entities/Measurement.js'
 import { ExerciseLibrary } from '../entities/ExerciseLibrary.js'
 import { UserGoal } from '../entities/UserGoal.js'
 import { Notification } from '../entities/Notification.js'
+import { Subscription } from '../entities/Subscription.js'
+
+const isProduction = process.env.NODE_ENV === 'production'
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
-  host: '127.0.0.1',
-  port: 5433,
-  username: 'postgres',
-  password: 'postgres',
-  database: 'athletiq',
+  url: process.env.DATABASE_URL || undefined,
+  host: process.env.DATABASE_URL ? undefined : (process.env.DB_HOST || '127.0.0.1'),
+  port: process.env.DATABASE_URL ? undefined : Number(process.env.DB_PORT || 5433),
+  username: process.env.DATABASE_URL ? undefined : (process.env.DB_USER || 'postgres'),
+  password: process.env.DATABASE_URL ? undefined : (process.env.DB_PASSWORD || 'postgres'),
+  database: process.env.DATABASE_URL ? undefined : (process.env.DB_NAME || 'athletiq'),
   schema: 'public',
-  synchronize: true, // Synchroniser automatiquement (DEVELOPMENT ONLY)
-  logging: process.env.NODE_ENV === 'development',
-  entities: [User, Workout, Exercise, Set, WorkoutPhoto, BodyStat, Measurement, ExerciseLibrary, UserGoal, Notification],
+  ssl: isProduction ? { rejectUnauthorized: false } : false,
+  synchronize: !isProduction,
+  logging: !isProduction,
+  entities: [User, Workout, Exercise, Set, WorkoutPhoto, BodyStat, Measurement, ExerciseLibrary, UserGoal, Notification, Subscription],
 })
 
 // Initialiser la connexion
