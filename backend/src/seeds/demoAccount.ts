@@ -9,6 +9,7 @@ import { Measurement } from '../entities/Measurement.js'
 import { ExerciseLibrary } from '../entities/ExerciseLibrary.js'
 import { UserGoal } from '../entities/UserGoal.js'
 import { Notification, NotificationType } from '../entities/Notification.js'
+import { Subscription, SubscriptionPlan, SubscriptionStatus } from '../entities/Subscription.js'
 
 // ──────────────── Helpers ────────────────
 
@@ -114,12 +115,14 @@ export async function seedDemoAccount() {
   const exerciseLibraryRepo = AppDataSource.getRepository(ExerciseLibrary)
   const goalRepo = AppDataSource.getRepository(UserGoal)
   const notifRepo = AppDataSource.getRepository(Notification)
+  const subRepo = AppDataSource.getRepository(Subscription)
 
   // ── Check if demo user already exists ──
   const existingUser = await userRepo.findOne({ where: { email: 'demo@athletiq.app' } })
   if (existingUser) {
     // Delete all related data first
     console.log('  Cleaning existing demo data...')
+    await subRepo.delete({ userId: existingUser.id })
     await workoutRepo.delete({ userId: existingUser.id })
     await bodyStatRepo.delete({ userId: existingUser.id })
     await measurementRepo.delete({ userId: existingUser.id })
@@ -370,6 +373,25 @@ export async function seedDemoAccount() {
       await exerciseRepo.save(exercise)
     }
   }
+
+  // ── Subscription (Pro Monthly active) ──
+  console.log('  Creating subscription...')
+  const now = new Date()
+  const periodStart = new Date(now)
+  periodStart.setDate(periodStart.getDate() - 15) // mid-cycle
+  const periodEnd = new Date(periodStart)
+  periodEnd.setMonth(periodEnd.getMonth() + 1)
+
+  const subscription = subRepo.create({
+    userId: user.id,
+    plan: SubscriptionPlan.MONTHLY,
+    status: SubscriptionStatus.ACTIVE,
+    trialStartDate: daysAgo(45),
+    trialEndDate: daysAgo(38),
+    currentPeriodStart: periodStart,
+    currentPeriodEnd: periodEnd,
+  })
+  await subRepo.save(subscription)
 
   console.log('  Demo account seeded successfully!')
   console.log('  ────────────────────────────────')
