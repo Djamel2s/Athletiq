@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Index } from 'typeorm'
-import { Workout } from './Workout.js'
+import type { Workout } from './Workout.js'
 
 @Entity('workout_photos')
 @Index(['workoutId', 'isPrimary'])
@@ -20,7 +20,7 @@ export class WorkoutPhoto {
   @CreateDateColumn()
   createdAt!: Date
 
-  @ManyToOne(() => Workout, workout => workout.photos, { onDelete: 'CASCADE' })
+  @ManyToOne('Workout', 'photos', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'workoutId' })
   workout!: Workout
 }

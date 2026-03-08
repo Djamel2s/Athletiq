@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, Index } from 'typeorm'
-import { Workout } from './Workout.js'
-import { Set } from './Set.js'
-import { ExerciseLibrary } from './ExerciseLibrary.js'
+import type { Workout } from './Workout.js'
+import type { Set } from './Set.js'
+import type { ExerciseLibrary } from './ExerciseLibrary.js'
 
 @Entity('exercises')
 @Index(['workoutId'])
@@ -40,14 +40,14 @@ export class Exercise {
   @Column({ type: 'json', nullable: true })
   plannedSets?: Array<{ setNumber: number; targetReps: number; targetWeight: number }>
 
-  @ManyToOne(() => Workout, workout => workout.exercises, { onDelete: 'CASCADE' })
+  @ManyToOne('Workout', 'exercises', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'workoutId' })
   workout!: Workout
 
-  @ManyToOne(() => ExerciseLibrary, { nullable: true })
+  @ManyToOne('ExerciseLibrary', { nullable: true })
   @JoinColumn({ name: 'exerciseLibraryId' })
   exerciseLibrary?: ExerciseLibrary
 
-  @OneToMany(() => Set, set => set.exercise)
+  @OneToMany('Set', 'exercise')
   sets!: Set[]
 }

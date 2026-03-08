@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, OneToMany, JoinColumn, Index } from 'typeorm'
-import { User } from './User.js'
-import { Exercise } from './Exercise.js'
-import { WorkoutPhoto } from './WorkoutPhoto.js'
+import type { User } from './User.js'
+import type { Exercise } from './Exercise.js'
+import type { WorkoutPhoto } from './WorkoutPhoto.js'
 
 @Entity('workouts')
 @Index(['userId', 'date'])
@@ -42,13 +42,13 @@ export class Workout {
   @CreateDateColumn()
   createdAt!: Date
 
-  @ManyToOne(() => User, user => user.workouts, { onDelete: 'CASCADE' })
+  @ManyToOne('User', 'workouts', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user!: User
 
-  @OneToMany(() => Exercise, exercise => exercise.workout)
+  @OneToMany('Exercise', 'workout')
   exercises!: Exercise[]
 
-  @OneToMany(() => WorkoutPhoto, photo => photo.workout)
+  @OneToMany('WorkoutPhoto', 'workout')
   photos!: WorkoutPhoto[]
 }

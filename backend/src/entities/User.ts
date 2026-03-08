@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm'
-import { Workout } from './Workout.js'
-import { BodyStat } from './BodyStat.js'
-import { Measurement } from './Measurement.js'
+import type { Workout } from './Workout.js'
+import type { BodyStat } from './BodyStat.js'
+import type { Measurement } from './Measurement.js'
 
 export enum Goal {
   BULK = 'BULK',
@@ -67,12 +67,12 @@ export class User {
   @UpdateDateColumn()
   updatedAt!: Date
 
-  @OneToMany(() => Workout, workout => workout.user)
+  @OneToMany('Workout', 'user')
   workouts!: Workout[]
 
-  @OneToMany(() => BodyStat, bodyStat => bodyStat.user)
+  @OneToMany('BodyStat', 'user')
   bodyStats!: BodyStat[]
 
-  @OneToMany(() => Measurement, measurement => measurement.user)
+  @OneToMany('Measurement', 'user')
   measurements!: Measurement[]
 }

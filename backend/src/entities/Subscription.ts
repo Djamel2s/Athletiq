@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm'
-import { User } from './User.js'
+import type { User } from './User.js'
 
 export enum SubscriptionStatus {
   TRIAL = 'TRIAL',           // Essai gratuit en cours
@@ -24,7 +24,7 @@ export class Subscription {
   @Column({ type: 'int' })
   userId!: number
 
-  @ManyToOne(() => User)
+  @ManyToOne('User')
   @JoinColumn({ name: 'userId' })
   user!: User
 

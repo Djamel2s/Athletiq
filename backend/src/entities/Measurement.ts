@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Index } from 'typeorm'
-import { User } from './User.js'
+import type { User } from './User.js'
 
 @Entity('measurements')
 @Index(['userId', 'date'])
@@ -31,7 +31,7 @@ export class Measurement {
   @Column({ type: 'float', nullable: true })
   calves?: number
 
-  @ManyToOne(() => User, user => user.measurements, { onDelete: 'CASCADE' })
+  @ManyToOne('User', 'measurements', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user!: User
 }

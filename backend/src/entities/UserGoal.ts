@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, Index } from 'typeorm'
-import { User } from './User.js'
+import type { User } from './User.js'
 
 export enum GoalType {
   WEIGHT = 'WEIGHT',
@@ -46,7 +46,7 @@ export class UserGoal {
   @CreateDateColumn()
   createdAt!: Date
 
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  @ManyToOne('User', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user!: User
 }
