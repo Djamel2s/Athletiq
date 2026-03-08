@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Index } from 'typeorm'
-import { Exercise } from './Exercise.js'
+import type { Exercise } from './Exercise.js'
 
 @Entity('sets')
 @Index(['exerciseId'])
@@ -25,7 +25,7 @@ export class Set {
   @Column({ type: 'text', nullable: true })
   notes?: string
 
-  @ManyToOne(() => Exercise, exercise => exercise.sets, { onDelete: 'CASCADE' })
+  @ManyToOne('Exercise', 'sets', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'exerciseId' })
   exercise!: Exercise
 }
