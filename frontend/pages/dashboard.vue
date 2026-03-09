@@ -98,6 +98,21 @@
                   Workouts
                 </span>
               </button>
+
+              <!-- Wrapped Button -->
+              <button
+                @click="navigateTo('/wrapped')"
+                class="flex items-center space-x-3 transition-all"
+              >
+                <div class="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                  </svg>
+                </div>
+                <span class="text-primary-900 dark:text-primary-100 font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  Wrapped
+                </span>
+              </button>
             </div>
 
             <!-- Spacer -->
@@ -134,6 +149,13 @@
           {{ motivationMessage }}
         </p>
       </div>
+
+      <!-- Comeback Banner -->
+      <ComebackBanner
+        v-if="lastWorkoutDate"
+        :last-workout-date="lastWorkoutDate"
+        :user-name="authStore.user?.firstName || ''"
+      />
 
       <!-- Streak Banner -->
       <div v-if="currentStreak > 0" class="mb-6 md:mb-8 fade-in cursor-pointer" @click="navigateTo('/streak')">
@@ -185,6 +207,46 @@
         </div>
       </div>
 
+      <!-- Recovery Score + Body Map -->
+      <div v-if="recoveryData" class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8 mb-8 md:mb-12 slide-up">
+        <!-- Recovery Score -->
+        <div class="card-glass">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0"
+              :class="recoveryData.score >= 70 ? 'bg-green-100 dark:bg-green-900/30' : recoveryData.score >= 50 ? 'bg-yellow-100 dark:bg-yellow-900/30' : 'bg-red-100 dark:bg-red-900/30'"
+            >
+              <span class="text-2xl font-bold" :class="recoveryData.score >= 70 ? 'text-green-600' : recoveryData.score >= 50 ? 'text-yellow-600' : 'text-red-600'">
+                {{ recoveryData.score }}
+              </span>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100">Score de récupération</h3>
+              <p class="text-sm text-primary-600 dark:text-primary-400">{{ recoveryData.recommendation }}</p>
+            </div>
+          </div>
+          <!-- Muscle recovery bars -->
+          <div class="space-y-2">
+            <div v-for="m in recoveryData.muscleRecovery.slice(0, 5)" :key="m.muscle" class="flex items-center gap-3">
+              <span class="text-xs text-primary-500 dark:text-primary-400 w-24 truncate">{{ muscleLabel(m.muscle) }}</span>
+              <div class="flex-1 h-2 bg-primary-100 dark:bg-primary-800 rounded-full overflow-hidden">
+                <div
+                  class="h-full rounded-full transition-all duration-500"
+                  :class="m.score >= 85 ? 'bg-green-500' : m.score >= 60 ? 'bg-[#d4c4b0]' : m.score >= 30 ? 'bg-yellow-500' : 'bg-red-500'"
+                  :style="{ width: `${m.score}%` }"
+                ></div>
+              </div>
+              <span class="text-xs font-semibold text-primary-700 dark:text-primary-300 w-10 text-right">{{ m.score }}%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Body Map -->
+        <DashboardBodyMap
+          v-if="recoveryData.muscleRecovery.length > 0"
+          :muscle-recovery="recoveryData.muscleRecovery"
+        />
+      </div>
+
       <!-- Activité récente -->
       <div v-if="workoutStore.isLoading" class="card-glass text-center py-12">
         <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary-200 dark:border-primary-700 border-t-primary-600"></div>
@@ -213,6 +275,9 @@ import WorkoutHeatmap from '~/components/WorkoutHeatmap.vue'
 
 const authStore = useAuthStore()
 const workoutStore = useWorkoutStore()
+const statsApi = useStatsApi()
+
+const recoveryData = ref<{ score: number; muscleRecovery: Array<{ muscle: string; score: number; daysSince: number; lastVolume: number }>; recommendation: string } | null>(null)
 
 // Charger l'utilisateur depuis le localStorage
 onMounted(async () => {
@@ -226,10 +291,24 @@ onMounted(async () => {
 
   // Charger les workouts récents
   await workoutStore.fetchWorkouts()
+
+  // Charger le score de récupération (en arrière-plan)
+  statsApi.getRecovery().then(data => {
+    recoveryData.value = data
+  }).catch(() => {})
 })
 
 const handleLogout = () => {
   authStore.logout()
+}
+
+const muscleLabel = (muscle: string) => {
+  const labels: Record<string, string> = {
+    CHEST: 'Pectoraux', BACK: 'Dos', SHOULDERS: 'Épaules', BICEPS: 'Biceps',
+    TRICEPS: 'Triceps', ABS: 'Abdos', LEGS: 'Jambes', QUADS: 'Quadriceps',
+    HAMSTRINGS: 'Ischio-jambiers', GLUTES: 'Fessiers', CALVES: 'Mollets', CARDIO: 'Cardio',
+  }
+  return labels[muscle] || muscle
 }
 
 const completedWorkouts = computed(() =>
@@ -237,6 +316,11 @@ const completedWorkouts = computed(() =>
     .filter(w => w.completedAt)
     .sort((a, b) => new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime())
 )
+
+const lastWorkoutDate = computed(() => {
+  if (completedWorkouts.value.length === 0) return null
+  return completedWorkouts.value[0]?.completedAt || null
+})
 
 const currentStreak = computed(() => {
   const sorted = completedWorkouts.value

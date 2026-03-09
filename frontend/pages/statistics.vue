@@ -374,6 +374,34 @@
           </div>
         </div>
       </div>
+
+      <!-- Progression Analysis -->
+      <div class="mt-8 md:mt-12 slide-up">
+        <StatsProgressionChart
+          v-if="workoutStore.workoutHistory.length > 0"
+          :workouts="workoutStore.workoutHistory"
+        />
+      </div>
+
+      <!-- Wrapped CTA -->
+      <div class="mt-8 md:mt-12 slide-up">
+        <div class="card-glass">
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 bg-gradient-primary rounded-2xl flex items-center justify-center flex-shrink-0">
+              <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100">Athletiq Wrapped</h3>
+              <p class="text-sm text-primary-600 dark:text-primary-400">Découvre ton bilan complet avec des stats partageables</p>
+            </div>
+            <button @click="navigateTo('/wrapped')" class="btn-primary text-sm">
+              Voir
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Goal Create Modal -->

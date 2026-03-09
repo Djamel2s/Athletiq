@@ -34,6 +34,12 @@ export interface CorrelationData {
   lowFreqAvgProgress: number
 }
 
+export interface RecoveryData {
+  score: number
+  muscleRecovery: { muscle: string; score: number; daysSince: number; lastVolume: number }[]
+  recommendation: string
+}
+
 export const useStatsApi = () => {
   const config = useRuntimeConfig()
   const authStore = useAuthStore()
@@ -60,5 +66,11 @@ export const useStatsApi = () => {
     })
   }
 
-  return { getStreak, getWeeklyRecap, getCorrelation }
+  const getRecovery = async () => {
+    return await $fetch<RecoveryData>(`${config.public.apiUrl}/stats/recovery`, {
+      headers: getAuthHeaders()
+    })
+  }
+
+  return { getStreak, getWeeklyRecap, getCorrelation, getRecovery }
 }

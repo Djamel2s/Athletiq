@@ -74,13 +74,29 @@ const drawFooter = (ctx: CanvasRenderingContext2D) => {
   ctx.fillText('athletiq.app', W - M, H - 80)
 }
 
-const drawStatBox = (ctx: CanvasRenderingContext2D, x: number, y: number, bw: number, bh: number, value: string, label: string) => {
+const drawStatBox = (ctx: CanvasRenderingContext2D, x: number, y: number, bw: number, bh: number, value: string, label: string, unit?: string) => {
   roundRect(ctx, x, y, bw, bh, 16)
   ctx.fillStyle = C.cardBg; ctx.fill()
   ctx.strokeStyle = C.cardBorder; ctx.lineWidth = 1.5; ctx.stroke()
-  ctx.font = `700 48px ${FONT}`; ctx.fillStyle = C.text; ctx.textAlign = 'center'
-  ctx.fillText(value, x + bw / 2, y + bh / 2 - 4)
-  ctx.font = `400 22px ${FONT}`; ctx.fillStyle = C.textMuted
+
+  if (unit) {
+    // Draw value and unit separately to avoid overlap
+    ctx.font = `700 48px ${FONT}`; ctx.fillStyle = C.text
+    const valW = ctx.measureText(value).width
+    ctx.font = `400 28px ${FONT}`
+    const unitW = ctx.measureText(unit).width
+    const totalW = valW + 6 + unitW
+    const startX = x + (bw - totalW) / 2
+    ctx.font = `700 48px ${FONT}`; ctx.fillStyle = C.text; ctx.textAlign = 'left'
+    ctx.fillText(value, startX, y + bh / 2 - 4)
+    ctx.font = `400 28px ${FONT}`; ctx.fillStyle = C.sandDark
+    ctx.fillText(unit, startX + valW + 6, y + bh / 2 - 4)
+  } else {
+    ctx.font = `700 48px ${FONT}`; ctx.fillStyle = C.text; ctx.textAlign = 'center'
+    ctx.fillText(value, x + bw / 2, y + bh / 2 - 4)
+  }
+
+  ctx.font = `400 22px ${FONT}`; ctx.fillStyle = C.textMuted; ctx.textAlign = 'center'
   ctx.fillText(label, x + bw / 2, y + bh / 2 + 34)
 }
 
@@ -116,11 +132,22 @@ const drawOverview = (ctx: CanvasRenderingContext2D) => {
   drawStatBox(ctx, startX, startY + bh + gap, bw, bh, d.avgDuration || '0min', 'Duree moyenne')
   drawStatBox(ctx, startX + bw + gap, startY + bh + gap, bw, bh, String(d.streak || 0), 'Serie en cours')
 
-  // Volume
-  ctx.font = `700 56px ${FONT}`; ctx.fillStyle = C.sand; ctx.textAlign = 'center'
-  ctx.fillText(`${d.totalVolume || '0'}`, W / 2, startY + bh * 2 + gap * 2 + 100)
-  ctx.font = `400 28px ${FONT}`; ctx.fillStyle = C.textMuted
-  ctx.fillText('kg de volume total souleve', W / 2, startY + bh * 2 + gap * 2 + 145)
+  // Volume - value and unit drawn separately
+  const volStr = `${d.totalVolume || '0'}`
+  const volUnit = ' kg'
+  ctx.font = `700 56px ${FONT}`
+  const volValW = ctx.measureText(volStr).width
+  ctx.font = `400 32px ${FONT}`
+  const volUnitW = ctx.measureText(volUnit).width
+  const volTotalW = volValW + volUnitW
+  const volStartX = (W - volTotalW) / 2
+  const volY = startY + bh * 2 + gap * 2 + 100
+  ctx.font = `700 56px ${FONT}`; ctx.fillStyle = C.sand; ctx.textAlign = 'left'
+  ctx.fillText(volStr, volStartX, volY)
+  ctx.font = `400 32px ${FONT}`; ctx.fillStyle = C.sandDark
+  ctx.fillText(volUnit, volStartX + volValW, volY)
+  ctx.font = `400 28px ${FONT}`; ctx.fillStyle = C.textMuted; ctx.textAlign = 'center'
+  ctx.fillText('de volume total souleve', W / 2, volY + 45)
 
   drawFooter(ctx)
 }
@@ -205,9 +232,11 @@ const drawRecords = (ctx: CanvasRenderingContext2D) => {
 
     // Weight - big
     ctx.font = `800 72px ${FONT}`; ctx.fillStyle = C.sand; ctx.textAlign = 'left'
-    ctx.fillText(`${r.maxWeight || 0}`, x + 28, y + 138)
+    const weightStr = `${r.maxWeight || 0}`
+    const weightWidth = ctx.measureText(weightStr).width
+    ctx.fillText(weightStr, x + 28, y + 138)
     ctx.font = `500 32px ${FONT}`; ctx.fillStyle = C.sandDark
-    ctx.fillText('kg', x + 28 + ctx.measureText(`${r.maxWeight || 0}`).width + 8, y + 138)
+    ctx.fillText('kg', x + 28 + weightWidth + 8, y + 138)
 
     // Reps + date
     ctx.font = `400 22px ${FONT}`; ctx.fillStyle = C.textMuted; ctx.textAlign = 'left'
@@ -352,10 +381,10 @@ const drawProgression = (ctx: CanvasRenderingContext2D) => {
   const bw = 280, bh = 130, gap = 28
   const totalBw = 3 * bw + 2 * gap
   const sx = (W - totalBw) / 2
-  drawStatBox(ctx, sx, sumY, bw, bh, `${points[points.length - 1]?.weight || 0}kg`, 'Actuel')
-  drawStatBox(ctx, sx + bw + gap, sumY, bw, bh, `${maxW}kg`, 'Max')
+  drawStatBox(ctx, sx, sumY, bw, bh, `${points[points.length - 1]?.weight || 0}`, 'Actuel', 'kg')
+  drawStatBox(ctx, sx + bw + gap, sumY, bw, bh, `${maxW}`, 'Max', 'kg')
   const diff = points.length >= 2 ? Math.round((points[points.length - 1].weight - points[0].weight) * 10) / 10 : 0
-  drawStatBox(ctx, sx + 2 * (bw + gap), sumY, bw, bh, `${diff > 0 ? '+' : ''}${diff}kg`, 'Progression')
+  drawStatBox(ctx, sx + 2 * (bw + gap), sumY, bw, bh, `${diff > 0 ? '+' : ''}${diff}`, 'Progression', 'kg')
 
   drawFooter(ctx)
 }
@@ -403,7 +432,8 @@ const handleShare = async () => {
 const downloadBlob = (blob: Blob, fileName: string) => {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
-  a.href = url; a.download = fileName; a.click()
+  a.href = url; a.download = fileName
+  document.body.appendChild(a); a.click(); document.body.removeChild(a)
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 </script>

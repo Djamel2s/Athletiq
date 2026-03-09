@@ -451,4 +451,152 @@ router.post('/check-inactivity', authenticate, async (req: AuthRequest, res) => 
   }
 })
 
+/**
+ * GET /stats/recovery
+ * Daily recovery score based on recent workout history per muscle group
+ */
+router.get('/recovery', authenticate, async (req: AuthRequest, res) => {
+  try {
+    const userId = req.user!.id
+
+    const now = new Date()
+    const fourteenDaysAgo = new Date(now)
+    fourteenDaysAgo.setDate(now.getDate() - 14)
+    const sevenDaysAgo = new Date(now)
+    sevenDaysAgo.setDate(now.getDate() - 7)
+
+    // Fetch workouts from last 14 days with exercises and sets
+    const workouts = await AppDataSource.getRepository(Workout)
+      .createQueryBuilder('w')
+      .leftJoinAndSelect('w.exercises', 'e')
+      .leftJoinAndSelect('e.sets', 's')
+      .leftJoinAndSelect('e.exerciseLibrary', 'lib')
+      .where('w.userId = :userId', { userId })
+      .andWhere('w.completedAt IS NOT NULL')
+      .andWhere('w.completedAt >= :since', { since: fourteenDaysAgo })
+      .orderBy('w.completedAt', 'DESC')
+      .getMany()
+
+    // Check if no workouts in last 7 days
+    const recentWorkouts = workouts.filter(
+      w => new Date(w.completedAt!).getTime() >= sevenDaysAgo.getTime()
+    )
+
+    if (recentWorkouts.length === 0) {
+      return res.json({
+        score: 100,
+        muscleRecovery: [],
+        recommendation: 'Pleinement récupéré. Prêt pour une séance intense !'
+      })
+    }
+
+    // Build per-muscle data: most recent workout date and volume
+    const muscleData = new Map<string, { lastDate: Date; totalVolume: number }>()
+
+    for (const w of workouts) {
+      const workoutDate = new Date(w.completedAt!)
+      if (w.exercises) {
+        for (const ex of w.exercises) {
+          const muscles: string[] = []
+          const lib = ex.exerciseLibrary
+          if (lib?.primaryMuscle) muscles.push(lib.primaryMuscle)
+          if (lib?.muscleGroups) {
+            for (const m of lib.muscleGroups) {
+              if (!muscles.includes(m)) muscles.push(m)
+            }
+          }
+          // Fallback: if no muscle info, skip
+          if (muscles.length === 0) continue
+
+          // Calculate volume for this exercise
+          let exVolume = 0
+          if (ex.sets) {
+            for (const s of ex.sets) {
+              exVolume += (s.weight || 0) * (s.reps || 0)
+            }
+          }
+
+          for (const muscle of muscles) {
+            const existing = muscleData.get(muscle)
+            if (!existing || workoutDate.getTime() > existing.lastDate.getTime()) {
+              muscleData.set(muscle, {
+                lastDate: workoutDate,
+                totalVolume: exVolume
+              })
+            } else if (workoutDate.getTime() === existing.lastDate.getTime()) {
+              existing.totalVolume += exVolume
+            }
+          }
+        }
+      }
+    }
+
+    // Calculate recovery score per muscle group
+    const muscleRecovery: { muscle: string; score: number; daysSince: number; lastVolume: number }[] = []
+
+    for (const [muscle, data] of muscleData) {
+      const daysSince = Math.floor(
+        (now.getTime() - data.lastDate.getTime()) / 86400000
+      )
+
+      // Volume factor: higher volume means slower recovery
+      // Normalize volume: consider >5000 kg as high volume
+      const volumeFactor = Math.min(data.totalVolume / 5000, 1) // 0 to 1
+
+      let score: number
+      if (daysSince <= 1) {
+        // 0-1 days ago: 20-40% (lower end if high volume)
+        score = 40 - 20 * volumeFactor
+      } else if (daysSince === 2) {
+        // 2 days ago: 50-70%
+        score = 70 - 20 * volumeFactor
+      } else if (daysSince === 3) {
+        // 3 days ago: 70-90%
+        score = 90 - 20 * volumeFactor
+      } else {
+        // 4+ days ago: 90-100%
+        score = 100 - 10 * volumeFactor
+      }
+
+      score = Math.round(Math.max(0, Math.min(100, score)))
+
+      muscleRecovery.push({
+        muscle,
+        score,
+        daysSince,
+        lastVolume: Math.round(data.totalVolume)
+      })
+    }
+
+    // Sort by score ascending (least recovered first)
+    muscleRecovery.sort((a, b) => a.score - b.score)
+
+    // Overall score = average of all muscle group recovery scores
+    const overallScore = muscleRecovery.length > 0
+      ? Math.round(muscleRecovery.reduce((sum, m) => sum + m.score, 0) / muscleRecovery.length)
+      : 100
+
+    // Recommendation in French
+    let recommendation: string
+    if (overallScore >= 90) {
+      recommendation = 'Pleinement récupéré. Prêt pour une séance intense !'
+    } else if (overallScore >= 70) {
+      recommendation = 'Bonne récupération. Vous pouvez vous entraîner normalement.'
+    } else if (overallScore >= 50) {
+      recommendation = 'Récupération partielle. Privilégiez les groupes musculaires reposés.'
+    } else {
+      recommendation = 'Fatigue musculaire. Un jour de repos serait bénéfique.'
+    }
+
+    res.json({
+      score: overallScore,
+      muscleRecovery,
+      recommendation
+    })
+  } catch (error) {
+    console.error('Recovery error:', error)
+    res.status(500).json({ error: 'Failed to fetch recovery data' })
+  }
+})
+
 export default router

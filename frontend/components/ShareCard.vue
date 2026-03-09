@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 const props = defineProps<{
-  type: 'streak' | 'recap' | 'beforeAfter'
+  type: 'streak' | 'recap' | 'beforeAfter' | 'receipt' | 'wrapped'
   title: string
   data: Record<string, any>
   beforeImage?: string
@@ -347,7 +347,7 @@ const drawRecapCard = (ctx: CanvasRenderingContext2D) => {
     let px = (w - Math.min(totalPillW, w - MARGIN * 2)) / 2
 
     muscles.forEach((muscle, i) => {
-      const pw = pillWidths[i]
+      const pw = pillWidths[i] ?? 60
       const py = musclesY + 16
 
       roundRect(ctx, px, py, pw, pillH, pillH / 2)
@@ -475,6 +475,228 @@ const drawBeforeAfterCard = async (ctx: CanvasRenderingContext2D) => {
   drawFooter(ctx, w, h)
 }
 
+const drawReceiptCard = (ctx: CanvasRenderingContext2D) => {
+  const w = cardWidth
+  const h = cardHeight.value
+  drawBg(ctx, w, h)
+  drawHeader(ctx, w)
+
+  // Date
+  const dateStr = props.data.date
+    ? new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(props.data.date))
+    : new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date())
+  ctx.font = `400 28px ${FONT}`
+  ctx.fillStyle = C.textMuted
+  ctx.textAlign = 'center'
+  ctx.fillText(dateStr.charAt(0).toUpperCase() + dateStr.slice(1), w / 2, 165)
+
+  // Workout name
+  ctx.font = `800 56px ${FONT}`
+  ctx.fillStyle = C.text
+  ctx.textAlign = 'center'
+  const name = props.data.workoutName || 'Entraînement'
+  ctx.fillText(name.length > 20 ? name.substring(0, 20) + '...' : name, w / 2, 240)
+
+  // Dotted separator
+  ctx.setLineDash([4, 8])
+  ctx.strokeStyle = C.cardBorder
+  ctx.lineWidth = 2
+  ctx.beginPath()
+  ctx.moveTo(MARGIN, 280)
+  ctx.lineTo(w - MARGIN, 280)
+  ctx.stroke()
+  ctx.setLineDash([])
+
+  // Big stats row - Duration, Calories, Volume
+  const statsY = 320
+  const boxW = 280
+  const boxH = 150
+  const gap = 28
+  const totalW = 3 * boxW + 2 * gap
+  const startX = (w - totalW) / 2
+
+  const mainStats = [
+    { value: props.data.duration || '0:00', label: 'Durée' },
+    { value: String(props.data.calories || 0), label: 'Calories' },
+    { value: String(props.data.exerciseCount || 0), label: 'Exercices' },
+  ]
+
+  mainStats.forEach((stat, i) => {
+    drawStatBox(ctx, startX + i * (boxW + gap), statsY, boxW, boxH, stat.value, stat.label)
+  })
+
+  // Exercise list - receipt style
+  const exercises = (props.data.exercises || []) as Array<{ name: string; sets: string; volume: string }>
+  let listY = statsY + boxH + 60
+
+  // Section header
+  ctx.font = `600 26px ${FONT}`
+  ctx.fillStyle = C.textMuted
+  ctx.textAlign = 'center'
+  ctx.fillText('DÉTAIL DES EXERCICES', w / 2, listY)
+  listY += 40
+
+  const rowH = 90
+  const rowW = w - MARGIN * 2
+
+  exercises.slice(0, 8).forEach((ex, i) => {
+    roundRect(ctx, MARGIN, listY, rowW, rowH, 14)
+    ctx.fillStyle = i % 2 === 0 ? C.cardBg : 'rgba(212, 196, 176, 0.03)'
+    ctx.fill()
+
+    // Exercise name
+    ctx.font = `600 30px ${FONT}`
+    ctx.fillStyle = C.text
+    ctx.textAlign = 'left'
+    const exName = ex.name.length > 22 ? ex.name.substring(0, 22) + '...' : ex.name
+    ctx.fillText(exName, MARGIN + 24, listY + 38)
+
+    // Sets info
+    ctx.font = `400 24px ${FONT}`
+    ctx.fillStyle = C.textMuted
+    ctx.fillText(ex.sets, MARGIN + 24, listY + 70)
+
+    // Volume on right
+    ctx.font = `700 30px ${FONT}`
+    ctx.fillStyle = C.sand
+    ctx.textAlign = 'right'
+    ctx.fillText(ex.volume, w - MARGIN - 24, listY + 54)
+
+    listY += rowH + 8
+  })
+
+  // Total volume at bottom
+  listY += 20
+  ctx.setLineDash([4, 8])
+  ctx.strokeStyle = C.cardBorder
+  ctx.lineWidth = 2
+  ctx.beginPath()
+  ctx.moveTo(MARGIN, listY)
+  ctx.lineTo(w - MARGIN, listY)
+  ctx.stroke()
+  ctx.setLineDash([])
+
+  listY += 50
+  ctx.font = `400 28px ${FONT}`
+  ctx.fillStyle = C.textMuted
+  ctx.textAlign = 'left'
+  ctx.fillText('Volume total', MARGIN + 24, listY)
+
+  ctx.font = `800 44px ${FONT}`
+  ctx.fillStyle = C.sand
+  ctx.textAlign = 'right'
+  const volStr = props.data.totalVolume || '0'
+  const volW = ctx.measureText(volStr).width
+  ctx.fillText(volStr, w - MARGIN - 70, listY + 4)
+  ctx.font = `400 28px ${FONT}`
+  ctx.fillStyle = C.sandDark
+  ctx.fillText('kg', w - MARGIN - 24, listY + 4)
+
+  drawFooter(ctx, w, h)
+}
+
+const drawWrappedCard = (ctx: CanvasRenderingContext2D) => {
+  const w = cardWidth
+  const h = cardHeight.value
+  drawBg(ctx, w, h)
+  drawHeader(ctx, w)
+
+  // Period label
+  ctx.font = `500 30px ${FONT}`
+  ctx.fillStyle = C.textMuted
+  ctx.textAlign = 'center'
+  ctx.fillText(props.data.period || 'CE MOIS', w / 2, 175)
+
+  // Big title
+  ctx.font = `800 72px ${FONT}`
+  ctx.fillStyle = C.text
+  ctx.fillText('Mon Bilan', w / 2, 260)
+
+  // Hero stat - total workouts
+  ctx.font = `800 200px ${FONT}`
+  ctx.fillStyle = C.sand
+  ctx.fillText(String(props.data.totalWorkouts || 0), w / 2, 500)
+  ctx.font = `500 40px ${FONT}`
+  ctx.fillStyle = C.sandDark
+  ctx.fillText('ENTRAÎNEMENTS', w / 2, 560)
+
+  // Separator
+  ctx.fillStyle = C.cardBorder
+  ctx.fillRect(w / 2 - 100, 600, 200, 1)
+
+  // Stats grid 2x2
+  const bw = 440, bh = 140, gapX = 24, gapY = 20
+  const gridStartX = (w - bw * 2 - gapX) / 2
+  let gridY = 640
+
+  const gridStats = [
+    { value: props.data.totalTime || '0h', label: 'Temps total' },
+    { value: props.data.totalVolume || '0T', label: 'Volume soulevé' },
+    { value: props.data.avgDuration || '0min', label: 'Durée moyenne' },
+    { value: String(props.data.streak || 0), label: 'Meilleure série' },
+  ]
+
+  gridStats.forEach((stat, i) => {
+    const col = i % 2
+    const row = Math.floor(i / 2)
+    drawStatBox(ctx, gridStartX + col * (bw + gapX), gridY + row * (bh + gapY), bw, bh, stat.value, stat.label)
+  })
+
+  // Top exercise
+  gridY += 2 * (bh + gapY) + 40
+  if (props.data.topExercise) {
+    ctx.font = `600 26px ${FONT}`
+    ctx.fillStyle = C.textMuted
+    ctx.textAlign = 'center'
+    ctx.fillText('EXERCICE PRÉFÉRÉ', w / 2, gridY)
+
+    roundRect(ctx, MARGIN, gridY + 16, w - MARGIN * 2, 120, 20)
+    ctx.fillStyle = 'rgba(212, 196, 176, 0.08)'
+    ctx.fill()
+    ctx.strokeStyle = C.cardBorder
+    ctx.lineWidth = 1
+    ctx.stroke()
+
+    ctx.font = `700 38px ${FONT}`
+    ctx.fillStyle = C.text
+    ctx.textAlign = 'center'
+    ctx.fillText(props.data.topExercise.name || '', w / 2, gridY + 70)
+
+    ctx.font = `400 26px ${FONT}`
+    ctx.fillStyle = C.textMuted
+    ctx.fillText(`${props.data.topExercise.count || 0} fois · PR: ${props.data.topExercise.pr || '—'}`, w / 2, gridY + 110)
+  }
+
+  // Improvements
+  gridY += 180
+  if (props.data.improvements?.length) {
+    ctx.font = `600 26px ${FONT}`
+    ctx.fillStyle = C.textMuted
+    ctx.textAlign = 'center'
+    ctx.fillText('PROGRESSIONS', w / 2, gridY)
+
+    const imps = props.data.improvements as Array<{ name: string; before: string; after: string }>
+    imps.slice(0, 3).forEach((imp, i) => {
+      const iy = gridY + 30 + i * 80
+      roundRect(ctx, MARGIN, iy, w - MARGIN * 2, 68, 14)
+      ctx.fillStyle = C.cardBg
+      ctx.fill()
+
+      ctx.font = `600 28px ${FONT}`
+      ctx.fillStyle = C.textSoft
+      ctx.textAlign = 'left'
+      ctx.fillText(imp.name, MARGIN + 20, iy + 42)
+
+      ctx.font = `700 28px ${FONT}`
+      ctx.fillStyle = C.sand
+      ctx.textAlign = 'right'
+      ctx.fillText(`${imp.before} → ${imp.after}`, w - MARGIN - 20, iy + 42)
+    })
+  }
+
+  drawFooter(ctx, w, h)
+}
+
 // --- Generate & actions ---
 const generate = async () => {
   const canvas = canvasRef.value
@@ -492,6 +714,10 @@ const generate = async () => {
     drawRecapCard(ctx)
   } else if (props.type === 'beforeAfter') {
     await drawBeforeAfterCard(ctx)
+  } else if (props.type === 'receipt') {
+    drawReceiptCard(ctx)
+  } else if (props.type === 'wrapped') {
+    drawWrappedCard(ctx)
   }
 
   previewUrl.value = canvas.toDataURL('image/png')
@@ -524,7 +750,7 @@ const download = () => {
   const a = document.createElement('a')
   a.href = previewUrl.value
   a.download = `athletiq-${props.type}.png`
-  a.click()
+  document.body.appendChild(a); a.click(); document.body.removeChild(a)
 }
 
 onMounted(() => {

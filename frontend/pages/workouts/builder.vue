@@ -71,9 +71,22 @@
             <h2 class="text-2xl font-bold text-primary-900 dark:text-primary-100">
               Exercices ({{ selectedExercises.length }})
             </h2>
-            <button @click="showExerciseLibrary = true" class="btn-primary">
-              + Ajouter un exercice
-            </button>
+            <div class="flex items-center gap-2">
+              <button
+                v-if="selectedExercises.length >= 2"
+                @click="applyOptimalOrder"
+                class="btn-outline text-sm"
+                title="Trier les exercices pour un entraînement optimal"
+              >
+                <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/>
+                </svg>
+                Optimiser l'ordre
+              </button>
+              <button @click="showExerciseLibrary = true" class="btn-primary">
+                + Ajouter un exercice
+              </button>
+            </div>
           </div>
 
           <div v-if="selectedExercises.length === 0" class="text-center py-12">
@@ -390,6 +403,7 @@
 <script setup lang="ts">
 import { useWorkoutStore } from '~/stores/workout'
 import { useAuthStore } from '~/stores/auth'
+import { optimizeExerciseOrder } from '~/composables/useExerciseOrder'
 import type { ExerciseLibrary, Exercise } from '~/types/workout'
 
 const workoutStore = useWorkoutStore()
@@ -491,6 +505,10 @@ const addExercise = async (exercise: ExerciseLibrary) => {
 
 const removeExercise = (index: number) => {
   selectedExercises.value.splice(index, 1)
+}
+
+const applyOptimalOrder = () => {
+  selectedExercises.value = optimizeExerciseOrder(selectedExercises.value)
 }
 
 const togglePlannedSets = (exercise: any) => {

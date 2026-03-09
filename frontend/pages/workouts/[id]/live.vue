@@ -90,6 +90,23 @@
           </div>
         </div>
 
+        <!-- Weight progression suggestion -->
+        <div v-if="weightSuggestion && currentSetNumber === 1" class="rounded-2xl p-4 bg-gradient-to-r from-[#d4c4b0]/15 to-[#b8a48f]/15 border border-[#d4c4b0]/30 dark:border-[#b8a48f]/20">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-semibold text-primary-900 dark:text-primary-100">{{ weightSuggestion.message }}</p>
+            </div>
+            <button @click="applyWeightSuggestion" class="btn-primary text-xs py-2 px-3 whitespace-nowrap">
+              Appliquer
+            </button>
+          </div>
+        </div>
+
         <!-- Série actuelle (en haut maintenant) -->
         <div class="card-glass space-y-6">
           <div class="text-center">
@@ -220,9 +237,15 @@
         </div>
 
         <!-- Série info en bas -->
-        <p class="absolute bottom-8 text-sm text-primary-400 dark:text-primary-500">
-          Série {{ currentSetNumber }} / {{ currentExercise?.targetSets || 3 }}
-        </p>
+        <div class="absolute bottom-8 text-center">
+          <p class="text-sm text-primary-400 dark:text-primary-500">
+            Série {{ currentSetNumber }} / {{ currentExercise?.targetSets || 3 }}
+          </p>
+          <p class="text-xs text-primary-300 dark:text-primary-600 mt-1">
+            {{ restDuration >= 150 ? 'Exercice composé lourd' : restDuration >= 120 ? 'Exercice composé' : restDuration >= 90 ? 'Charge lourde' : 'Isolation' }}
+            · {{ restDuration }}s recommandé
+          </p>
+        </div>
       </div>
     </Transition>
 
@@ -258,6 +281,17 @@
                 <p class="text-xs text-primary-500 dark:text-primary-400 mt-1">Exercices</p>
               </div>
             </div>
+
+            <!-- Share receipt button -->
+            <button
+              @click="showReceiptModal = true"
+              class="btn-outline w-full flex items-center justify-center gap-2"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+              </svg>
+              Partager mon reçu de séance
+            </button>
 
             <!-- Upload photo -->
             <div class="card-glass !p-6 space-y-4">
@@ -341,6 +375,21 @@
         </div>
       </div>
     </Transition>
+    <!-- Receipt Share Modal -->
+    <Teleport to="body">
+      <div v-if="showReceiptModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showReceiptModal = false"></div>
+        <div class="relative bg-white dark:bg-primary-900 rounded-2xl p-4 md:p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-primary-200 dark:border-primary-700">
+          <button @click="showReceiptModal = false" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors">
+            <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+          <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-4">Reçu de séance</h3>
+          <ShareCard type="receipt" title="Mon entraînement Athletiq" :data="receiptData" />
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -478,6 +527,7 @@ const loadWorkout = async (id: number) => {
     if (currentExercise.value?.exerciseLibraryId) {
       await loadExerciseHistory(currentExercise.value.exerciseLibraryId)
       prefillCurrentSet()
+      checkWeightProgression()
     }
   } catch (error) {
     console.error('Failed to load workout:', error)
@@ -493,6 +543,49 @@ const loadExerciseHistory = async (exerciseLibraryId: number) => {
   } catch (error) {
     console.error('Failed to load exercise history:', error)
     exerciseHistory.value = null
+  }
+}
+
+// Auto weight progression: suggest increase when all previous sets hit target reps
+const weightSuggestion = ref<{ message: string; newWeight: number } | null>(null)
+
+const checkWeightProgression = () => {
+  if (!exerciseHistory.value?.lastSets || exerciseHistory.value.lastSets.length === 0) {
+    weightSuggestion.value = null
+    return
+  }
+
+  const lastSets = exerciseHistory.value.lastSets
+  const exercise = currentExercise.value
+  if (!exercise) return
+
+  const targetReps = exercise.targetReps || 10
+  // Check if ALL sets from last time met or exceeded target reps
+  const allSetsHitTarget = lastSets.every(s => (s.reps || 0) >= targetReps)
+
+  if (allSetsHitTarget && lastSets.length > 0) {
+    const lastWeight = lastSets[0].weight || 0
+    // Upper body: +2.5kg, Lower body: +5kg
+    const lib = exercise.exerciseLibrary
+    const isLowerBody = lib?.muscleGroups?.some((mg: string) =>
+      ['LEGS', 'QUADS', 'HAMSTRINGS', 'GLUTES', 'CALVES'].includes(mg)
+    ) ?? false
+    const increment = isLowerBody ? 5 : 2.5
+    const newWeight = lastWeight + increment
+
+    weightSuggestion.value = {
+      message: `Toutes les séries réussies ! Essaie ${newWeight} kg (+${increment})`,
+      newWeight
+    }
+  } else {
+    weightSuggestion.value = null
+  }
+}
+
+const applyWeightSuggestion = () => {
+  if (weightSuggestion.value) {
+    currentSetData.value.weight = weightSuggestion.value.newWeight
+    weightSuggestion.value = null
   }
 }
 
@@ -573,22 +666,53 @@ const validateCurrentSet = async () => {
       if (currentExercise.value?.exerciseLibraryId) {
         await loadExerciseHistory(currentExercise.value.exerciseLibraryId)
         prefillCurrentSet()
+        checkWeightProgression()
       }
 
-      // Utiliser le restTime de l'exercice suivant ou 90s par défaut
-      const nextExercise = workout.value?.exercises?.[currentExerciseIndex.value]
-      const restTime = nextExercise?.restTime || 90
-      startRestTimer(restTime)
+      // Smart rest: between exercises
+      const smartRest = computeSmartRest(currentExercise.value, currentSetData.value.weight, true)
+      startRestTimer(smartRest)
     } else {
       currentSetNumber.value++
       prefillCurrentSet()
-      // Utiliser le restTime de l'exercice actuel ou 60s par défaut
-      const restTime = currentExercise.value?.restTime || 60
-      startRestTimer(restTime)
+      // Smart rest: between sets of same exercise
+      const smartRest = computeSmartRest(currentExercise.value, currentSetData.value.weight, false)
+      startRestTimer(smartRest)
     }
   } catch (error) {
     console.error('Failed to save set:', error)
   }
+}
+
+// Smart rest timer: compute optimal rest based on exercise type and load
+const computeSmartRest = (exercise: Exercise | null, weight: number, betweenExercises: boolean): number => {
+  if (!exercise) return betweenExercises ? 90 : 60
+
+  // If exercise has a custom restTime, always use it
+  if (exercise.restTime) return exercise.restTime
+
+  const lib = exercise.exerciseLibrary
+  const muscleCount = lib?.muscleGroups?.length || 1
+  const equipment = lib?.equipment || ''
+  const isCompound = muscleCount >= 2 || ['BARBELL'].includes(equipment)
+  const isHeavy = weight >= 80 // heavy load threshold
+
+  let rest: number
+
+  if (isCompound && isHeavy) {
+    rest = 180 // 3min for heavy compounds (squat, deadlift, bench)
+  } else if (isCompound) {
+    rest = 120 // 2min for compound movements
+  } else if (isHeavy) {
+    rest = 90 // 1.5min for heavy isolation
+  } else {
+    rest = 60 // 1min for light isolation
+  }
+
+  // Add 30s when switching between exercises
+  if (betweenExercises) rest += 30
+
+  return rest
 }
 
 const startRestTimer = (duration: number = 60) => {
@@ -626,6 +750,7 @@ const toast = useToast()
 
 // === Completion screen state ===
 const showCompletionScreen = ref(false)
+const showReceiptModal = ref(false)
 const photoInput = ref<HTMLInputElement | null>(null)
 const photoPreview = ref<string | null>(null)
 const photoFile = ref<File | null>(null)
@@ -633,6 +758,33 @@ const photoIsPrimary = ref(true)
 const isUploadingPhoto = ref(false)
 
 const completionCalories = computed(() => Math.round((elapsedTime.value / 60) * 6))
+
+const receiptData = computed(() => {
+  const exercises = (workout.value?.exercises || []).map(ex => {
+    const sets = ex.sets || []
+    const completedSetsCount = sets.length
+    const totalVol = sets.reduce((s, set) => s + (set.reps || 0) * (set.weight || 0), 0)
+    const setsStr = sets.map(s => `${s.reps}×${s.weight}kg`).join(' · ')
+    return {
+      name: ex.exerciseLibrary?.name || ex.name,
+      sets: setsStr || `${completedSetsCount} séries`,
+      volume: totalVol > 0 ? `${totalVol.toLocaleString('fr-FR')} kg` : '—'
+    }
+  })
+  const totalVolume = (workout.value?.exercises || []).reduce((total, ex) => {
+    return total + (ex.sets || []).reduce((s, set) => s + (set.reps || 0) * (set.weight || 0), 0)
+  }, 0)
+  return {
+    workoutName: workout.value?.name || 'Entraînement',
+    date: workout.value?.completedAt || new Date().toISOString(),
+    duration: formattedTime.value,
+    calories: completionCalories.value,
+    exerciseCount: workout.value?.exercises?.length || 0,
+    exercises,
+    totalVolume: totalVolume.toLocaleString('fr-FR'),
+    userName: authStore.user?.firstName || '',
+  }
+})
 
 const completeWorkout = async () => {
   if (!workout.value) return
