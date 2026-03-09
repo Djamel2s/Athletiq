@@ -22,11 +22,11 @@ const photoRepo = AppDataSource.getRepository(WorkoutPhoto)
 // Validation schemas
 const createWorkoutSchema = z.object({
   name: z.string(),
-  description: z.string().optional(),
-  isTemplate: z.boolean().optional(),
-  date: z.string().datetime().optional(),
-  duration: z.number().optional(),
-  notes: z.string().optional()
+  description: z.string().nullish(),
+  isTemplate: z.boolean().nullish(),
+  date: z.string().datetime().nullish(),
+  duration: z.number().nullish(),
+  notes: z.string().nullish()
 })
 
 const addExerciseSchema = z.object({
@@ -138,7 +138,11 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
     }
 
     const workout = workoutRepo.create({
-      ...data,
+      name: data.name,
+      description: data.description ?? undefined,
+      isTemplate: data.isTemplate ?? undefined,
+      notes: data.notes ?? undefined,
+      duration: data.duration ?? undefined,
       date: data.date ? new Date(data.date) : new Date(),
       userId: req.user!.id
     })
