@@ -30,7 +30,7 @@ const createWorkoutSchema = z.object({
 })
 
 const addExerciseSchema = z.object({
-  exerciseLibraryId: z.number().optional(),
+  exerciseLibraryId: z.number().nullish(),
   name: z.string(),
   orderIndex: z.number().nullish(),
   notes: z.string().nullish(),
@@ -46,8 +46,8 @@ const addExerciseSchema = z.object({
 })
 
 const updateExerciseSchema = z.object({
-  exerciseLibraryId: z.number().optional(),
-  name: z.string().optional(),
+  exerciseLibraryId: z.number().nullish(),
+  name: z.string().nullish(),
   orderIndex: z.number().nullish(),
   notes: z.string().nullish(),
   targetSets: z.number().nullish(),
@@ -65,8 +65,8 @@ const addSetSchema = z.object({
   setNumber: z.number(),
   reps: z.number(),
   weight: z.number(),
-  rpe: z.number().min(1).max(10).optional(),
-  notes: z.string().optional()
+  rpe: z.number().min(1).max(10).nullish(),
+  notes: z.string().nullish()
 })
 
 // Get all workouts for user
@@ -180,10 +180,13 @@ router.put('/:id', authenticate, async (req: AuthRequest, res) => {
       return res.status(404).json({ error: 'Workout not found' })
     }
 
-    Object.assign(workout, {
-      ...data,
-      date: data.date ? new Date(data.date) : workout.date
-    })
+    // Only assign defined (non-null) values
+    if (data.name != null) workout.name = data.name
+    if (data.description !== undefined) workout.description = data.description ?? undefined
+    if (data.notes !== undefined) workout.notes = data.notes ?? undefined
+    if (data.duration != null) workout.duration = data.duration
+    if (data.isTemplate != null) workout.isTemplate = data.isTemplate
+    if (data.date) workout.date = new Date(data.date)
 
     await workoutRepo.save(workout)
 
@@ -455,8 +458,12 @@ router.post('/:workoutId/exercises/:exerciseId/sets', authenticate, async (req: 
     }
 
     const set = setRepo.create({
-      ...data,
-      exerciseId
+      exerciseId,
+      setNumber: data.setNumber,
+      reps: data.reps,
+      weight: data.weight,
+      rpe: data.rpe ?? undefined,
+      notes: data.notes ?? undefined,
     })
 
     await setRepo.save(set)

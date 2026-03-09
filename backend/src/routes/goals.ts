@@ -13,15 +13,15 @@ const createGoalSchema = z.object({
   title: z.string().min(1).max(100),
   targetValue: z.number().positive(),
   startValue: z.number().min(0),
-  exerciseName: z.string().optional(),
-  exerciseLibraryId: z.number().optional(),
-  deadline: z.string().optional()
+  exerciseName: z.string().nullish(),
+  exerciseLibraryId: z.number().nullish(),
+  deadline: z.string().nullish()
 })
 
 const updateGoalSchema = z.object({
-  title: z.string().min(1).max(100).optional(),
-  targetValue: z.number().positive().optional(),
-  deadline: z.string().nullable().optional()
+  title: z.string().min(1).max(100).nullish(),
+  targetValue: z.number().positive().nullish(),
+  deadline: z.string().nullish()
 })
 
 // Helper: calculate current value for a goal
@@ -108,7 +108,12 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
     const repo = AppDataSource.getRepository(UserGoal)
 
     const goal = repo.create({
-      ...data,
+      type: data.type,
+      title: data.title,
+      targetValue: data.targetValue,
+      startValue: data.startValue,
+      exerciseName: data.exerciseName ?? undefined,
+      exerciseLibraryId: data.exerciseLibraryId ?? undefined,
       userId: req.user!.id,
       deadline: data.deadline ? new Date(data.deadline) : undefined
     })
@@ -139,8 +144,8 @@ router.put('/:id', authenticate, async (req: AuthRequest, res) => {
 
     if (!goal) return res.status(404).json({ error: 'Goal not found' })
 
-    if (data.title !== undefined) goal.title = data.title
-    if (data.targetValue !== undefined) goal.targetValue = data.targetValue
+    if (data.title != null) goal.title = data.title
+    if (data.targetValue != null) goal.targetValue = data.targetValue
     if (data.deadline !== undefined) goal.deadline = data.deadline ? new Date(data.deadline) : undefined
 
     const saved = await repo.save(goal)

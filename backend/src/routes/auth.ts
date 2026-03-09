@@ -13,8 +13,8 @@ const userRepository = AppDataSource.getRepository(User)
 const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
-  firstName: z.string().optional(),
-  lastName: z.string().optional()
+  firstName: z.string().nullish(),
+  lastName: z.string().nullish()
 })
 
 const loginSchema = z.object({
@@ -40,8 +40,8 @@ router.post('/register', async (req, res) => {
     const newUser = userRepository.create({
       email,
       password: hashedPassword,
-      firstName,
-      lastName
+      firstName: firstName ?? undefined,
+      lastName: lastName ?? undefined,
     })
     await userRepository.save(newUser)
 

@@ -12,14 +12,14 @@ const exerciseLibraryRepo = AppDataSource.getRepository(ExerciseLibrary)
 // Validation schema
 const createExerciseSchema = z.object({
   name: z.string(),
-  description: z.string().optional(),
-  instructions: z.string().optional(),
-  muscleGroups: z.array(z.nativeEnum(MuscleGroup)).optional(),
-  primaryMuscle: z.nativeEnum(MuscleGroup).optional(),
+  description: z.string().nullish(),
+  instructions: z.string().nullish(),
+  muscleGroups: z.array(z.nativeEnum(MuscleGroup)).nullish(),
+  primaryMuscle: z.nativeEnum(MuscleGroup).nullish(),
   equipment: z.nativeEnum(Equipment),
   difficulty: z.nativeEnum(Difficulty),
-  videoUrl: z.string().url().optional(),
-  imageUrl: z.string().url().optional()
+  videoUrl: z.string().url().nullish(),
+  imageUrl: z.string().url().nullish()
 })
 
 // Get all exercises (with optional filters)
@@ -134,7 +134,17 @@ router.post('/', authenticate, async (req, res) => {
       return res.status(409).json({ error: 'Exercise already exists' })
     }
 
-    const exercise = exerciseLibraryRepo.create(data)
+    const exercise = exerciseLibraryRepo.create({
+      name: data.name,
+      equipment: data.equipment,
+      difficulty: data.difficulty,
+      description: data.description ?? undefined,
+      instructions: data.instructions ?? undefined,
+      muscleGroups: data.muscleGroups ?? undefined,
+      primaryMuscle: data.primaryMuscle ?? undefined,
+      videoUrl: data.videoUrl ?? undefined,
+      imageUrl: data.imageUrl ?? undefined,
+    })
     await exerciseLibraryRepo.save(exercise)
 
     res.status(201).json(exercise)

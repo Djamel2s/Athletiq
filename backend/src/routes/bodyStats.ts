@@ -31,9 +31,9 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
   try {
     const schema = z.object({
       weight: z.number().positive(),
-      bodyFat: z.number().min(0).max(100).optional(),
-      notes: z.string().optional(),
-      date: z.string().datetime().optional()
+      bodyFat: z.number().min(0).max(100).nullish(),
+      notes: z.string().nullish(),
+      date: z.string().datetime().nullish()
     })
 
     const data = schema.parse(req.body)
@@ -41,8 +41,8 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
     const stat = bodyStatRepository.create({
       userId: req.user!.id,
       weight: data.weight,
-      bodyFat: data.bodyFat,
-      notes: data.notes,
+      bodyFat: data.bodyFat ?? undefined,
+      notes: data.notes ?? undefined,
       date: data.date ? new Date(data.date) : new Date()
     })
 
@@ -60,10 +60,10 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
 router.put('/:id', authenticate, async (req: AuthRequest, res) => {
   try {
     const schema = z.object({
-      weight: z.number().positive().optional(),
-      bodyFat: z.number().min(0).max(100).optional().nullable(),
-      notes: z.string().optional().nullable(),
-      date: z.string().datetime().optional()
+      weight: z.number().positive().nullish(),
+      bodyFat: z.number().min(0).max(100).nullish(),
+      notes: z.string().nullish(),
+      date: z.string().datetime().nullish()
     })
 
     const data = schema.parse(req.body)
@@ -76,7 +76,7 @@ router.put('/:id', authenticate, async (req: AuthRequest, res) => {
       return res.status(404).json({ error: 'Body stat not found' })
     }
 
-    if (data.weight !== undefined) stat.weight = data.weight
+    if (data.weight != null) stat.weight = data.weight
     if (data.bodyFat !== undefined) stat.bodyFat = data.bodyFat ?? undefined
     if (data.notes !== undefined) stat.notes = data.notes ?? undefined
     if (data.date) stat.date = new Date(data.date)

@@ -29,14 +29,14 @@ router.get('/me', authenticate, async (req: AuthRequest, res) => {
 router.put('/me', authenticate, async (req: AuthRequest, res) => {
   try {
     const updateSchema = z.object({
-      firstName: z.string().optional(),
-      lastName: z.string().optional(),
-      avatarUrl: z.string().url().optional(),
-      goal: z.enum(['BULK', 'STRENGTH', 'RECOMP', 'CUT']).optional(),
-      streakGoalPerWeek: z.number().int().min(1).max(7).optional(),
-      reminderEnabled: z.boolean().optional(),
-      reminderTime: z.string().regex(/^\d{2}:\d{2}$/).optional(),
-      inactivityThresholdDays: z.number().int().min(1).max(14).optional()
+      firstName: z.string().nullish(),
+      lastName: z.string().nullish(),
+      avatarUrl: z.string().url().nullish(),
+      goal: z.enum(['BULK', 'STRENGTH', 'RECOMP', 'CUT']).nullish(),
+      streakGoalPerWeek: z.number().int().min(1).max(7).nullish(),
+      reminderEnabled: z.boolean().nullish(),
+      reminderTime: z.string().regex(/^\d{2}:\d{2}$/).nullish(),
+      inactivityThresholdDays: z.number().int().min(1).max(14).nullish()
     })
 
     const data = updateSchema.parse(req.body)

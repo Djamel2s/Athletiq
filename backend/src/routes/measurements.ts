@@ -30,13 +30,13 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
 router.post('/', authenticate, async (req: AuthRequest, res) => {
   try {
     const schema = z.object({
-      chest: z.number().positive().optional(),
-      waist: z.number().positive().optional(),
-      hips: z.number().positive().optional(),
-      biceps: z.number().positive().optional(),
-      thighs: z.number().positive().optional(),
-      calves: z.number().positive().optional(),
-      date: z.string().datetime().optional()
+      chest: z.number().positive().nullish(),
+      waist: z.number().positive().nullish(),
+      hips: z.number().positive().nullish(),
+      biceps: z.number().positive().nullish(),
+      thighs: z.number().positive().nullish(),
+      calves: z.number().positive().nullish(),
+      date: z.string().datetime().nullish()
     }).refine(
       (data) => data.chest || data.waist || data.hips || data.biceps || data.thighs || data.calves,
       { message: 'At least one measurement is required' }
@@ -46,12 +46,12 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
 
     const measurement = measurementRepository.create({
       userId: req.user!.id,
-      chest: data.chest,
-      waist: data.waist,
-      hips: data.hips,
-      biceps: data.biceps,
-      thighs: data.thighs,
-      calves: data.calves,
+      chest: data.chest ?? undefined,
+      waist: data.waist ?? undefined,
+      hips: data.hips ?? undefined,
+      biceps: data.biceps ?? undefined,
+      thighs: data.thighs ?? undefined,
+      calves: data.calves ?? undefined,
       date: data.date ? new Date(data.date) : new Date()
     })
 
@@ -69,13 +69,13 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
 router.put('/:id', authenticate, async (req: AuthRequest, res) => {
   try {
     const schema = z.object({
-      chest: z.number().positive().optional().nullable(),
-      waist: z.number().positive().optional().nullable(),
-      hips: z.number().positive().optional().nullable(),
-      biceps: z.number().positive().optional().nullable(),
-      thighs: z.number().positive().optional().nullable(),
-      calves: z.number().positive().optional().nullable(),
-      date: z.string().datetime().optional()
+      chest: z.number().positive().nullish(),
+      waist: z.number().positive().nullish(),
+      hips: z.number().positive().nullish(),
+      biceps: z.number().positive().nullish(),
+      thighs: z.number().positive().nullish(),
+      calves: z.number().positive().nullish(),
+      date: z.string().datetime().nullish()
     })
 
     const data = schema.parse(req.body)
