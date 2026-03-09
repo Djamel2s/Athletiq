@@ -158,8 +158,9 @@
       </div>
 
       <!-- Actions rapides -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 mb-8 md:mb-12 slide-up">
-        <div class="card-glass group text-center">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8 mb-8 md:mb-12 slide-up">
+        <!-- Nouvel entraînement - caché sur mobile (déjà dans la bottom nav) -->
+        <div class="hidden lg:block card-glass group text-center">
           <div class="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mb-6 mx-auto icon-container">
             <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h8M6 9v6m12-6v6M4.5 10v4m15-4v4"/>
@@ -175,7 +176,7 @@
         </div>
 
         <!-- Activity Heatmap -->
-        <div class="md:col-span-2">
+        <div class="lg:col-span-2">
           <WorkoutHeatmap
             v-if="workoutStore.workoutHistory"
             :workouts="workoutStore.workoutHistory"
