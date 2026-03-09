@@ -111,7 +111,7 @@ router.get('/timelapse', authenticate, async (req: AuthRequest, res) => {
     }
 
     const photos = await query
-      .orderBy('photo.createdAt', 'ASC')
+      .orderBy('workout.date', 'ASC')
       .getMany()
 
     res.json(photos)

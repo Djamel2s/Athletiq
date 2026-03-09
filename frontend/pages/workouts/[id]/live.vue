@@ -66,66 +66,9 @@
           {{ currentExercise.exerciseLibrary?.name || currentExercise.name }}
         </h1>
 
-        <!-- GIF/Image OU Timer de repos -->
-        <div class="card-glass overflow-hidden mb-4">
-          <!-- Timer de repos intégré -->
-          <div v-if="showRestTimer" class="h-48 md:h-64 flex flex-col items-center justify-center p-8">
-            <h3 class="text-2xl font-bold text-primary-900 dark:text-primary-100 mb-6">Repos</h3>
-
-            <!-- Cercle de progression avec timer -->
-            <div class="relative mb-8">
-              <svg class="transform -rotate-90" width="160" height="160">
-                <!-- Cercle de fond -->
-                <circle
-                  cx="80"
-                  cy="80"
-                  r="70"
-                  stroke="currentColor"
-                  class="text-primary-200 dark:text-primary-700"
-                  stroke-width="8"
-                  fill="none"
-                />
-                <!-- Cercle de progression -->
-                <circle
-                  cx="80"
-                  cy="80"
-                  r="70"
-                  stroke="url(#gradient)"
-                  stroke-width="8"
-                  fill="none"
-                  :stroke-dasharray="circumference"
-                  :stroke-dashoffset="progressOffset"
-                  stroke-linecap="round"
-                  class="transition-all duration-1000 ease-linear"
-                />
-                <!-- Définition du gradient -->
-                <defs>
-                  <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:#d4c4b0;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#b8a48f;stop-opacity:1" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <!-- Timer au centre du cercle -->
-              <div class="absolute inset-0 flex items-center justify-center">
-                <div class="text-5xl font-bold text-gradient-primary font-mono">
-                  {{ formatRestTime(restTimeRemaining) }}
-                </div>
-              </div>
-            </div>
-
-            <div class="flex space-x-4">
-              <button @click="skipRest" class="btn-outline">
-                Passer
-              </button>
-              <button @click="addRestTime(30)" class="btn-primary">
-                +30s
-              </button>
-            </div>
-          </div>
-
-          <!-- GIF/Image normal -->
-          <div v-else-if="currentExercise.exerciseLibrary?.imageUrl || currentExercise.exerciseLibrary?.videoUrl">
+        <!-- GIF/Image exercice (caché pendant le repos) -->
+        <div v-if="!showRestTimer" class="card-glass overflow-hidden mb-4">
+          <div v-if="currentExercise.exerciseLibrary?.imageUrl || currentExercise.exerciseLibrary?.videoUrl">
             <img
               v-if="currentExercise.exerciseLibrary.imageUrl"
               :src="currentExercise.exerciseLibrary.imageUrl"
@@ -142,8 +85,6 @@
               class="w-full h-48 md:h-64 object-cover rounded-2xl"
             />
           </div>
-
-          <!-- Placeholder si pas de média -->
           <div v-else class="h-48 md:h-64 flex items-center justify-center bg-primary-100 dark:bg-primary-800">
             <p class="text-primary-500 dark:text-primary-400">Aucune image disponible</p>
           </div>
@@ -224,6 +165,66 @@
         </div>
       </div>
     </div>
+
+    <!-- Écran plein écran de repos -->
+    <Transition name="fade">
+      <div v-if="showRestTimer" class="fixed inset-0 z-50 bg-white dark:bg-primary-900 flex flex-col items-center justify-center">
+        <!-- Exercice suivant info -->
+        <p class="text-sm text-primary-500 dark:text-primary-400 mb-2 tracking-widest uppercase">Repos</p>
+        <p class="text-lg font-semibold text-primary-700 dark:text-primary-300 mb-10">
+          {{ currentExercise?.exerciseLibrary?.name || currentExercise?.name }}
+        </p>
+
+        <!-- Cercle de progression avec timer -->
+        <div class="relative mb-12">
+          <svg class="transform -rotate-90" width="240" height="240">
+            <circle
+              cx="120" cy="120" r="105"
+              stroke="currentColor"
+              class="text-primary-100 dark:text-primary-800"
+              stroke-width="10"
+              fill="none"
+            />
+            <circle
+              cx="120" cy="120" r="105"
+              stroke="url(#restGradient)"
+              stroke-width="10"
+              fill="none"
+              :stroke-dasharray="restCircumference"
+              :stroke-dashoffset="restProgressOffset"
+              stroke-linecap="round"
+              class="transition-all duration-1000 ease-linear"
+            />
+            <defs>
+              <linearGradient id="restGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#d4c4b0;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#b8a48f;stop-opacity:1" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="text-7xl font-light text-primary-900 dark:text-primary-100 tabular-nums" style="font-family: 'SF Pro Display', system-ui, -apple-system, sans-serif; letter-spacing: -2px;">
+              {{ formatRestTime(restTimeRemaining) }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Boutons -->
+        <div class="flex gap-4">
+          <button @click="skipRest" class="btn-outline px-8 py-3 text-base">
+            Passer
+          </button>
+          <button @click="addRestTime(30)" class="btn-primary px-8 py-3 text-base">
+            +30s
+          </button>
+        </div>
+
+        <!-- Série info en bas -->
+        <p class="absolute bottom-8 text-sm text-primary-400 dark:text-primary-500">
+          Série {{ currentSetNumber }} / {{ currentExercise?.targetSets || 3 }}
+        </p>
+      </div>
+    </Transition>
 
     <!-- Écran de fin d'entraînement -->
     <Transition name="fade">
@@ -382,12 +383,12 @@ const currentExercise = computed(() => {
 
 const totalSets = computed(() => currentExercise.value?.targetSets || 3)
 
-// Cercle de progression pour le timer
-const circumference = computed(() => 2 * Math.PI * 70) // rayon = 70
+// Cercle de progression pour le timer (rayon = 105)
+const restCircumference = computed(() => 2 * Math.PI * 105)
 
-const progressOffset = computed(() => {
+const restProgressOffset = computed(() => {
   const progress = restTimeRemaining.value / restDuration.value
-  return circumference.value * (1 - progress)
+  return restCircumference.value * (1 - progress)
 })
 
 const progress = computed(() => {

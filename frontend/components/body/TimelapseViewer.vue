@@ -14,7 +14,7 @@
 
       <!-- Date Overlay -->
       <div v-if="photos.length > 0" class="absolute top-4 left-4 px-3 py-1.5 bg-black/50 backdrop-blur-sm rounded-xl text-white text-sm font-medium">
-        {{ formatDate(photos[currentIndex]?.createdAt || photos[currentIndex]?.workout?.date) }}
+        {{ formatDate(photos[currentIndex]?.workout?.date || photos[currentIndex]?.createdAt) }}
       </div>
 
       <!-- Counter -->
@@ -189,8 +189,10 @@ const downloadCurrentPhoto = async () => {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `athletiq-photo-${formatDate(photo.createdAt || photo.workout?.date).replace(/\s/g, '-')}.jpg`
+    a.download = `athletiq-photo-${formatDate(photo.workout?.date || photo.createdAt).replace(/\s/g, '-')}.jpg`
+    document.body.appendChild(a)
     a.click()
+    document.body.removeChild(a)
     URL.revokeObjectURL(url)
   } catch {
     // Fallback: open in new tab
@@ -323,7 +325,10 @@ const downloadBlob = (url: string, filename: string) => {
   const a = document.createElement('a')
   a.href = url
   a.download = filename
+  a.style.display = 'none'
+  document.body.appendChild(a)
   a.click()
+  document.body.removeChild(a)
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
@@ -384,7 +389,7 @@ const drawVideoFrame = (ctx: CanvasRenderingContext2D, w: number, h: number, img
   // Date overlay on image
   const photo = props.photos[index]
   if (photo) {
-    const dateStr = formatDate(photo.createdAt || photo.workout?.date)
+    const dateStr = formatDate(photo.workout?.date || photo.createdAt)
     ctx.font = `500 28px system-ui, -apple-system, sans-serif`
     const textW = ctx.measureText(dateStr).width
     roundRect(ctx, padding + 16, imgY + 16, textW + 24, 40, 10)

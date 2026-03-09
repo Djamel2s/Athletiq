@@ -4,7 +4,7 @@ import { ExerciseLibrary, MuscleGroup, Equipment, Difficulty } from '../entities
 export const exercisesData = [
   // CHEST
   {
-    name: 'Bench Press',
+    name: 'Développé couché',
     description: 'Un exercice composé qui cible principalement les pectoraux',
     instructions: 'Allongez-vous sur un banc plat, descendez la barre jusqu\'à la poitrine puis poussez vers le haut',
     muscleGroups: [MuscleGroup.CHEST, MuscleGroup.TRICEPS, MuscleGroup.SHOULDERS],
@@ -13,7 +13,7 @@ export const exercisesData = [
     difficulty: Difficulty.INTERMEDIATE
   },
   {
-    name: 'Incline Dumbbell Press',
+    name: 'Développé incliné haltères',
     description: 'Développé incliné aux haltères pour cibler le haut des pectoraux',
     instructions: 'Sur un banc incliné, poussez les haltères vers le haut en gardant les coudes à 45°',
     muscleGroups: [MuscleGroup.CHEST, MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS],
@@ -22,7 +22,7 @@ export const exercisesData = [
     difficulty: Difficulty.INTERMEDIATE
   },
   {
-    name: 'Push-ups',
+    name: 'Pompes',
     description: 'Pompes classiques au poids du corps',
     instructions: 'Position planche, descendez en pliant les coudes puis remontez',
     muscleGroups: [MuscleGroup.CHEST, MuscleGroup.TRICEPS, MuscleGroup.SHOULDERS],
@@ -31,7 +31,7 @@ export const exercisesData = [
     difficulty: Difficulty.BEGINNER
   },
   {
-    name: 'Cable Flyes',
+    name: 'Écarté poulie',
     description: 'Écarté aux câbles pour isoler les pectoraux',
     instructions: 'Debout entre deux câbles, écartez les bras puis ramenez-les devant vous',
     muscleGroups: [MuscleGroup.CHEST],
@@ -51,7 +51,7 @@ export const exercisesData = [
 
   // BACK
   {
-    name: 'Deadlift',
+    name: 'Soulevé de terre',
     description: 'Soulevé de terre, exercice composé complet',
     instructions: 'Soulevez la barre du sol en gardant le dos droit et les hanches basses',
     muscleGroups: [MuscleGroup.BACK, MuscleGroup.LEGS, MuscleGroup.GLUTES, MuscleGroup.HAMSTRINGS],
@@ -60,7 +60,7 @@ export const exercisesData = [
     difficulty: Difficulty.ADVANCED
   },
   {
-    name: 'Pull-ups',
+    name: 'Tractions',
     description: 'Tractions à la barre fixe',
     instructions: 'Suspendez-vous à une barre et tirez-vous vers le haut jusqu\'à ce que le menton dépasse',
     muscleGroups: [MuscleGroup.BACK, MuscleGroup.BICEPS],
@@ -69,7 +69,7 @@ export const exercisesData = [
     difficulty: Difficulty.INTERMEDIATE
   },
   {
-    name: 'Bent Over Row',
+    name: 'Rowing barre',
     description: 'Rowing barre buste penché',
     instructions: 'Penchez-vous en avant et tirez la barre vers le bas du ventre',
     muscleGroups: [MuscleGroup.BACK, MuscleGroup.BICEPS],
@@ -78,7 +78,7 @@ export const exercisesData = [
     difficulty: Difficulty.INTERMEDIATE
   },
   {
-    name: 'Lat Pulldown',
+    name: 'Tirage vertical',
     description: 'Tirage vertical à la poulie haute',
     instructions: 'Tirez la barre vers la poitrine en gardant le dos droit',
     muscleGroups: [MuscleGroup.BACK, MuscleGroup.BICEPS],
@@ -87,7 +87,7 @@ export const exercisesData = [
     difficulty: Difficulty.BEGINNER
   },
   {
-    name: 'Seated Cable Row',
+    name: 'Rowing poulie basse',
     description: 'Rowing assis à la poulie',
     instructions: 'Assis, tirez la poignée vers le bas du ventre en gardant le dos droit',
     muscleGroups: [MuscleGroup.BACK, MuscleGroup.BICEPS],
@@ -98,7 +98,7 @@ export const exercisesData = [
 
   // SHOULDERS
   {
-    name: 'Overhead Press',
+    name: 'Développé militaire',
     description: 'Développé militaire à la barre',
     instructions: 'Debout, poussez la barre au-dessus de la tête',
     muscleGroups: [MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS],
@@ -107,7 +107,7 @@ export const exercisesData = [
     difficulty: Difficulty.INTERMEDIATE
   },
   {
-    name: 'Lateral Raises',
+    name: 'Élévations latérales',
     description: 'Élévations latérales aux haltères',
     instructions: 'Levez les haltères sur les côtés jusqu\'à hauteur des épaules',
     muscleGroups: [MuscleGroup.SHOULDERS],
@@ -116,7 +116,7 @@ export const exercisesData = [
     difficulty: Difficulty.BEGINNER
   },
   {
-    name: 'Front Raises',
+    name: 'Élévations frontales',
     description: 'Élévations frontales',
     instructions: 'Levez les haltères devant vous jusqu\'à hauteur des épaules',
     muscleGroups: [MuscleGroup.SHOULDERS],
@@ -125,7 +125,7 @@ export const exercisesData = [
     difficulty: Difficulty.BEGINNER
   },
   {
-    name: 'Face Pulls',
+    name: 'Tirage visage',
     description: 'Tirage visage à la corde',
     instructions: 'Tirez la corde vers le visage en écartant les mains',
     muscleGroups: [MuscleGroup.SHOULDERS, MuscleGroup.BACK],
@@ -145,7 +145,7 @@ export const exercisesData = [
     difficulty: Difficulty.INTERMEDIATE
   },
   {
-    name: 'Leg Press',
+    name: 'Presse à cuisses',
     description: 'Presse à cuisses',
     instructions: 'Poussez la plateforme avec les pieds',
     muscleGroups: [MuscleGroup.LEGS, MuscleGroup.QUADS, MuscleGroup.GLUTES],
@@ -154,7 +154,7 @@ export const exercisesData = [
     difficulty: Difficulty.BEGINNER
   },
   {
-    name: 'Romanian Deadlift',
+    name: 'Soulevé de terre roumain',
     description: 'Soulevé de terre roumain pour ischio-jambiers',
     instructions: 'Descendez la barre le long des jambes en gardant les genoux légèrement fléchis',
     muscleGroups: [MuscleGroup.HAMSTRINGS, MuscleGroup.GLUTES, MuscleGroup.BACK],
@@ -163,7 +163,7 @@ export const exercisesData = [
     difficulty: Difficulty.INTERMEDIATE
   },
   {
-    name: 'Leg Curl',
+    name: 'Curl ischio-jambiers',
     description: 'Curl ischio-jambiers à la machine',
     instructions: 'Allongé, fléchissez les jambes en ramenant les talons vers les fesses',
     muscleGroups: [MuscleGroup.HAMSTRINGS],
@@ -172,7 +172,7 @@ export const exercisesData = [
     difficulty: Difficulty.BEGINNER
   },
   {
-    name: 'Leg Extension',
+    name: 'Extension de jambes',
     description: 'Extension de jambes à la machine',
     instructions: 'Assis, étendez les jambes en contractant les quadriceps',
     muscleGroups: [MuscleGroup.QUADS],
@@ -181,7 +181,7 @@ export const exercisesData = [
     difficulty: Difficulty.BEGINNER
   },
   {
-    name: 'Calf Raises',
+    name: 'Mollets debout',
     description: 'Élévation des mollets',
     instructions: 'Montez sur la pointe des pieds puis redescendez',
     muscleGroups: [MuscleGroup.CALVES],
@@ -190,7 +190,7 @@ export const exercisesData = [
     difficulty: Difficulty.BEGINNER
   },
   {
-    name: 'Lunges',
+    name: 'Fentes',
     description: 'Fentes avant',
     instructions: 'Faites un grand pas en avant et descendez jusqu\'à ce que le genou arrière touche presque le sol',
     muscleGroups: [MuscleGroup.LEGS, MuscleGroup.QUADS, MuscleGroup.GLUTES],
@@ -201,7 +201,7 @@ export const exercisesData = [
 
   // BICEPS
   {
-    name: 'Barbell Curl',
+    name: 'Curl barre',
     description: 'Curl barre pour biceps',
     instructions: 'Fléchissez les coudes en remontant la barre vers les épaules',
     muscleGroups: [MuscleGroup.BICEPS],
@@ -210,7 +210,7 @@ export const exercisesData = [
     difficulty: Difficulty.BEGINNER
   },
   {
-    name: 'Hammer Curl',
+    name: 'Curl marteau',
     description: 'Curl marteau aux haltères',
     instructions: 'Fléchissez les coudes avec les haltères en position neutre',
     muscleGroups: [MuscleGroup.BICEPS],
@@ -219,7 +219,7 @@ export const exercisesData = [
     difficulty: Difficulty.BEGINNER
   },
   {
-    name: 'Concentration Curl',
+    name: 'Curl concentration',
     description: 'Curl concentration assis',
     instructions: 'Assis, coude appuyé sur la cuisse, fléchissez le bras',
     muscleGroups: [MuscleGroup.BICEPS],
@@ -230,7 +230,7 @@ export const exercisesData = [
 
   // TRICEPS
   {
-    name: 'Tricep Pushdown',
+    name: 'Extension triceps poulie',
     description: 'Extension triceps à la poulie haute',
     instructions: 'Poussez la barre ou corde vers le bas en gardant les coudes fixes',
     muscleGroups: [MuscleGroup.TRICEPS],
@@ -239,7 +239,7 @@ export const exercisesData = [
     difficulty: Difficulty.BEGINNER
   },
   {
-    name: 'Overhead Tricep Extension',
+    name: 'Extension triceps overhead',
     description: 'Extension triceps au-dessus de la tête',
     instructions: 'Tendez les bras au-dessus de la tête avec un haltère',
     muscleGroups: [MuscleGroup.TRICEPS],
@@ -248,7 +248,7 @@ export const exercisesData = [
     difficulty: Difficulty.BEGINNER
   },
   {
-    name: 'Close Grip Bench Press',
+    name: 'Développé couché prise serrée',
     description: 'Développé couché prise serrée',
     instructions: 'Comme le développé couché mais avec les mains rapprochées',
     muscleGroups: [MuscleGroup.TRICEPS, MuscleGroup.CHEST],
@@ -259,7 +259,7 @@ export const exercisesData = [
 
   // ABS
   {
-    name: 'Plank',
+    name: 'Gainage',
     description: 'Gainage statique',
     instructions: 'Maintenez la position planche en contractant les abdos',
     muscleGroups: [MuscleGroup.ABS],
@@ -268,7 +268,7 @@ export const exercisesData = [
     difficulty: Difficulty.BEGINNER
   },
   {
-    name: 'Crunches',
+    name: 'Crunchs',
     description: 'Crunchs abdominaux',
     instructions: 'Allongé sur le dos, relevez le buste en contractant les abdos',
     muscleGroups: [MuscleGroup.ABS],
@@ -277,7 +277,7 @@ export const exercisesData = [
     difficulty: Difficulty.BEGINNER
   },
   {
-    name: 'Hanging Leg Raises',
+    name: 'Relevé de jambes suspendu',
     description: 'Relevé de jambes suspendu',
     instructions: 'Suspendu à une barre, relevez les jambes vers le haut',
     muscleGroups: [MuscleGroup.ABS],
@@ -286,7 +286,7 @@ export const exercisesData = [
     difficulty: Difficulty.INTERMEDIATE
   },
   {
-    name: 'Russian Twists',
+    name: 'Rotations russes',
     description: 'Rotations russes',
     instructions: 'Assis, pieds levés, tournez le buste de gauche à droite',
     muscleGroups: [MuscleGroup.ABS],
@@ -297,7 +297,7 @@ export const exercisesData = [
 
   // CARDIO
   {
-    name: 'Running',
+    name: 'Course à pied',
     description: 'Course à pied',
     instructions: 'Courez à votre rythme',
     muscleGroups: [MuscleGroup.CARDIO, MuscleGroup.LEGS],
@@ -306,7 +306,7 @@ export const exercisesData = [
     difficulty: Difficulty.BEGINNER
   },
   {
-    name: 'Cycling',
+    name: 'Vélo',
     description: 'Vélo',
     instructions: 'Pédalez à votre rythme',
     muscleGroups: [MuscleGroup.CARDIO, MuscleGroup.LEGS],
@@ -315,7 +315,7 @@ export const exercisesData = [
     difficulty: Difficulty.BEGINNER
   },
   {
-    name: 'Rowing Machine',
+    name: 'Rameur',
     description: 'Rameur',
     instructions: 'Tirez la poignée en poussant sur les jambes',
     muscleGroups: [MuscleGroup.CARDIO, MuscleGroup.BACK, MuscleGroup.LEGS],
@@ -324,7 +324,7 @@ export const exercisesData = [
     difficulty: Difficulty.BEGINNER
   },
   {
-    name: 'Jump Rope',
+    name: 'Corde à sauter',
     description: 'Corde à sauter',
     instructions: 'Sautez à la corde à votre rythme',
     muscleGroups: [MuscleGroup.CARDIO, MuscleGroup.CALVES],
@@ -334,13 +334,60 @@ export const exercisesData = [
   }
 ]
 
+// Map old English names to new French names for migration
+const NAME_MIGRATION: Record<string, string> = {
+  'Bench Press': 'Développé couché',
+  'Incline Dumbbell Press': 'Développé incliné haltères',
+  'Push-ups': 'Pompes',
+  'Cable Flyes': 'Écarté poulie',
+  'Deadlift': 'Soulevé de terre',
+  'Pull-ups': 'Tractions',
+  'Bent Over Row': 'Rowing barre',
+  'Lat Pulldown': 'Tirage vertical',
+  'Seated Cable Row': 'Rowing poulie basse',
+  'Overhead Press': 'Développé militaire',
+  'Lateral Raises': 'Élévations latérales',
+  'Front Raises': 'Élévations frontales',
+  'Face Pulls': 'Tirage visage',
+  'Leg Press': 'Presse à cuisses',
+  'Romanian Deadlift': 'Soulevé de terre roumain',
+  'Leg Curl': 'Curl ischio-jambiers',
+  'Leg Extension': 'Extension de jambes',
+  'Calf Raises': 'Mollets debout',
+  'Lunges': 'Fentes',
+  'Barbell Curl': 'Curl barre',
+  'Hammer Curl': 'Curl marteau',
+  'Concentration Curl': 'Curl concentration',
+  'Tricep Pushdown': 'Extension triceps poulie',
+  'Overhead Tricep Extension': 'Extension triceps overhead',
+  'Close Grip Bench Press': 'Développé couché prise serrée',
+  'Plank': 'Gainage',
+  'Crunches': 'Crunchs',
+  'Hanging Leg Raises': 'Relevé de jambes suspendu',
+  'Russian Twists': 'Rotations russes',
+  'Running': 'Course à pied',
+  'Cycling': 'Vélo',
+  'Rowing Machine': 'Rameur',
+  'Jump Rope': 'Corde à sauter',
+}
+
 export async function seedExerciseLibrary() {
   const exerciseRepo = AppDataSource.getRepository(ExerciseLibrary)
 
   console.log('🌱 Seeding exercise library...')
 
+  // First, rename any old English-named exercises to French
+  for (const [oldName, newName] of Object.entries(NAME_MIGRATION)) {
+    const existing = await exerciseRepo.findOne({ where: { name: oldName } })
+    if (existing) {
+      existing.name = newName
+      await exerciseRepo.save(existing)
+      console.log(`🔄 Renamed: ${oldName} → ${newName}`)
+    }
+  }
+
+  // Then create any missing exercises
   for (const exerciseData of exercisesData) {
-    // Check if exercise already exists
     const existing = await exerciseRepo.findOne({
       where: { name: exerciseData.name }
     })

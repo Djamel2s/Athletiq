@@ -21,10 +21,10 @@
     <Transition name="dropdown">
       <div
         v-if="isOpen"
-        class="absolute right-0 top-12 w-80 max-h-96 glass-dark rounded-2xl shadow-2xl overflow-hidden z-50"
+        class="absolute right-0 top-12 w-[calc(100vw-2rem)] sm:w-80 max-h-96 bg-white/95 dark:bg-primary-900/95 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden z-50 border border-primary-200 dark:border-primary-700"
       >
         <!-- Header -->
-        <div class="flex items-center justify-between p-4 border-b border-white/10">
+        <div class="flex items-center justify-between p-4 border-b border-primary-200 dark:border-primary-700">
           <h4 class="font-semibold text-primary-900 dark:text-primary-100">Notifications</h4>
           <button
             v-if="notificationStore.unreadCount > 0"
@@ -45,8 +45,8 @@
             :key="notif.id"
             @click="notificationStore.markRead(notif.id)"
             :class="[
-              'p-4 border-b border-white/5 cursor-pointer hover:bg-white/5 dark:hover:bg-white/5 transition-colors',
-              !notif.read ? 'bg-primary-50/50 dark:bg-primary-800/30' : ''
+              'p-4 border-b border-primary-100 dark:border-primary-800 cursor-pointer hover:bg-primary-50 dark:hover:bg-primary-800/50 transition-colors',
+              !notif.read ? 'bg-primary-50 dark:bg-primary-800/30' : ''
             ]"
           >
             <div class="flex items-start gap-3">

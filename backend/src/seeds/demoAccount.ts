@@ -42,24 +42,24 @@ interface WorkoutTemplate {
 const PUSH_DAY: WorkoutTemplate = {
   name: 'Push Day',
   exercises: [
-    { name: 'Bench Press', sets: 4, repsRange: [6, 10], weightRange: [60, 90] },
-    { name: 'Incline Dumbbell Press', sets: 4, repsRange: [8, 12], weightRange: [20, 34] },
-    { name: 'Cable Flyes', sets: 3, repsRange: [10, 15], weightRange: [10, 20] },
-    { name: 'Overhead Press', sets: 4, repsRange: [6, 10], weightRange: [30, 50] },
-    { name: 'Lateral Raises', sets: 3, repsRange: [12, 15], weightRange: [8, 14] },
-    { name: 'Tricep Pushdown', sets: 3, repsRange: [10, 15], weightRange: [20, 35] },
+    { name: 'Développé couché', sets: 4, repsRange: [6, 10], weightRange: [60, 90] },
+    { name: 'Développé incliné haltères', sets: 4, repsRange: [8, 12], weightRange: [20, 34] },
+    { name: 'Écarté poulie', sets: 3, repsRange: [10, 15], weightRange: [10, 20] },
+    { name: 'Développé militaire', sets: 4, repsRange: [6, 10], weightRange: [30, 50] },
+    { name: 'Élévations latérales', sets: 3, repsRange: [12, 15], weightRange: [8, 14] },
+    { name: 'Extension triceps poulie', sets: 3, repsRange: [10, 15], weightRange: [20, 35] },
   ]
 }
 
 const PULL_DAY: WorkoutTemplate = {
   name: 'Pull Day',
   exercises: [
-    { name: 'Deadlift', sets: 4, repsRange: [4, 8], weightRange: [80, 130] },
-    { name: 'Barbell Row', sets: 4, repsRange: [6, 10], weightRange: [50, 80] },
-    { name: 'Pull-ups', sets: 4, repsRange: [6, 12], weightRange: [0, 0] },
-    { name: 'Face Pull', sets: 3, repsRange: [12, 20], weightRange: [10, 20] },
-    { name: 'Barbell Curl', sets: 3, repsRange: [8, 12], weightRange: [20, 35] },
-    { name: 'Hammer Curl', sets: 3, repsRange: [10, 12], weightRange: [10, 18] },
+    { name: 'Soulevé de terre', sets: 4, repsRange: [4, 8], weightRange: [80, 130] },
+    { name: 'Rowing barre', sets: 4, repsRange: [6, 10], weightRange: [50, 80] },
+    { name: 'Tractions', sets: 4, repsRange: [6, 12], weightRange: [0, 0] },
+    { name: 'Tirage visage', sets: 3, repsRange: [12, 20], weightRange: [10, 20] },
+    { name: 'Curl barre', sets: 3, repsRange: [8, 12], weightRange: [20, 35] },
+    { name: 'Curl marteau', sets: 3, repsRange: [10, 12], weightRange: [10, 18] },
   ]
 }
 
@@ -67,23 +67,23 @@ const LEG_DAY: WorkoutTemplate = {
   name: 'Leg Day',
   exercises: [
     { name: 'Squat', sets: 4, repsRange: [5, 10], weightRange: [70, 120] },
-    { name: 'Romanian Deadlift', sets: 4, repsRange: [8, 12], weightRange: [60, 90] },
-    { name: 'Leg Press', sets: 4, repsRange: [8, 12], weightRange: [100, 200] },
-    { name: 'Leg Curl', sets: 3, repsRange: [10, 15], weightRange: [30, 50] },
-    { name: 'Leg Extension', sets: 3, repsRange: [10, 15], weightRange: [30, 50] },
-    { name: 'Calf Raise', sets: 4, repsRange: [12, 20], weightRange: [40, 80] },
+    { name: 'Soulevé de terre roumain', sets: 4, repsRange: [8, 12], weightRange: [60, 90] },
+    { name: 'Presse à cuisses', sets: 4, repsRange: [8, 12], weightRange: [100, 200] },
+    { name: 'Curl ischio-jambiers', sets: 3, repsRange: [10, 15], weightRange: [30, 50] },
+    { name: 'Extension de jambes', sets: 3, repsRange: [10, 15], weightRange: [30, 50] },
+    { name: 'Mollets debout', sets: 4, repsRange: [12, 20], weightRange: [40, 80] },
   ]
 }
 
 const UPPER_DAY: WorkoutTemplate = {
   name: 'Upper Body',
   exercises: [
-    { name: 'Bench Press', sets: 4, repsRange: [6, 10], weightRange: [60, 85] },
-    { name: 'Barbell Row', sets: 4, repsRange: [6, 10], weightRange: [50, 75] },
-    { name: 'Overhead Press', sets: 3, repsRange: [8, 10], weightRange: [30, 45] },
-    { name: 'Pull-ups', sets: 3, repsRange: [6, 12], weightRange: [0, 0] },
+    { name: 'Développé couché', sets: 4, repsRange: [6, 10], weightRange: [60, 85] },
+    { name: 'Rowing barre', sets: 4, repsRange: [6, 10], weightRange: [50, 75] },
+    { name: 'Développé militaire', sets: 3, repsRange: [8, 10], weightRange: [30, 45] },
+    { name: 'Tractions', sets: 3, repsRange: [6, 12], weightRange: [0, 0] },
     { name: 'Dips', sets: 3, repsRange: [8, 15], weightRange: [0, 0] },
-    { name: 'Lateral Raises', sets: 3, repsRange: [12, 15], weightRange: [8, 14] },
+    { name: 'Élévations latérales', sets: 3, repsRange: [12, 15], weightRange: [8, 14] },
   ]
 }
 
@@ -91,10 +91,10 @@ const FULL_BODY: WorkoutTemplate = {
   name: 'Full Body',
   exercises: [
     { name: 'Squat', sets: 3, repsRange: [6, 10], weightRange: [70, 100] },
-    { name: 'Bench Press', sets: 3, repsRange: [6, 10], weightRange: [60, 80] },
-    { name: 'Barbell Row', sets: 3, repsRange: [8, 10], weightRange: [50, 70] },
-    { name: 'Overhead Press', sets: 3, repsRange: [8, 10], weightRange: [30, 40] },
-    { name: 'Romanian Deadlift', sets: 3, repsRange: [8, 12], weightRange: [60, 80] },
+    { name: 'Développé couché', sets: 3, repsRange: [6, 10], weightRange: [60, 80] },
+    { name: 'Rowing barre', sets: 3, repsRange: [8, 10], weightRange: [50, 70] },
+    { name: 'Développé militaire', sets: 3, repsRange: [8, 10], weightRange: [30, 40] },
+    { name: 'Soulevé de terre roumain', sets: 3, repsRange: [8, 12], weightRange: [60, 80] },
   ]
 }
 
@@ -301,9 +301,9 @@ export async function seedDemoAccount() {
   // ── Goals ──
   console.log('  Creating goals...')
   const goals = [
-    { type: 'PR', title: 'Bench Press 100kg', targetValue: 100, startValue: 70, exerciseName: 'Bench Press', achieved: true, achievedAt: daysAgo(12) },
+    { type: 'PR', title: 'Développé couché 100kg', targetValue: 100, startValue: 70, exerciseName: 'Développé couché', achieved: true, achievedAt: daysAgo(12) },
     { type: 'PR', title: 'Squat 140kg', targetValue: 140, startValue: 90, exerciseName: 'Squat', achieved: false },
-    { type: 'PR', title: 'Deadlift 160kg', targetValue: 160, startValue: 100, exerciseName: 'Deadlift', achieved: false },
+    { type: 'PR', title: 'Soulevé de terre 160kg', targetValue: 160, startValue: 100, exerciseName: 'Soulevé de terre', achieved: false },
     { type: 'WEIGHT', title: 'Atteindre 82kg', targetValue: 82, startValue: 78, achieved: false },
     { type: 'BODY_FAT', title: 'Body fat sous 14%', targetValue: 14, startValue: 15, achieved: false },
   ]
@@ -326,13 +326,13 @@ export async function seedDemoAccount() {
   // ── Notifications ──
   console.log('  Creating notifications...')
   const notifications = [
-    { type: NotificationType.PR_ACHIEVED, title: 'Nouveau record personnel !', message: 'Bench Press: 100kg - Bravo !', daysAgo: 12 },
-    { type: NotificationType.STREAK_MILESTONE, title: 'Serie de 4 semaines !', message: 'Vous vous entrainez depuis 4 semaines consecutives.', daysAgo: 28 },
-    { type: NotificationType.STREAK_MILESTONE, title: 'Serie de 8 semaines !', message: '8 semaines de suite, impressionnant !', daysAgo: 5 },
-    { type: NotificationType.GOAL_ACHIEVED, title: 'Objectif atteint !', message: 'Bench Press 100kg - Objectif accompli !', daysAgo: 12 },
-    { type: NotificationType.GOAL_PROGRESS, title: 'Progression Squat', message: 'Vous etes a 85% de votre objectif Squat 140kg', daysAgo: 3 },
-    { type: NotificationType.PR_ACHIEVED, title: 'Nouveau record !', message: 'Squat: 120kg', daysAgo: 8 },
-    { type: NotificationType.PR_ACHIEVED, title: 'Nouveau record !', message: 'Deadlift: 130kg', daysAgo: 15 },
+    { type: NotificationType.PR_ACHIEVED, title: 'Nouveau record personnel !', message: 'Développé couché : 100kg - Bravo !', daysAgo: 12 },
+    { type: NotificationType.STREAK_MILESTONE, title: 'Série de 4 semaines !', message: 'Vous vous entraînez depuis 4 semaines consécutives.', daysAgo: 28 },
+    { type: NotificationType.STREAK_MILESTONE, title: 'Série de 8 semaines !', message: '8 semaines de suite, impressionnant !', daysAgo: 5 },
+    { type: NotificationType.GOAL_ACHIEVED, title: 'Objectif atteint !', message: 'Développé couché 100kg - Objectif accompli !', daysAgo: 12 },
+    { type: NotificationType.GOAL_PROGRESS, title: 'Progression Squat', message: 'Vous êtes à 85% de votre objectif Squat 140kg', daysAgo: 3 },
+    { type: NotificationType.PR_ACHIEVED, title: 'Nouveau record !', message: 'Squat : 120kg', daysAgo: 8 },
+    { type: NotificationType.PR_ACHIEVED, title: 'Nouveau record !', message: 'Soulevé de terre : 130kg', daysAgo: 15 },
   ]
 
   for (const n of notifications) {
