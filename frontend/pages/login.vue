@@ -10,6 +10,16 @@
         <p class="text-primary-600 dark:text-primary-400 text-body-relaxed">Connectez-vous à votre compte</p>
       </div>
 
+      <!-- Email verified banner -->
+      <div v-if="emailVerified" class="mb-6 p-4 rounded-2xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 fade-in">
+        <div class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+          <p class="text-sm text-green-700 dark:text-green-300">Email verifie avec succes. Connectez-vous maintenant.</p>
+        </div>
+      </div>
+
       <!-- Formulaire -->
       <div class="card-glass slide-up">
         <form @submit.prevent="handleLogin" class="space-y-6">
@@ -98,11 +108,13 @@ definePageMeta({
 })
 
 const authStore = useAuthStore()
+const route = useRoute()
 
 const email = ref('')
 const password = ref('')
 const loading = ref(false)
 const error = ref('')
+const emailVerified = computed(() => route.query.verified === 'true')
 
 const handleLogin = async () => {
   error.value = ''
