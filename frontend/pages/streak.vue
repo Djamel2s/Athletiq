@@ -336,7 +336,7 @@ onMounted(async () => {
     correlationData.value = correlation
 
     // Check for new milestone celebration
-    if (streak?.milestones?.some(m => m.achieved && isRecent(m.achievedAt))) {
+    if (streak?.milestones?.some((m: any) => m.achieved && isRecent(m.achievedAt))) {
       showCelebration.value = true
       setTimeout(() => showCelebration.value = false, 3000)
     }

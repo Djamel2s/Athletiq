@@ -188,7 +188,7 @@
                     >
                       <svg
                         class="w-4 h-4 transition-transform"
-                        :class="{ 'rotate-90': exercise.showPlannedSets }"
+                        :class="{ 'rotate-90': (exercise as any).showPlannedSets }"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -198,7 +198,7 @@
                       Personnaliser les séries
                     </button>
 
-                    <div v-if="exercise.showPlannedSets" class="mt-3 bg-primary-50 dark:bg-primary-800 rounded-lg p-3">
+                    <div v-if="(exercise as any).showPlannedSets" class="mt-3 bg-primary-50 dark:bg-primary-800 rounded-lg p-3">
                       <p class="text-xs text-primary-600 dark:text-primary-400 mb-2">Définissez les reps et poids pour chaque série:</p>
                       <div class="space-y-2">
                         <div

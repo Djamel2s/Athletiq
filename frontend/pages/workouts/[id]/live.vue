@@ -410,7 +410,7 @@ const exerciseHistory = ref<{ lastSets: Set[], lastWorkoutDate: string | null } 
 const completedSets = ref<Array<{ reps: number, weight: number }>>([])
 
 const showCountdown = ref(true)
-const countdownNumber = ref(3)
+const countdownNumber = ref<number | string>(3)
 
 const currentSetData = ref({
   reps: 10,
@@ -505,7 +505,7 @@ const startCountdown = () => {
     countdownNumber.value = 3
 
     const countdownInterval = setInterval(() => {
-      countdownNumber.value--
+      countdownNumber.value = (countdownNumber.value as number) - 1
 
       if (countdownNumber.value === 0) {
         countdownNumber.value = 'GO'

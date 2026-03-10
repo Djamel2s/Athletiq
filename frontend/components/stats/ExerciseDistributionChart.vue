@@ -10,7 +10,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js'
-import type { ChartData } from '~/types/statistics'
+import type { ChartData as AppChartData } from '~/types/statistics'
 
 // Register Chart.js components
 ChartJS.register(
@@ -20,12 +20,12 @@ ChartJS.register(
 )
 
 interface Props {
-  data: ChartData
+  data: AppChartData
 }
 
 const props = defineProps<Props>()
 
-const chartData = computed(() => props.data)
+const chartData = computed(() => props.data as any)
 
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')

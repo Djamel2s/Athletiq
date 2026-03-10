@@ -174,7 +174,7 @@
               <div v-for="field in measurementFields" :key="field.key">
                 <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1">{{ field.label }} (cm)</label>
                 <input
-                  v-model.number="measurementForm[field.key]"
+                  v-model.number="(measurementForm as any)[field.key]"
                   type="number"
                   step="0.1"
                   min="0"

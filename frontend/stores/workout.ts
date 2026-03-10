@@ -214,6 +214,8 @@ export const useWorkoutStore = defineStore('workout', {
         targetSets?: number
         targetReps?: number
         targetWeight?: number
+        restTime?: number
+        plannedSets?: Array<{ setNumber: number; targetReps: number; targetWeight: number }>
         orderIndex?: number
       }
     ) {

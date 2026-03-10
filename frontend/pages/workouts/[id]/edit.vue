@@ -167,7 +167,7 @@
                     >
                       <svg
                         class="w-4 h-4 transition-transform"
-                        :class="{ 'rotate-90': exercise.showPlannedSets }"
+                        :class="{ 'rotate-90': (exercise as any).showPlannedSets }"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -177,7 +177,7 @@
                       Personnaliser les séries
                     </button>
 
-                    <div v-if="exercise.showPlannedSets" class="mt-3 bg-primary-50 dark:bg-primary-800 rounded-lg p-3">
+                    <div v-if="(exercise as any).showPlannedSets" class="mt-3 bg-primary-50 dark:bg-primary-800 rounded-lg p-3">
                       <p class="text-xs text-primary-600 dark:text-primary-400 mb-2">Définissez les reps et poids pour chaque série:</p>
                       <div class="space-y-2">
                         <div
@@ -387,10 +387,12 @@ onMounted(async () => {
   if (id) {
     try {
       const workout = await workoutStore.fetchWorkout(id)
-      workoutId.value = workout.id
-      workoutForm.value.name = workout.name
-      workoutForm.value.description = workout.description || ''
-      selectedExercises.value = workout.exercises || []
+      if (workout) {
+        workoutId.value = workout.id
+        workoutForm.value.name = workout.name
+        workoutForm.value.description = workout.description || ''
+        selectedExercises.value = workout.exercises || []
+      }
     } catch (error) {
       console.error('Failed to load workout:', error)
       toast.error('Erreur', 'Impossible de charger le workout')
