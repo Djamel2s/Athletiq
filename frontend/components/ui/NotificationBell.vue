@@ -21,7 +21,7 @@
     <Transition name="dropdown">
       <div
         v-if="isOpen"
-        class="absolute right-0 top-12 w-[calc(100vw-2rem)] sm:w-80 max-h-96 bg-white/95 dark:bg-primary-900/95 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden z-50 border border-primary-200 dark:border-primary-700"
+        class="fixed left-4 right-4 top-16 sm:absolute sm:left-auto sm:right-0 sm:top-12 sm:w-80 max-h-96 bg-white/95 dark:bg-primary-900/95 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden z-50 border border-primary-200 dark:border-primary-700"
       >
         <!-- Header -->
         <div class="flex items-center justify-between p-4 border-b border-primary-200 dark:border-primary-700">

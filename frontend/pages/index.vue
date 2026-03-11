@@ -68,48 +68,44 @@
             </div>
           </div>
 
-          <!-- Floating stat cards -->
-          <div class="relative h-80 md:h-96 lg:h-[28rem] slide-up hidden md:block">
-            <div class="absolute top-4 left-4 lg:left-8 glass rounded-2xl p-5 md:p-6 float" style="animation-delay: 0s;">
-              <div class="flex items-center space-x-4">
-                <div class="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center flex-shrink-0">
-                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                  </svg>
-                </div>
-                <div>
-                  <p class="text-sm text-primary-500 dark:text-primary-400">Ce mois</p>
-                  <p class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">12 seances</p>
-                </div>
-              </div>
+          <!-- Illustration musculaire -->
+          <div class="relative h-80 md:h-96 lg:h-[28rem] slide-up hidden md:flex flex-col items-center justify-center">
+            <!-- Toggle Homme / Femme -->
+            <div class="flex items-center gap-1 mb-4 glass rounded-full p-1">
+              <button
+                @click="heroGender = 'male'"
+                :class="heroGender === 'male' ? 'bg-gradient-primary text-white' : 'text-primary-500 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100'"
+                class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300"
+              >
+                Homme
+              </button>
+              <button
+                @click="heroGender = 'female'"
+                :class="heroGender === 'female' ? 'bg-gradient-primary text-white' : 'text-primary-500 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100'"
+                class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300"
+              >
+                Femme
+              </button>
             </div>
 
-            <div class="absolute top-32 right-4 lg:right-8 glass rounded-2xl p-5 md:p-6 float" style="animation-delay: 2s;">
-              <div class="flex items-center space-x-4">
-                <div class="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center flex-shrink-0">
-                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                  </svg>
-                </div>
-                <div>
-                  <p class="text-sm text-primary-500 dark:text-primary-400">Developpe couche</p>
-                  <p class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">+12 kg en 3 mois</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="absolute bottom-4 left-8 lg:left-16 glass rounded-2xl p-5 md:p-6 float" style="animation-delay: 4s;">
-              <div class="flex items-center space-x-4">
-                <div class="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center flex-shrink-0">
-                  <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/>
-                  </svg>
-                </div>
-                <div>
-                  <p class="text-sm text-primary-500 dark:text-primary-400">Streak</p>
-                  <p class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">5 jours de suite</p>
-                </div>
-              </div>
+            <!-- Figure -->
+            <div class="relative flex-1 w-full flex items-center justify-center">
+              <Transition name="hero-figure" mode="out-in">
+                <img
+                  v-if="heroGender === 'male'"
+                  key="male"
+                  src="/muscle-male.svg"
+                  alt="Anatomie musculaire homme"
+                  class="h-full max-h-[22rem] w-auto object-contain drop-shadow-2xl"
+                />
+                <img
+                  v-else
+                  key="female"
+                  src="/muscle-female.svg"
+                  alt="Anatomie musculaire femme"
+                  class="h-full max-h-[22rem] w-auto object-contain drop-shadow-2xl"
+                />
+              </Transition>
             </div>
           </div>
         </div>
@@ -487,6 +483,7 @@ useHead({
 })
 
 const authStore = useAuthStore()
+const heroGender = ref<'male' | 'female'>('male')
 
 onMounted(() => {
   authStore.loadFromLocalStorage()
@@ -497,3 +494,18 @@ const logout = () => {
   navigateTo('/login')
 }
 </script>
+
+<style scoped>
+.hero-figure-enter-active,
+.hero-figure-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.hero-figure-enter-from {
+  opacity: 0;
+  transform: scale(0.95);
+}
+.hero-figure-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
+}
+</style>

@@ -1,0 +1,108 @@
+<svg viewBox="0 0 300 520" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="fskin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8ddd0"/>
+      <stop offset="100%" stop-color="#d4c4b0"/>
+    </linearGradient>
+    <linearGradient id="fshadow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d4c4b0"/>
+      <stop offset="100%" stop-color="#b8a48f"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Tete -->
+  <ellipse cx="150" cy="36" rx="22" ry="26" fill="url(#fskin)"/>
+  <!-- Machoire plus fine -->
+  <path d="M132 46 Q142 62 150 64 Q158 62 168 46" fill="#d4c4b0"/>
+
+  <!-- Cou (plus fin) -->
+  <path d="M140 58 L138 78 L162 78 L160 58Z" fill="url(#fshadow)"/>
+
+  <!-- Trapezes (moins volumineux) -->
+  <path d="M138 74 Q124 74 108 84 L114 90 Q128 82 140 80Z" fill="url(#fshadow)"/>
+  <path d="M162 74 Q176 74 192 84 L186 90 Q172 82 160 80Z" fill="url(#fshadow)"/>
+
+  <!-- Deltoides gauche (plus fins) -->
+  <path d="M108 84 Q92 88 86 104 Q84 114 88 124 Q94 120 100 112 Q106 100 114 90Z" fill="url(#fskin)"/>
+  <path d="M96 96 Q94 106 94 114" fill="none" stroke="#c4b4a0" stroke-width="1" opacity="0.3"/>
+
+  <!-- Deltoides droit -->
+  <path d="M192 84 Q208 88 214 104 Q216 114 212 124 Q206 120 200 112 Q194 100 186 90Z" fill="url(#fskin)"/>
+  <path d="M204 96 Q206 106 206 114" fill="none" stroke="#c4b4a0" stroke-width="1" opacity="0.3"/>
+
+  <!-- Poitrine gauche -->
+  <path d="M114 90 Q108 100 106 116 Q106 130 114 138 L148 140 L148 90 Q132 84 114 90Z" fill="url(#fskin)"/>
+  <path d="M114 108 Q126 118 140 120 Q146 120 148 118" fill="none" stroke="#c4b4a0" stroke-width="1.2" opacity="0.25"/>
+
+  <!-- Poitrine droite -->
+  <path d="M186 90 Q192 100 194 116 Q194 130 186 138 L152 140 L152 90 Q168 84 186 90Z" fill="url(#fskin)"/>
+  <path d="M186 108 Q174 118 160 120 Q154 120 152 118" fill="none" stroke="#c4b4a0" stroke-width="1.2" opacity="0.25"/>
+
+  <!-- Ligne centrale -->
+  <line x1="150" y1="88" x2="150" y2="140" stroke="#c4b4a0" stroke-width="1.2" opacity="0.2"/>
+
+  <!-- Biceps gauche (plus fins) -->
+  <path d="M88 124 Q82 138 80 154 Q78 166 82 174 L96 170 Q94 158 94 146 Q94 134 96 126Z" fill="url(#fskin)"/>
+
+  <!-- Biceps droit -->
+  <path d="M212 124 Q218 138 220 154 Q222 166 218 174 L204 170 Q206 158 206 146 Q206 134 204 126Z" fill="url(#fskin)"/>
+
+  <!-- Avant-bras gauche -->
+  <path d="M82 174 Q78 190 74 210 Q70 226 72 236 L90 232 Q90 222 90 208 Q92 194 96 170Z" fill="url(#fshadow)"/>
+
+  <!-- Avant-bras droit -->
+  <path d="M218 174 Q222 190 226 210 Q230 226 228 236 L210 232 Q210 222 210 208 Q208 194 204 170Z" fill="url(#fshadow)"/>
+
+  <!-- Taille (plus fine, V-shape feminine) -->
+  <path d="M106 130 Q100 150 98 168 L116 172 Q114 156 114 144Z" fill="url(#fshadow)"/>
+  <path d="M194 130 Q200 150 202 168 L184 172 Q186 156 186 144Z" fill="url(#fshadow)"/>
+
+  <!-- Abdominaux (taille fine) -->
+  <path d="M116 140 L116 224 Q126 236 150 240 Q174 236 184 224 L184 140 L152 142 L148 142Z" fill="url(#fskin)"/>
+
+  <!-- Linea alba -->
+  <line x1="150" y1="140" x2="150" y2="236" stroke="#c4b4a0" stroke-width="1.4" opacity="0.25"/>
+
+  <!-- Lignes abdos (plus subtiles) -->
+  <path d="M122 160 Q136 164 150 162 Q164 164 178 160" fill="none" stroke="#c4b4a0" stroke-width="1.1" opacity="0.2"/>
+  <path d="M122 178 Q136 182 150 180 Q164 182 178 178" fill="none" stroke="#c4b4a0" stroke-width="1.1" opacity="0.2"/>
+  <path d="M124 196 Q136 200 150 198 Q164 200 176 196" fill="none" stroke="#c4b4a0" stroke-width="1.1" opacity="0.2"/>
+
+  <!-- V-line -->
+  <path d="M116 204 Q124 232 138 250" fill="none" stroke="#c4b4a0" stroke-width="1.2" opacity="0.2"/>
+  <path d="M184 204 Q176 232 162 250" fill="none" stroke="#c4b4a0" stroke-width="1.2" opacity="0.2"/>
+
+  <!-- Hanches (plus larges, feminines) -->
+  <path d="M98 168 Q92 194 94 226 Q98 248 136 260 L116 224 L116 172Z" fill="url(#fshadow)"/>
+  <path d="M202 168 Q208 194 206 226 Q202 248 164 260 L184 224 L184 172Z" fill="url(#fshadow)"/>
+
+  <!-- Quadriceps gauche -->
+  <path d="M136 260 Q130 284 128 314 Q126 344 130 372 L148 376 L148 260Z" fill="url(#fskin)"/>
+  <path d="M94 238 Q90 270 94 314 Q98 344 108 372 L130 376 L130 372 Q126 344 128 314 Q130 284 136 260Z" fill="url(#fshadow)"/>
+  <path d="M128 274 Q132 294 132 314 Q130 344 130 372" fill="none" stroke="#c4b4a0" stroke-width="1" opacity="0.2"/>
+
+  <!-- Quadriceps droit -->
+  <path d="M164 260 Q170 284 172 314 Q174 344 170 372 L152 376 L152 260Z" fill="url(#fskin)"/>
+  <path d="M206 238 Q210 270 206 314 Q202 344 192 372 L170 376 L170 372 Q174 344 172 314 Q170 284 164 260Z" fill="url(#fshadow)"/>
+  <path d="M172 274 Q168 294 168 314 Q170 344 170 372" fill="none" stroke="#c4b4a0" stroke-width="1" opacity="0.2"/>
+
+  <!-- Genoux -->
+  <ellipse cx="132" cy="380" rx="16" ry="9" fill="url(#fshadow)" opacity="0.4"/>
+  <ellipse cx="168" cy="380" rx="16" ry="9" fill="url(#fshadow)" opacity="0.4"/>
+
+  <!-- Mollets gauche -->
+  <path d="M108 388 Q106 412 108 440 Q110 458 116 478 L140 478 Q138 458 136 440 Q134 412 138 388Z" fill="url(#fskin)"/>
+  <path d="M114 400 Q112 420 114 444" fill="none" stroke="#c4b4a0" stroke-width="1" opacity="0.2"/>
+
+  <!-- Mollets droit -->
+  <path d="M192 388 Q194 412 192 440 Q190 458 184 478 L160 478 Q162 458 164 440 Q166 412 162 388Z" fill="url(#fskin)"/>
+  <path d="M186 400 Q188 420 186 444" fill="none" stroke="#c4b4a0" stroke-width="1" opacity="0.2"/>
+
+  <!-- Pieds -->
+  <path d="M116 478 Q108 488 104 494 Q100 500 108 502 L140 500 Q144 496 140 490 L140 478Z" fill="url(#fshadow)"/>
+  <path d="M184 478 Q192 488 196 494 Q200 500 192 502 L160 500 Q156 496 160 490 L160 478Z" fill="url(#fshadow)"/>
+
+  <!-- Mains -->
+  <path d="M72 236 Q66 246 64 254 Q62 260 68 262 L86 258 Q88 250 90 242 L90 232Z" fill="url(#fshadow)"/>
+  <path d="M228 236 Q234 246 236 254 Q238 260 232 262 L214 258 Q212 250 210 242 L210 232Z" fill="url(#fshadow)"/>
+</svg>
