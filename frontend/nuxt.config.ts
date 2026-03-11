@@ -86,13 +86,26 @@ export default defineNuxtConfig({
       ]
     },
     workbox: {
-      // Cache les pages de l'app
-      navigateFallback: '/',
+      // Pas de navigateFallback car SSR (les pages sont servies par le serveur)
+      navigateFallback: undefined,
       // Cache les ressources statiques (CSS, JS, images)
-      globPatterns: ['**/*.{js,css,html,png,svg,ico,woff2}'],
-      // Cache les appels API (stratégie network-first = essaie le réseau, sinon cache)
+      globPatterns: ['**/*.{js,css,png,svg,ico,woff2}'],
+      // Strategies runtime
       runtimeCaching: [
         {
+          // Pages HTML — network first, fallback sur cache
+          urlPattern: ({ request }: { request: Request }) => request.mode === 'navigate',
+          handler: 'NetworkFirst',
+          options: {
+            cacheName: 'pages-cache',
+            expiration: {
+              maxEntries: 50,
+              maxAgeSeconds: 60 * 60 * 24 // 24h
+            }
+          }
+        },
+        {
+          // Appels API
           urlPattern: /^https:\/\/.*\/api\/.*/i,
           handler: 'NetworkFirst',
           options: {
