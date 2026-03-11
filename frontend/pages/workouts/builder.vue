@@ -313,10 +313,16 @@
                 <option value="CHEST">Pectoraux</option>
                 <option value="BACK">Dos</option>
                 <option value="SHOULDERS">Épaules</option>
-                <option value="LEGS">Jambes</option>
                 <option value="BICEPS">Biceps</option>
                 <option value="TRICEPS">Triceps</option>
+                <option value="LEGS">Jambes</option>
+                <option value="QUADS">Quadriceps</option>
+                <option value="HAMSTRINGS">Ischio-jambiers</option>
+                <option value="GLUTES">Fessiers</option>
+                <option value="CALVES">Mollets</option>
                 <option value="ABS">Abdos</option>
+                <option value="CARDIO">Cardio</option>
+                <option value="FULL_BODY">Full body</option>
               </select>
 
               <select v-model="filterEquipment" @change="searchExercises" class="input-primary w-full sm:w-auto">
@@ -326,6 +332,8 @@
                 <option value="BODYWEIGHT">Poids du corps</option>
                 <option value="MACHINE">Machine</option>
                 <option value="CABLE">Câble</option>
+                <option value="KETTLEBELL">Kettlebell</option>
+                <option value="RESISTANCE_BAND">Élastique</option>
               </select>
 
               <select v-model="filterDifficulty" @change="searchExercises" class="input-primary w-full sm:w-auto">
@@ -354,8 +362,14 @@
               class="p-4 border border-primary-200 dark:border-primary-700 rounded-xl hover:border-primary-400 dark:hover:border-primary-500 hover:shadow-lg transition-all cursor-pointer"
               @click="addExercise(exercise)"
             >
+              <ExerciseAnimation
+                :image-id="exercise.imageUrl"
+                :name="exercise.name"
+                size="sm"
+                class="mb-3"
+              />
               <h3 class="font-bold text-primary-900 dark:text-primary-100 mb-2">{{ exercise.name }}</h3>
-              <p class="text-sm text-primary-600 dark:text-primary-400 mb-3">{{ exercise.description }}</p>
+              <p class="text-sm text-primary-600 dark:text-primary-400 mb-3 line-clamp-2">{{ exercise.description }}</p>
 
               <div class="flex flex-wrap gap-2">
                 <span class="px-2 py-1 bg-primary-200 dark:bg-primary-700 text-primary-800 dark:text-primary-200 text-xs font-medium rounded">

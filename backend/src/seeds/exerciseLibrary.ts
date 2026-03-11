@@ -12,7 +12,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CHEST, MuscleGroup.TRICEPS, MuscleGroup.SHOULDERS],
     primaryMuscle: MuscleGroup.CHEST,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Barbell_Bench_Press_-_Medium_Grip'
   },
   {
     name: 'Développé couché haltères',
@@ -21,7 +22,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CHEST, MuscleGroup.TRICEPS, MuscleGroup.SHOULDERS],
     primaryMuscle: MuscleGroup.CHEST,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Dumbbell_Bench_Press'
   },
   {
     name: 'Développé incliné barre',
@@ -30,7 +32,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CHEST, MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS],
     primaryMuscle: MuscleGroup.CHEST,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Barbell_Incline_Bench_Press_-_Medium_Grip'
   },
   {
     name: 'Développé incliné haltères',
@@ -39,7 +42,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CHEST, MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS],
     primaryMuscle: MuscleGroup.CHEST,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Incline_Dumbbell_Press'
   },
   {
     name: 'Développé décliné barre',
@@ -48,7 +52,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CHEST, MuscleGroup.TRICEPS],
     primaryMuscle: MuscleGroup.CHEST,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Decline_Barbell_Bench_Press'
   },
   {
     name: 'Développé décliné haltères',
@@ -57,7 +62,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CHEST, MuscleGroup.TRICEPS],
     primaryMuscle: MuscleGroup.CHEST,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Decline_Dumbbell_Bench_Press'
   },
   {
     name: 'Pompes',
@@ -66,7 +72,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CHEST, MuscleGroup.TRICEPS, MuscleGroup.SHOULDERS],
     primaryMuscle: MuscleGroup.CHEST,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Pushups'
   },
   {
     name: 'Pompes diamant',
@@ -75,7 +82,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CHEST, MuscleGroup.TRICEPS],
     primaryMuscle: MuscleGroup.CHEST,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Pushups_Close_and_Wide_Hand'
   },
   {
     name: 'Pompes inclinées',
@@ -84,7 +92,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CHEST, MuscleGroup.TRICEPS, MuscleGroup.SHOULDERS],
     primaryMuscle: MuscleGroup.CHEST,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Pushups'
   },
   {
     name: 'Pompes déclinées',
@@ -93,7 +102,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CHEST, MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS],
     primaryMuscle: MuscleGroup.CHEST,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Pushups'
   },
   {
     name: 'Écarté poulie',
@@ -102,7 +112,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CHEST],
     primaryMuscle: MuscleGroup.CHEST,
     equipment: Equipment.CABLE,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Cable_Crossover'
   },
   {
     name: 'Écarté couché haltères',
@@ -111,7 +122,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CHEST],
     primaryMuscle: MuscleGroup.CHEST,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Dumbbell_Flyes'
   },
   {
     name: 'Écarté incliné haltères',
@@ -120,7 +132,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CHEST],
     primaryMuscle: MuscleGroup.CHEST,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Incline_Dumbbell_Flyes'
   },
   {
     name: 'Dips',
@@ -129,7 +142,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CHEST, MuscleGroup.TRICEPS],
     primaryMuscle: MuscleGroup.CHEST,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Dips_-_Chest_Version'
   },
   {
     name: 'Peck-deck (butterfly)',
@@ -138,7 +152,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CHEST],
     primaryMuscle: MuscleGroup.CHEST,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Butterfly'
   },
   {
     name: 'Développé couché machine',
@@ -147,7 +162,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CHEST, MuscleGroup.TRICEPS, MuscleGroup.SHOULDERS],
     primaryMuscle: MuscleGroup.CHEST,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Machine_Bench_Press'
   },
   {
     name: 'Pullover haltère',
@@ -156,7 +172,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CHEST, MuscleGroup.BACK],
     primaryMuscle: MuscleGroup.CHEST,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Bent-Arm_Dumbbell_Pullover'
   },
   {
     name: 'Poulie vis-à-vis haute',
@@ -165,7 +182,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CHEST],
     primaryMuscle: MuscleGroup.CHEST,
     equipment: Equipment.CABLE,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Cable_Crossover'
   },
   {
     name: 'Poulie vis-à-vis basse',
@@ -174,7 +192,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CHEST],
     primaryMuscle: MuscleGroup.CHEST,
     equipment: Equipment.CABLE,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Cable_Crossover'
   },
 
   // ═══════════════════════════════════════════════════
@@ -187,7 +206,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BACK, MuscleGroup.LEGS, MuscleGroup.GLUTES, MuscleGroup.HAMSTRINGS],
     primaryMuscle: MuscleGroup.BACK,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.ADVANCED
+    difficulty: Difficulty.ADVANCED,
+    imageUrl: 'Barbell_Deadlift'
   },
   {
     name: 'Soulevé de terre sumo',
@@ -196,7 +216,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BACK, MuscleGroup.LEGS, MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.BACK,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.ADVANCED
+    difficulty: Difficulty.ADVANCED,
+    imageUrl: 'Sumo_Deadlift'
   },
   {
     name: 'Tractions',
@@ -205,7 +226,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BACK, MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BACK,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Pullups'
   },
   {
     name: 'Tractions supination',
@@ -214,7 +236,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BACK, MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BACK,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Chin-Up'
   },
   {
     name: 'Tractions prise neutre',
@@ -223,7 +246,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BACK, MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BACK,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Close-Grip_Front_Lat_Pulldown'
   },
   {
     name: 'Rowing barre',
@@ -232,7 +256,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BACK, MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BACK,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Bent_Over_Barbell_Row'
   },
   {
     name: 'Rowing haltère',
@@ -241,7 +266,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BACK, MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BACK,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'One-Arm_Dumbbell_Row'
   },
   {
     name: 'Rowing T-bar',
@@ -250,7 +276,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BACK, MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BACK,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'T-Bar_Row_with_Handle'
   },
   {
     name: 'Tirage vertical',
@@ -259,7 +286,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BACK, MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BACK,
     equipment: Equipment.CABLE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Wide-Grip_Lat_Pulldown'
   },
   {
     name: 'Tirage vertical prise serrée',
@@ -268,7 +296,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BACK, MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BACK,
     equipment: Equipment.CABLE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'V-Bar_Pulldown'
   },
   {
     name: 'Tirage vertical supination',
@@ -277,7 +306,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BACK, MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BACK,
     equipment: Equipment.CABLE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Underhand_Cable_Pulldowns'
   },
   {
     name: 'Rowing poulie basse',
@@ -286,7 +316,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BACK, MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BACK,
     equipment: Equipment.CABLE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Seated_Cable_Rows'
   },
   {
     name: 'Rowing machine',
@@ -295,7 +326,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BACK, MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BACK,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Seated_Cable_Rows'
   },
   {
     name: 'Rowing inversé',
@@ -304,7 +336,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BACK, MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BACK,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Inverted_Row'
   },
   {
     name: 'Pullover poulie',
@@ -313,7 +346,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BACK],
     primaryMuscle: MuscleGroup.BACK,
     equipment: Equipment.CABLE,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Straight-Arm_Pulldown'
   },
   {
     name: 'Hyperextension',
@@ -322,7 +356,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BACK, MuscleGroup.GLUTES, MuscleGroup.HAMSTRINGS],
     primaryMuscle: MuscleGroup.BACK,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Hyperextensions_Back_Extension'
   },
   {
     name: 'Good morning',
@@ -331,7 +366,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BACK, MuscleGroup.HAMSTRINGS, MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.BACK,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Good_Morning'
   },
   {
     name: 'Shrug barre',
@@ -340,7 +376,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BACK, MuscleGroup.SHOULDERS],
     primaryMuscle: MuscleGroup.BACK,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Barbell_Shrug'
   },
   {
     name: 'Shrug haltères',
@@ -349,7 +386,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BACK, MuscleGroup.SHOULDERS],
     primaryMuscle: MuscleGroup.BACK,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Dumbbell_Shrug'
   },
 
   // ═══════════════════════════════════════════════════
@@ -362,7 +400,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS],
     primaryMuscle: MuscleGroup.SHOULDERS,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Standing_Military_Press'
   },
   {
     name: 'Développé épaules haltères',
@@ -371,7 +410,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS],
     primaryMuscle: MuscleGroup.SHOULDERS,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Dumbbell_Shoulder_Press'
   },
   {
     name: 'Développé Arnold',
@@ -380,7 +420,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS],
     primaryMuscle: MuscleGroup.SHOULDERS,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Arnold_Dumbbell_Press'
   },
   {
     name: 'Développé épaules machine',
@@ -389,7 +430,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS],
     primaryMuscle: MuscleGroup.SHOULDERS,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Machine_Shoulder_Press'
   },
   {
     name: 'Élévations latérales',
@@ -398,7 +440,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.SHOULDERS],
     primaryMuscle: MuscleGroup.SHOULDERS,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Side_Lateral_Raise'
   },
   {
     name: 'Élévations latérales poulie',
@@ -407,7 +450,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.SHOULDERS],
     primaryMuscle: MuscleGroup.SHOULDERS,
     equipment: Equipment.CABLE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Bent_Over_Low-Pulley_Side_Lateral'
   },
   {
     name: 'Élévations latérales machine',
@@ -416,7 +460,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.SHOULDERS],
     primaryMuscle: MuscleGroup.SHOULDERS,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Side_Lateral_Raise'
   },
   {
     name: 'Élévations frontales',
@@ -425,7 +470,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.SHOULDERS],
     primaryMuscle: MuscleGroup.SHOULDERS,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Front_Dumbbell_Raise'
   },
   {
     name: 'Élévations frontales barre',
@@ -434,7 +480,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.SHOULDERS],
     primaryMuscle: MuscleGroup.SHOULDERS,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Front_Plate_Raise'
   },
   {
     name: 'Élévations frontales poulie',
@@ -443,7 +490,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.SHOULDERS],
     primaryMuscle: MuscleGroup.SHOULDERS,
     equipment: Equipment.CABLE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Front_Cable_Raise'
   },
   {
     name: 'Oiseau haltères',
@@ -452,7 +500,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.SHOULDERS, MuscleGroup.BACK],
     primaryMuscle: MuscleGroup.SHOULDERS,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Seated_Bent-Over_Rear_Delt_Raise'
   },
   {
     name: 'Oiseau poulie',
@@ -461,7 +510,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.SHOULDERS, MuscleGroup.BACK],
     primaryMuscle: MuscleGroup.SHOULDERS,
     equipment: Equipment.CABLE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Bent_Over_Low-Pulley_Side_Lateral'
   },
   {
     name: 'Oiseau machine',
@@ -470,7 +520,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.SHOULDERS, MuscleGroup.BACK],
     primaryMuscle: MuscleGroup.SHOULDERS,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Reverse_Machine_Flyes'
   },
   {
     name: 'Tirage visage',
@@ -479,7 +530,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.SHOULDERS, MuscleGroup.BACK],
     primaryMuscle: MuscleGroup.SHOULDERS,
     equipment: Equipment.CABLE,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Face_Pull'
   },
   {
     name: 'Rowing vertical barre',
@@ -488,7 +540,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.SHOULDERS, MuscleGroup.BACK],
     primaryMuscle: MuscleGroup.SHOULDERS,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Upright_Barbell_Row'
   },
   {
     name: 'Rowing vertical haltères',
@@ -497,7 +550,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.SHOULDERS, MuscleGroup.BACK],
     primaryMuscle: MuscleGroup.SHOULDERS,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Upright_Barbell_Row'
   },
   {
     name: 'Handstand push-ups',
@@ -506,7 +560,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS],
     primaryMuscle: MuscleGroup.SHOULDERS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.ADVANCED
+    difficulty: Difficulty.ADVANCED,
+    imageUrl: 'Handstand_Push-Ups'
   },
   {
     name: 'Pike push-ups',
@@ -515,7 +570,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS],
     primaryMuscle: MuscleGroup.SHOULDERS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Pushups'
   },
 
   // ═══════════════════════════════════════════════════
@@ -528,7 +584,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BICEPS,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Barbell_Curl'
   },
   {
     name: 'Curl barre EZ',
@@ -537,7 +594,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BICEPS,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Barbell_Curl'
   },
   {
     name: 'Curl haltères',
@@ -546,7 +604,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BICEPS,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Dumbbell_Bicep_Curl'
   },
   {
     name: 'Curl marteau',
@@ -555,7 +614,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BICEPS,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Hammer_Curls'
   },
   {
     name: 'Curl concentration',
@@ -564,7 +624,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BICEPS,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Concentration_Curls'
   },
   {
     name: 'Curl incliné',
@@ -573,7 +634,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BICEPS,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Alternate_Incline_Dumbbell_Curl'
   },
   {
     name: 'Curl au pupitre',
@@ -582,7 +644,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BICEPS,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Preacher_Curl'
   },
   {
     name: 'Curl au pupitre haltère',
@@ -591,7 +654,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BICEPS,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Preacher_Curl'
   },
   {
     name: 'Curl poulie basse',
@@ -600,7 +664,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BICEPS,
     equipment: Equipment.CABLE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Standing_Biceps_Cable_Curl'
   },
   {
     name: 'Curl poulie haute',
@@ -609,7 +674,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BICEPS,
     equipment: Equipment.CABLE,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Overhead_Cable_Curl'
   },
   {
     name: 'Curl inversé',
@@ -618,7 +684,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BICEPS,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Reverse_Barbell_Curl'
   },
   {
     name: 'Curl marteau corde poulie',
@@ -627,7 +694,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BICEPS,
     equipment: Equipment.CABLE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Cable_Hammer_Curls_-_Rope_Attachment'
   },
   {
     name: 'Curl spider',
@@ -636,7 +704,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BICEPS,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Spider_Curl'
   },
 
   // ═══════════════════════════════════════════════════
@@ -649,7 +718,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.TRICEPS],
     primaryMuscle: MuscleGroup.TRICEPS,
     equipment: Equipment.CABLE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Triceps_Pushdown'
   },
   {
     name: 'Extension triceps corde',
@@ -658,7 +728,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.TRICEPS],
     primaryMuscle: MuscleGroup.TRICEPS,
     equipment: Equipment.CABLE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Triceps_Pushdown_-_Rope_Attachment'
   },
   {
     name: 'Extension triceps overhead',
@@ -667,7 +738,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.TRICEPS],
     primaryMuscle: MuscleGroup.TRICEPS,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Dumbbell_One-Arm_Triceps_Extension'
   },
   {
     name: 'Extension triceps overhead corde',
@@ -676,7 +748,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.TRICEPS],
     primaryMuscle: MuscleGroup.TRICEPS,
     equipment: Equipment.CABLE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Triceps_Pushdown_-_Rope_Attachment'
   },
   {
     name: 'Skull crusher',
@@ -685,7 +758,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.TRICEPS],
     primaryMuscle: MuscleGroup.TRICEPS,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'EZ-Bar_Skullcrusher'
   },
   {
     name: 'Développé couché prise serrée',
@@ -694,7 +768,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.TRICEPS, MuscleGroup.CHEST],
     primaryMuscle: MuscleGroup.TRICEPS,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Close-Grip_Barbell_Bench_Press'
   },
   {
     name: 'Kickback triceps',
@@ -703,7 +778,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.TRICEPS],
     primaryMuscle: MuscleGroup.TRICEPS,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Tricep_Dumbbell_Kickback'
   },
   {
     name: 'Dips banc',
@@ -712,7 +788,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.TRICEPS],
     primaryMuscle: MuscleGroup.TRICEPS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Bench_Dips'
   },
   {
     name: 'Dips triceps',
@@ -721,7 +798,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.TRICEPS, MuscleGroup.CHEST],
     primaryMuscle: MuscleGroup.TRICEPS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Dips_-_Triceps_Version'
   },
   {
     name: 'Extension triceps haltère un bras',
@@ -730,7 +808,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.TRICEPS],
     primaryMuscle: MuscleGroup.TRICEPS,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Dumbbell_One-Arm_Triceps_Extension'
   },
 
   // ═══════════════════════════════════════════════════
@@ -743,7 +822,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.LEGS, MuscleGroup.QUADS, MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.LEGS,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Barbell_Squat'
   },
   {
     name: 'Squat avant (front squat)',
@@ -752,7 +832,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.LEGS, MuscleGroup.QUADS],
     primaryMuscle: MuscleGroup.QUADS,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.ADVANCED
+    difficulty: Difficulty.ADVANCED,
+    imageUrl: 'Front_Barbell_Squat'
   },
   {
     name: 'Squat goblet',
@@ -761,7 +842,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.LEGS, MuscleGroup.QUADS, MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.LEGS,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Goblet_Squat'
   },
   {
     name: 'Squat bulgare',
@@ -770,7 +852,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.LEGS, MuscleGroup.QUADS, MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.LEGS,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Single_Leg_Squat'
   },
   {
     name: 'Squat sumo',
@@ -779,7 +862,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.LEGS, MuscleGroup.GLUTES, MuscleGroup.QUADS],
     primaryMuscle: MuscleGroup.LEGS,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Barbell_Squat'
   },
   {
     name: 'Squat au poids du corps',
@@ -788,7 +872,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.LEGS, MuscleGroup.QUADS, MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.LEGS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Bodyweight_Squat'
   },
   {
     name: 'Hack squat',
@@ -797,7 +882,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.LEGS, MuscleGroup.QUADS],
     primaryMuscle: MuscleGroup.QUADS,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Barbell_Hack_Squat'
   },
   {
     name: 'Presse à cuisses',
@@ -806,7 +892,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.LEGS, MuscleGroup.QUADS, MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.LEGS,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Leg_Press'
   },
   {
     name: 'Extension de jambes',
@@ -815,7 +902,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.QUADS],
     primaryMuscle: MuscleGroup.QUADS,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Leg_Extensions'
   },
   {
     name: 'Fentes',
@@ -824,7 +912,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.LEGS, MuscleGroup.QUADS, MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.LEGS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Dumbbell_Lunges'
   },
   {
     name: 'Fentes marchées',
@@ -833,7 +922,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.LEGS, MuscleGroup.QUADS, MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.LEGS,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Barbell_Walking_Lunge'
   },
   {
     name: 'Fentes latérales',
@@ -842,7 +932,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.LEGS, MuscleGroup.QUADS, MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.LEGS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Side_Lunge'
   },
   {
     name: 'Fentes arrière',
@@ -851,7 +942,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.LEGS, MuscleGroup.QUADS, MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.LEGS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Dumbbell_Lunges'
   },
   {
     name: 'Step-up',
@@ -860,7 +952,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.LEGS, MuscleGroup.QUADS, MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.LEGS,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Barbell_Step_Ups'
   },
   {
     name: 'Sissy squat',
@@ -869,7 +962,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.QUADS],
     primaryMuscle: MuscleGroup.QUADS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.ADVANCED
+    difficulty: Difficulty.ADVANCED,
+    imageUrl: 'Bodyweight_Squat'
   },
   {
     name: 'Squat Smith machine',
@@ -878,7 +972,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.LEGS, MuscleGroup.QUADS, MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.LEGS,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Smith_Machine_Squat'
   },
 
   // ═══════════════════════════════════════════════════
@@ -891,7 +986,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.HAMSTRINGS, MuscleGroup.GLUTES, MuscleGroup.BACK],
     primaryMuscle: MuscleGroup.HAMSTRINGS,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Romanian_Deadlift'
   },
   {
     name: 'Soulevé de terre roumain haltères',
@@ -900,7 +996,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.HAMSTRINGS, MuscleGroup.GLUTES, MuscleGroup.BACK],
     primaryMuscle: MuscleGroup.HAMSTRINGS,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Romanian_Deadlift_With_Dumbbells'
   },
   {
     name: 'Soulevé de terre jambes tendues',
@@ -909,7 +1006,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.HAMSTRINGS, MuscleGroup.GLUTES, MuscleGroup.BACK],
     primaryMuscle: MuscleGroup.HAMSTRINGS,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Stiff-Legged_Barbell_Deadlift'
   },
   {
     name: 'Soulevé de terre un bras haltère',
@@ -918,7 +1016,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.HAMSTRINGS, MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.HAMSTRINGS,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Stiff-Legged_Dumbbell_Deadlift'
   },
   {
     name: 'Curl ischio-jambiers',
@@ -927,7 +1026,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.HAMSTRINGS],
     primaryMuscle: MuscleGroup.HAMSTRINGS,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Lying_Leg_Curls'
   },
   {
     name: 'Curl ischio-jambiers assis',
@@ -936,7 +1036,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.HAMSTRINGS],
     primaryMuscle: MuscleGroup.HAMSTRINGS,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Seated_Leg_Curl'
   },
   {
     name: 'Curl nordique',
@@ -945,7 +1046,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.HAMSTRINGS],
     primaryMuscle: MuscleGroup.HAMSTRINGS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.ADVANCED
+    difficulty: Difficulty.ADVANCED,
+    imageUrl: 'Lying_Leg_Curls'
   },
   {
     name: 'Glute-ham raise',
@@ -954,7 +1056,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.HAMSTRINGS, MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.HAMSTRINGS,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.ADVANCED
+    difficulty: Difficulty.ADVANCED,
+    imageUrl: 'Glute_Ham_Raise'
   },
 
   // ═══════════════════════════════════════════════════
@@ -967,7 +1070,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.GLUTES, MuscleGroup.HAMSTRINGS],
     primaryMuscle: MuscleGroup.GLUTES,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Barbell_Hip_Thrust'
   },
   {
     name: 'Hip thrust machine',
@@ -976,7 +1080,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.GLUTES, MuscleGroup.HAMSTRINGS],
     primaryMuscle: MuscleGroup.GLUTES,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Barbell_Hip_Thrust'
   },
   {
     name: 'Pont fessier',
@@ -985,7 +1090,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.GLUTES, MuscleGroup.HAMSTRINGS],
     primaryMuscle: MuscleGroup.GLUTES,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Barbell_Glute_Bridge'
   },
   {
     name: 'Donkey kick',
@@ -994,7 +1100,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.GLUTES,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Flutter_Kicks'
   },
   {
     name: 'Fire hydrant',
@@ -1003,7 +1110,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.GLUTES,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Flutter_Kicks'
   },
   {
     name: 'Kickback fessier poulie',
@@ -1012,7 +1120,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.GLUTES, MuscleGroup.HAMSTRINGS],
     primaryMuscle: MuscleGroup.GLUTES,
     equipment: Equipment.CABLE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Glute_Kickback'
   },
   {
     name: 'Abduction hanche poulie',
@@ -1021,7 +1130,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.GLUTES,
     equipment: Equipment.CABLE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Thigh_Abductor'
   },
   {
     name: 'Abducteur machine',
@@ -1030,7 +1140,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.GLUTES,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Thigh_Abductor'
   },
   {
     name: 'Adducteur machine',
@@ -1039,7 +1150,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.LEGS],
     primaryMuscle: MuscleGroup.LEGS,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Thigh_Adductor'
   },
   {
     name: 'Fente croisée',
@@ -1048,7 +1160,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.GLUTES, MuscleGroup.QUADS],
     primaryMuscle: MuscleGroup.GLUTES,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Dumbbell_Lunges'
   },
   {
     name: 'Clamshell',
@@ -1057,7 +1170,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.GLUTES,
     equipment: Equipment.RESISTANCE_BAND,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Clam'
   },
 
   // ═══════════════════════════════════════════════════
@@ -1070,7 +1184,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CALVES],
     primaryMuscle: MuscleGroup.CALVES,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Standing_Calf_Raises'
   },
   {
     name: 'Mollets assis',
@@ -1079,7 +1194,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CALVES],
     primaryMuscle: MuscleGroup.CALVES,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Seated_Calf_Raise'
   },
   {
     name: 'Mollets debout haltères',
@@ -1088,7 +1204,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CALVES],
     primaryMuscle: MuscleGroup.CALVES,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Standing_Dumbbell_Calf_Raise'
   },
   {
     name: 'Mollets presse à cuisses',
@@ -1097,7 +1214,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CALVES],
     primaryMuscle: MuscleGroup.CALVES,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Calf_Press_On_The_Leg_Press_Machine'
   },
   {
     name: 'Mollets un pied',
@@ -1106,7 +1224,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CALVES],
     primaryMuscle: MuscleGroup.CALVES,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Standing_Calf_Raises'
   },
 
   // ═══════════════════════════════════════════════════
@@ -1119,7 +1238,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.ABS],
     primaryMuscle: MuscleGroup.ABS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Plank'
   },
   {
     name: 'Gainage latéral',
@@ -1128,7 +1248,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.ABS],
     primaryMuscle: MuscleGroup.ABS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Side_Bridge'
   },
   {
     name: 'Crunchs',
@@ -1137,7 +1258,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.ABS],
     primaryMuscle: MuscleGroup.ABS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Crunches'
   },
   {
     name: 'Crunchs obliques',
@@ -1146,7 +1268,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.ABS],
     primaryMuscle: MuscleGroup.ABS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Oblique_Crunches'
   },
   {
     name: 'Crunchs poulie haute',
@@ -1155,7 +1278,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.ABS],
     primaryMuscle: MuscleGroup.ABS,
     equipment: Equipment.CABLE,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Cable_Crunch'
   },
   {
     name: 'Crunchs inversés',
@@ -1164,7 +1288,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.ABS],
     primaryMuscle: MuscleGroup.ABS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Reverse_Crunch'
   },
   {
     name: 'Relevé de jambes suspendu',
@@ -1173,7 +1298,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.ABS],
     primaryMuscle: MuscleGroup.ABS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Hanging_Leg_Raise'
   },
   {
     name: 'Relevé de jambes allongé',
@@ -1182,7 +1308,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.ABS],
     primaryMuscle: MuscleGroup.ABS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Flat_Bench_Lying_Leg_Raise'
   },
   {
     name: 'Relevé de genoux suspendu',
@@ -1191,7 +1318,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.ABS],
     primaryMuscle: MuscleGroup.ABS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Hanging_Leg_Raise'
   },
   {
     name: 'Rotations russes',
@@ -1200,7 +1328,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.ABS],
     primaryMuscle: MuscleGroup.ABS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Russian_Twist'
   },
   {
     name: 'Mountain climbers',
@@ -1209,7 +1338,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.ABS, MuscleGroup.CARDIO],
     primaryMuscle: MuscleGroup.ABS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Mountain_Climbers'
   },
   {
     name: 'Ab wheel (rollout)',
@@ -1218,7 +1348,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.ABS],
     primaryMuscle: MuscleGroup.ABS,
     equipment: Equipment.OTHER,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Ab_Roller'
   },
   {
     name: 'Bicycle crunch',
@@ -1227,7 +1358,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.ABS],
     primaryMuscle: MuscleGroup.ABS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Air_Bike'
   },
   {
     name: 'Dead bug',
@@ -1236,7 +1368,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.ABS],
     primaryMuscle: MuscleGroup.ABS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Flat_Bench_Lying_Leg_Raise'
   },
   {
     name: 'Hollow hold',
@@ -1245,7 +1378,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.ABS],
     primaryMuscle: MuscleGroup.ABS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Plank'
   },
   {
     name: 'V-up',
@@ -1254,7 +1388,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.ABS],
     primaryMuscle: MuscleGroup.ABS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Jackknife_Sit-Up'
   },
   {
     name: 'Dragon flag',
@@ -1263,7 +1398,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.ABS],
     primaryMuscle: MuscleGroup.ABS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.ADVANCED
+    difficulty: Difficulty.ADVANCED,
+    imageUrl: 'Hanging_Leg_Raise'
   },
   {
     name: 'Essuie-glaces',
@@ -1272,7 +1408,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.ABS],
     primaryMuscle: MuscleGroup.ABS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.ADVANCED
+    difficulty: Difficulty.ADVANCED,
+    imageUrl: 'Windmills'
   },
   {
     name: 'Crunchs machine',
@@ -1281,7 +1418,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.ABS],
     primaryMuscle: MuscleGroup.ABS,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Ab_Crunch_Machine'
   },
   {
     name: 'Pallof press',
@@ -1290,7 +1428,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.ABS],
     primaryMuscle: MuscleGroup.ABS,
     equipment: Equipment.CABLE,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Cable_Crunch'
   },
   {
     name: 'Sit-ups',
@@ -1299,7 +1438,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.ABS],
     primaryMuscle: MuscleGroup.ABS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: '3_4_Sit-Up'
   },
   {
     name: 'Toes to bar',
@@ -1308,7 +1448,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.ABS],
     primaryMuscle: MuscleGroup.ABS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.ADVANCED
+    difficulty: Difficulty.ADVANCED,
+    imageUrl: 'Hanging_Leg_Raise'
   },
 
   // ═══════════════════════════════════════════════════
@@ -1321,7 +1462,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BICEPS,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Palms-Up_Barbell_Wrist_Curl_Over_A_Bench'
   },
   {
     name: 'Curl poignets inversé',
@@ -1330,7 +1472,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BICEPS,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Palms-Down_Wrist_Curl_Over_A_Bench'
   },
   {
     name: 'Farmer walk',
@@ -1339,7 +1482,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.FULL_BODY],
     primaryMuscle: MuscleGroup.FULL_BODY,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Barbell_Shrug'
   },
 
   // ═══════════════════════════════════════════════════
@@ -1352,7 +1496,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.FULL_BODY, MuscleGroup.SHOULDERS, MuscleGroup.LEGS],
     primaryMuscle: MuscleGroup.FULL_BODY,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.ADVANCED
+    difficulty: Difficulty.ADVANCED,
+    imageUrl: 'Clean_and_Press'
   },
   {
     name: 'Thruster',
@@ -1361,7 +1506,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.FULL_BODY, MuscleGroup.LEGS, MuscleGroup.SHOULDERS],
     primaryMuscle: MuscleGroup.FULL_BODY,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Clean_and_Press'
   },
   {
     name: 'Turkish get-up',
@@ -1370,7 +1516,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.FULL_BODY, MuscleGroup.SHOULDERS, MuscleGroup.ABS],
     primaryMuscle: MuscleGroup.FULL_BODY,
     equipment: Equipment.KETTLEBELL,
-    difficulty: Difficulty.ADVANCED
+    difficulty: Difficulty.ADVANCED,
+    imageUrl: 'Turkish_Get-Up_Kettlebell'
   },
   {
     name: 'Kettlebell swing',
@@ -1379,7 +1526,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.FULL_BODY, MuscleGroup.GLUTES, MuscleGroup.HAMSTRINGS],
     primaryMuscle: MuscleGroup.FULL_BODY,
     equipment: Equipment.KETTLEBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'One-Arm_Kettlebell_Swings'
   },
   {
     name: 'Snatch kettlebell',
@@ -1388,7 +1536,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.FULL_BODY, MuscleGroup.SHOULDERS],
     primaryMuscle: MuscleGroup.FULL_BODY,
     equipment: Equipment.KETTLEBELL,
-    difficulty: Difficulty.ADVANCED
+    difficulty: Difficulty.ADVANCED,
+    imageUrl: 'One-Arm_Kettlebell_Swings'
   },
   {
     name: 'Clean kettlebell',
@@ -1397,7 +1546,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.FULL_BODY, MuscleGroup.SHOULDERS],
     primaryMuscle: MuscleGroup.FULL_BODY,
     equipment: Equipment.KETTLEBELL,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'One-Arm_Kettlebell_Swings'
   },
   {
     name: 'Man maker',
@@ -1406,7 +1556,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.FULL_BODY],
     primaryMuscle: MuscleGroup.FULL_BODY,
     equipment: Equipment.DUMBBELL,
-    difficulty: Difficulty.ADVANCED
+    difficulty: Difficulty.ADVANCED,
+    imageUrl: 'Clean_and_Press'
   },
   {
     name: 'Épaulé barre',
@@ -1415,7 +1566,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.FULL_BODY, MuscleGroup.LEGS, MuscleGroup.BACK],
     primaryMuscle: MuscleGroup.FULL_BODY,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.ADVANCED
+    difficulty: Difficulty.ADVANCED,
+    imageUrl: 'Power_Clean'
   },
   {
     name: 'Arraché barre',
@@ -1424,7 +1576,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.FULL_BODY, MuscleGroup.LEGS, MuscleGroup.SHOULDERS],
     primaryMuscle: MuscleGroup.FULL_BODY,
     equipment: Equipment.BARBELL,
-    difficulty: Difficulty.ADVANCED
+    difficulty: Difficulty.ADVANCED,
+    imageUrl: 'Power_Snatch'
   },
   {
     name: 'Squat goblet kettlebell',
@@ -1433,7 +1586,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.LEGS, MuscleGroup.QUADS, MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.LEGS,
     equipment: Equipment.KETTLEBELL,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Goblet_Squat'
   },
 
   // ═══════════════════════════════════════════════════
@@ -1446,7 +1600,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BACK],
     primaryMuscle: MuscleGroup.BACK,
     equipment: Equipment.RESISTANCE_BAND,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Seated_Cable_Rows'
   },
   {
     name: 'Curl élastique',
@@ -1455,7 +1610,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BICEPS],
     primaryMuscle: MuscleGroup.BICEPS,
     equipment: Equipment.RESISTANCE_BAND,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Barbell_Curl'
   },
   {
     name: 'Squat élastique',
@@ -1464,7 +1620,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.LEGS, MuscleGroup.QUADS, MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.LEGS,
     equipment: Equipment.RESISTANCE_BAND,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Bodyweight_Squat'
   },
   {
     name: 'Élévations latérales élastique',
@@ -1473,7 +1630,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.SHOULDERS],
     primaryMuscle: MuscleGroup.SHOULDERS,
     equipment: Equipment.RESISTANCE_BAND,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Side_Lateral_Raise'
   },
   {
     name: 'Extension triceps élastique',
@@ -1482,7 +1640,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.TRICEPS],
     primaryMuscle: MuscleGroup.TRICEPS,
     equipment: Equipment.RESISTANCE_BAND,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Triceps_Pushdown'
   },
   {
     name: 'Pompes élastique',
@@ -1491,7 +1650,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CHEST, MuscleGroup.TRICEPS],
     primaryMuscle: MuscleGroup.CHEST,
     equipment: Equipment.RESISTANCE_BAND,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Pushups'
   },
   {
     name: 'Pull-apart élastique',
@@ -1500,7 +1660,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.SHOULDERS, MuscleGroup.BACK],
     primaryMuscle: MuscleGroup.SHOULDERS,
     equipment: Equipment.RESISTANCE_BAND,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Band_Pull_Apart'
   },
   {
     name: 'Hip thrust élastique',
@@ -1509,7 +1670,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.GLUTES,
     equipment: Equipment.RESISTANCE_BAND,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Barbell_Glute_Bridge'
   },
 
   // ═══════════════════════════════════════════════════
@@ -1522,7 +1684,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CARDIO, MuscleGroup.LEGS],
     primaryMuscle: MuscleGroup.CARDIO,
     equipment: Equipment.OTHER,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Jogging-Treadmill'
   },
   {
     name: 'Vélo',
@@ -1531,7 +1694,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CARDIO, MuscleGroup.LEGS],
     primaryMuscle: MuscleGroup.CARDIO,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Bicycling_Stationary'
   },
   {
     name: 'Rameur',
@@ -1540,7 +1704,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CARDIO, MuscleGroup.BACK, MuscleGroup.LEGS],
     primaryMuscle: MuscleGroup.CARDIO,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Rowing_Stationary'
   },
   {
     name: 'Corde à sauter',
@@ -1549,7 +1714,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CARDIO, MuscleGroup.CALVES],
     primaryMuscle: MuscleGroup.CARDIO,
     equipment: Equipment.OTHER,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Rope_Jumping'
   },
   {
     name: 'Elliptique',
@@ -1558,7 +1724,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CARDIO, MuscleGroup.LEGS],
     primaryMuscle: MuscleGroup.CARDIO,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Elliptical_Trainer'
   },
   {
     name: 'Tapis de course',
@@ -1567,7 +1734,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CARDIO, MuscleGroup.LEGS],
     primaryMuscle: MuscleGroup.CARDIO,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Jogging-Treadmill'
   },
   {
     name: 'Burpees',
@@ -1576,7 +1744,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CARDIO, MuscleGroup.FULL_BODY],
     primaryMuscle: MuscleGroup.CARDIO,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Burpee'
   },
   {
     name: 'Jumping jacks',
@@ -1585,7 +1754,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CARDIO],
     primaryMuscle: MuscleGroup.CARDIO,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Jumping_Jacks'
   },
   {
     name: 'Sprint',
@@ -1594,7 +1764,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CARDIO, MuscleGroup.LEGS],
     primaryMuscle: MuscleGroup.CARDIO,
     equipment: Equipment.OTHER,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Jogging-Treadmill'
   },
   {
     name: 'Box jump',
@@ -1603,7 +1774,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CARDIO, MuscleGroup.LEGS],
     primaryMuscle: MuscleGroup.CARDIO,
     equipment: Equipment.OTHER,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Bench_Jump'
   },
   {
     name: 'Battling ropes',
@@ -1612,7 +1784,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CARDIO, MuscleGroup.SHOULDERS],
     primaryMuscle: MuscleGroup.CARDIO,
     equipment: Equipment.OTHER,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Battling_Ropes'
   },
   {
     name: 'Assault bike',
@@ -1621,7 +1794,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CARDIO, MuscleGroup.FULL_BODY],
     primaryMuscle: MuscleGroup.CARDIO,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.INTERMEDIATE
+    difficulty: Difficulty.INTERMEDIATE,
+    imageUrl: 'Bicycling_Stationary'
   },
   {
     name: 'Natation',
@@ -1630,7 +1804,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CARDIO, MuscleGroup.FULL_BODY],
     primaryMuscle: MuscleGroup.CARDIO,
     equipment: Equipment.OTHER,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: null
   },
   {
     name: 'Marche rapide',
@@ -1639,7 +1814,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CARDIO, MuscleGroup.LEGS],
     primaryMuscle: MuscleGroup.CARDIO,
     equipment: Equipment.OTHER,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Jogging-Treadmill'
   },
   {
     name: 'Montée d\'escaliers',
@@ -1648,7 +1824,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CARDIO, MuscleGroup.LEGS],
     primaryMuscle: MuscleGroup.CARDIO,
     equipment: Equipment.OTHER,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Stairmaster'
   },
   {
     name: 'Stairmaster',
@@ -1657,7 +1834,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CARDIO, MuscleGroup.LEGS, MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.CARDIO,
     equipment: Equipment.MACHINE,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Stairmaster'
   },
 
   // ═══════════════════════════════════════════════════
@@ -1670,7 +1848,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.QUADS],
     primaryMuscle: MuscleGroup.QUADS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'All_Fours_Quad_Stretch'
   },
   {
     name: 'Étirement ischio-jambiers',
@@ -1679,7 +1858,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.HAMSTRINGS],
     primaryMuscle: MuscleGroup.HAMSTRINGS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: '90_90_Hamstring'
   },
   {
     name: 'Étirement pectoraux',
@@ -1688,7 +1868,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CHEST],
     primaryMuscle: MuscleGroup.CHEST,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Behind_Head_Chest_Stretch'
   },
   {
     name: 'Étirement dos',
@@ -1697,7 +1878,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.BACK],
     primaryMuscle: MuscleGroup.BACK,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Cat_Stretch'
   },
   {
     name: 'Étirement épaules',
@@ -1706,7 +1888,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.SHOULDERS],
     primaryMuscle: MuscleGroup.SHOULDERS,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Arm_Circles'
   },
   {
     name: 'Étirement hanches (pigeon)',
@@ -1715,7 +1898,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.GLUTES],
     primaryMuscle: MuscleGroup.GLUTES,
     equipment: Equipment.BODYWEIGHT,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Ankle_On_The_Knee'
   },
   {
     name: 'Foam rolling',
@@ -1724,7 +1908,8 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.FULL_BODY],
     primaryMuscle: MuscleGroup.FULL_BODY,
     equipment: Equipment.OTHER,
-    difficulty: Difficulty.BEGINNER
+    difficulty: Difficulty.BEGINNER,
+    imageUrl: 'Anterior_Tibialis-SMR'
   }
 ]
 
@@ -1780,8 +1965,9 @@ export async function seedExerciseLibrary() {
     }
   }
 
-  // Then create any missing exercises
+  // Then create or update exercises
   let created = 0
+  let updated = 0
   let skipped = 0
   for (const exerciseData of exercisesData) {
     const existing = await exerciseRepo.findOne({
@@ -1792,10 +1978,15 @@ export async function seedExerciseLibrary() {
       const exercise = exerciseRepo.create(exerciseData)
       await exerciseRepo.save(exercise)
       created++
+    } else if (exerciseData.imageUrl && !existing.imageUrl) {
+      // Update imageUrl if exercise exists but has no image
+      existing.imageUrl = exerciseData.imageUrl
+      await exerciseRepo.save(existing)
+      updated++
     } else {
       skipped++
     }
   }
 
-  console.log(`🎉 Exercise library seeding complete! Created: ${created}, Skipped: ${skipped}, Total: ${exercisesData.length}`)
+  console.log(`🎉 Exercise library seeding complete! Created: ${created}, Updated: ${updated}, Skipped: ${skipped}, Total: ${exercisesData.length}`)
 }

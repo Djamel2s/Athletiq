@@ -66,28 +66,13 @@
           {{ currentExercise.exerciseLibrary?.name || currentExercise.name }}
         </h1>
 
-        <!-- GIF/Image exercice (caché pendant le repos) -->
-        <div v-if="!showRestTimer" class="card-glass overflow-hidden mb-4">
-          <div v-if="currentExercise.exerciseLibrary?.imageUrl || currentExercise.exerciseLibrary?.videoUrl">
-            <img
-              v-if="currentExercise.exerciseLibrary.imageUrl"
-              :src="currentExercise.exerciseLibrary.imageUrl"
-              :alt="currentExercise.exerciseLibrary.name"
-              class="w-full h-48 md:h-64 object-cover rounded-2xl"
-            />
-            <video
-              v-else-if="currentExercise.exerciseLibrary.videoUrl"
-              :src="currentExercise.exerciseLibrary.videoUrl"
-              loop
-              autoplay
-              muted
-              playsinline
-              class="w-full h-48 md:h-64 object-cover rounded-2xl"
-            />
-          </div>
-          <div v-else class="h-48 md:h-64 flex items-center justify-center bg-primary-100 dark:bg-primary-800">
-            <p class="text-primary-500 dark:text-primary-400">Aucune image disponible</p>
-          </div>
+        <!-- Animation exercice (caché pendant le repos) -->
+        <div v-if="!showRestTimer" class="mb-4">
+          <ExerciseAnimation
+            :image-id="currentExercise.exerciseLibrary?.imageUrl"
+            :name="currentExercise.exerciseLibrary?.name || currentExercise.name"
+            size="lg"
+          />
         </div>
 
         <!-- Weight progression suggestion -->

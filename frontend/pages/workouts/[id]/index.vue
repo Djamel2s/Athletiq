@@ -93,6 +93,14 @@
             :key="exercise.id"
             class="card-glass"
           >
+            <!-- Exercise Image -->
+            <ExerciseAnimation
+              :image-id="exercise.exerciseLibrary?.imageUrl"
+              :name="exercise.exerciseLibrary?.name || exercise.name"
+              size="sm"
+              class="mb-4"
+            />
+
             <div class="flex items-start justify-between gap-3 mb-4">
               <div>
                 <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100">
