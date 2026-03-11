@@ -68,44 +68,14 @@
             </div>
           </div>
 
-          <!-- Illustration musculaire -->
+          <!-- Visual hero -->
           <div class="relative h-80 md:h-96 lg:h-[28rem] slide-up hidden md:flex flex-col items-center justify-center">
-            <!-- Toggle Homme / Femme -->
-            <div class="flex items-center gap-1 mb-4 glass rounded-full p-1">
-              <button
-                @click="heroGender = 'male'"
-                :class="heroGender === 'male' ? 'bg-gradient-primary text-white' : 'text-primary-500 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100'"
-                class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300"
-              >
-                Homme
-              </button>
-              <button
-                @click="heroGender = 'female'"
-                :class="heroGender === 'female' ? 'bg-gradient-primary text-white' : 'text-primary-500 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100'"
-                class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300"
-              >
-                Femme
-              </button>
-            </div>
-
-            <!-- Figure -->
             <div class="relative flex-1 w-full flex items-center justify-center">
-              <Transition name="hero-figure" mode="out-in">
-                <img
-                  v-if="heroGender === 'male'"
-                  key="male"
-                  src="/muscle-male.svg"
-                  alt="Anatomie musculaire homme"
-                  class="h-full max-h-[22rem] w-auto object-contain drop-shadow-2xl"
-                />
-                <img
-                  v-else
-                  key="female"
-                  src="/muscle-female.svg"
-                  alt="Anatomie musculaire femme"
-                  class="h-full max-h-[22rem] w-auto object-contain drop-shadow-2xl"
-                />
-              </Transition>
+              <img
+                src="/athletiq-icon.svg"
+                alt="Athletiq"
+                class="h-full max-h-[18rem] w-auto object-contain drop-shadow-2xl opacity-30"
+              />
             </div>
           </div>
         </div>
@@ -483,7 +453,6 @@ useHead({
 })
 
 const authStore = useAuthStore()
-const heroGender = ref<'male' | 'female'>('male')
 
 onMounted(() => {
   authStore.loadFromLocalStorage()
