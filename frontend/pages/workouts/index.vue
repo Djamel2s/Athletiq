@@ -241,6 +241,8 @@ import { useSubscriptionStore } from '~/stores/subscription'
 import { useSubscriptionLimits } from '~/composables/useSubscriptionLimits'
 import type { Workout } from '~/types/workout'
 
+useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
+
 const workoutStore = useWorkoutStore()
 const authStore = useAuthStore()
 const subscriptionStore = useSubscriptionStore()

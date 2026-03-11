@@ -147,6 +147,8 @@ definePageMeta({
   middleware: 'auth'
 })
 
+useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
+
 const authStore = useAuthStore()
 
 const firstName = ref('')

@@ -273,6 +273,8 @@ import { useAuthStore } from '~/stores/auth'
 import { useWorkoutStore } from '~/stores/workout'
 import WorkoutHeatmap from '~/components/WorkoutHeatmap.vue'
 
+useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
+
 const authStore = useAuthStore()
 const workoutStore = useWorkoutStore()
 const statsApi = useStatsApi()

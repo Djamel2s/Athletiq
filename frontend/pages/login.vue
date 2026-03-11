@@ -107,6 +107,13 @@ definePageMeta({
   layout: false
 })
 
+useSeoMeta({
+  title: 'Connexion · Athletiq',
+  ogTitle: 'Connexion · Athletiq',
+  description: 'Connectez-vous à votre compte Athletiq pour suivre vos entraînements et votre progression.',
+  ogDescription: 'Connectez-vous à votre compte Athletiq pour suivre vos entraînements et votre progression.',
+})
+
 const authStore = useAuthStore()
 const route = useRoute()
 

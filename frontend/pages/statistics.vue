@@ -422,6 +422,8 @@
 import { useWorkoutStore } from '~/stores/workout'
 import { useAuthStore } from '~/stores/auth'
 import { useGoalStore } from '~/stores/goals'
+
+useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
 import { useBodyStore } from '~/stores/body'
 import { useSubscriptionStore } from '~/stores/subscription'
 import { useSubscriptionLimits } from '~/composables/useSubscriptionLimits'

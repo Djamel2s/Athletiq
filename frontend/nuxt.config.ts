@@ -8,7 +8,9 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@nuxt/icon',
     '@nuxtjs/color-mode',
-    '@vite-pwa/nuxt'
+    '@vite-pwa/nuxt',
+    '@nuxtjs/sitemap',
+    '@nuxtjs/robots'
   ],
 
   colorMode: {
@@ -21,22 +23,25 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'Athletiq - Suivi intelligent d\'entraînements',
+      htmlAttrs: { lang: 'fr' },
+      title: 'Athletiq - Suis ta progression. Prouve-le.',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'Athletiq — Ton coach de musculation intelligent. Suis tes entraînements, tes progrès et atteins tes objectifs.' },
+        { name: 'description', content: 'L\'app de musculation qui transforme tes entraînements en résultats. Suivi des séances, progression visuelle, streak et insights personnalisés.' },
         // Open Graph / Facebook
         { property: 'og:type', content: 'website' },
-        { property: 'og:title', content: 'Athletiq — Suivi intelligent d\'entraînements' },
-        { property: 'og:description', content: 'Suis tes entraînements, analyse tes progrès et atteins tes objectifs avec Athletiq.' },
-        { property: 'og:image', content: '/athletiq-og.png' },
+        { property: 'og:title', content: 'Athletiq - Suis ta progression. Prouve-le.' },
+        { property: 'og:description', content: 'L\'app de musculation qui transforme tes entraînements en résultats. Suivi des séances, progression visuelle, streak et insights personnalisés.' },
+        { property: 'og:image', content: 'https://athletiq.fr/athletiq-og.png' },
         { property: 'og:site_name', content: 'Athletiq' },
+        { property: 'og:url', content: 'https://athletiq.fr' },
+        { property: 'og:locale', content: 'fr_FR' },
         // Twitter Card
         { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:title', content: 'Athletiq — Suivi intelligent d\'entraînements' },
-        { name: 'twitter:description', content: 'Suis tes entraînements, analyse tes progrès et atteins tes objectifs.' },
-        { name: 'twitter:image', content: '/athletiq-og.png' },
+        { name: 'twitter:title', content: 'Athletiq - Suis ta progression. Prouve-le.' },
+        { name: 'twitter:description', content: 'L\'app de musculation qui transforme tes entraînements en résultats. Suivi des séances, progression visuelle, streak et insights personnalisés.' },
+        { name: 'twitter:image', content: 'https://athletiq.fr/athletiq-og.png' },
         // Theme
         { name: 'theme-color', content: '#d4c4b0' }
       ],
@@ -114,5 +119,42 @@ export default defineNuxtConfig({
     public: {
       apiUrl: process.env.NUXT_PUBLIC_API_URL || 'http://localhost:3001/api'
     }
+  },
+
+  sitemap: {
+    siteUrl: 'https://athletiq.fr',
+    urls: [
+      '/',
+      '/login',
+      '/register',
+      '/forgot-password',
+      '/reset-password',
+      '/legal/cgu',
+      '/legal/privacy',
+      '/legal/mentions'
+    ],
+    exclude: ['/**'],
+  },
+
+  robots: {
+    rules: [
+      {
+        userAgent: '*',
+        allow: '/',
+        disallow: [
+          '/dashboard',
+          '/workouts',
+          '/settings',
+          '/profile',
+          '/body',
+          '/statistics',
+          '/calendar',
+          '/streak',
+          '/wrapped',
+          '/subscription',
+          '/api'
+        ]
+      }
+    ]
   }
 })

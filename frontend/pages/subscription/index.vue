@@ -197,6 +197,8 @@ import { useAuthStore } from '~/stores/auth'
 import { useSubscriptionStore } from '~/stores/subscription'
 import { useSubscriptionLimits } from '~/composables/useSubscriptionLimits'
 
+useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
+
 definePageMeta({
   layout: false,
   middleware: 'auth'

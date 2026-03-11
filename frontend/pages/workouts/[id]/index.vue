@@ -160,6 +160,8 @@ import { useWorkoutStore } from '~/stores/workout'
 import { useAuthStore } from '~/stores/auth'
 import type { Exercise, Set } from '~/types/workout'
 
+useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
+
 const route = useRoute()
 const workoutStore = useWorkoutStore()
 const authStore = useAuthStore()

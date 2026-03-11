@@ -380,6 +380,8 @@
 import { useAuthStore } from '~/stores/auth'
 import { useBodyStore } from '~/stores/body'
 import { useWorkoutStore } from '~/stores/workout'
+
+useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
 import { useSubscriptionStore } from '~/stores/subscription'
 import { useSubscriptionLimits } from '~/composables/useSubscriptionLimits'
 import type { ProgressPhoto, Measurement } from '~/types/body'

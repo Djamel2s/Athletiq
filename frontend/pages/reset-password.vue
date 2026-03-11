@@ -69,6 +69,13 @@
 <script setup lang="ts">
 definePageMeta({ layout: false })
 
+useSeoMeta({
+  title: 'Nouveau mot de passe · Athletiq',
+  ogTitle: 'Nouveau mot de passe · Athletiq',
+  description: 'Choisissez un nouveau mot de passe pour votre compte Athletiq.',
+  ogDescription: 'Choisissez un nouveau mot de passe pour votre compte Athletiq.',
+})
+
 const route = useRoute()
 const password = ref('')
 const confirmPassword = ref('')

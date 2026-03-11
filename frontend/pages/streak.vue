@@ -308,6 +308,8 @@
 <script setup lang="ts">
 import type { StreakData, WeeklyRecapData, CorrelationData } from '~/composables/useStatsApi'
 
+useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
+
 const authStore = useAuthStore()
 const workoutStore = useWorkoutStore()
 const statsApi = useStatsApi()

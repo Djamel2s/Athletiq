@@ -406,6 +406,8 @@ import { useAuthStore } from '~/stores/auth'
 import { optimizeExerciseOrder } from '~/composables/useExerciseOrder'
 import type { ExerciseLibrary, Exercise } from '~/types/workout'
 
+useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
+
 const workoutStore = useWorkoutStore()
 const authStore = useAuthStore()
 const toast = useToast()

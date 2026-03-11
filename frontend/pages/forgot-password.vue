@@ -64,6 +64,13 @@
 <script setup lang="ts">
 definePageMeta({ layout: false })
 
+useSeoMeta({
+  title: 'Mot de passe oublié · Athletiq',
+  ogTitle: 'Mot de passe oublié · Athletiq',
+  description: 'Réinitialisez votre mot de passe Athletiq.',
+  ogDescription: 'Réinitialisez votre mot de passe Athletiq.',
+})
+
 const email = ref('')
 const loading = ref(false)
 const error = ref('')

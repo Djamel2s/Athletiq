@@ -216,6 +216,8 @@
 <script setup lang="ts">
 import type { Workout, Exercise, Set } from '~/types/workout'
 
+useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
+
 const authStore = useAuthStore()
 const workoutStore = useWorkoutStore()
 

@@ -139,6 +139,13 @@ definePageMeta({
   layout: false
 })
 
+useSeoMeta({
+  title: 'Créer un compte · Athletiq',
+  ogTitle: 'Créer un compte · Athletiq',
+  description: 'Créez votre compte Athletiq gratuitement et commencez à suivre vos entraînements.',
+  ogDescription: 'Créez votre compte Athletiq gratuitement et commencez à suivre vos entraînements.',
+})
+
 const authStore = useAuthStore()
 
 const firstName = ref('')

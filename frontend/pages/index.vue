@@ -450,6 +450,42 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth'
 
+useSeoMeta({
+  title: 'Athletiq - Suis ta progression. Prouve-le.',
+  ogTitle: 'Athletiq - Suis ta progression. Prouve-le.',
+  description: "L'app de musculation qui transforme tes entraînements en résultats. Suivi des séances, progression visuelle, streak et insights personnalisés.",
+  ogDescription: "L'app de musculation qui transforme tes entraînements en résultats. Suivi des séances, progression visuelle, streak et insights personnalisés.",
+  ogImage: 'https://athletiq.fr/athletiq-og.png',
+  ogUrl: 'https://athletiq.fr',
+  twitterCard: 'summary_large_image',
+})
+
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: 'Athletiq',
+        operatingSystem: 'Web',
+        applicationCategory: 'HealthApplication',
+        offers: {
+          '@type': 'Offer',
+          price: '0',
+          priceCurrency: 'EUR'
+        },
+        url: 'https://athletiq.fr',
+        description: "L'app de musculation qui transforme tes entraînements en résultats. Suivi des séances, progression visuelle, streak et insights personnalisés.",
+        author: {
+          '@type': 'Organization',
+          name: 'Athletiq'
+        }
+      })
+    }
+  ]
+})
+
 const authStore = useAuthStore()
 
 onMounted(() => {

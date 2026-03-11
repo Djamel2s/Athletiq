@@ -202,6 +202,8 @@ import { useAuthStore } from '~/stores/auth'
 import { useWorkoutStore } from '~/stores/workout'
 import type { Workout } from '~/types/workout'
 
+useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
+
 const authStore = useAuthStore()
 const workoutStore = useWorkoutStore()
 

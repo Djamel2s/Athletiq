@@ -24,31 +24,54 @@ const C = {
 }
 
 // ============================================================
-// Layout principal — fond sombre premium
+// Layout principal — fond sombre premium, dark mode safe
 // ============================================================
 const emailLayout = (content: string) => `
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-modes" content="light dark">
   <title>Athletiq</title>
+  <!--[if mso]>
+  <noscript>
+    <xml>
+      <o:OfficeDocumentSettings>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+  </noscript>
+  <![endif]-->
+  <style>
+    :root { color-scheme: light dark; }
+    body, .body-bg { background-color: ${C.bg} !important; }
+    .card-bg { background-color: ${C.cardBg} !important; }
+    [data-ogsc] body, [data-ogsc] .body-bg { background-color: ${C.bg} !important; }
+    [data-ogsc] .card-bg { background-color: ${C.cardBg} !important; }
+    @media (prefers-color-scheme: dark) {
+      body, .body-bg { background-color: ${C.bg} !important; }
+      .card-bg { background-color: ${C.cardBg} !important; }
+      u + .body .body-bg { background-color: ${C.bg} !important; }
+    }
+  </style>
 </head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: ${C.bg}; color: ${C.text};">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: ${C.bg};">
+<body class="body-bg" style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: ${C.bg}; color: ${C.text}; color-scheme: light dark; -webkit-text-size-adjust: none;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="body-bg" style="background-color: ${C.bg};">
     <tr>
-      <td align="center" style="padding: 48px 16px;">
+      <td align="center" style="padding: 56px 20px;">
         <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width: 560px; width: 100%;">
 
-          <!-- Logo -->
+          <!-- Header with gradient accent -->
           <tr>
-            <td align="center" style="padding-bottom: 32px;">
+            <td style="background: linear-gradient(180deg, rgba(212,196,176,0.08) 0%, transparent 100%); border-radius: 24px 24px 0 0; padding: 40px 40px 24px 40px;">
               <table role="presentation" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td style="width: 36px; height: 36px; background: linear-gradient(135deg, ${C.gradientStart}, ${C.gradientEnd}); border-radius: 10px;" align="center" valign="middle">
-                    <span style="color: ${C.bg}; font-size: 18px; font-weight: 800; line-height: 36px;">A</span>
+                  <td style="width: 40px; height: 40px;" valign="middle">
+                    <img src="https://athletiq.fr/pwa-192x192.png" width="40" height="40" alt="Athletiq" style="border-radius: 10px; display: block; border: 0;">
                   </td>
-                  <td style="padding-left: 12px;">
+                  <td style="padding-left: 14px;" valign="middle">
                     <span style="font-size: 22px; font-weight: 700; color: ${C.text}; letter-spacing: -0.5px;">Athletiq</span>
                   </td>
                 </tr>
@@ -58,20 +81,31 @@ const emailLayout = (content: string) => `
 
           <!-- Card -->
           <tr>
-            <td style="background-color: ${C.cardBg}; border: 1px solid ${C.cardBorder}; border-radius: 20px; padding: 44px 36px;">
+            <td class="card-bg" style="background-color: ${C.cardBg}; border: 1px solid ${C.cardBorder}; border-top: none; border-radius: 0 0 24px 24px; padding: 12px 44px 48px 44px;">
               ${content}
             </td>
           </tr>
 
           <!-- Footer -->
           <tr>
-            <td align="center" style="padding-top: 32px;">
-              <p style="font-size: 12px; color: ${C.textDim}; margin: 0; line-height: 1.6;">
-                Athletiq &mdash; Ton coach de musculation intelligent
-              </p>
-              <p style="font-size: 11px; color: ${C.textDim}; margin: 8px 0 0; opacity: 0.6;">
-                Si tu n'as pas demand&eacute; cet email, ignore-le simplement.
-              </p>
+            <td align="center" style="padding: 36px 20px 0;">
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td align="center" style="padding-bottom: 12px;">
+                    <hr style="border: none; border-top: 1px solid ${C.cardBorder}; margin: 0; width: 60px;">
+                  </td>
+                </tr>
+                <tr>
+                  <td align="center">
+                    <p style="font-size: 12px; color: ${C.textDim}; margin: 0; line-height: 1.6; letter-spacing: 0.2px;">
+                      Athletiq -- Ton coach de musculation intelligent
+                    </p>
+                    <p style="font-size: 11px; color: ${C.textDim}; margin: 10px 0 0; opacity: 0.5;">
+                      Si tu n'as pas demande cet email, ignore-le simplement.
+                    </p>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
 
@@ -87,31 +121,31 @@ const emailLayout = (content: string) => `
 // Composants r&eacute;utilisables
 // ============================================================
 const heading = (text: string) =>
-  `<h1 style="font-size: 24px; font-weight: 700; color: ${C.text}; margin: 0 0 8px; letter-spacing: -0.3px;">${text}</h1>`
+  `<h1 style="font-size: 26px; font-weight: 700; color: ${C.text}; margin: 0 0 10px; letter-spacing: -0.4px; line-height: 1.3;">${text}</h1>`
 
 const paragraph = (text: string) =>
-  `<p style="font-size: 15px; color: ${C.textMuted}; line-height: 1.7; margin: 0 0 20px;">${text}</p>`
+  `<p style="font-size: 15px; color: ${C.textMuted}; line-height: 1.75; margin: 0 0 24px;">${text}</p>`
 
 const button = (text: string, url: string) =>
-  `<table role="presentation" cellpadding="0" cellspacing="0" style="margin: 32px auto;">
+  `<table role="presentation" cellpadding="0" cellspacing="0" style="margin: 36px auto;">
     <tr>
-      <td style="background: linear-gradient(135deg, ${C.gradientStart}, ${C.gradientEnd}); border-radius: 12px; padding: 14px 36px;">
-        <a href="${url}" style="color: ${C.bg}; text-decoration: none; font-size: 15px; font-weight: 600; display: inline-block;">${text}</a>
+      <td style="background: linear-gradient(135deg, ${C.gradientStart}, ${C.gradientEnd}); border-radius: 14px; padding: 15px 40px; box-shadow: 0 2px 8px rgba(212,196,176,0.15);">
+        <a href="${url}" style="color: ${C.bg}; text-decoration: none; font-size: 15px; font-weight: 600; display: inline-block; letter-spacing: 0.1px;">${text}</a>
       </td>
     </tr>
   </table>`
 
 const divider = () =>
-  `<hr style="border: none; border-top: 1px solid ${C.cardBorder}; margin: 28px 0;">`
+  `<hr style="border: none; border-top: 1px solid ${C.cardBorder}; margin: 32px 0;">`
 
 const statBox = (value: string, label: string) =>
-  `<td style="background-color: ${C.bg}; border-radius: 12px; padding: 20px 16px; text-align: center; width: 33%;">
-    <div style="font-size: 28px; font-weight: 700; color: ${C.sand};">${value}</div>
-    <div style="font-size: 12px; color: ${C.textDim}; margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px;">${label}</div>
+  `<td class="body-bg" style="background-color: ${C.bg}; border-radius: 14px; padding: 22px 16px; text-align: center; width: 33%;">
+    <div style="font-size: 28px; font-weight: 700; color: ${C.sand}; letter-spacing: -0.5px;">${value}</div>
+    <div style="font-size: 11px; color: ${C.textDim}; margin-top: 8px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 500;">${label}</div>
   </td>`
 
 const smallText = (text: string) =>
-  `<p style="font-size: 12px; color: ${C.textDim}; margin: 0; line-height: 1.5;">${text}</p>`
+  `<p style="font-size: 12px; color: ${C.textDim}; margin: 0; line-height: 1.6;">${text}</p>`
 
 // ============================================================
 // EMAIL : Confirmation d'inscription
@@ -224,8 +258,8 @@ export const sendWeeklyRecapEmail = async (
     ${data.streak > 0 ? `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 8px;">
       <tr>
-        <td style="background-color: ${C.bg}; border-radius: 12px; padding: 16px 20px; text-align: center;">
-          <span style="color: ${C.sand}; font-weight: 700; font-size: 16px;">Streak : ${data.streak} semaine${data.streak > 1 ? 's' : ''}</span>
+        <td class="body-bg" style="background-color: ${C.bg}; border-radius: 14px; padding: 18px 24px; text-align: center;">
+          <span style="color: ${C.sand}; font-weight: 700; font-size: 16px; letter-spacing: -0.2px;">Streak : ${data.streak} semaine${data.streak > 1 ? 's' : ''}</span>
         </td>
       </tr>
     </table>
