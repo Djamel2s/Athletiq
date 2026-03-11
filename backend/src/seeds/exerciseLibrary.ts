@@ -1804,8 +1804,7 @@ export const exercisesData = [
     muscleGroups: [MuscleGroup.CARDIO, MuscleGroup.FULL_BODY],
     primaryMuscle: MuscleGroup.CARDIO,
     equipment: Equipment.OTHER,
-    difficulty: Difficulty.BEGINNER,
-    imageUrl: null
+    difficulty: Difficulty.BEGINNER
   },
   {
     name: 'Marche rapide',
