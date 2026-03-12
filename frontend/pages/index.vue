@@ -396,9 +396,10 @@
             <span class="text-primary-400 dark:text-primary-500 text-sm">Suivi de musculation</span>
           </div>
 
-          <div class="flex items-center gap-6 text-sm">
+          <div class="flex items-center gap-6 text-sm flex-wrap justify-center">
             <a href="#features" class="text-primary-500 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-colors">Fonctionnalités</a>
             <a href="#pricing" class="text-primary-500 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-colors">Tarifs</a>
+            <a href="mailto:contact@athletiq.fr" class="text-primary-500 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-colors">Contact</a>
             <NuxtLink to="/legal/cgu" class="text-primary-500 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-colors">CGU</NuxtLink>
             <NuxtLink to="/legal/privacy" class="text-primary-500 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-colors">Confidentialité</NuxtLink>
             <NuxtLink to="/legal/mentions" class="text-primary-500 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-colors">Mentions légales</NuxtLink>

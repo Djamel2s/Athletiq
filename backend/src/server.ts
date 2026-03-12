@@ -26,6 +26,9 @@ import emailRoutes from './routes/email.js'
 const app = express()
 const PORT = process.env.PORT || 3001
 
+// Trust proxy (Fly.io, Render, etc.) pour rate limiting et IP correcte
+app.set('trust proxy', 1)
+
 // Initialiser la base de données
 await initializeDatabase()
 

@@ -98,7 +98,10 @@ const emailLayout = (content: string) => `
                 <tr>
                   <td align="center">
                     <p style="font-size: 12px; color: ${C.textDim}; margin: 0; line-height: 1.6; letter-spacing: 0.2px;">
-                      Athletiq -- Ton coach de musculation intelligent
+                      Athletiq &mdash; Ton coach de musculation intelligent
+                    </p>
+                    <p style="font-size: 11px; color: ${C.textDim}; margin: 8px 0 0; opacity: 0.6;">
+                      <a href="mailto:contact@athletiq.fr" style="color: ${C.textDim}; text-decoration: none;">contact@athletiq.fr</a>
                     </p>
                     <p style="font-size: 11px; color: ${C.textDim}; margin: 10px 0 0; opacity: 0.5;">
                       Si tu n'as pas demande cet email, ignore-le simplement.
