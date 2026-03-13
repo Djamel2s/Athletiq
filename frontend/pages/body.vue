@@ -9,8 +9,8 @@
               <img src="/athletiq-icon.svg" alt="Athletiq" class="h-10 md:h-14 w-auto transition-transform duration-300 hover:scale-105" />
             </NuxtLink>
             <div class="flex items-center space-x-3">
-              <span class="hidden md:inline text-2xl text-[#d4c4b0] font-light">|</span>
-              <h1 class="text-lg md:text-2xl font-bold text-display bg-gradient-to-r from-[#d4c4b0] to-white dark:to-primary-100 bg-clip-text text-transparent">Suivi Corporel</h1>
+              <span class="hidden md:inline text-2xl text-sand-500 font-light">|</span>
+              <h1 class="text-lg md:text-2xl font-bold text-display bg-gradient-to-r from-sand-500 to-white dark:to-primary-100 bg-clip-text text-transparent">Suivi Corporel</h1>
             </div>
           </div>
 
@@ -599,7 +599,7 @@ definePageMeta({
 }
 
 .bg-gradient-primary {
-  background: linear-gradient(135deg, #d4c4b0 0%, #b8a48f 100%);
+  background: linear-gradient(135deg, rgb(var(--sand-500)) 0%, rgb(var(--sand-600)) 100%);
 }
 
 .checkbox-primary {
@@ -607,7 +607,7 @@ definePageMeta({
   -webkit-appearance: none;
   width: 18px;
   height: 18px;
-  border: 2px solid #d4c4b0;
+  border: 2px solid rgb(var(--sand-500));
   border-radius: 5px;
   background: transparent;
   cursor: pointer;
@@ -617,8 +617,8 @@ definePageMeta({
 }
 
 .checkbox-primary:checked {
-  background: linear-gradient(135deg, #d4c4b0 0%, #b8a48f 100%);
-  border-color: #b8a48f;
+  background: linear-gradient(135deg, rgb(var(--sand-500)) 0%, rgb(var(--sand-600)) 100%);
+  border-color: rgb(var(--sand-600));
 }
 
 .checkbox-primary:checked::after {

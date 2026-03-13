@@ -11,7 +11,7 @@
     <div class="mb-4">
       <select
         v-model="selectedExercise"
-        class="w-full px-4 py-2.5 rounded-xl bg-white/50 dark:bg-primary-800/50 border border-primary-200 dark:border-primary-700 text-primary-900 dark:text-primary-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#d4c4b0] transition-all"
+        class="w-full px-4 py-2.5 rounded-xl bg-white/50 dark:bg-primary-800/50 border border-primary-200 dark:border-primary-700 text-primary-900 dark:text-primary-100 text-sm focus:outline-none focus:ring-2 focus:ring-sand-500 transition-all"
       >
         <option value="">Choisir un exercice...</option>
         <option v-for="name in exerciseNames" :key="name" :value="name">

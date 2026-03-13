@@ -42,7 +42,7 @@
 
         <section>
           <h2 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-3">5. Données personnelles</h2>
-          <p>Pour toute information relative à la collecte et au traitement de vos données personnelles, veuillez consulter notre <NuxtLink to="/legal/privacy" class="text-[#b8a48f] hover:underline font-medium">Politique de Confidentialité</NuxtLink>.</p>
+          <p>Pour toute information relative à la collecte et au traitement de vos données personnelles, veuillez consulter notre <NuxtLink to="/legal/privacy" class="text-sand-600 hover:underline font-medium">Politique de Confidentialité</NuxtLink>.</p>
         </section>
 
         <section>

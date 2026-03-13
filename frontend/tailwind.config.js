@@ -25,16 +25,16 @@ export default {
           900: '#1c1917',
         },
         sand: {
-          50: '#fdfcfb',
-          100: '#faf8f6',
-          200: '#f5f1ed',
-          300: '#ede7df',
-          400: '#e3d9cc',
-          500: '#d4c4b0', // Sable
-          600: '#b8a48f',
-          700: '#9b8772',
-          800: '#7d6d5c',
-          900: '#625749',
+          50: 'rgb(var(--sand-50) / <alpha-value>)',
+          100: 'rgb(var(--sand-100) / <alpha-value>)',
+          200: 'rgb(var(--sand-200) / <alpha-value>)',
+          300: 'rgb(var(--sand-300) / <alpha-value>)',
+          400: 'rgb(var(--sand-400) / <alpha-value>)',
+          500: 'rgb(var(--sand-500) / <alpha-value>)',
+          600: 'rgb(var(--sand-600) / <alpha-value>)',
+          700: 'rgb(var(--sand-700) / <alpha-value>)',
+          800: 'rgb(var(--sand-800) / <alpha-value>)',
+          900: 'rgb(var(--sand-900) / <alpha-value>)',
         },
         cream: {
           50: '#fffef9',
@@ -51,7 +51,7 @@ export default {
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-primary': 'linear-gradient(135deg, #d4c4b0 0%, #b8a48f 100%)',
+        'gradient-primary': 'linear-gradient(135deg, rgb(var(--sand-500)) 0%, rgb(var(--sand-600)) 100%)',
         'gradient-subtle': 'linear-gradient(180deg, rgba(250, 248, 246, 1) 0%, rgba(255, 255, 255, 1) 100%)',
       },
       backdropBlur: {
@@ -60,7 +60,7 @@ export default {
       boxShadow: {
         'soft': '0 2px 15px 0 rgba(0, 0, 0, 0.05)',
         'soft-lg': '0 10px 40px 0 rgba(0, 0, 0, 0.08)',
-        'glow': '0 0 20px rgba(212, 196, 176, 0.3)',
+        'glow': '0 0 20px rgba(var(--sand-500), 0.3)',
       }
     },
   },

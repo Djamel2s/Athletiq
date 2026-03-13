@@ -50,10 +50,10 @@
             ? 'cursor-pointer hover:bg-primary-100 dark:hover:bg-primary-800'
             : 'opacity-0 cursor-default',
           cell.isToday && !isSelected(cell)
-            ? 'ring-2 ring-[#d4c4b0] dark:ring-[#b8a48f]'
+            ? 'ring-2 ring-sand-500 dark:ring-sand-600'
             : '',
           isSelected(cell)
-            ? 'bg-gradient-to-br from-[#d4c4b0] to-[#b8a48f] text-white shadow-sm'
+            ? 'bg-gradient-to-br from-sand-500 to-sand-600 text-white shadow-sm'
             : 'text-primary-800 dark:text-primary-200'
         ]"
       >
@@ -61,7 +61,7 @@
         <!-- Workout indicator dot -->
         <span
           v-if="cell.workouts.length > 0 && !isSelected(cell)"
-          class="absolute bottom-1 w-1.5 h-1.5 rounded-full bg-[#d4c4b0] dark:bg-[#b8a48f]"
+          class="absolute bottom-1 w-1.5 h-1.5 rounded-full bg-sand-500 dark:bg-sand-600"
         ></span>
         <span
           v-if="cell.workouts.length > 0 && isSelected(cell)"
@@ -84,7 +84,7 @@
           @click="navigateTo(`/workouts/${workout.id}`)"
         >
           <div class="flex items-center gap-3 min-w-0">
-            <div class="w-9 h-9 bg-gradient-to-br from-[#d4c4b0] to-[#b8a48f] rounded-lg flex items-center justify-center flex-shrink-0">
+            <div class="w-9 h-9 bg-gradient-to-br from-sand-500 to-sand-600 rounded-lg flex items-center justify-center flex-shrink-0">
               <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h8M6 9v6m12-6v6M4.5 10v4m15-4v4"/>
               </svg>

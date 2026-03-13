@@ -92,7 +92,7 @@
             <div class="card-glass relative group hover:scale-[1.02] transition-transform">
               <h4 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-1">Mensuel</h4>
               <div class="flex items-baseline gap-1 mb-4">
-                <span class="text-3xl font-bold bg-gradient-to-r from-[#d4c4b0] to-[#9d8569] bg-clip-text text-transparent">9,99€</span>
+                <span class="text-3xl font-bold bg-gradient-to-r from-sand-500 to-sand-700 bg-clip-text text-transparent">9,99€</span>
                 <span class="text-primary-500 dark:text-primary-400">/mois</span>
               </div>
               <ul class="space-y-2 mb-6 text-sm text-primary-600 dark:text-primary-400">
@@ -111,13 +111,13 @@
             </div>
 
             <!-- Yearly -->
-            <div class="card-glass relative group hover:scale-[1.02] transition-transform border-2 border-[#d4c4b0]/50">
+            <div class="card-glass relative group hover:scale-[1.02] transition-transform border-2 border-sand-500/50">
               <div class="absolute -top-3 right-4 px-3 py-1 bg-gradient-primary text-white text-xs font-bold rounded-full">
                 -33%
               </div>
               <h4 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-1">Annuel</h4>
               <div class="flex items-baseline gap-1 mb-1">
-                <span class="text-3xl font-bold bg-gradient-to-r from-[#d4c4b0] to-[#9d8569] bg-clip-text text-transparent">79,99€</span>
+                <span class="text-3xl font-bold bg-gradient-to-r from-sand-500 to-sand-700 bg-clip-text text-transparent">79,99€</span>
                 <span class="text-primary-500 dark:text-primary-400">/an</span>
               </div>
               <p class="text-sm text-primary-500 dark:text-primary-400 mb-4">soit 6,66€/mois</p>

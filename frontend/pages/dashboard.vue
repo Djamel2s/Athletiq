@@ -159,7 +159,7 @@
 
       <!-- Streak Banner -->
       <div v-if="currentStreak > 0" class="mb-6 md:mb-8 fade-in cursor-pointer" @click="navigateTo('/streak')">
-        <div class="flex items-center gap-4 px-5 py-4 rounded-2xl bg-gradient-to-r from-[#d4c4b0]/10 to-[#b8a48f]/10 dark:from-[#d4c4b0]/15 dark:to-[#b8a48f]/15 border border-[#d4c4b0]/30 dark:border-[#b8a48f]/20 hover:shadow-lg hover:scale-[1.01] transition-all">
+        <div class="flex items-center gap-4 px-5 py-4 rounded-2xl bg-gradient-to-r from-sand-500/10 to-sand-600/10 dark:from-sand-500/15 dark:to-sand-600/15 border border-sand-500/30 dark:border-sand-600/20 hover:shadow-lg hover:scale-[1.01] transition-all">
           <div class="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center flex-shrink-0">
             <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
               <path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/>

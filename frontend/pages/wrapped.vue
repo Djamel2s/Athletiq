@@ -9,8 +9,8 @@
               <img src="/athletiq-icon.svg" alt="Athletiq" class="h-10 md:h-14 w-auto transition-transform duration-300 hover:scale-105" />
             </NuxtLink>
             <div class="flex items-center space-x-3">
-              <span class="text-2xl text-[#d4c4b0] font-light hidden md:inline">|</span>
-              <h1 class="text-lg md:text-2xl font-bold text-display bg-gradient-to-r from-[#d4c4b0] to-white dark:to-primary-100 bg-clip-text text-transparent">Athletiq Wrapped</h1>
+              <span class="text-2xl text-sand-500 font-light hidden md:inline">|</span>
+              <h1 class="text-lg md:text-2xl font-bold text-display bg-gradient-to-r from-sand-500 to-white dark:to-primary-100 bg-clip-text text-transparent">Athletiq Wrapped</h1>
             </div>
           </div>
           <NavActions />
@@ -111,7 +111,7 @@
               <div
                 v-for="(ex, i) in topExercises"
                 :key="ex.name"
-                class="flex items-center gap-4 w-full p-4 rounded-2xl border-2 transition-all bg-gradient-to-b from-[#d4c4b0]/20 to-[#b8a48f]/20 dark:from-[#d4c4b0]/10 dark:to-[#b8a48f]/10 border-[#d4c4b0] dark:border-[#b8a48f]"
+                class="flex items-center gap-4 w-full p-4 rounded-2xl border-2 transition-all bg-gradient-to-b from-sand-500/20 to-sand-600/20 dark:from-sand-500/10 dark:to-sand-600/10 border-sand-500 dark:border-sand-600"
               >
                 <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-primary flex-shrink-0">
                   <span class="text-white font-bold text-lg">{{ i + 1 }}</span>
@@ -121,7 +121,7 @@
                   <p class="text-sm text-primary-500 dark:text-primary-400">{{ ex.count }} fois</p>
                 </div>
                 <div class="text-right flex-shrink-0">
-                  <p class="text-sm font-semibold text-[#9d8569] dark:text-[#d4c4b0]">{{ ex.maxWeight > 0 ? ex.maxWeight + ' kg' : '---' }}</p>
+                  <p class="text-sm font-semibold text-sand-700 dark:text-sand-500">{{ ex.maxWeight > 0 ? ex.maxWeight + ' kg' : '---' }}</p>
                   <p class="text-xs text-primary-400">PR</p>
                 </div>
               </div>
@@ -136,7 +136,7 @@
                 <span class="w-24 text-sm text-primary-600 dark:text-primary-400 text-right flex-shrink-0 truncate">{{ muscle.label }}</span>
                 <div class="flex-1 h-6 bg-primary-200 dark:bg-primary-800 rounded-full overflow-hidden">
                   <div
-                    class="h-full rounded-full bg-gradient-to-r from-[#d4c4b0] to-[#b8a48f] transition-all duration-700"
+                    class="h-full rounded-full bg-gradient-to-r from-sand-500 to-sand-600 transition-all duration-700"
                     :style="{ width: `${muscle.percent}%` }"
                   ></div>
                 </div>
@@ -152,7 +152,7 @@
               <div
                 v-for="(imp, i) in bestImprovements"
                 :key="imp.name"
-                class="flex items-center gap-4 p-4 rounded-2xl border-2 transition-all bg-gradient-to-b from-[#d4c4b0]/20 to-[#b8a48f]/20 dark:from-[#d4c4b0]/10 dark:to-[#b8a48f]/10 border-[#d4c4b0] dark:border-[#b8a48f]"
+                class="flex items-center gap-4 p-4 rounded-2xl border-2 transition-all bg-gradient-to-b from-sand-500/20 to-sand-600/20 dark:from-sand-500/10 dark:to-sand-600/10 border-sand-500 dark:border-sand-600"
               >
                 <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-primary flex-shrink-0">
                   <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,8 +165,8 @@
                 <div class="text-right flex-shrink-0">
                   <p class="text-sm font-semibold text-primary-500 dark:text-primary-400">
                     {{ imp.before }} kg
-                    <span class="text-[#9d8569] dark:text-[#d4c4b0] mx-1">&rarr;</span>
-                    <span class="text-[#9d8569] dark:text-[#d4c4b0] font-bold">{{ imp.after }} kg</span>
+                    <span class="text-sand-700 dark:text-sand-500 mx-1">&rarr;</span>
+                    <span class="text-sand-700 dark:text-sand-500 font-bold">{{ imp.after }} kg</span>
                   </p>
                   <p class="text-xs text-primary-400">+{{ imp.diff }} kg</p>
                 </div>

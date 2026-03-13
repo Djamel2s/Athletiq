@@ -76,7 +76,7 @@
         </div>
 
         <!-- Weight progression suggestion -->
-        <div v-if="weightSuggestion && currentSetNumber === 1" class="rounded-2xl p-4 bg-gradient-to-r from-[#d4c4b0]/15 to-[#b8a48f]/15 border border-[#d4c4b0]/30 dark:border-[#b8a48f]/20">
+        <div v-if="weightSuggestion && currentSetNumber === 1" class="rounded-2xl p-4 bg-gradient-to-r from-sand-500/15 to-sand-600/15 border border-sand-500/30 dark:border-sand-600/20">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center flex-shrink-0">
               <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -199,8 +199,8 @@
             />
             <defs>
               <linearGradient id="restGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#d4c4b0;stop-opacity:1" />
-                <stop offset="100%" style="stop-color:#b8a48f;stop-opacity:1" />
+                <stop offset="0%" style="stop-color:rgb(var(--sand-500));stop-opacity:1" />
+                <stop offset="100%" style="stop-color:rgb(var(--sand-600));stop-opacity:1" />
               </linearGradient>
             </defs>
           </svg>
@@ -325,7 +325,7 @@
 
               <!-- Primary toggle -->
               <label v-if="photoPreview" class="flex items-center gap-3 cursor-pointer">
-                <input v-model="photoIsPrimary" type="checkbox" class="w-5 h-5 rounded border-primary-300 dark:border-primary-600 text-[#b8a48f] focus:ring-[#b8a48f]" />
+                <input v-model="photoIsPrimary" type="checkbox" class="w-5 h-5 rounded border-primary-300 dark:border-primary-600 text-sand-600 focus:ring-sand-600" />
                 <span class="text-sm text-primary-700 dark:text-primary-300">Photo principale (timelapse)</span>
               </label>
             </div>

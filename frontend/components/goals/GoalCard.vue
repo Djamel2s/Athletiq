@@ -32,7 +32,7 @@
       <div class="w-full h-3 bg-primary-200 dark:bg-primary-700 rounded-full overflow-hidden">
         <div
           class="h-full rounded-full transition-all duration-500"
-          :class="goal.achieved ? 'bg-gradient-to-r from-green-400 to-green-500' : 'bg-gradient-to-r from-[#d4c4b0] to-[#b8a48f]'"
+          :class="goal.achieved ? 'bg-gradient-to-r from-green-400 to-green-500' : 'bg-gradient-to-r from-sand-500 to-sand-600'"
           :style="{ width: `${Math.min(goal.progress, 100)}%` }"
         ></div>
       </div>

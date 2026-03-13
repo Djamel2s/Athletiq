@@ -11,4 +11,8 @@ useHead({
     lang: 'fr'
   }
 })
+
+// Apply gender-based theme (rose for female users)
+const { applyTheme } = useTheme()
+onMounted(() => applyTheme())
 </script>

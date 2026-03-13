@@ -9,8 +9,8 @@
               <img src="/athletiq-icon.svg" alt="Athletiq" class="h-10 md:h-14 w-auto transition-transform duration-300 hover:scale-105" />
             </NuxtLink>
             <div class="flex items-center space-x-3">
-              <span class="text-2xl text-[#d4c4b0] font-light hidden md:inline">|</span>
-              <h1 class="text-lg md:text-2xl font-bold text-display bg-gradient-to-r from-[#d4c4b0] to-white dark:to-primary-100 bg-clip-text text-transparent">Mon Profil</h1>
+              <span class="text-2xl text-sand-500 font-light hidden md:inline">|</span>
+              <h1 class="text-lg md:text-2xl font-bold text-display bg-gradient-to-r from-sand-500 to-white dark:to-primary-100 bg-clip-text text-transparent">Mon Profil</h1>
             </div>
           </div>
           <NavActions />
@@ -79,6 +79,28 @@
             />
           </div>
 
+          <!-- Genre -->
+          <div>
+            <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-3">
+              Genre
+            </label>
+            <div class="grid grid-cols-2 gap-2 md:gap-3">
+              <button
+                v-for="genderOption in genders"
+                :key="genderOption.value"
+                type="button"
+                @click="selectedGender = genderOption.value"
+                class="p-3 md:p-4 rounded-2xl border-2 transition-all duration-300 text-center flex items-center justify-center gap-2 md:gap-3"
+                :class="selectedGender === genderOption.value
+                  ? 'border-sand-500 dark:border-sand-600 bg-sand-500/10 dark:bg-sand-600/15 shadow-md'
+                  : 'border-primary-200 dark:border-primary-700 bg-white/50 dark:bg-primary-800/50 hover:border-primary-300 dark:hover:border-primary-600'"
+              >
+                <span class="text-lg">{{ genderOption.emoji }}</span>
+                <span class="font-semibold text-primary-900 dark:text-primary-100 text-xs md:text-sm">{{ genderOption.label }}</span>
+              </button>
+            </div>
+          </div>
+
           <!-- Objectif -->
           <div>
             <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-3">
@@ -92,7 +114,7 @@
                 @click="selectedGoal = goalOption.value"
                 class="p-3 md:p-4 rounded-2xl border-2 transition-all duration-300 text-left flex items-start gap-2 md:gap-3"
                 :class="selectedGoal === goalOption.value
-                  ? 'border-[#d4c4b0] dark:border-[#b8a48f] bg-[#d4c4b0]/10 dark:bg-[#b8a48f]/15 shadow-md'
+                  ? 'border-sand-500 dark:border-sand-600 bg-sand-500/10 dark:bg-sand-600/15 shadow-md'
                   : 'border-primary-200 dark:border-primary-700 bg-white/50 dark:bg-primary-800/50 hover:border-primary-300 dark:hover:border-primary-600'"
               >
                 <div class="w-7 h-7 md:w-8 md:h-8 rounded-lg flex-shrink-0 flex items-center justify-center mt-0.5"
@@ -110,8 +132,8 @@
           </div>
 
           <!-- Success message -->
-          <div v-if="success" class="p-3 rounded-xl bg-[#d4c4b0]/15 dark:bg-[#b8a48f]/15 border border-[#d4c4b0]/40 dark:border-[#b8a48f]/30">
-            <p class="text-sm text-[#9d8569] font-medium">Profil mis a jour avec succes</p>
+          <div v-if="success" class="p-3 rounded-xl bg-sand-500/15 dark:bg-sand-600/15 border border-sand-500/40 dark:border-sand-600/30">
+            <p class="text-sm text-sand-700 font-medium">Profil mis a jour avec succes</p>
           </div>
 
           <!-- Error message -->
@@ -150,13 +172,20 @@ definePageMeta({
 useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
 
 const authStore = useAuthStore()
+const { applyTheme } = useTheme()
 
 const firstName = ref('')
 const lastName = ref('')
 const selectedGoal = ref<string | null>(null)
+const selectedGender = ref<string | null>(null)
 const loading = ref(false)
 const error = ref('')
 const success = ref(false)
+
+const genders = [
+  { value: 'male', label: 'Homme', emoji: '\u{1F468}' },
+  { value: 'female', label: 'Femme', emoji: '\u{1F469}' }
+]
 
 const goals = [
   { value: 'BULK', label: 'Prise de masse', desc: 'Gagner du muscle', iconPath: 'M13 10V3L4 14h7v7l9-11h-7z' },
@@ -181,11 +210,13 @@ const handleSave = async () => {
     if (firstName.value) data.firstName = firstName.value
     if (lastName.value) data.lastName = lastName.value
     if (selectedGoal.value) data.goal = selectedGoal.value
+    if (selectedGender.value) data.gender = selectedGender.value
 
     const result = await authStore.updateProfile(data)
 
     if (result.success) {
       success.value = true
+      applyTheme()
       setTimeout(() => { success.value = false }, 3000)
     } else {
       error.value = result.error || 'Une erreur est survenue'
@@ -206,5 +237,6 @@ onMounted(() => {
   firstName.value = authStore.user?.firstName || ''
   lastName.value = authStore.user?.lastName || ''
   selectedGoal.value = authStore.user?.goal || null
+  selectedGender.value = authStore.user?.gender || null
 })
 </script>

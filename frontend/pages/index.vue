@@ -48,7 +48,7 @@
       <div class="max-w-7xl mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div class="fade-in text-center lg:text-left">
-            <p class="text-sm md:text-base font-semibold text-[#b8a48f] dark:text-[#d4c4b0] uppercase tracking-wider mb-4">Suivi de musculation</p>
+            <p class="text-sm md:text-base font-semibold text-sand-600 dark:text-sand-500 uppercase tracking-wider mb-4">Suivi de musculation</p>
             <h1 class="text-4xl md:text-5xl lg:text-7xl font-bold mb-6 md:mb-8 text-display text-primary-900 dark:text-primary-100 leading-tight">
               Chaque serie<br>
               compte.<br>
@@ -143,13 +143,13 @@
               </p>
             </div>
             <div class="mt-6 flex items-end gap-1 h-16">
-              <div class="w-full bg-[#d4c4b0]/20 rounded-t" style="height: 30%"></div>
-              <div class="w-full bg-[#d4c4b0]/30 rounded-t" style="height: 45%"></div>
-              <div class="w-full bg-[#d4c4b0]/40 rounded-t" style="height: 40%"></div>
-              <div class="w-full bg-[#d4c4b0]/50 rounded-t" style="height: 55%"></div>
-              <div class="w-full bg-[#d4c4b0]/60 rounded-t" style="height: 65%"></div>
-              <div class="w-full bg-[#d4c4b0]/70 rounded-t" style="height: 60%"></div>
-              <div class="w-full bg-[#d4c4b0]/80 rounded-t" style="height: 75%"></div>
+              <div class="w-full bg-sand-500/20 rounded-t" style="height: 30%"></div>
+              <div class="w-full bg-sand-500/30 rounded-t" style="height: 45%"></div>
+              <div class="w-full bg-sand-500/40 rounded-t" style="height: 40%"></div>
+              <div class="w-full bg-sand-500/50 rounded-t" style="height: 55%"></div>
+              <div class="w-full bg-sand-500/60 rounded-t" style="height: 65%"></div>
+              <div class="w-full bg-sand-500/70 rounded-t" style="height: 60%"></div>
+              <div class="w-full bg-sand-500/80 rounded-t" style="height: 75%"></div>
               <div class="w-full bg-gradient-primary rounded-t" style="height: 90%"></div>
             </div>
           </div>
@@ -230,11 +230,11 @@
       <div class="max-w-4xl mx-auto">
         <div class="flex flex-wrap justify-center gap-x-8 gap-y-3 text-sm md:text-base text-primary-500 dark:text-primary-400">
           <span class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-[#b8a48f]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+            <svg class="w-4 h-4 text-sand-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
             Optimise mobile
           </span>
           <span class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-[#b8a48f]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+            <svg class="w-4 h-4 text-sand-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
             Donnees securisees
           </span>
         </div>
@@ -288,7 +288,7 @@
           <div class="card-glass text-center">
             <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-2">Mensuel</h3>
             <div class="flex items-baseline justify-center gap-1 mb-2">
-              <span class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#d4c4b0] to-[#9d8569] bg-clip-text text-transparent">9,99€</span>
+              <span class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-sand-500 to-sand-700 bg-clip-text text-transparent">9,99€</span>
               <span class="text-primary-500 dark:text-primary-400">/mois</span>
             </div>
             <p class="text-sm text-primary-500 dark:text-primary-400 mb-6">Sans engagement</p>
@@ -316,13 +316,13 @@
           </div>
 
           <!-- Yearly -->
-          <div class="card-glass text-center relative border-2 border-[#d4c4b0]/50">
+          <div class="card-glass text-center relative border-2 border-sand-500/50">
             <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-primary text-white text-xs font-bold rounded-full whitespace-nowrap">
               2 mois offerts
             </div>
             <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-2">Annuel</h3>
             <div class="flex items-baseline justify-center gap-1 mb-1">
-              <span class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#d4c4b0] to-[#9d8569] bg-clip-text text-transparent">79,99€</span>
+              <span class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-sand-500 to-sand-700 bg-clip-text text-transparent">79,99€</span>
               <span class="text-primary-500 dark:text-primary-400">/an</span>
             </div>
             <p class="text-sm text-primary-500 dark:text-primary-400 mb-6">6,66€/mois — 33% d'economie</p>

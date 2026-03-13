@@ -219,7 +219,7 @@ const getOverlayOpacity = (muscle: string): number => {
 
 const barClass = (score: number): string => {
   if (score >= 85) return 'bg-green-500'
-  if (score >= 60) return 'bg-[#d4c4b0]'
+  if (score >= 60) return 'bg-sand-500'
   if (score >= 30) return 'bg-yellow-500'
   return 'bg-red-500'
 }

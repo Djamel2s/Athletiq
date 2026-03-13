@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-2xl border border-[#d4c4b0]/30 bg-gradient-to-r from-[#d4c4b0]/10 to-[#9d8569]/10 dark:from-[#d4c4b0]/5 dark:to-[#9d8569]/5 p-4 md:p-5">
+  <div class="rounded-2xl border border-sand-500/30 bg-gradient-to-r from-sand-500/10 to-sand-700/10 dark:from-sand-500/5 dark:to-sand-700/5 p-4 md:p-5">
     <div class="flex items-center gap-3 md:gap-4">
       <div class="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center flex-shrink-0">
         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

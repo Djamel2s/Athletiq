@@ -14,7 +14,7 @@
           :class="[
             'flex flex-col items-center justify-center w-16 py-1 rounded-xl transition-colors',
             item.path === activePath
-              ? 'text-[#9d8569]'
+              ? 'text-sand-700'
               : 'text-primary-400 dark:text-primary-500'
           ]"
         >
@@ -29,9 +29,9 @@
             class="go-button relative w-[68px] h-[68px] rounded-full flex items-center justify-center active:scale-90 transition-all duration-200"
           >
             <!-- Outer glow ring -->
-            <div class="absolute inset-0 rounded-full bg-gradient-to-br from-[#d4c4b0] to-[#9d8569] opacity-30 blur-md scale-110"></div>
+            <div class="absolute inset-0 rounded-full bg-gradient-to-br from-sand-500 to-sand-700 opacity-30 blur-md scale-110"></div>
             <!-- Button body -->
-            <div class="relative w-full h-full rounded-full bg-gradient-to-br from-[#d4c4b0] to-[#9d8569] flex items-center justify-center shadow-xl ring-4 ring-white/80 dark:ring-primary-900/80">
+            <div class="relative w-full h-full rounded-full bg-gradient-to-br from-sand-500 to-sand-700 flex items-center justify-center shadow-xl ring-4 ring-white/80 dark:ring-primary-900/80">
               <span class="text-white font-black text-xl tracking-wider">GO</span>
             </div>
           </button>
@@ -46,7 +46,7 @@
           :class="[
             'flex flex-col items-center justify-center w-16 py-1 rounded-xl transition-colors',
             item.path === activePath
-              ? 'text-[#9d8569]'
+              ? 'text-sand-700'
               : 'text-primary-400 dark:text-primary-500'
           ]"
         >

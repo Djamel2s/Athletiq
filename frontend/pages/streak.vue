@@ -9,8 +9,8 @@
               <img src="/athletiq-icon.svg" alt="Athletiq" class="h-10 md:h-14 w-auto transition-transform duration-300 hover:scale-105" />
             </NuxtLink>
             <div class="flex items-center space-x-3">
-              <span class="text-2xl text-[#d4c4b0] font-light hidden md:inline">|</span>
-              <h1 class="text-lg md:text-2xl font-bold text-display bg-gradient-to-r from-[#d4c4b0] to-white dark:to-primary-100 bg-clip-text text-transparent">Motivation</h1>
+              <span class="text-2xl text-sand-500 font-light hidden md:inline">|</span>
+              <h1 class="text-lg md:text-2xl font-bold text-display bg-gradient-to-r from-sand-500 to-white dark:to-primary-100 bg-clip-text text-transparent">Motivation</h1>
             </div>
           </div>
           <NavActions />
@@ -45,7 +45,7 @@
                 <path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/>
               </svg>
             </div>
-            <div v-if="streakData && streakData.currentStreak > 0" class="absolute -top-2 -right-4 w-10 h-10 bg-[#b8a48f] rounded-full flex items-center justify-center text-white font-bold text-sm animate-pulse">
+            <div v-if="streakData && streakData.currentStreak > 0" class="absolute -top-2 -right-4 w-10 h-10 bg-sand-600 rounded-full flex items-center justify-center text-white font-bold text-sm animate-pulse">
               {{ streakData.currentStreak }}
             </div>
           </div>
@@ -67,11 +67,11 @@
             <div class="h-3 bg-primary-200 dark:bg-primary-800 rounded-full overflow-hidden">
               <div
                 class="h-full rounded-full transition-all duration-700"
-                :class="weekProgress >= 100 ? 'bg-gradient-to-r from-[#d4c4b0] to-[#9d8569]' : 'bg-gradient-to-r from-[#d4c4b0] to-[#b8a48f]'"
+                :class="weekProgress >= 100 ? 'bg-gradient-to-r from-sand-500 to-sand-700' : 'bg-gradient-to-r from-sand-500 to-sand-600'"
                 :style="{ width: `${Math.min(weekProgress, 100)}%` }"
               ></div>
             </div>
-            <p v-if="weekProgress >= 100" class="text-sm text-[#9d8569] dark:text-[#d4c4b0] mt-2 font-semibold">
+            <p v-if="weekProgress >= 100" class="text-sm text-sand-700 dark:text-sand-500 mt-2 font-semibold">
               Objectif atteint cette semaine !
             </p>
             <p v-else class="text-sm text-primary-500 dark:text-primary-400 mt-2">
@@ -118,7 +118,7 @@
               :class="[
                 'flex flex-col items-center p-4 rounded-2xl border-2 transition-all min-w-[100px]',
                 m.achieved
-                  ? 'bg-gradient-to-b from-[#d4c4b0]/20 to-[#b8a48f]/20 dark:from-[#d4c4b0]/10 dark:to-[#b8a48f]/10 border-[#d4c4b0] dark:border-[#b8a48f]'
+                  ? 'bg-gradient-to-b from-sand-500/20 to-sand-600/20 dark:from-sand-500/10 dark:to-sand-600/10 border-sand-500 dark:border-sand-600'
                   : streakData!.currentStreak >= m.weeks * 0.8
                     ? 'border-primary-300 dark:border-primary-600 bg-primary-50 dark:bg-primary-800/50'
                     : 'border-primary-200 dark:border-primary-700 opacity-50'
@@ -133,7 +133,7 @@
                 </svg>
               </div>
               <span class="text-lg font-bold text-primary-900 dark:text-primary-100">{{ m.weeks }}sem</span>
-              <span v-if="m.achieved" class="text-xs text-[#9d8569] dark:text-[#d4c4b0] font-medium mt-1">Obtenu</span>
+              <span v-if="m.achieved" class="text-xs text-sand-700 dark:text-sand-500 font-medium mt-1">Obtenu</span>
               <span v-else class="text-xs text-primary-400 mt-1">{{ m.weeks - (streakData?.currentStreak || 0) }} restantes</span>
             </div>
           </div>
@@ -152,7 +152,7 @@
                 :class="[
                   'w-10 h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center text-xs md:text-sm font-bold transition-transform hover:scale-110',
                   week.metGoal
-                    ? 'bg-gradient-to-br from-[#d4c4b0] to-[#b8a48f] text-primary-900'
+                    ? 'bg-gradient-to-br from-sand-500 to-sand-600 text-primary-900'
                     : week.count > 0
                       ? 'bg-primary-200 dark:bg-primary-700 text-primary-700 dark:text-primary-300'
                       : 'bg-primary-100 dark:bg-primary-800/50 text-primary-300 dark:text-primary-600'
@@ -176,7 +176,7 @@
               <span>Partiel</span>
             </div>
             <div class="flex items-center gap-1">
-              <div class="w-4 h-4 rounded bg-gradient-to-br from-[#d4c4b0] to-[#b8a48f]"></div>
+              <div class="w-4 h-4 rounded bg-gradient-to-br from-sand-500 to-sand-600"></div>
               <span>Objectif atteint</span>
             </div>
           </div>
@@ -197,7 +197,7 @@
               <div
                 :class="[
                   'w-full rounded-t-lg transition-all min-h-[4px]',
-                  week.workoutCount >= 3 ? 'bg-gradient-to-t from-[#b8a48f] to-[#d4c4b0]' : 'bg-primary-300 dark:bg-primary-600'
+                  week.workoutCount >= 3 ? 'bg-gradient-to-t from-sand-600 to-sand-500' : 'bg-primary-300 dark:bg-primary-600'
                 ]"
                 :style="{ height: `${Math.max((week.avgMaxWeight / maxWeight) * 100, 4)}%` }"
               ></div>
@@ -212,7 +212,7 @@
               <p class="text-2xl font-bold text-primary-700 dark:text-primary-300">{{ correlationData.lowFreqAvgProgress.toFixed(1) }}%</p>
               <p class="text-xs text-primary-400">progression moy.</p>
             </div>
-            <div class="p-4 rounded-xl bg-gradient-to-br from-[#d4c4b0]/20 to-[#b8a48f]/20 border border-[#d4c4b0]/30 text-center">
+            <div class="p-4 rounded-xl bg-gradient-to-br from-sand-500/20 to-sand-600/20 border border-sand-500/30 text-center">
               <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">Semaines 3x+</p>
               <p class="text-2xl font-bold text-primary-900 dark:text-primary-100">{{ correlationData.highFreqAvgProgress.toFixed(1) }}%</p>
               <p class="text-xs text-primary-400">progression moy.</p>

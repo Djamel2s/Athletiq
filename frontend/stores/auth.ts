@@ -7,6 +7,7 @@ interface User {
   lastName?: string | null
   avatarUrl?: string | null
   goal?: string | null
+  gender?: string | null
 }
 
 interface AuthState {
@@ -94,7 +95,7 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    async updateProfile(data: { firstName?: string; lastName?: string; goal?: string }) {
+    async updateProfile(data: { firstName?: string; lastName?: string; goal?: string; gender?: string }) {
       try {
         const config = useRuntimeConfig()
         const response = await $fetch<User>(`${config.public.apiUrl}/users/me`, {

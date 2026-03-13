@@ -9,7 +9,7 @@
           :class="[
             'px-3 py-1 rounded-lg text-xs font-medium transition-colors',
             view === 'front'
-              ? 'bg-gradient-to-br from-[#d4c4b0] to-[#b8a48f] text-white'
+              ? 'bg-gradient-to-br from-sand-500 to-sand-600 text-white'
               : 'text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-800'
           ]"
         >
@@ -20,7 +20,7 @@
           :class="[
             'px-3 py-1 rounded-lg text-xs font-medium transition-colors',
             view === 'back'
-              ? 'bg-gradient-to-br from-[#d4c4b0] to-[#b8a48f] text-white'
+              ? 'bg-gradient-to-br from-sand-500 to-sand-600 text-white'
               : 'text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-800'
           ]"
         >

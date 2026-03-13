@@ -12,7 +12,7 @@ router.get('/me', authenticate, async (req: AuthRequest, res) => {
   try {
     const user = await userRepository.findOne({
       where: { id: req.user!.id },
-      select: ['id', 'email', 'firstName', 'lastName', 'avatarUrl', 'goal', 'streakGoalPerWeek', 'bestStreak', 'reminderEnabled', 'reminderTime', 'inactivityThresholdDays', 'createdAt', 'updatedAt']
+      select: ['id', 'email', 'firstName', 'lastName', 'avatarUrl', 'goal', 'gender', 'streakGoalPerWeek', 'bestStreak', 'reminderEnabled', 'reminderTime', 'inactivityThresholdDays', 'createdAt', 'updatedAt']
     })
 
     if (!user) {
@@ -33,6 +33,7 @@ router.put('/me', authenticate, async (req: AuthRequest, res) => {
       lastName: z.string().nullish(),
       avatarUrl: z.string().url().nullish(),
       goal: z.enum(['BULK', 'STRENGTH', 'RECOMP', 'CUT']).nullish(),
+      gender: z.enum(['male', 'female']).nullish(),
       streakGoalPerWeek: z.number().int().min(1).max(7).nullish(),
       reminderEnabled: z.boolean().nullish(),
       reminderTime: z.string().regex(/^\d{2}:\d{2}$/).nullish(),
@@ -45,7 +46,7 @@ router.put('/me', authenticate, async (req: AuthRequest, res) => {
 
     const user = await userRepository.findOne({
       where: { id: req.user!.id },
-      select: ['id', 'email', 'firstName', 'lastName', 'avatarUrl', 'goal', 'streakGoalPerWeek', 'bestStreak', 'reminderEnabled', 'reminderTime', 'inactivityThresholdDays', 'updatedAt']
+      select: ['id', 'email', 'firstName', 'lastName', 'avatarUrl', 'goal', 'gender', 'streakGoalPerWeek', 'bestStreak', 'reminderEnabled', 'reminderTime', 'inactivityThresholdDays', 'updatedAt']
     })
 
     res.json(user)

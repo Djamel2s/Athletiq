@@ -31,7 +31,7 @@
         <div :class="['flex-1 pb-6', index < workouts.length - 1 ? '' : 'pb-0']">
           <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
-              <p class="font-semibold text-primary-900 dark:text-primary-100 group-hover:text-[#b8a48f] transition-colors truncate">{{ workout.name }}</p>
+              <p class="font-semibold text-primary-900 dark:text-primary-100 group-hover:text-sand-600 transition-colors truncate">{{ workout.name }}</p>
               <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
                 {{ formatFullDate(workout.completedAt!) }}
               </p>

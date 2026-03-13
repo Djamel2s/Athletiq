@@ -28,7 +28,7 @@
       <!-- Progress Bar -->
       <div class="w-full h-1.5 bg-primary-200 dark:bg-primary-700 rounded-full overflow-hidden">
         <div
-          class="h-full bg-gradient-to-r from-[#d4c4b0] to-[#b8a48f] rounded-full transition-all duration-300"
+          class="h-full bg-gradient-to-r from-sand-500 to-sand-600 rounded-full transition-all duration-300"
           :style="{ width: `${((currentIndex + 1) / photos.length) * 100}%` }"
         ></div>
       </div>
@@ -46,7 +46,7 @@
 
         <button
           @click="togglePlay"
-          class="w-12 h-12 flex items-center justify-center rounded-xl bg-gradient-to-r from-[#d4c4b0] to-[#b8a48f] text-white hover:shadow-lg transition-all"
+          class="w-12 h-12 flex items-center justify-center rounded-xl bg-gradient-to-r from-sand-500 to-sand-600 text-white hover:shadow-lg transition-all"
         >
           <svg v-if="!isPlaying" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
             <path d="M8 5v14l11-7z"/>

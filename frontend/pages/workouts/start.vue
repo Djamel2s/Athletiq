@@ -9,8 +9,8 @@
               <img src="/athletiq-icon.svg" alt="Athletiq" class="h-10 md:h-14 w-auto transition-transform duration-300 hover:scale-105" />
             </NuxtLink>
             <div class="flex items-center space-x-3">
-              <span class="text-2xl text-[#d4c4b0] font-light hidden md:inline">|</span>
-              <h1 class="text-lg md:text-2xl font-bold text-display bg-gradient-to-r from-[#d4c4b0] to-white dark:to-primary-100 bg-clip-text text-transparent">Lancer un entraînement</h1>
+              <span class="text-2xl text-sand-500 font-light hidden md:inline">|</span>
+              <h1 class="text-lg md:text-2xl font-bold text-display bg-gradient-to-r from-sand-500 to-white dark:to-primary-100 bg-clip-text text-transparent">Lancer un entraînement</h1>
             </div>
           </div>
 
@@ -66,7 +66,7 @@
           <button
             @click="launchWorkout(lastCompletedWorkout)"
             :disabled="!!isLaunching"
-            class="w-full card-glass hover:shadow-2xl hover:scale-[1.01] transition-all cursor-pointer group border-2 border-[#d4c4b0]/40 dark:border-[#b8a48f]/30 text-left"
+            class="w-full card-glass hover:shadow-2xl hover:scale-[1.01] transition-all cursor-pointer group border-2 border-sand-500/40 dark:border-sand-600/30 text-left"
           >
             <div class="flex items-center gap-4">
               <div class="w-14 h-14 bg-gradient-primary rounded-2xl flex items-center justify-center flex-shrink-0">
@@ -80,7 +80,7 @@
                 </svg>
               </div>
               <div class="flex-1 min-w-0">
-                <p class="text-xs font-semibold text-[#b8a48f] uppercase tracking-wider mb-1">Relancer le dernier</p>
+                <p class="text-xs font-semibold text-sand-600 uppercase tracking-wider mb-1">Relancer le dernier</p>
                 <p class="text-xl font-bold text-primary-900 dark:text-primary-100 truncate">{{ lastCompletedWorkout.name }}</p>
                 <p class="text-sm text-primary-500 dark:text-primary-400">{{ lastCompletedWorkout.exercises?.length || 0 }} exercices</p>
               </div>

@@ -33,6 +33,9 @@ export class User {
   @Column({ type: 'enum', enum: Goal, nullable: true })
   goal?: Goal
 
+  @Column({ type: 'varchar', nullable: true })
+  gender?: string
+
   @Column({ type: 'int', default: 2 })
   streakGoalPerWeek!: number
 

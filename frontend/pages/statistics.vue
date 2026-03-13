@@ -9,8 +9,8 @@
               <img src="/athletiq-icon.svg" alt="Athletiq" class="h-10 md:h-14 w-auto transition-transform duration-300 hover:scale-105" />
             </NuxtLink>
             <div class="flex items-center space-x-3">
-              <span class="hidden md:inline text-2xl text-[#d4c4b0] font-light">|</span>
-              <h1 class="text-lg md:text-2xl font-bold text-display bg-gradient-to-r from-[#d4c4b0] to-white dark:to-primary-100 bg-clip-text text-transparent">Statistiques</h1>
+              <span class="hidden md:inline text-2xl text-sand-500 font-light">|</span>
+              <h1 class="text-lg md:text-2xl font-bold text-display bg-gradient-to-r from-sand-500 to-white dark:to-primary-100 bg-clip-text text-transparent">Statistiques</h1>
             </div>
           </div>
 
@@ -303,7 +303,7 @@
               </div>
               <div class="flex-1 min-w-0">
                 <p class="font-bold text-primary-900 dark:text-primary-100 truncate">{{ record?.exerciseName || 'Exercice inconnu' }}</p>
-                <p class="text-2xl font-bold bg-gradient-to-r from-[#d4c4b0] to-[#9d8569] bg-clip-text text-transparent">
+                <p class="text-2xl font-bold bg-gradient-to-r from-sand-500 to-sand-700 bg-clip-text text-transparent">
                   {{ record?.maxWeight || 0 }} kg
                 </p>
                 <div class="flex items-center space-x-3 text-sm text-primary-600 dark:text-primary-400 mt-1">
