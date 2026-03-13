@@ -101,6 +101,7 @@ const selectedExercise = ref('')
 
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
+const { accentColors } = useTheme()
 
 // Extract unique exercise names from completed workouts
 const exerciseNames = computed(() => {
@@ -336,8 +337,8 @@ function drawChart() {
 
   // Main line with gradient
   const gradient = ctx.createLinearGradient(padding.left, 0, w - padding.right, 0)
-  gradient.addColorStop(0, '#d4c4b0')
-  gradient.addColorStop(1, '#9d8569')
+  gradient.addColorStop(0, accentColors.value[500])
+  gradient.addColorStop(1, accentColors.value[700])
 
   ctx.strokeStyle = gradient
   ctx.lineWidth = 2.5
@@ -354,8 +355,8 @@ function drawChart() {
 
   // Fill area under curve
   const areaGradient = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartH)
-  areaGradient.addColorStop(0, dark ? 'rgba(212, 196, 176, 0.15)' : 'rgba(212, 196, 176, 0.2)')
-  areaGradient.addColorStop(1, 'rgba(212, 196, 176, 0)')
+  areaGradient.addColorStop(0, dark ? `rgba(${accentColors.value.rgb500}, 0.15)` : `rgba(${accentColors.value.rgb500}, 0.2)`)
+  areaGradient.addColorStop(1, `rgba(${accentColors.value.rgb500}, 0)`)
 
   ctx.fillStyle = areaGradient
   ctx.beginPath()
@@ -385,7 +386,7 @@ function drawChart() {
     // Inner dot
     ctx.beginPath()
     ctx.arc(x, y, 2.5, 0, Math.PI * 2)
-    ctx.fillStyle = '#9d8569'
+    ctx.fillStyle = accentColors.value[700]
     ctx.fill()
   }
 }

@@ -95,8 +95,7 @@
                   ? 'border-sand-500 dark:border-sand-600 bg-sand-500/10 dark:bg-sand-600/15 shadow-md'
                   : 'border-primary-200 dark:border-primary-700 bg-white/50 dark:bg-primary-800/50 hover:border-primary-300 dark:hover:border-primary-600'"
               >
-                <span class="text-lg">{{ genderOption.emoji }}</span>
-                <span class="font-semibold text-primary-900 dark:text-primary-100 text-xs md:text-sm">{{ genderOption.label }}</span>
+                <span class="font-semibold text-primary-900 dark:text-primary-100 text-sm md:text-base">{{ genderOption.label }}</span>
               </button>
             </div>
           </div>
@@ -183,8 +182,8 @@ const error = ref('')
 const success = ref(false)
 
 const genders = [
-  { value: 'male', label: 'Homme', emoji: '\u{1F468}' },
-  { value: 'female', label: 'Femme', emoji: '\u{1F469}' }
+  { value: 'male', label: 'Homme' },
+  { value: 'female', label: 'Femme' }
 ]
 
 const goals = [

@@ -39,6 +39,7 @@ const chartData = computed(() => props.data)
 
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
+const { accentColors } = useTheme()
 
 const chartOptions = computed(() => ({
   responsive: true,
@@ -51,7 +52,7 @@ const chartOptions = computed(() => ({
       backgroundColor: isDark.value ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.9)',
       titleColor: isDark.value ? '#f5f5f4' : '#1c1917',
       bodyColor: isDark.value ? '#d6d3d1' : '#57534e',
-      borderColor: isDark.value ? '#44403c' : '#d4c4b0',
+      borderColor: isDark.value ? '#44403c' : accentColors.value[500],
       borderWidth: 1,
       padding: 12,
       displayColors: false,
@@ -72,7 +73,7 @@ const chartOptions = computed(() => ({
         callback: (value: any) => `${value} kcal`
       },
       grid: {
-        color: isDark.value ? 'rgba(68, 64, 60, 0.3)' : 'rgba(212, 196, 176, 0.2)'
+        color: isDark.value ? 'rgba(68, 64, 60, 0.3)' : `rgba(${accentColors.value.rgb500}, 0.2)`
       }
     },
     x: {
@@ -84,7 +85,7 @@ const chartOptions = computed(() => ({
         }
       },
       grid: {
-        color: isDark.value ? 'rgba(68, 64, 60, 0.15)' : 'rgba(212, 196, 176, 0.1)'
+        color: isDark.value ? 'rgba(68, 64, 60, 0.15)' : `rgba(${accentColors.value.rgb500}, 0.1)`
       }
     }
   }

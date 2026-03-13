@@ -36,6 +36,7 @@ const props = defineProps<Props>()
 
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
+const { accentColors } = useTheme()
 
 const chartData = computed(() => {
   const sorted = [...props.stats].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
@@ -46,11 +47,11 @@ const chartData = computed(() => {
       {
         label: 'Poids (kg)',
         data: sorted.map(s => s.weight),
-        borderColor: '#d4c4b0',
-        backgroundColor: isDark.value ? 'rgba(212, 196, 176, 0.1)' : 'rgba(212, 196, 176, 0.2)',
+        borderColor: accentColors.value[500],
+        backgroundColor: isDark.value ? `rgba(${accentColors.value.rgb500}, 0.1)` : `rgba(${accentColors.value.rgb500}, 0.2)`,
         fill: true,
         tension: 0.4,
-        pointBackgroundColor: '#d4c4b0',
+        pointBackgroundColor: accentColors.value[500],
         pointBorderColor: isDark.value ? '#1c1c1c' : '#ffffff',
         pointBorderWidth: 2,
         pointRadius: 4,
@@ -71,7 +72,7 @@ const chartOptions = computed(() => ({
       backgroundColor: isDark.value ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.9)',
       titleColor: isDark.value ? '#f5f5f4' : '#1c1917',
       bodyColor: isDark.value ? '#d6d3d1' : '#57534e',
-      borderColor: isDark.value ? '#44403c' : '#d4c4b0',
+      borderColor: isDark.value ? '#44403c' : accentColors.value[500],
       borderWidth: 1,
       padding: 12,
       displayColors: false,
@@ -95,7 +96,7 @@ const chartOptions = computed(() => ({
         callback: (value: any) => `${value} kg`
       },
       grid: {
-        color: isDark.value ? 'rgba(68, 64, 60, 0.3)' : 'rgba(212, 196, 176, 0.2)'
+        color: isDark.value ? 'rgba(68, 64, 60, 0.3)' : `rgba(${accentColors.value.rgb500}, 0.2)`
       }
     },
     x: {
@@ -104,7 +105,7 @@ const chartOptions = computed(() => ({
         font: { family: 'system-ui', size: 12 }
       },
       grid: {
-        color: isDark.value ? 'rgba(68, 64, 60, 0.15)' : 'rgba(212, 196, 176, 0.1)'
+        color: isDark.value ? 'rgba(68, 64, 60, 0.15)' : `rgba(${accentColors.value.rgb500}, 0.1)`
       }
     }
   }

@@ -29,6 +29,7 @@ const chartData = computed(() => props.data as any)
 
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
+const { accentColors } = useTheme()
 
 const chartOptions = computed(() => ({
   responsive: true,
@@ -50,7 +51,7 @@ const chartOptions = computed(() => ({
       backgroundColor: isDark.value ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.9)',
       titleColor: isDark.value ? '#f5f5f4' : '#1c1917',
       bodyColor: isDark.value ? '#d6d3d1' : '#57534e',
-      borderColor: isDark.value ? '#44403c' : '#d4c4b0',
+      borderColor: isDark.value ? '#44403c' : accentColors.value[500],
       borderWidth: 1,
       padding: 12,
       displayColors: true,

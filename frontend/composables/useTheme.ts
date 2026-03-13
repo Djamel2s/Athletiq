@@ -4,12 +4,14 @@ const SAND_COLORS = {
   500: '#d4c4b0',
   600: '#b8a48f',
   700: '#9b8772',
+  rgb500: '212, 196, 176',
 }
 
 const ROSE_COLORS = {
   500: '#d4b0bc',
   600: '#b88fa0',
   700: '#9b7284',
+  rgb500: '212, 176, 188',
 }
 
 export function useTheme() {

@@ -42,24 +42,32 @@ const emit = defineEmits<{
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 const previewUrl = ref<string | null>(null)
 
+const { accentColors } = useTheme()
+
 const cardWidth = 1080
 const cardHeight = computed(() => props.type === 'beforeAfter' ? 1350 : 1920)
 
-// --- Design System ---
-const C = {
-  bg1: '#1a1612',
-  bg2: '#2a2318',
-  bg3: '#1f1b16',
-  sand: '#d4c4b0',
-  sandLight: '#e8ddd0',
-  sandDark: '#b8a48f',
-  accent: '#9d8569',
-  text: '#ffffff',
-  textSoft: '#c8bfb5',
-  textMuted: '#7a7068',
-  cardBg: 'rgba(212, 196, 176, 0.06)',
-  cardBorder: 'rgba(212, 196, 176, 0.12)',
+// --- Design System (theme-aware) ---
+function getColors() {
+  const colors = accentColors.value
+  return {
+    bg1: '#1a1612',
+    bg2: '#2a2318',
+    bg3: '#1f1b16',
+    sand: colors[500],
+    sandLight: colors[500],
+    sandDark: colors[600],
+    accent: colors[700],
+    text: '#ffffff',
+    textSoft: '#c8bfb5',
+    textMuted: '#7a7068',
+    cardBg: `rgba(${colors.rgb500}, 0.06)`,
+    cardBorder: `rgba(${colors.rgb500}, 0.12)`,
+    rgb500: colors.rgb500,
+  }
 }
+// Keep C as reactive reference resolved at draw time
+let C = getColors()
 
 const MARGIN = 72
 const FONT = 'system-ui, -apple-system, sans-serif'
@@ -90,16 +98,16 @@ const drawBg = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
 
   // Subtle noise texture
   for (let i = 0; i < 4000; i++) {
-    ctx.fillStyle = `rgba(212, 196, 176, ${Math.random() * 0.015})`
+    ctx.fillStyle = `rgba(${C.rgb500}, ${Math.random() * 0.015})`
     ctx.fillRect(Math.random() * w, Math.random() * h, 1, 1)
   }
 
   // Top accent line
   const lineGrad = ctx.createLinearGradient(MARGIN, 0, w - MARGIN, 0)
-  lineGrad.addColorStop(0, 'rgba(212, 196, 176, 0)')
+  lineGrad.addColorStop(0, `rgba(${C.rgb500}, 0)`)
   lineGrad.addColorStop(0.3, C.sandDark)
   lineGrad.addColorStop(0.7, C.sandDark)
-  lineGrad.addColorStop(1, 'rgba(212, 196, 176, 0)')
+  lineGrad.addColorStop(1, `rgba(${C.rgb500}, 0)`)
   ctx.fillStyle = lineGrad
   ctx.fillRect(MARGIN, 48, w - MARGIN * 2, 2)
 }
@@ -117,10 +125,10 @@ const drawHeader = (ctx: CanvasRenderingContext2D, w: number) => {
 const drawFooter = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
   // Bottom accent line
   const lineGrad = ctx.createLinearGradient(MARGIN, 0, w - MARGIN, 0)
-  lineGrad.addColorStop(0, 'rgba(212, 196, 176, 0)')
-  lineGrad.addColorStop(0.3, 'rgba(212, 196, 176, 0.3)')
-  lineGrad.addColorStop(0.7, 'rgba(212, 196, 176, 0.3)')
-  lineGrad.addColorStop(1, 'rgba(212, 196, 176, 0)')
+  lineGrad.addColorStop(0, `rgba(${C.rgb500}, 0)`)
+  lineGrad.addColorStop(0.3, `rgba(${C.rgb500}, 0.3)`)
+  lineGrad.addColorStop(0.7, `rgba(${C.rgb500}, 0.3)`)
+  lineGrad.addColorStop(1, `rgba(${C.rgb500}, 0)`)
   ctx.fillStyle = lineGrad
   ctx.fillRect(MARGIN, h - 130, w - MARGIN * 2, 1)
 
@@ -233,9 +241,9 @@ const drawStreakCard = (ctx: CanvasRenderingContext2D) => {
         grad.addColorStop(1, C.accent)
         ctx.fillStyle = grad
       } else if (week.count > 0) {
-        ctx.fillStyle = 'rgba(212, 196, 176, 0.25)'
+        ctx.fillStyle = `rgba(${C.rgb500}, 0.25)`
       } else {
-        ctx.fillStyle = 'rgba(212, 196, 176, 0.06)'
+        ctx.fillStyle = `rgba(${C.rgb500}, 0.06)`
       }
       ctx.fill()
 
@@ -255,7 +263,7 @@ const drawStreakCard = (ctx: CanvasRenderingContext2D) => {
 
     // Empty square
     roundRect(ctx, w / 2 - 180, legendY, 16, 16, 4)
-    ctx.fillStyle = 'rgba(212, 196, 176, 0.06)'
+    ctx.fillStyle = `rgba(${C.rgb500}, 0.06)`
     ctx.fill()
     ctx.fillStyle = C.textMuted
     ctx.textAlign = 'left'
@@ -263,7 +271,7 @@ const drawStreakCard = (ctx: CanvasRenderingContext2D) => {
 
     // Partial square
     roundRect(ctx, w / 2 - 100, legendY, 16, 16, 4)
-    ctx.fillStyle = 'rgba(212, 196, 176, 0.25)'
+    ctx.fillStyle = `rgba(${C.rgb500}, 0.25)`
     ctx.fill()
     ctx.fillStyle = C.textMuted
     ctx.textAlign = 'left'
@@ -541,7 +549,7 @@ const drawReceiptCard = (ctx: CanvasRenderingContext2D) => {
 
   exercises.slice(0, 8).forEach((ex, i) => {
     roundRect(ctx, MARGIN, listY, rowW, rowH, 14)
-    ctx.fillStyle = i % 2 === 0 ? C.cardBg : 'rgba(212, 196, 176, 0.03)'
+    ctx.fillStyle = i % 2 === 0 ? C.cardBg : `rgba(${C.rgb500}, 0.03)`
     ctx.fill()
 
     // Exercise name
@@ -651,7 +659,7 @@ const drawWrappedCard = (ctx: CanvasRenderingContext2D) => {
     ctx.fillText('EXERCICE PRÉFÉRÉ', w / 2, gridY)
 
     roundRect(ctx, MARGIN, gridY + 16, w - MARGIN * 2, 120, 20)
-    ctx.fillStyle = 'rgba(212, 196, 176, 0.08)'
+    ctx.fillStyle = `rgba(${C.rgb500}, 0.08)`
     ctx.fill()
     ctx.strokeStyle = C.cardBorder
     ctx.lineWidth = 1
@@ -704,6 +712,9 @@ const generate = async () => {
 
   const ctx = canvas.getContext('2d')
   if (!ctx) return
+
+  // Refresh theme colors before drawing
+  C = getColors()
 
   canvas.width = cardWidth
   canvas.height = cardHeight.value
