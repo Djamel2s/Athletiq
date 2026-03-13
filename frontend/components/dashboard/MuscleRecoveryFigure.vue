@@ -19,9 +19,9 @@
     <!-- Layout: barres à gauche + figure à droite -->
     <div class="flex items-center gap-4 md:gap-6">
       <!-- Barres de récupération (gauche) -->
-      <div v-if="muscleRecovery.length > 0" class="flex-1 min-w-0 space-y-2.5 bg-white/40 dark:bg-primary-800/40 rounded-2xl p-3 md:p-4 border border-primary-200/50 dark:border-primary-700/50">
+      <div class="flex-1 min-w-0 space-y-2.5 bg-white/40 dark:bg-primary-800/40 rounded-2xl p-3 md:p-4 border border-primary-200/50 dark:border-primary-700/50">
         <h3 class="text-xs font-semibold text-primary-500 dark:text-primary-400 uppercase tracking-wider mb-3">Récupération</h3>
-        <div v-for="m in muscleRecovery.slice(0, 8)" :key="m.muscle" class="flex items-center gap-2">
+        <div v-for="m in displayBars" :key="m.muscle" class="flex items-center gap-2">
           <span class="text-[10px] md:text-xs text-primary-500 dark:text-primary-400 w-20 md:w-24 truncate">{{ muscleLabel(m.muscle) }}</span>
           <div class="flex-1 h-2 bg-primary-100 dark:bg-primary-800 rounded-full overflow-hidden">
             <div
@@ -186,114 +186,114 @@
             </linearGradient>
           </defs>
 
-          <!-- Tete (plus petite, plus ronde) -->
+          <!-- Tete -->
           <ellipse cx="150" cy="36" rx="22" ry="26" fill="url(#skin-f)"/>
           <path d="M132 44 Q142 60 150 62 Q158 60 168 44" :fill="skinBase"/>
-          <!-- Cheveux hint -->
           <path d="M128 28 Q130 16 150 12 Q170 16 172 28" fill="none" :stroke="skinDark" stroke-width="2" opacity="0.3"/>
 
-          <!-- Cou (plus fin) -->
-          <path d="M140 58 L139 78 L161 78 L160 58Z" fill="url(#shadow-f)"/>
+          <!-- Cou fin -->
+          <path d="M141 58 L140 78 L160 78 L159 58Z" fill="url(#shadow-f)"/>
 
-          <!-- Trapezes (SHOULDERS - plus étroits) -->
+          <!-- Trapezes (SHOULDERS - étroits) -->
           <g :opacity="getOverlayOpacity('SHOULDERS')">
-            <path d="M139 76 Q126 74 108 84 L114 92 Q128 84 141 82Z" :fill="getColor('SHOULDERS')"/>
-            <path d="M161 76 Q174 74 192 84 L186 92 Q172 84 159 82Z" :fill="getColor('SHOULDERS')"/>
+            <path d="M140 76 Q128 74 112 84 L117 91 Q130 83 142 81Z" :fill="getColor('SHOULDERS')"/>
+            <path d="M160 76 Q172 74 188 84 L183 91 Q170 83 158 81Z" :fill="getColor('SHOULDERS')"/>
           </g>
-          <path d="M139 76 Q126 74 108 84 L114 92 Q128 84 141 82Z" fill="url(#shadow-f)" :opacity="1 - getOverlayOpacity('SHOULDERS') * 0.6"/>
-          <path d="M161 76 Q174 74 192 84 L186 92 Q172 84 159 82Z" fill="url(#shadow-f)" :opacity="1 - getOverlayOpacity('SHOULDERS') * 0.6"/>
+          <path d="M140 76 Q128 74 112 84 L117 91 Q130 83 142 81Z" fill="url(#shadow-f)" :opacity="1 - getOverlayOpacity('SHOULDERS') * 0.6"/>
+          <path d="M160 76 Q172 74 188 84 L183 91 Q170 83 158 81Z" fill="url(#shadow-f)" :opacity="1 - getOverlayOpacity('SHOULDERS') * 0.6"/>
 
-          <!-- Deltoides (SHOULDERS - plus petits) -->
+          <!-- Deltoides (SHOULDERS - petits) -->
           <g :opacity="getOverlayOpacity('SHOULDERS')">
-            <path d="M108 84 Q92 88 86 104 Q84 114 88 124 Q94 120 100 110 Q106 100 114 92Z" :fill="getColor('SHOULDERS')"/>
-            <path d="M192 84 Q208 88 214 104 Q216 114 212 124 Q206 120 200 110 Q194 100 186 92Z" :fill="getColor('SHOULDERS')"/>
+            <path d="M112 84 Q96 88 90 102 Q88 112 92 120 Q97 117 102 108 Q108 98 117 91Z" :fill="getColor('SHOULDERS')"/>
+            <path d="M188 84 Q204 88 210 102 Q212 112 208 120 Q203 117 198 108 Q192 98 183 91Z" :fill="getColor('SHOULDERS')"/>
           </g>
-          <path d="M108 84 Q92 88 86 104 Q84 114 88 124 Q94 120 100 110 Q106 100 114 92Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('SHOULDERS') * 0.6"/>
-          <path d="M192 84 Q208 88 214 104 Q216 114 212 124 Q206 120 200 110 Q194 100 186 92Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('SHOULDERS') * 0.6"/>
+          <path d="M112 84 Q96 88 90 102 Q88 112 92 120 Q97 117 102 108 Q108 98 117 91Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('SHOULDERS') * 0.6"/>
+          <path d="M188 84 Q204 88 210 102 Q212 112 208 120 Q203 117 198 108 Q192 98 183 91Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('SHOULDERS') * 0.6"/>
 
-          <!-- Poitrine (CHEST - formes féminines) -->
+          <!-- Poitrine / Seins (CHEST - ronds, volumineux) -->
           <g :opacity="getOverlayOpacity('CHEST')">
-            <path d="M114 92 Q108 100 104 116 Q102 130 110 140 L148 144 L148 92 Q134 86 114 92Z" :fill="getColor('CHEST')"/>
-            <path d="M186 92 Q192 100 196 116 Q198 130 190 140 L152 144 L152 92 Q166 86 186 92Z" :fill="getColor('CHEST')"/>
+            <path d="M117 91 Q110 98 106 108 L106 116 Q106 138 120 148 L148 148 L148 91 Q134 86 117 91Z" :fill="getColor('CHEST')"/>
+            <path d="M183 91 Q190 98 194 108 L194 116 Q194 138 180 148 L152 148 L152 91 Q166 86 183 91Z" :fill="getColor('CHEST')"/>
           </g>
-          <path d="M114 92 Q108 100 104 116 Q102 130 110 140 L148 144 L148 92 Q134 86 114 92Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('CHEST') * 0.6"/>
-          <path d="M186 92 Q192 100 196 116 Q198 130 190 140 L152 144 L152 92 Q166 86 186 92Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('CHEST') * 0.6"/>
-          <!-- Courbes poitrine -->
-          <path d="M112 106 Q118 124 134 130 Q142 132 148 128" fill="none" :stroke="skinDetail" stroke-width="1.8" opacity="0.4"/>
-          <path d="M188 106 Q182 124 166 130 Q158 132 152 128" fill="none" :stroke="skinDetail" stroke-width="1.8" opacity="0.4"/>
-          <line x1="150" y1="90" x2="150" y2="144" :stroke="skinDetail" stroke-width="1.2" opacity="0.2"/>
+          <path d="M117 91 Q110 98 106 108 L106 116 Q106 138 120 148 L148 148 L148 91 Q134 86 117 91Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('CHEST') * 0.6"/>
+          <path d="M183 91 Q190 98 194 108 L194 116 Q194 138 180 148 L152 148 L152 91 Q166 86 183 91Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('CHEST') * 0.6"/>
+          <!-- Seins - courbes rondes bien marquées -->
+          <ellipse cx="127" cy="118" rx="20" ry="18" fill="url(#skin-f)" opacity="0.6"/>
+          <ellipse cx="173" cy="118" rx="20" ry="18" fill="url(#skin-f)" opacity="0.6"/>
+          <path d="M110 108 Q116 130 130 138 Q140 142 148 136" fill="none" :stroke="skinDetail" stroke-width="2" opacity="0.5"/>
+          <path d="M190 108 Q184 130 170 138 Q160 142 152 136" fill="none" :stroke="skinDetail" stroke-width="2" opacity="0.5"/>
+          <line x1="150" y1="90" x2="150" y2="148" :stroke="skinDetail" stroke-width="1" opacity="0.15"/>
 
-          <!-- Biceps (BICEPS - plus fins) -->
+          <!-- Biceps (BICEPS - fins) -->
           <g :opacity="getOverlayOpacity('BICEPS')">
-            <path d="M88 124 Q82 138 80 154 Q78 168 82 176 L96 172 Q94 160 93 148 Q93 136 94 124Z" :fill="getColor('BICEPS')"/>
-            <path d="M212 124 Q218 138 220 154 Q222 168 218 176 L204 172 Q206 160 207 148 Q207 136 206 124Z" :fill="getColor('BICEPS')"/>
+            <path d="M92 120 Q86 134 84 150 Q82 162 86 170 L98 166 Q96 156 96 144 Q96 132 97 120Z" :fill="getColor('BICEPS')"/>
+            <path d="M208 120 Q214 134 216 150 Q218 162 214 170 L202 166 Q204 156 204 144 Q204 132 203 120Z" :fill="getColor('BICEPS')"/>
           </g>
-          <path d="M88 124 Q82 138 80 154 Q78 168 82 176 L96 172 Q94 160 93 148 Q93 136 94 124Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('BICEPS') * 0.6"/>
-          <path d="M212 124 Q218 138 220 154 Q222 168 218 176 L204 172 Q206 160 207 148 Q207 136 206 124Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('BICEPS') * 0.6"/>
+          <path d="M92 120 Q86 134 84 150 Q82 162 86 170 L98 166 Q96 156 96 144 Q96 132 97 120Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('BICEPS') * 0.6"/>
+          <path d="M208 120 Q214 134 216 150 Q218 162 214 170 L202 166 Q204 156 204 144 Q204 132 203 120Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('BICEPS') * 0.6"/>
 
-          <!-- Avant-bras (plus fins) -->
-          <path d="M82 176 Q76 194 72 214 Q68 228 70 238 L88 234 Q88 224 90 212 Q92 196 96 172Z" fill="url(#shadow-f)"/>
-          <path d="M218 176 Q224 194 228 214 Q232 228 230 238 L212 234 Q212 224 210 212 Q208 196 204 172Z" fill="url(#shadow-f)"/>
+          <!-- Avant-bras fins -->
+          <path d="M86 170 Q80 188 76 208 Q72 222 74 232 L90 228 Q90 220 92 208 Q94 192 98 166Z" fill="url(#shadow-f)"/>
+          <path d="M214 170 Q220 188 224 208 Q228 222 226 232 L210 228 Q210 220 208 208 Q206 192 202 166Z" fill="url(#shadow-f)"/>
 
-          <!-- Taille fine (ABS - cintrée) -->
+          <!-- Taille ULTRA fine (ABS - style Orangina/animé) -->
           <g :opacity="getOverlayOpacity('ABS')">
-            <path d="M118 144 Q114 160 112 180 Q110 200 114 220 Q122 238 150 244 Q178 238 186 220 Q190 200 188 180 Q186 160 182 144 L152 146 L148 146Z" :fill="getColor('ABS')"/>
+            <path d="M120 148 Q128 152 150 152 Q172 152 180 148 Q176 158 172 164 Q164 172 158 178 Q154 182 150 184 Q146 182 142 178 Q136 172 128 164 Q124 158 120 148Z" :fill="getColor('ABS')"/>
+            <path d="M142 178 Q136 186 132 196 Q128 208 130 220 Q134 236 150 242 Q166 236 170 220 Q172 208 168 196 Q164 186 158 178 Q154 182 150 184 Q146 182 142 178Z" :fill="getColor('ABS')"/>
           </g>
-          <path d="M118 144 Q114 160 112 180 Q110 200 114 220 Q122 238 150 244 Q178 238 186 220 Q190 200 188 180 Q186 160 182 144 L152 146 L148 146Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('ABS') * 0.6"/>
-          <line x1="150" y1="144" x2="150" y2="238" :stroke="skinDetail" stroke-width="1.2" opacity="0.2"/>
-          <path d="M126 166 Q138 170 150 168 Q162 170 174 166" fill="none" :stroke="skinDetail" stroke-width="1" opacity="0.2"/>
-          <path d="M124 186 Q138 190 150 188 Q162 190 176 186" fill="none" :stroke="skinDetail" stroke-width="1" opacity="0.2"/>
-          <path d="M122 206 Q136 210 150 208 Q164 210 178 206" fill="none" :stroke="skinDetail" stroke-width="1" opacity="0.2"/>
-          <!-- Courbe de la taille -->
-          <path d="M110 140 Q104 166 106 180" fill="none" :stroke="skinDetail" stroke-width="1.5" opacity="0.3"/>
-          <path d="M190 140 Q196 166 194 180" fill="none" :stroke="skinDetail" stroke-width="1.5" opacity="0.3"/>
+          <path d="M120 148 Q128 152 150 152 Q172 152 180 148 Q176 158 172 164 Q164 172 158 178 Q154 182 150 184 Q146 182 142 178 Q136 172 128 164 Q124 158 120 148Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('ABS') * 0.6"/>
+          <path d="M142 178 Q136 186 132 196 Q128 208 130 220 Q134 236 150 242 Q166 236 170 220 Q172 208 168 196 Q164 186 158 178 Q154 182 150 184 Q146 182 142 178Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('ABS') * 0.6"/>
+          <line x1="150" y1="152" x2="150" y2="238" :stroke="skinDetail" stroke-width="1" opacity="0.15"/>
+          <path d="M138 170 Q144 172 150 171 Q156 172 162 170" fill="none" :stroke="skinDetail" stroke-width="0.8" opacity="0.15"/>
+          <path d="M136 192 Q142 195 150 194 Q158 195 164 192" fill="none" :stroke="skinDetail" stroke-width="0.8" opacity="0.15"/>
+          <!-- Courbes taille cintrée -->
+          <path d="M120 148 Q114 162 128 164" fill="none" :stroke="skinDetail" stroke-width="1.5" opacity="0.35"/>
+          <path d="M180 148 Q186 162 172 164" fill="none" :stroke="skinDetail" stroke-width="1.5" opacity="0.35"/>
 
-          <!-- Hanches larges + Fessiers (GLUTES - plus prononcés) -->
+          <!-- Hanches très larges + Fessiers gros (GLUTES) -->
           <g :opacity="getOverlayOpacity('GLUTES')">
-            <path d="M106 180 Q96 200 92 224 Q90 242 100 258 Q112 270 134 264 L118 230 Q114 210 112 190Z" :fill="getColor('GLUTES')"/>
-            <path d="M194 180 Q204 200 208 224 Q210 242 200 258 Q188 270 166 264 L182 230 Q186 210 188 190Z" :fill="getColor('GLUTES')"/>
+            <path d="M128 164 Q112 172 96 196 Q86 218 86 238 Q88 256 102 268 Q116 276 138 268 L132 196 Q130 178 128 164Z" :fill="getColor('GLUTES')"/>
+            <path d="M172 164 Q188 172 204 196 Q214 218 214 238 Q212 256 198 268 Q184 276 162 268 L168 196 Q170 178 172 164Z" :fill="getColor('GLUTES')"/>
           </g>
-          <path d="M106 180 Q96 200 92 224 Q90 242 100 258 Q112 270 134 264 L118 230 Q114 210 112 190Z" fill="url(#shadow-f)" :opacity="1 - getOverlayOpacity('GLUTES') * 0.6"/>
-          <path d="M194 180 Q204 200 208 224 Q210 242 200 258 Q188 270 166 264 L182 230 Q186 210 188 190Z" fill="url(#shadow-f)" :opacity="1 - getOverlayOpacity('GLUTES') * 0.6"/>
+          <path d="M128 164 Q112 172 96 196 Q86 218 86 238 Q88 256 102 268 Q116 276 138 268 L132 196 Q130 178 128 164Z" fill="url(#shadow-f)" :opacity="1 - getOverlayOpacity('GLUTES') * 0.6"/>
+          <path d="M172 164 Q188 172 204 196 Q214 218 214 238 Q212 256 198 268 Q184 276 162 268 L168 196 Q170 178 172 164Z" fill="url(#shadow-f)" :opacity="1 - getOverlayOpacity('GLUTES') * 0.6"/>
           <!-- Courbe fessiers -->
-          <path d="M96 210 Q94 230 100 250" fill="none" :stroke="skinDetail" stroke-width="1.2" opacity="0.3"/>
-          <path d="M204 210 Q206 230 200 250" fill="none" :stroke="skinDetail" stroke-width="1.2" opacity="0.3"/>
+          <path d="M92 206 Q88 226 94 252" fill="none" :stroke="skinDetail" stroke-width="1.2" opacity="0.3"/>
+          <path d="M208 206 Q212 226 206 252" fill="none" :stroke="skinDetail" stroke-width="1.2" opacity="0.3"/>
 
-          <!-- Quadriceps (QUADS - plus fins, hanches plus larges) -->
+          <!-- Quadriceps (QUADS) -->
           <g :opacity="getOverlayOpacity('QUADS')">
-            <path d="M134 264 Q130 286 128 314 Q126 342 130 370 L148 374 L148 264Z" :fill="getColor('QUADS')"/>
-            <path d="M100 258 Q96 280 98 314 Q100 342 110 370 L130 374 L130 370 Q126 342 128 314 Q130 286 134 264Z" :fill="getColor('QUADS')"/>
-            <path d="M166 264 Q170 286 172 314 Q174 342 170 370 L152 374 L152 264Z" :fill="getColor('QUADS')"/>
-            <path d="M200 258 Q204 280 202 314 Q200 342 190 370 L170 374 L170 370 Q174 342 172 314 Q170 286 166 264Z" :fill="getColor('QUADS')"/>
+            <path d="M138 268 Q134 290 132 316 Q130 344 134 370 L150 374 L150 268Z" :fill="getColor('QUADS')"/>
+            <path d="M102 268 Q98 288 100 316 Q102 344 112 370 L134 374 L134 370 Q130 344 132 316 Q134 290 138 268Z" :fill="getColor('QUADS')"/>
+            <path d="M162 268 Q166 290 168 316 Q170 344 166 370 L150 374 L150 268Z" :fill="getColor('QUADS')"/>
+            <path d="M198 268 Q202 288 200 316 Q198 344 188 370 L166 374 L166 370 Q170 344 168 316 Q166 290 162 268Z" :fill="getColor('QUADS')"/>
           </g>
-          <path d="M134 264 Q130 286 128 314 Q126 342 130 370 L148 374 L148 264Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('QUADS') * 0.6"/>
-          <path d="M100 258 Q96 280 98 314 Q100 342 110 370 L130 374 L130 370 Q126 342 128 314 Q130 286 134 264Z" fill="url(#shadow-f)" :opacity="1 - getOverlayOpacity('QUADS') * 0.6"/>
-          <path d="M166 264 Q170 286 172 314 Q174 342 170 370 L152 374 L152 264Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('QUADS') * 0.6"/>
-          <path d="M200 258 Q204 280 202 314 Q200 342 190 370 L170 374 L170 370 Q174 342 172 314 Q170 286 166 264Z" fill="url(#shadow-f)" :opacity="1 - getOverlayOpacity('QUADS') * 0.6"/>
-          <path d="M128 280 Q132 300 132 320 Q130 348 130 370" fill="none" :stroke="skinDetail" stroke-width="1" opacity="0.25"/>
-          <path d="M172 280 Q168 300 168 320 Q170 348 170 370" fill="none" :stroke="skinDetail" stroke-width="1" opacity="0.25"/>
+          <path d="M138 268 Q134 290 132 316 Q130 344 134 370 L150 374 L150 268Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('QUADS') * 0.6"/>
+          <path d="M102 268 Q98 288 100 316 Q102 344 112 370 L134 374 L134 370 Q130 344 132 316 Q134 290 138 268Z" fill="url(#shadow-f)" :opacity="1 - getOverlayOpacity('QUADS') * 0.6"/>
+          <path d="M162 268 Q166 290 168 316 Q170 344 166 370 L150 374 L150 268Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('QUADS') * 0.6"/>
+          <path d="M198 268 Q202 288 200 316 Q198 344 188 370 L166 374 L166 370 Q170 344 168 316 Q166 290 162 268Z" fill="url(#shadow-f)" :opacity="1 - getOverlayOpacity('QUADS') * 0.6"/>
+          <path d="M132 284 Q136 304 136 324 Q134 350 134 370" fill="none" :stroke="skinDetail" stroke-width="1" opacity="0.2"/>
+          <path d="M168 284 Q164 304 164 324 Q166 350 166 370" fill="none" :stroke="skinDetail" stroke-width="1" opacity="0.2"/>
 
           <!-- Genoux -->
-          <ellipse cx="134" cy="378" rx="16" ry="9" fill="url(#shadow-f)" opacity="0.5"/>
-          <ellipse cx="166" cy="378" rx="16" ry="9" fill="url(#shadow-f)" opacity="0.5"/>
+          <ellipse cx="136" cy="378" rx="16" ry="9" fill="url(#shadow-f)" opacity="0.5"/>
+          <ellipse cx="164" cy="378" rx="16" ry="9" fill="url(#shadow-f)" opacity="0.5"/>
 
-          <!-- Mollets (CALVES - plus fins, galbés) -->
+          <!-- Mollets (CALVES - galbés) -->
           <g :opacity="getOverlayOpacity('CALVES')">
-            <path d="M114 386 Q112 408 114 436 Q116 456 122 476 L142 476 Q140 456 138 436 Q136 408 140 386Z" :fill="getColor('CALVES')"/>
-            <path d="M186 386 Q188 408 186 436 Q184 456 178 476 L158 476 Q160 456 162 436 Q164 408 160 386Z" :fill="getColor('CALVES')"/>
+            <path d="M116 386 Q114 408 116 436 Q118 456 124 476 L144 476 Q142 456 140 436 Q138 408 142 386Z" :fill="getColor('CALVES')"/>
+            <path d="M184 386 Q186 408 184 436 Q182 456 176 476 L156 476 Q158 456 160 436 Q162 408 158 386Z" :fill="getColor('CALVES')"/>
           </g>
-          <path d="M114 386 Q112 408 114 436 Q116 456 122 476 L142 476 Q140 456 138 436 Q136 408 140 386Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('CALVES') * 0.6"/>
-          <path d="M186 386 Q188 408 186 436 Q184 456 178 476 L158 476 Q160 456 162 436 Q164 408 160 386Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('CALVES') * 0.6"/>
-          <path d="M118 400 Q116 418 118 440" fill="none" :stroke="skinDetail" stroke-width="1" opacity="0.2"/>
-          <path d="M182 400 Q184 418 182 440" fill="none" :stroke="skinDetail" stroke-width="1" opacity="0.2"/>
+          <path d="M116 386 Q114 408 116 436 Q118 456 124 476 L144 476 Q142 456 140 436 Q138 408 142 386Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('CALVES') * 0.6"/>
+          <path d="M184 386 Q186 408 184 436 Q182 456 176 476 L156 476 Q158 456 160 436 Q162 408 158 386Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('CALVES') * 0.6"/>
 
-          <!-- Pieds (plus petits) -->
-          <path d="M122 476 Q114 486 112 492 Q110 498 116 500 L142 498 Q146 494 142 488 L142 476Z" fill="url(#shadow-f)"/>
-          <path d="M178 476 Q186 486 188 492 Q190 498 184 500 L158 498 Q154 494 158 488 L158 476Z" fill="url(#shadow-f)"/>
+          <!-- Pieds -->
+          <path d="M124 476 Q116 486 114 492 Q112 498 118 500 L144 498 Q148 494 144 488 L144 476Z" fill="url(#shadow-f)"/>
+          <path d="M176 476 Q184 486 186 492 Q188 498 182 500 L156 498 Q152 494 156 488 L156 476Z" fill="url(#shadow-f)"/>
 
-          <!-- Mains (plus petites) -->
-          <path d="M70 238 Q64 248 62 254 Q60 260 66 262 L82 258 Q86 252 88 244 L88 234Z" fill="url(#shadow-f)"/>
-          <path d="M230 238 Q236 248 238 254 Q240 260 234 262 L218 258 Q214 252 212 244 L212 234Z" fill="url(#shadow-f)"/>
+          <!-- Mains -->
+          <path d="M74 232 Q68 242 66 248 Q64 254 70 256 L86 252 Q90 246 90 238 L90 228Z" fill="url(#shadow-f)"/>
+          <path d="M226 232 Q232 242 234 248 Q236 254 230 256 L214 252 Q210 246 210 238 L210 228Z" fill="url(#shadow-f)"/>
         </svg>
       </div>
     </div>
@@ -318,6 +318,13 @@ const authStore = useAuthStore()
 const { isRose, accentColors } = useTheme()
 
 const isFemale = computed(() => authStore.user?.gender === 'female')
+
+// Default muscles shown when no data (full energy)
+const defaultMuscles = ['CHEST', 'BACK', 'SHOULDERS', 'QUADS', 'GLUTES', 'ABS', 'BICEPS', 'TRICEPS']
+const displayBars = computed(() => {
+  if (props.muscleRecovery.length > 0) return props.muscleRecovery.slice(0, 8)
+  return defaultMuscles.map(muscle => ({ muscle, score: 100, daysSince: 0, lastVolume: 0 }))
+})
 
 // Skin colors based on theme
 const skinBase = computed(() => accentColors.value[500])
