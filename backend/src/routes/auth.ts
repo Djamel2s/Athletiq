@@ -51,6 +51,8 @@ router.post('/register', async (req, res) => {
       email: newUser.email,
       firstName: newUser.firstName,
       lastName: newUser.lastName,
+      goal: newUser.goal,
+      gender: newUser.gender,
       createdAt: newUser.createdAt
     }
 
@@ -93,7 +95,9 @@ router.post('/login', async (req, res) => {
         id: user.id,
         email: user.email,
         firstName: user.firstName,
-        lastName: user.lastName
+        lastName: user.lastName,
+        goal: user.goal,
+        gender: user.gender
       },
       token,
       refreshToken
