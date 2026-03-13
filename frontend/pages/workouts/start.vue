@@ -92,78 +92,62 @@
         </div>
 
         <!-- Workouts Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 slide-up">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 slide-up">
           <div
             v-for="workout in availableWorkouts"
             :key="workout.id"
             @click="launchWorkout(workout)"
-            :class="['card-glass hover:shadow-2xl hover:scale-[1.02] transition-all cursor-pointer group', isLaunching === workout.id ? 'opacity-70 pointer-events-none' : '']"
+            :class="['group relative rounded-2xl border border-primary-200/60 dark:border-primary-700/60 bg-white/70 dark:bg-primary-800/70 backdrop-blur-sm hover:border-sand-500/50 dark:hover:border-sand-600/40 hover:shadow-xl transition-all cursor-pointer overflow-hidden', isLaunching === workout.id ? 'opacity-70 pointer-events-none' : '']"
           >
-            <div class="flex items-center space-x-3 mb-4">
-              <div class="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center icon-container">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                </svg>
-              </div>
-              <div class="flex-1">
-                <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100 group-hover:text-primary-700 dark:group-hover:text-primary-300 transition-colors">
+            <div class="h-1 bg-gradient-primary"></div>
+            <div class="p-5">
+              <div class="flex items-start justify-between mb-3">
+                <h3 class="text-lg md:text-xl font-bold text-primary-900 dark:text-primary-100 group-hover:text-sand-700 dark:group-hover:text-sand-400 transition-colors leading-tight">
                   {{ workout.name }}
                 </h3>
-              </div>
-              <span v-if="workout.isTemplate" class="px-3 py-1 bg-primary-200 dark:bg-primary-700 text-primary-700 dark:text-primary-300 text-xs font-semibold rounded-full">
-                TEMPLATE
-              </span>
-            </div>
-
-            <p v-if="workout.description" class="text-primary-600 dark:text-primary-400 mb-4">
-              {{ workout.description }}
-            </p>
-
-            <!-- Exercise preview -->
-            <div v-if="workout.exercises && workout.exercises.length > 0" class="flex flex-wrap gap-2 mb-4">
-              <div
-                v-for="exercise in workout.exercises.slice(0, 5)"
-                :key="exercise.id"
-                class="px-3 py-1 bg-primary-100 dark:bg-primary-800 text-primary-700 dark:text-primary-300 text-sm rounded-lg font-medium"
-              >
-                {{ exercise.exerciseLibrary?.name || exercise.name }}
-              </div>
-              <div v-if="workout.exercises.length > 5" class="px-3 py-1 bg-primary-200 dark:bg-primary-700 text-primary-700 dark:text-primary-300 text-sm rounded-lg font-medium">
-                +{{ workout.exercises.length - 5 }} autres
-              </div>
-            </div>
-
-            <!-- Stats -->
-            <div class="flex flex-wrap gap-4 text-sm text-primary-600 dark:text-primary-400 pt-4 border-t border-primary-200 dark:border-primary-700">
-              <span v-if="workout.exercises?.length" class="flex items-center space-x-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                </svg>
-                <span class="font-semibold">{{ workout.exercises.length }} exercices</span>
-              </span>
-
-              <span v-if="getEstimatedDuration(workout)" class="flex items-center space-x-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <span class="font-semibold">~{{ getEstimatedDuration(workout) }} min</span>
-              </span>
-            </div>
-
-            <!-- Action hint -->
-            <div class="mt-4 pt-4 border-t border-primary-200 dark:border-primary-700">
-              <div class="flex items-center justify-between text-sm">
-                <span v-if="isLaunching === workout.id" class="text-primary-600 dark:text-primary-300 flex items-center gap-2">
-                  <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                <div v-if="isLaunching === workout.id" class="w-8 h-8 flex items-center justify-center flex-shrink-0">
+                  <svg class="animate-spin h-5 w-5 text-sand-500" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                   </svg>
-                  Lancement...
-                </span>
-                <span v-else class="text-primary-500 dark:text-primary-400">Clique pour démarrer</span>
-                <svg v-if="isLaunching !== workout.id" class="w-5 h-5 text-primary-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                </div>
+                <svg v-else class="w-5 h-5 text-primary-300 dark:text-primary-600 group-hover:text-sand-500 group-hover:translate-x-0.5 transition-all flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                 </svg>
+              </div>
+
+              <p v-if="workout.description" class="text-sm text-primary-500 dark:text-primary-400 mb-3 line-clamp-2">
+                {{ workout.description }}
+              </p>
+
+              <!-- Exercise preview tags -->
+              <div v-if="workout.exercises && workout.exercises.length > 0" class="flex flex-wrap gap-1.5 mb-4">
+                <span
+                  v-for="exercise in workout.exercises.slice(0, 4)"
+                  :key="exercise.id"
+                  class="px-2 py-0.5 bg-primary-50 dark:bg-primary-800 text-primary-600 dark:text-primary-400 text-[11px] rounded-md font-medium"
+                >
+                  {{ exercise.exerciseLibrary?.name || exercise.name }}
+                </span>
+                <span v-if="workout.exercises.length > 4" class="px-2 py-0.5 bg-sand-500/10 text-sand-600 dark:text-sand-400 text-[11px] rounded-md font-semibold">
+                  +{{ workout.exercises.length - 4 }}
+                </span>
+              </div>
+
+              <!-- Stats -->
+              <div class="flex items-center gap-3 pt-3 border-t border-primary-100 dark:border-primary-800">
+                <span v-if="workout.exercises?.length" class="inline-flex items-center gap-1 text-xs text-primary-500 dark:text-primary-400">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                  </svg>
+                  {{ workout.exercises.length }} exercices
+                </span>
+                <span v-if="getEstimatedDuration(workout)" class="inline-flex items-center gap-1 text-xs text-primary-500 dark:text-primary-400">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  ~{{ getEstimatedDuration(workout) }} min
+                </span>
               </div>
             </div>
           </div>

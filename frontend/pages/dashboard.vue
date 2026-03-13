@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen">
+  <div class="min-h-screen overflow-x-hidden">
     <!-- Navigation -->
     <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
       <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-5">
@@ -139,7 +139,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1">
+        <div class="flex-1 min-w-0">
       <!-- Bienvenue -->
       <div class="mb-8 md:mb-12 fade-in">
         <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold mb-2 md:mb-4 text-display text-primary-900 dark:text-primary-100">

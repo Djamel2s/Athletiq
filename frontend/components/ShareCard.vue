@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 const props = defineProps<{
-  type: 'streak' | 'recap' | 'beforeAfter' | 'receipt' | 'wrapped'
+  type: 'streak' | 'recap' | 'beforeAfter' | 'beforeAfterSplit' | 'receipt' | 'wrapped'
   title: string
   data: Record<string, any>
   beforeImage?: string
@@ -45,7 +45,7 @@ const previewUrl = ref<string | null>(null)
 const { accentColors } = useTheme()
 
 const cardWidth = 1080
-const cardHeight = computed(() => props.type === 'beforeAfter' ? 1350 : 1920)
+const cardHeight = computed(() => (props.type === 'beforeAfter' || props.type === 'beforeAfterSplit') ? 1350 : 1920)
 
 // --- Design System (theme-aware) ---
 function getColors() {
@@ -483,6 +483,111 @@ const drawBeforeAfterCard = async (ctx: CanvasRenderingContext2D) => {
   drawFooter(ctx, w, h)
 }
 
+const drawBeforeAfterSplitCard = async (ctx: CanvasRenderingContext2D) => {
+  const w = cardWidth
+  const h = cardHeight.value
+  drawBg(ctx, w, h)
+  drawHeader(ctx, w)
+
+  // Subtitle
+  ctx.font = `500 32px ${FONT}`
+  ctx.fillStyle = C.textMuted
+  ctx.textAlign = 'center'
+  ctx.fillText('MA TRANSFORMATION', w / 2, 180)
+
+  const imgH = 780
+  const imgY = 220
+  const halfW = w / 2
+
+  const loadImage = (src: string): Promise<HTMLImageElement> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image()
+      img.crossOrigin = 'anonymous'
+      img.onload = () => resolve(img)
+      img.onerror = reject
+      img.src = src
+    })
+  }
+
+  // Draw left half from before image (center crop, right half of image)
+  if (props.beforeImage) {
+    try {
+      const img = await loadImage(props.beforeImage)
+      ctx.save()
+      roundRect(ctx, 0, imgY, halfW, imgH, 0)
+      ctx.clip()
+      const scale = Math.max(w / img.width, imgH / img.height)
+      const dx = (w - img.width * scale) / 2
+      const dy = (imgH - img.height * scale) / 2
+      ctx.drawImage(img, dx, imgY + dy, img.width * scale, img.height * scale)
+      ctx.restore()
+    } catch { /* skip */ }
+  }
+
+  // Draw right half from after image (center crop, left half of image)
+  if (props.afterImage) {
+    try {
+      const img = await loadImage(props.afterImage)
+      ctx.save()
+      roundRect(ctx, halfW, imgY, halfW, imgH, 0)
+      ctx.clip()
+      const scale = Math.max(w / img.width, imgH / img.height)
+      const dx = (w - img.width * scale) / 2
+      const dy = (imgH - img.height * scale) / 2
+      ctx.drawImage(img, dx, imgY + dy, img.width * scale, img.height * scale)
+      ctx.restore()
+    } catch { /* skip */ }
+  }
+
+  // Divider line
+  ctx.save()
+  ctx.strokeStyle = 'rgba(255,255,255,0.8)'
+  ctx.lineWidth = 3
+  ctx.beginPath()
+  ctx.moveTo(halfW, imgY)
+  ctx.lineTo(halfW, imgY + imgH)
+  ctx.stroke()
+  ctx.restore()
+
+  // Labels on images
+  ctx.font = `700 28px ${FONT}`
+
+  // "AVANT" label bottom-left
+  ctx.save()
+  ctx.fillStyle = 'rgba(0,0,0,0.5)'
+  roundRect(ctx, 20, imgY + imgH - 70, 160, 50, 12)
+  ctx.fill()
+  ctx.fillStyle = '#fff'
+  ctx.textAlign = 'center'
+  ctx.fillText('AVANT', 100, imgY + imgH - 37)
+  ctx.restore()
+
+  // "APRES" label bottom-right
+  ctx.save()
+  ctx.fillStyle = 'rgba(0,0,0,0.5)'
+  roundRect(ctx, w - 180, imgY + imgH - 70, 160, 50, 12)
+  ctx.fill()
+  ctx.fillStyle = C.sand
+  ctx.textAlign = 'center'
+  ctx.fillText('APRES', w - 100, imgY + imgH - 37)
+  ctx.restore()
+
+  // Dates
+  const labelY = imgY + imgH + 40
+  ctx.font = `400 24px ${FONT}`
+  ctx.fillStyle = C.textMuted
+  if (props.data.beforeDate) {
+    ctx.textAlign = 'center'
+    ctx.fillText(props.data.beforeDate, halfW / 2, labelY)
+  }
+  if (props.data.afterDate) {
+    ctx.textAlign = 'center'
+    ctx.fillText(props.data.afterDate, halfW + halfW / 2, labelY)
+  }
+
+  drawFooter(ctx, w, h)
+}
+
 const drawReceiptCard = (ctx: CanvasRenderingContext2D) => {
   const w = cardWidth
   const h = cardHeight.value
@@ -725,6 +830,8 @@ const generate = async () => {
     drawRecapCard(ctx)
   } else if (props.type === 'beforeAfter') {
     await drawBeforeAfterCard(ctx)
+  } else if (props.type === 'beforeAfterSplit') {
+    await drawBeforeAfterSplitCard(ctx)
   } else if (props.type === 'receipt') {
     drawReceiptCard(ctx)
   } else if (props.type === 'wrapped') {

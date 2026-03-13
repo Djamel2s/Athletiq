@@ -100,81 +100,82 @@
             <div
               v-for="(exercise, index) in selectedExercises"
               :key="exercise.id"
-              class="p-4 bg-primary-50 dark:bg-primary-800 rounded-xl border border-primary-200 dark:border-primary-700 hover:border-primary-400 dark:hover:border-primary-500 transition-colors"
+              class="rounded-2xl border border-primary-200/60 dark:border-primary-700/60 bg-white/60 dark:bg-primary-800/60 hover:border-sand-500/40 dark:hover:border-sand-600/30 transition-all overflow-hidden"
             >
+              <!-- Exercise number accent -->
+              <div class="flex items-stretch">
+                <div class="w-12 bg-gradient-primary flex items-center justify-center flex-shrink-0">
+                  <span class="text-white font-bold text-sm">{{ index + 1 }}</span>
+                </div>
+                <div class="flex-1 p-4">
               <div class="flex items-start justify-between">
                 <div class="flex-1">
-                  <div class="flex items-center space-x-3 mb-2">
-                    <span class="flex items-center justify-center w-8 h-8 bg-primary-600 text-white rounded-full font-bold text-sm">
-                      {{ index + 1 }}
-                    </span>
-                    <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100">{{ exercise.exerciseLibrary?.name || exercise.name }}</h3>
-                  </div>
+                  <h3 class="text-base md:text-lg font-bold text-primary-900 dark:text-primary-100 mb-1">{{ exercise.exerciseLibrary?.name || exercise.name }}</h3>
 
-                  <p v-if="exercise.exerciseLibrary?.description" class="text-sm text-primary-600 dark:text-primary-400 mb-3 ml-0 md:ml-11">
+                  <p v-if="exercise.exerciseLibrary?.description" class="text-xs text-primary-500 dark:text-primary-400 mb-2 line-clamp-1">
                     {{ exercise.exerciseLibrary.description }}
                   </p>
 
-                  <div class="flex flex-wrap gap-2 ml-0 md:ml-11">
+                  <div class="flex flex-wrap gap-1.5 mb-3">
                     <span
                       v-if="exercise.exerciseLibrary?.primaryMuscle"
-                      class="px-2 py-1 bg-primary-200 dark:bg-primary-700 text-primary-800 dark:text-primary-200 text-xs font-medium rounded"
+                      class="px-2 py-0.5 bg-sand-500/10 dark:bg-sand-600/10 text-sand-700 dark:text-sand-400 text-[10px] font-semibold rounded-md uppercase tracking-wider"
                     >
                       {{ formatMuscleGroup(exercise.exerciseLibrary.primaryMuscle) }}
                     </span>
                     <span
                       v-if="exercise.exerciseLibrary?.equipment"
-                      class="px-2 py-1 bg-primary-100 dark:bg-primary-800 text-primary-700 dark:text-primary-300 text-xs font-medium rounded"
+                      class="px-2 py-0.5 bg-primary-100 dark:bg-primary-800 text-primary-600 dark:text-primary-400 text-[10px] font-medium rounded-md"
                     >
                       {{ formatEquipment(exercise.exerciseLibrary.equipment) }}
                     </span>
                     <span
                       v-if="exercise.exerciseLibrary?.difficulty"
-                      class="px-2 py-1 bg-primary-100 dark:bg-primary-800 text-primary-700 dark:text-primary-300 text-xs font-medium rounded"
+                      class="px-2 py-0.5 bg-primary-100 dark:bg-primary-800 text-primary-600 dark:text-primary-400 text-[10px] font-medium rounded-md"
                     >
                       {{ formatDifficulty(exercise.exerciseLibrary.difficulty) }}
                     </span>
                   </div>
 
                   <!-- Target values -->
-                  <div class="mt-3 ml-0 md:ml-11 flex flex-wrap gap-4 text-sm">
+                  <div class="grid grid-cols-4 gap-2">
                     <div>
-                      <label class="text-primary-600 dark:text-primary-400 text-xs">Séries</label>
+                      <label class="text-primary-500 dark:text-primary-400 text-[10px] uppercase tracking-wider font-medium">Séries</label>
                       <input
                         v-model.number="exercise.targetSets"
                         type="number"
                         min="1"
-                        class="w-20 px-2 py-1 border border-primary-300 dark:border-primary-600 rounded text-center bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100"
+                        class="w-full px-2 py-1.5 border border-primary-200 dark:border-primary-700 rounded-lg text-center text-sm font-semibold bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100 focus:border-sand-500 focus:ring-1 focus:ring-sand-500/30 transition-colors"
                         @change="updatePlannedSets(exercise)"
                       />
                     </div>
                     <div>
-                      <label class="text-primary-600 dark:text-primary-400 text-xs">Reps</label>
+                      <label class="text-primary-500 dark:text-primary-400 text-[10px] uppercase tracking-wider font-medium">Reps</label>
                       <input
                         v-model.number="exercise.targetReps"
                         type="number"
                         min="1"
-                        class="w-20 px-2 py-1 border border-primary-300 dark:border-primary-600 rounded text-center bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100"
+                        class="w-full px-2 py-1.5 border border-primary-200 dark:border-primary-700 rounded-lg text-center text-sm font-semibold bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100 focus:border-sand-500 focus:ring-1 focus:ring-sand-500/30 transition-colors"
                       />
                     </div>
                     <div>
-                      <label class="text-primary-600 dark:text-primary-400 text-xs">Poids (kg)</label>
+                      <label class="text-primary-500 dark:text-primary-400 text-[10px] uppercase tracking-wider font-medium">Poids</label>
                       <input
                         v-model.number="exercise.targetWeight"
                         type="number"
                         min="0"
                         step="0.5"
-                        class="w-20 px-2 py-1 border border-primary-300 dark:border-primary-600 rounded text-center bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100"
+                        class="w-full px-2 py-1.5 border border-primary-200 dark:border-primary-700 rounded-lg text-center text-sm font-semibold bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100 focus:border-sand-500 focus:ring-1 focus:ring-sand-500/30 transition-colors"
                       />
                     </div>
                     <div>
-                      <label class="text-primary-600 dark:text-primary-400 text-xs">Repos (s)</label>
+                      <label class="text-primary-500 dark:text-primary-400 text-[10px] uppercase tracking-wider font-medium">Repos</label>
                       <input
                         v-model.number="exercise.restTime"
                         type="number"
                         min="0"
                         step="15"
-                        class="w-20 px-2 py-1 border border-primary-300 dark:border-primary-600 rounded text-center bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100"
+                        class="w-full px-2 py-1.5 border border-primary-200 dark:border-primary-700 rounded-lg text-center text-sm font-semibold bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100 focus:border-sand-500 focus:ring-1 focus:ring-sand-500/30 transition-colors"
                       />
                     </div>
                   </div>
@@ -232,12 +233,14 @@
 
                 <button
                   @click="removeExercise(index)"
-                  class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 p-2"
+                  class="w-8 h-8 flex items-center justify-center rounded-lg text-primary-300 dark:text-primary-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex-shrink-0"
                 >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                   </svg>
                 </button>
+              </div>
+            </div>
               </div>
             </div>
           </div>

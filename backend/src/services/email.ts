@@ -1,6 +1,6 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
 const FROM_EMAIL = process.env.FROM_EMAIL || 'Athletiq <noreply@athletiq.fr>'
 const APP_URL = process.env.APP_URL || 'http://localhost:3000'
@@ -279,6 +279,10 @@ export const sendWeeklyRecapEmail = async (
 // Fonction d'envoi g&eacute;n&eacute;rique via Resend
 // ============================================================
 const sendEmail = async (to: string, subject: string, html: string) => {
+  if (!resend) {
+    console.warn(`[Email] Resend non configure, email non envoye a ${to}: ${subject}`)
+    return { success: false, error: 'Resend API key not configured' }
+  }
   try {
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
