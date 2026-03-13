@@ -31,6 +31,12 @@ const PRICES = {
 // ============================================================
 router.get('/', authenticate, async (req: AuthRequest, res) => {
   try {
+    // Vérifier que l'utilisateur existe
+    const user = await userRepo.findOne({ where: { id: req.userId } })
+    if (!user) {
+      return res.status(401).json({ error: 'Utilisateur non trouvé' })
+    }
+
     let subscription = await subscriptionRepo.findOne({
       where: { userId: req.userId }
     })
