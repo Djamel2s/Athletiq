@@ -4,7 +4,7 @@
       <!-- Logo -->
       <div class="text-center mb-10 fade-in">
         <NuxtLink to="/" class="inline-block">
-          <img src="/athletiq-icon.svg" alt="Athletiq" class="h-16 w-auto mx-auto mb-4 hover:scale-105 transition-transform duration-300" />
+          <AppLogo class="h-16 w-auto mx-auto mb-4 hover:scale-105 transition-transform duration-300" />
         </NuxtLink>
         <h1 class="text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-display">Mot de passe oublié</h1>
         <p class="text-primary-600 dark:text-primary-400 text-body-relaxed">Entrez votre email pour recevoir un lien de réinitialisation</p>

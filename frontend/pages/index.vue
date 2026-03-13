@@ -5,7 +5,7 @@
       <div class="max-w-7xl mx-auto px-6 py-5">
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-3">
-            <img src="/athletiq-icon.svg" alt="Athletiq" class="h-14 w-auto md:hidden transition-transform duration-300 hover:scale-105" />
+            <AppLogo class="h-14 w-auto md:hidden transition-transform duration-300 hover:scale-105" />
             <img src="/athletiq-full-icon.svg" alt="Athletiq" class="hidden md:block h-12 w-auto transition-transform duration-300 hover:scale-105" />
           </div>
 
@@ -71,11 +71,7 @@
           <!-- Visual hero -->
           <div class="relative h-80 md:h-96 lg:h-[28rem] slide-up hidden md:flex flex-col items-center justify-center">
             <div class="relative flex-1 w-full flex items-center justify-center">
-              <img
-                src="/athletiq-icon.svg"
-                alt="Athletiq"
-                class="h-full max-h-[18rem] w-auto object-contain drop-shadow-2xl opacity-30"
-              />
+              <AppLogo class="h-full max-h-[18rem] w-auto object-contain drop-shadow-2xl opacity-30" />
             </div>
           </div>
         </div>

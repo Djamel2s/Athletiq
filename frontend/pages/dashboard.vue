@@ -7,7 +7,7 @@
           <div class="flex items-center space-x-3">
             <!-- Logo -->
             <NuxtLink to="/dashboard">
-              <img src="/athletiq-icon.svg" alt="Athletiq" class="h-10 md:h-14 w-auto transition-transform duration-300 hover:scale-105" />
+              <AppLogo />
             </NuxtLink>
           </div>
 

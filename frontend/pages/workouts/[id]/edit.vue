@@ -6,7 +6,7 @@
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-4">
             <NuxtLink to="/dashboard">
-              <img src="/athletiq-icon.svg" alt="Athletiq" class="h-14 w-auto" />
+              <AppLogo class="h-14 w-auto" />
             </NuxtLink>
             <h1 class="text-2xl font-bold text-primary-900 dark:text-primary-100">
               Modifier le Workout

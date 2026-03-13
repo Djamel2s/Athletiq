@@ -6,7 +6,7 @@
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-2 md:space-x-4">
             <NuxtLink to="/dashboard">
-              <img src="/athletiq-icon.svg" alt="Athletiq" class="h-10 md:h-14 w-auto transition-transform duration-300 hover:scale-105" />
+              <AppLogo />
             </NuxtLink>
             <div class="flex items-center space-x-3">
               <span class="hidden md:inline text-2xl text-sand-500 font-light">|</span>
