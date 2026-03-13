@@ -250,28 +250,28 @@
           <path d="M120 148 Q114 162 128 164" fill="none" :stroke="skinDetail" stroke-width="1.5" opacity="0.35"/>
           <path d="M180 148 Q186 162 172 164" fill="none" :stroke="skinDetail" stroke-width="1.5" opacity="0.35"/>
 
-          <!-- Hanches très larges + Fessiers gros (GLUTES) -->
+          <!-- Hanches + Fessiers (GLUTES) -->
           <g :opacity="getOverlayOpacity('GLUTES')">
-            <path d="M128 164 Q112 172 96 196 Q86 218 86 238 Q88 256 102 268 Q116 276 138 268 L132 196 Q130 178 128 164Z" :fill="getColor('GLUTES')"/>
-            <path d="M172 164 Q188 172 204 196 Q214 218 214 238 Q212 256 198 268 Q184 276 162 268 L168 196 Q170 178 172 164Z" :fill="getColor('GLUTES')"/>
+            <path d="M128 164 Q116 174 106 192 Q98 210 98 228 Q100 248 110 258 Q120 266 138 262 L132 196 Q130 178 128 164Z" :fill="getColor('GLUTES')"/>
+            <path d="M172 164 Q184 174 194 192 Q202 210 202 228 Q200 248 190 258 Q180 266 162 262 L168 196 Q170 178 172 164Z" :fill="getColor('GLUTES')"/>
           </g>
-          <path d="M128 164 Q112 172 96 196 Q86 218 86 238 Q88 256 102 268 Q116 276 138 268 L132 196 Q130 178 128 164Z" fill="url(#shadow-f)" :opacity="1 - getOverlayOpacity('GLUTES') * 0.6"/>
-          <path d="M172 164 Q188 172 204 196 Q214 218 214 238 Q212 256 198 268 Q184 276 162 268 L168 196 Q170 178 172 164Z" fill="url(#shadow-f)" :opacity="1 - getOverlayOpacity('GLUTES') * 0.6"/>
+          <path d="M128 164 Q116 174 106 192 Q98 210 98 228 Q100 248 110 258 Q120 266 138 262 L132 196 Q130 178 128 164Z" fill="url(#shadow-f)" :opacity="1 - getOverlayOpacity('GLUTES') * 0.6"/>
+          <path d="M172 164 Q184 174 194 192 Q202 210 202 228 Q200 248 190 258 Q180 266 162 262 L168 196 Q170 178 172 164Z" fill="url(#shadow-f)" :opacity="1 - getOverlayOpacity('GLUTES') * 0.6"/>
           <!-- Courbe fessiers -->
-          <path d="M92 206 Q88 226 94 252" fill="none" :stroke="skinDetail" stroke-width="1.2" opacity="0.3"/>
-          <path d="M208 206 Q212 226 206 252" fill="none" :stroke="skinDetail" stroke-width="1.2" opacity="0.3"/>
+          <path d="M102 200 Q100 218 104 244" fill="none" :stroke="skinDetail" stroke-width="1.2" opacity="0.3"/>
+          <path d="M198 200 Q200 218 196 244" fill="none" :stroke="skinDetail" stroke-width="1.2" opacity="0.3"/>
 
           <!-- Quadriceps (QUADS) -->
           <g :opacity="getOverlayOpacity('QUADS')">
-            <path d="M138 268 Q134 290 132 316 Q130 344 134 370 L150 374 L150 268Z" :fill="getColor('QUADS')"/>
-            <path d="M102 268 Q98 288 100 316 Q102 344 112 370 L134 374 L134 370 Q130 344 132 316 Q134 290 138 268Z" :fill="getColor('QUADS')"/>
-            <path d="M162 268 Q166 290 168 316 Q170 344 166 370 L150 374 L150 268Z" :fill="getColor('QUADS')"/>
-            <path d="M198 268 Q202 288 200 316 Q198 344 188 370 L166 374 L166 370 Q170 344 168 316 Q166 290 162 268Z" :fill="getColor('QUADS')"/>
+            <path d="M138 262 Q134 284 132 312 Q130 340 134 370 L150 374 L150 262Z" :fill="getColor('QUADS')"/>
+            <path d="M110 258 Q106 282 108 312 Q110 340 118 370 L134 374 L134 370 Q130 340 132 312 Q134 284 138 262Z" :fill="getColor('QUADS')"/>
+            <path d="M162 262 Q166 284 168 312 Q170 340 166 370 L150 374 L150 262Z" :fill="getColor('QUADS')"/>
+            <path d="M190 258 Q194 282 192 312 Q190 340 182 370 L166 374 L166 370 Q170 340 168 312 Q166 284 162 262Z" :fill="getColor('QUADS')"/>
           </g>
-          <path d="M138 268 Q134 290 132 316 Q130 344 134 370 L150 374 L150 268Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('QUADS') * 0.6"/>
-          <path d="M102 268 Q98 288 100 316 Q102 344 112 370 L134 374 L134 370 Q130 344 132 316 Q134 290 138 268Z" fill="url(#shadow-f)" :opacity="1 - getOverlayOpacity('QUADS') * 0.6"/>
-          <path d="M162 268 Q166 290 168 316 Q170 344 166 370 L150 374 L150 268Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('QUADS') * 0.6"/>
-          <path d="M198 268 Q202 288 200 316 Q198 344 188 370 L166 374 L166 370 Q170 344 168 316 Q166 290 162 268Z" fill="url(#shadow-f)" :opacity="1 - getOverlayOpacity('QUADS') * 0.6"/>
+          <path d="M138 262 Q134 284 132 312 Q130 340 134 370 L150 374 L150 262Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('QUADS') * 0.6"/>
+          <path d="M110 258 Q106 282 108 312 Q110 340 118 370 L134 374 L134 370 Q130 340 132 312 Q134 284 138 262Z" fill="url(#shadow-f)" :opacity="1 - getOverlayOpacity('QUADS') * 0.6"/>
+          <path d="M162 262 Q166 284 168 312 Q170 340 166 370 L150 374 L150 262Z" fill="url(#skin-f)" :opacity="1 - getOverlayOpacity('QUADS') * 0.6"/>
+          <path d="M190 258 Q194 282 192 312 Q190 340 182 370 L166 374 L166 370 Q170 340 168 312 Q166 284 162 262Z" fill="url(#shadow-f)" :opacity="1 - getOverlayOpacity('QUADS') * 0.6"/>
           <path d="M132 284 Q136 304 136 324 Q134 350 134 370" fill="none" :stroke="skinDetail" stroke-width="1" opacity="0.2"/>
           <path d="M168 284 Q164 304 164 324 Q166 350 166 370" fill="none" :stroke="skinDetail" stroke-width="1" opacity="0.2"/>
 
