@@ -102,145 +102,97 @@
               :key="exercise.id"
               class="rounded-2xl border border-primary-200/60 dark:border-primary-700/60 bg-white/60 dark:bg-primary-800/60 hover:border-sand-500/40 dark:hover:border-sand-600/30 transition-all overflow-hidden"
             >
-              <!-- Exercise number accent -->
               <div class="flex items-stretch">
                 <div class="w-12 bg-gradient-primary flex items-center justify-center flex-shrink-0">
                   <span class="text-white font-bold text-sm">{{ index + 1 }}</span>
                 </div>
                 <div class="flex-1 p-4">
-              <div class="flex items-start justify-between">
-                <div class="flex-1">
-                  <h3 class="text-base md:text-lg font-bold text-primary-900 dark:text-primary-100 mb-1">{{ exercise.exerciseLibrary?.name || exercise.name }}</h3>
-
-                  <p v-if="exercise.exerciseLibrary?.description" class="text-xs text-primary-500 dark:text-primary-400 mb-2 line-clamp-1">
-                    {{ exercise.exerciseLibrary.description }}
-                  </p>
-
-                  <div class="flex flex-wrap gap-1.5 mb-3">
-                    <span
-                      v-if="exercise.exerciseLibrary?.primaryMuscle"
-                      class="px-2 py-0.5 bg-sand-500/10 dark:bg-sand-600/10 text-sand-700 dark:text-sand-400 text-[10px] font-semibold rounded-md uppercase tracking-wider"
+                  <div class="flex items-start justify-between mb-3">
+                    <div class="flex-1">
+                      <h3 class="text-base md:text-lg font-bold text-primary-900 dark:text-primary-100 mb-1">{{ exercise.exerciseLibrary?.name || exercise.name }}</h3>
+                      <div class="flex flex-wrap gap-1.5">
+                        <span
+                          v-if="exercise.exerciseLibrary?.primaryMuscle"
+                          class="px-2 py-0.5 bg-sand-500/10 dark:bg-sand-600/10 text-sand-700 dark:text-sand-400 text-[10px] font-semibold rounded-md uppercase tracking-wider"
+                        >
+                          {{ formatMuscleGroup(exercise.exerciseLibrary.primaryMuscle) }}
+                        </span>
+                        <span
+                          v-if="exercise.exerciseLibrary?.equipment"
+                          class="px-2 py-0.5 bg-primary-100 dark:bg-primary-800 text-primary-600 dark:text-primary-400 text-[10px] font-medium rounded-md"
+                        >
+                          {{ formatEquipment(exercise.exerciseLibrary.equipment) }}
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      @click="removeExercise(index)"
+                      class="w-8 h-8 flex items-center justify-center rounded-lg text-primary-300 dark:text-primary-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex-shrink-0"
                     >
-                      {{ formatMuscleGroup(exercise.exerciseLibrary.primaryMuscle) }}
-                    </span>
-                    <span
-                      v-if="exercise.exerciseLibrary?.equipment"
-                      class="px-2 py-0.5 bg-primary-100 dark:bg-primary-800 text-primary-600 dark:text-primary-400 text-[10px] font-medium rounded-md"
-                    >
-                      {{ formatEquipment(exercise.exerciseLibrary.equipment) }}
-                    </span>
-                    <span
-                      v-if="exercise.exerciseLibrary?.difficulty"
-                      class="px-2 py-0.5 bg-primary-100 dark:bg-primary-800 text-primary-600 dark:text-primary-400 text-[10px] font-medium rounded-md"
-                    >
-                      {{ formatDifficulty(exercise.exerciseLibrary.difficulty) }}
-                    </span>
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                      </svg>
+                    </button>
                   </div>
 
-                  <!-- Target values -->
-                  <div class="grid grid-cols-4 gap-2">
-                    <div>
-                      <label class="text-primary-500 dark:text-primary-400 text-[10px] uppercase tracking-wider font-medium">Séries</label>
+                  <!-- Séries -->
+                  <div class="space-y-2">
+                    <div
+                      v-for="(set, setIndex) in getExerciseSets(exercise)"
+                      :key="setIndex"
+                      class="flex items-center gap-1.5 flex-wrap"
+                    >
+                      <button
+                        @click="removeSet(exercise, Number(setIndex))"
+                        type="button"
+                        class="w-5 h-5 flex items-center justify-center rounded text-primary-300 dark:text-primary-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex-shrink-0"
+                      >
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+                        </svg>
+                      </button>
+                      <span class="text-xs text-primary-500 dark:text-primary-400 font-medium w-12 flex-shrink-0">Série {{ Number(setIndex) + 1 }}</span>
                       <input
-                        v-model.number="exercise.targetSets"
+                        v-model.number="set.targetReps"
                         type="number"
                         min="1"
-                        class="w-full px-2 py-1.5 border border-primary-200 dark:border-primary-700 rounded-lg text-center text-sm font-semibold bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100 focus:border-sand-500 focus:ring-1 focus:ring-sand-500/30 transition-colors"
-                        @change="updatePlannedSets(exercise)"
+                        placeholder="Reps"
+                        class="w-14 px-1.5 py-1.5 border border-primary-200 dark:border-primary-700 rounded-lg text-center text-xs font-semibold bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100 focus:border-sand-500 focus:ring-1 focus:ring-sand-500/30 transition-colors"
                       />
-                    </div>
-                    <div>
-                      <label class="text-primary-500 dark:text-primary-400 text-[10px] uppercase tracking-wider font-medium">Reps</label>
+                      <span class="text-[10px] text-primary-400 dark:text-primary-500">reps ×</span>
                       <input
-                        v-model.number="exercise.targetReps"
-                        type="number"
-                        min="1"
-                        class="w-full px-2 py-1.5 border border-primary-200 dark:border-primary-700 rounded-lg text-center text-sm font-semibold bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100 focus:border-sand-500 focus:ring-1 focus:ring-sand-500/30 transition-colors"
-                      />
-                    </div>
-                    <div>
-                      <label class="text-primary-500 dark:text-primary-400 text-[10px] uppercase tracking-wider font-medium">Poids</label>
-                      <input
-                        v-model.number="exercise.targetWeight"
+                        v-model.number="set.targetWeight"
                         type="number"
                         min="0"
                         step="0.5"
-                        class="w-full px-2 py-1.5 border border-primary-200 dark:border-primary-700 rounded-lg text-center text-sm font-semibold bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100 focus:border-sand-500 focus:ring-1 focus:ring-sand-500/30 transition-colors"
+                        placeholder="kg"
+                        class="w-14 px-1.5 py-1.5 border border-primary-200 dark:border-primary-700 rounded-lg text-center text-xs font-semibold bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100 focus:border-sand-500 focus:ring-1 focus:ring-sand-500/30 transition-colors"
                       />
-                    </div>
-                    <div>
-                      <label class="text-primary-500 dark:text-primary-400 text-[10px] uppercase tracking-wider font-medium">Repos</label>
+                      <span class="text-[10px] text-primary-400 dark:text-primary-500">kg</span>
+                      <span class="text-[10px] text-primary-300 dark:text-primary-600 mx-0.5">|</span>
                       <input
-                        v-model.number="exercise.restTime"
+                        v-model.number="set.restTime"
                         type="number"
                         min="0"
                         step="15"
-                        class="w-full px-2 py-1.5 border border-primary-200 dark:border-primary-700 rounded-lg text-center text-sm font-semibold bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100 focus:border-sand-500 focus:ring-1 focus:ring-sand-500/30 transition-colors"
+                        class="w-12 px-1 py-1.5 border border-primary-200 dark:border-primary-700 rounded-lg text-center text-[10px] font-semibold bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100 focus:border-sand-500 focus:ring-1 focus:ring-sand-500/30 transition-colors"
                       />
+                      <span class="text-[10px] text-primary-400 dark:text-primary-500">s</span>
                     </div>
                   </div>
 
-                  <!-- Personnalisation des séries -->
-                  <div class="mt-3 ml-0 md:ml-11">
-                    <button
-                      @click="togglePlannedSets(exercise)"
-                      type="button"
-                      class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-200 font-medium flex items-center gap-1"
-                    >
-                      <svg
-                        class="w-4 h-4 transition-transform"
-                        :class="{ 'rotate-90': (exercise as any).showPlannedSets }"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                      </svg>
-                      Personnaliser les séries
-                    </button>
-
-                    <div v-if="(exercise as any).showPlannedSets" class="mt-3 bg-primary-50 dark:bg-primary-800 rounded-lg p-3">
-                      <p class="text-xs text-primary-600 dark:text-primary-400 mb-2">Définissez les reps et poids pour chaque série:</p>
-                      <div class="space-y-2">
-                        <div
-                          v-for="(set, setIndex) in exercise.plannedSets"
-                          :key="setIndex"
-                          class="flex items-center gap-2"
-                        >
-                          <span class="text-xs text-primary-700 dark:text-primary-300 font-medium w-16">Série {{ setIndex + 1 }}:</span>
-                          <input
-                            v-model.number="set.targetReps"
-                            type="number"
-                            min="1"
-                            placeholder="Reps"
-                            class="w-20 px-2 py-1 border border-primary-300 dark:border-primary-600 rounded text-center text-xs bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100"
-                          />
-                          <span class="text-xs text-primary-600 dark:text-primary-400">reps ×</span>
-                          <input
-                            v-model.number="set.targetWeight"
-                            type="number"
-                            min="0"
-                            step="0.5"
-                            placeholder="Poids"
-                            class="w-20 px-2 py-1 border border-primary-300 dark:border-primary-600 rounded text-center text-xs bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100"
-                          />
-                          <span class="text-xs text-primary-600 dark:text-primary-400">kg</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <!-- Ajouter une série -->
+                  <button
+                    @click="addSet(exercise)"
+                    type="button"
+                    class="mt-2 flex items-center gap-1 text-xs font-medium text-sand-600 dark:text-sand-400 hover:text-sand-800 dark:hover:text-sand-300 transition-colors"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Série {{ getExerciseSets(exercise).length + 1 }}
+                  </button>
                 </div>
-
-                <button
-                  @click="removeExercise(index)"
-                  class="w-8 h-8 flex items-center justify-center rounded-lg text-primary-300 dark:text-primary-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex-shrink-0"
-                >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                  </svg>
-                </button>
-              </div>
-            </div>
               </div>
             </div>
           </div>
@@ -436,7 +388,6 @@ const workoutForm = ref({
 
 const workoutId = ref<number | null>(null)
 const isCreating = ref(false)
-const isEditing = ref(false)
 const selectedExercises = ref<Exercise[]>([])
 const showSavedModal = ref(false)
 const isSaving = ref(false)
@@ -508,10 +459,9 @@ const addExercise = async (exercise: ExerciseLibrary) => {
     const addedExercise = await workoutStore.addExerciseToWorkout(workoutId.value, {
       exerciseLibraryId: exercise.id,
       name: exercise.name,
-      targetSets: 3,
-      targetReps: 10,
       restTime: 60,
-      orderIndex: selectedExercises.value.length
+      orderIndex: selectedExercises.value.length,
+      plannedSets: [{ setNumber: 1, targetReps: 10, targetWeight: 0, restTime: 60 }]
     })
 
     selectedExercises.value.push(addedExercise)
@@ -530,38 +480,29 @@ const applyOptimalOrder = () => {
   selectedExercises.value = optimizeExerciseOrder(selectedExercises.value)
 }
 
-const togglePlannedSets = (exercise: any) => {
-  exercise.showPlannedSets = !exercise.showPlannedSets
-  if (exercise.showPlannedSets && (!exercise.plannedSets || exercise.plannedSets.length === 0)) {
-    updatePlannedSets(exercise)
+const getExerciseSets = (exercise: any): any[] => {
+  if (!exercise.plannedSets) {
+    exercise.plannedSets = [{ setNumber: 1, targetReps: 10, targetWeight: 0, restTime: 60 }]
   }
+  return exercise.plannedSets
 }
 
-const updatePlannedSets = (exercise: any) => {
-  const numSets = exercise.targetSets || 3
-  const defaultReps = exercise.targetReps || 10
-  const defaultWeight = exercise.targetWeight || 0
+const addSet = (exercise: any) => {
+  if (!exercise.plannedSets) exercise.plannedSets = []
+  const lastSet = exercise.plannedSets[exercise.plannedSets.length - 1]
+  exercise.plannedSets.push({
+    setNumber: exercise.plannedSets.length + 1,
+    targetReps: lastSet?.targetReps || 10,
+    targetWeight: lastSet?.targetWeight || 0,
+    restTime: lastSet?.restTime || 60
+  })
+}
 
-  if (!exercise.plannedSets) {
-    exercise.plannedSets = []
-  }
-
-  // Ajuster le nombre de séries
-  while (exercise.plannedSets.length < numSets) {
-    exercise.plannedSets.push({
-      setNumber: exercise.plannedSets.length + 1,
-      targetReps: defaultReps,
-      targetWeight: defaultWeight
-    })
-  }
-
-  while (exercise.plannedSets.length > numSets) {
-    exercise.plannedSets.pop()
-  }
-
-  // Mettre à jour les numéros de série
-  exercise.plannedSets.forEach((set: any, index: number) => {
-    set.setNumber = index + 1
+const removeSet = (exercise: any, index: number) => {
+  if (!exercise.plannedSets || exercise.plannedSets.length <= 1) return
+  exercise.plannedSets.splice(index, 1)
+  exercise.plannedSets.forEach((set: any, i: number) => {
+    set.setNumber = i + 1
   })
 }
 
@@ -580,21 +521,18 @@ const saveWorkout = async () => {
   isSaving.value = true
   try {
     for (const exercise of selectedExercises.value) {
-      const updateData: any = {}
-
-      if (exercise.targetSets !== undefined) updateData.targetSets = exercise.targetSets
-      if (exercise.targetReps !== undefined) updateData.targetReps = exercise.targetReps
-      if (exercise.targetWeight !== undefined) updateData.targetWeight = exercise.targetWeight
-      if (exercise.restTime !== undefined) updateData.restTime = exercise.restTime
-
-      if (exercise.plannedSets && exercise.plannedSets.length > 0) {
-        const validPlannedSets = exercise.plannedSets.filter((set: any) =>
-          set.targetReps && set.targetReps > 0 &&
-          set.targetWeight !== undefined && set.targetWeight !== null && !isNaN(set.targetWeight)
-        )
-        if (validPlannedSets.length > 0) {
-          updateData.plannedSets = validPlannedSets
-        }
+      const sets = getExerciseSets(exercise)
+      const updateData: any = {
+        restTime: exercise.restTime || 60,
+        targetSets: sets.length,
+        targetReps: sets[0]?.targetReps || 10,
+        targetWeight: sets[0]?.targetWeight || 0,
+        plannedSets: sets.map((s: any, i: number) => ({
+          setNumber: i + 1,
+          targetReps: Number(s.targetReps) || 10,
+          targetWeight: Number(s.targetWeight) || 0,
+          restTime: Number(s.restTime) || 60
+        }))
       }
 
       if (exercise.notes !== undefined) updateData.notes = exercise.notes

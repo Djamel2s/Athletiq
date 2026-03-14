@@ -63,6 +63,7 @@ export interface PlannedSet {
   setNumber: number
   targetReps: number
   targetWeight: number
+  restTime?: number
 }
 
 export interface Exercise {

@@ -212,12 +212,15 @@
         </div>
 
         <!-- Boutons -->
-        <div class="flex gap-4">
+        <div class="flex gap-3">
+          <button @click="addRestTime(-15)" class="btn-outline px-5 py-3 text-base font-mono">
+            -15s
+          </button>
           <button @click="skipRest" class="btn-outline px-8 py-3 text-base">
             Passer
           </button>
-          <button @click="addRestTime(30)" class="btn-primary px-8 py-3 text-base">
-            +30s
+          <button @click="addRestTime(15)" class="btn-primary px-5 py-3 text-base font-mono">
+            +15s
           </button>
         </div>
 
@@ -675,7 +678,15 @@ const validateCurrentSet = async () => {
 const computeSmartRest = (exercise: Exercise | null, weight: number, betweenExercises: boolean): number => {
   if (!exercise) return betweenExercises ? 90 : 60
 
-  // If exercise has a custom restTime, always use it
+  // 1. Check per-set restTime from plannedSets (just completed set)
+  if (exercise.plannedSets && exercise.plannedSets.length > 0) {
+    const justCompletedSetIndex = currentSetNumber.value - 1 // currentSetNumber already incremented
+    const plannedSet = exercise.plannedSets.find(s => s.setNumber === justCompletedSetIndex) ||
+                       exercise.plannedSets[justCompletedSetIndex - 1]
+    if (plannedSet?.restTime) return plannedSet.restTime
+  }
+
+  // 2. If exercise has a custom restTime, always use it
   if (exercise.restTime) return exercise.restTime
 
   const lib = exercise.exerciseLibrary
@@ -724,7 +735,7 @@ const skipRest = () => {
 }
 
 const addRestTime = (seconds: number) => {
-  restTimeRemaining.value += seconds
+  restTimeRemaining.value = Math.max(0, restTimeRemaining.value + seconds)
 }
 
 const formatRestTime = (seconds: number) => {
