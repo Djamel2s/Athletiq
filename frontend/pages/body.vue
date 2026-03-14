@@ -134,58 +134,87 @@
           </div>
         </div>
 
-        <!-- Weight History -->
+        <!-- Weight History — Timeline -->
         <div v-if="bodyStore.bodyStats.length > 0" class="card-glass">
-          <div class="flex items-center gap-3 mb-6">
-            <div class="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
-              </svg>
-            </div>
-            <h3 class="text-xl font-semibold text-primary-900 dark:text-primary-100">Historique Poids</h3>
+          <div class="flex items-center justify-between mb-8">
+            <h3 class="text-xl font-semibold text-primary-900 dark:text-primary-100">Journal de pesée</h3>
+            <span class="text-xs text-primary-400 dark:text-primary-500">{{ bodyStore.bodyStats.length }} entrée{{ bodyStore.bodyStats.length > 1 ? 's' : '' }}</span>
           </div>
-          <div class="space-y-2">
-            <div
-              v-for="(stat, index) in bodyStore.bodyStats"
-              :key="stat.id"
-              class="flex items-center gap-4 p-3 md:p-4 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800/60 transition-colors group"
-            >
-              <!-- Weight variation indicator -->
-              <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                :class="getWeightTrend(index) === 'up' ? 'bg-green-100 dark:bg-green-900/30' : getWeightTrend(index) === 'down' ? 'bg-red-100 dark:bg-red-900/30' : 'bg-primary-100 dark:bg-primary-800'">
-                <svg v-if="getWeightTrend(index) === 'up'" class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
-                </svg>
-                <svg v-else-if="getWeightTrend(index) === 'down'" class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                </svg>
-                <div v-else class="w-2 h-2 rounded-full bg-primary-400"></div>
-              </div>
-              <!-- Content -->
-              <div class="flex-1 min-w-0">
-                <div class="flex items-baseline gap-2">
-                  <span class="text-lg font-bold text-primary-900 dark:text-primary-100">{{ stat.weight }} kg</span>
-                  <span v-if="stat.bodyFat" class="text-xs font-medium text-primary-500 dark:text-primary-400 bg-primary-100 dark:bg-primary-800 px-2 py-0.5 rounded-full">{{ stat.bodyFat }}% BF</span>
-                </div>
-                <div class="flex items-center gap-2 mt-0.5">
-                  <span class="text-xs text-primary-500 dark:text-primary-400">{{ formatDate(stat.date) }}</span>
-                  <span v-if="stat.notes" class="text-xs text-primary-400 dark:text-primary-500 truncate">· {{ stat.notes }}</span>
-                </div>
-              </div>
-              <!-- Weight diff -->
-              <span v-if="getWeightDiff(index)" class="text-xs font-semibold px-2 py-1 rounded-lg flex-shrink-0"
-                :class="getWeightDiff(index)! > 0 ? 'text-green-600 bg-green-50 dark:text-green-400 dark:bg-green-900/20' : 'text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-900/20'">
-                {{ getWeightDiff(index)! > 0 ? '+' : '' }}{{ getWeightDiff(index) }} kg
-              </span>
-              <!-- Delete -->
-              <button
-                @click="deleteWeight(stat.id)"
-                class="w-8 h-8 flex items-center justify-center rounded-lg text-primary-300 dark:text-primary-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 opacity-0 group-hover:opacity-100 transition-all flex-shrink-0"
+
+          <div class="relative">
+            <!-- Timeline line -->
+            <div class="absolute left-[23px] top-0 bottom-0 w-px bg-gradient-to-b from-sand-500/40 via-primary-200 dark:via-primary-700 to-transparent"></div>
+
+            <div class="space-y-0">
+              <div
+                v-for="(stat, index) in bodyStore.bodyStats"
+                :key="stat.id"
+                class="relative flex gap-4 md:gap-5 group"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                </svg>
-              </button>
+                <!-- Timeline dot -->
+                <div class="relative z-10 flex flex-col items-center pt-4">
+                  <div class="w-[13px] h-[13px] rounded-full border-[3px] flex-shrink-0 transition-all"
+                    :class="index === 0
+                      ? 'border-sand-500 bg-sand-500 shadow-[0_0_8px_rgba(var(--sand-500),0.4)]'
+                      : 'border-primary-300 dark:border-primary-600 bg-white dark:bg-primary-900 group-hover:border-sand-500'
+                    "
+                  ></div>
+                </div>
+
+                <!-- Content card -->
+                <div class="flex-1 pb-6">
+                  <div class="rounded-2xl border border-primary-100 dark:border-primary-800 p-4 transition-all group-hover:border-primary-200 dark:group-hover:border-primary-700 group-hover:shadow-sm"
+                    :class="index === 0 ? 'bg-gradient-to-br from-sand-500/[0.04] to-transparent border-sand-500/20 dark:border-sand-500/10' : ''">
+
+                    <!-- Top row: date + delete -->
+                    <div class="flex items-center justify-between mb-3">
+                      <div class="flex items-center gap-2">
+                        <span class="text-[11px] font-semibold uppercase tracking-wider text-primary-400 dark:text-primary-500">
+                          {{ getWeightDay(stat.date) }}
+                        </span>
+                        <span class="text-[11px] text-primary-300 dark:text-primary-600">{{ getWeightMonthYear(stat.date) }}</span>
+                      </div>
+                      <button
+                        @click="deleteWeight(stat.id)"
+                        class="w-7 h-7 flex items-center justify-center rounded-lg text-primary-300 dark:text-primary-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 opacity-0 group-hover:opacity-100 transition-all"
+                      >
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                      </button>
+                    </div>
+
+                    <!-- Weight value + diff -->
+                    <div class="flex items-end justify-between mb-3">
+                      <div class="flex items-baseline gap-1.5">
+                        <span class="text-2xl font-bold text-primary-900 dark:text-primary-100 tabular-nums">{{ stat.weight }}</span>
+                        <span class="text-sm font-medium text-primary-400 dark:text-primary-500">kg</span>
+                      </div>
+                      <span v-if="getWeightDiff(index)" class="text-xs font-bold tabular-nums"
+                        :class="getWeightDiff(index)! > 0 ? 'text-green-500' : 'text-red-500'">
+                        {{ getWeightDiff(index)! > 0 ? '+' : '' }}{{ getWeightDiff(index) }}
+                      </span>
+                    </div>
+
+                    <!-- Progress bar -->
+                    <div class="h-1.5 rounded-full bg-primary-100 dark:bg-primary-800 overflow-hidden mb-2.5">
+                      <div
+                        class="h-full rounded-full transition-all duration-500"
+                        :class="index === 0 ? 'bg-gradient-to-r from-sand-500 to-sand-600' : 'bg-primary-300 dark:bg-primary-600'"
+                        :style="{ width: getWeightBarWidth(stat.weight) + '%' }"
+                      ></div>
+                    </div>
+
+                    <!-- Meta row -->
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <span v-if="stat.bodyFat" class="inline-flex items-center text-[11px] font-semibold text-primary-500 dark:text-primary-400 bg-primary-50 dark:bg-primary-800/80 px-2 py-0.5 rounded-md">
+                        {{ stat.bodyFat }}% BF
+                      </span>
+                      <span v-if="stat.notes" class="text-[11px] text-primary-400 dark:text-primary-500 italic truncate">{{ stat.notes }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -512,6 +541,24 @@ const getWeightDiff = (index: number): number | null => {
   const stats = bodyStore.bodyStats
   if (index >= stats.length - 1) return null
   return Math.round((stats[index].weight - stats[index + 1].weight) * 10) / 10
+}
+
+const getWeightBarWidth = (weight: number): number => {
+  if (bodyStore.bodyStats.length < 2) return 100
+  const min = Math.min(...bodyStore.bodyStats.map(s => s.weight))
+  const max = Math.max(...bodyStore.bodyStats.map(s => s.weight))
+  if (max === min) return 100
+  return Math.max(15, ((weight - min) / (max - min)) * 100)
+}
+
+const getWeightDay = (dateString: string) => {
+  const d = new Date(dateString)
+  return d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })
+}
+
+const getWeightMonthYear = (dateString: string) => {
+  const d = new Date(dateString)
+  return d.toLocaleDateString('fr-FR', { year: 'numeric' })
 }
 
 // ========== MEASUREMENTS ==========
