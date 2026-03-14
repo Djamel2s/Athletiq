@@ -1,5 +1,5 @@
 <template>
-  <img :src="logoSrc" alt="Athletiq" :class="classes" />
+  <img :src="logoSrc" alt="Athletiq" :class="classes" width="56" height="56" />
 </template>
 
 <script setup lang="ts">

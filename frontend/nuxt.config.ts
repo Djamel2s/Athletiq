@@ -10,7 +10,8 @@ export default defineNuxtConfig({
     '@nuxtjs/color-mode',
     '@vite-pwa/nuxt',
     '@nuxtjs/sitemap',
-    '@nuxtjs/robots'
+    '@nuxtjs/robots',
+    '@vercel/speed-insights/nuxt'
   ],
 
   colorMode: {
