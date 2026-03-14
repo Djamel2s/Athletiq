@@ -14,7 +14,8 @@ const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
   firstName: z.string().nullish(),
-  lastName: z.string().nullish()
+  lastName: z.string().nullish(),
+  gender: z.enum(['male', 'female']).nullish()
 })
 
 const loginSchema = z.object({
@@ -25,7 +26,7 @@ const loginSchema = z.object({
 // Register
 router.post('/register', async (req, res) => {
   try {
-    const { email, password, firstName, lastName } = registerSchema.parse(req.body)
+    const { email, password, firstName, lastName, gender } = registerSchema.parse(req.body)
 
     // Check if user exists
     const existingUser = await userRepository.findOne({ where: { email } })
@@ -42,6 +43,7 @@ router.post('/register', async (req, res) => {
       password: hashedPassword,
       firstName: firstName ?? undefined,
       lastName: lastName ?? undefined,
+      gender: gender ?? undefined,
     })
     await userRepository.save(newUser)
 

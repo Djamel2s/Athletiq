@@ -33,12 +33,12 @@ export const useAuthStore = defineStore('auth', {
   },
 
   actions: {
-    async register(email: string, password: string, firstName?: string, lastName?: string) {
+    async register(email: string, password: string, firstName?: string, lastName?: string, gender?: string) {
       try {
         const config = useRuntimeConfig()
         const response = await $fetch(`${config.public.apiUrl}/auth/register`, {
           method: 'POST',
-          body: { email, password, firstName, lastName }
+          body: { email, password, firstName, lastName, gender }
         })
 
         this.setAuth(response)
@@ -112,6 +112,54 @@ export const useAuthStore = defineStore('auth', {
         return {
           success: false,
           error: error.data?.error || 'Erreur lors de la mise à jour du profil'
+        }
+      }
+    },
+
+    async uploadAvatar(file: File) {
+      try {
+        const config = useRuntimeConfig()
+        const formData = new FormData()
+        formData.append('avatar', file)
+
+        const response = await $fetch<any>(`${config.public.apiUrl}/users/me/avatar`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${this.token}` },
+          body: formData
+        })
+
+        if (this.user) {
+          this.user.avatarUrl = response.avatarUrl
+          this.saveToLocalStorage()
+        }
+        return { success: true, avatarUrl: response.avatarUrl }
+      } catch (error: any) {
+        console.error('Avatar upload error:', error)
+        return {
+          success: false,
+          error: error.data?.error || 'Erreur lors de l\'upload de la photo'
+        }
+      }
+    },
+
+    async deleteAvatar() {
+      try {
+        const config = useRuntimeConfig()
+        await $fetch(`${config.public.apiUrl}/users/me/avatar`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${this.token}` }
+        })
+
+        if (this.user) {
+          this.user.avatarUrl = null
+          this.saveToLocalStorage()
+        }
+        return { success: true }
+      } catch (error: any) {
+        console.error('Avatar delete error:', error)
+        return {
+          success: false,
+          error: error.data?.error || 'Erreur lors de la suppression de la photo'
         }
       }
     },
