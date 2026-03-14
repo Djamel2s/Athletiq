@@ -10,8 +10,7 @@ export default defineNuxtConfig({
     '@nuxtjs/color-mode',
     '@vite-pwa/nuxt',
     '@nuxtjs/sitemap',
-    '@nuxtjs/robots',
-    '@vercel/speed-insights/nuxt'
+    '@nuxtjs/robots'
   ],
 
   colorMode: {
@@ -49,6 +48,9 @@ export default defineNuxtConfig({
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/athletiq-icon.svg' },
         { rel: 'apple-touch-icon', href: '/athletiq-icon.svg' }
+      ],
+      script: [
+        { src: '/_vercel/speed-insights/script.js', defer: true }
       ]
     }
   },
