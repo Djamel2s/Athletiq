@@ -535,7 +535,7 @@ const saveWorkout = async () => {
       if (exercise.restTime !== undefined) updateData.restTime = exercise.restTime
 
       // Filtrer les séries planifiées pour ne garder que celles qui sont complètes
-      if (exercise.plannedSets !== undefined && exercise.plannedSets.length > 0) {
+      if (exercise.plannedSets && exercise.plannedSets.length > 0) {
         const validPlannedSets = exercise.plannedSets.filter((set: any) =>
           set.targetReps && set.targetReps > 0 &&
           set.targetWeight !== undefined && set.targetWeight !== null && !isNaN(set.targetWeight)
