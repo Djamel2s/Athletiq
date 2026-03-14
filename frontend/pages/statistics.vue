@@ -318,9 +318,11 @@
 
         <!-- Upgrade banner objectifs -->
         <div v-if="!isPremium && !canCreateGoal" class="mb-6">
-          <UpgradeBanner
-            title="Limite d'objectifs atteinte"
-            :message="`Vous avez ${goalUsageText} objectif(s). Passez Pro pour en créer autant que vous voulez.`"
+          <ProWall
+            title="Objectifs illimites"
+            :message="`Vous avez ${goalUsageText} objectif(s). Debloquez Pro pour suivre tous vos objectifs en parallele.`"
+            icon="target"
+            compact
           />
         </div>
 

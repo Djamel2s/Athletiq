@@ -327,10 +327,12 @@
       <!-- ==================== ONGLET PHOTOS ==================== -->
       <div v-else-if="activeTab === 'photos'" class="space-y-8 slide-up">
         <!-- Upgrade banner photos -->
-        <UpgradeBanner
+        <ProWall
           v-if="!isPremium && !canUploadPhoto"
-          title="Limite de photos atteinte"
-          :message="`Vous avez ${photoUsageText} photos. Passez Pro pour en uploader autant que vous voulez.`"
+          title="Galerie photo illimitee"
+          :message="`Vous avez ${photoUsageText} photos. Debloquez Pro pour capturer chaque etape de votre transformation.`"
+          icon="camera"
+          compact
         />
 
         <!-- Upload Section -->
@@ -527,15 +529,6 @@ const weightChangeClass = computed(() => {
   if (bodyStore.weightChange30d === null) return 'text-primary-900 dark:text-primary-100'
   return bodyStore.weightChange30d > 0 ? 'text-green-500' : bodyStore.weightChange30d < 0 ? 'text-red-500' : 'text-primary-900 dark:text-primary-100'
 })
-
-const getWeightTrend = (index: number): 'up' | 'down' | 'same' => {
-  const stats = bodyStore.bodyStats
-  if (index >= stats.length - 1) return 'same'
-  const diff = stats[index].weight - stats[index + 1].weight
-  if (diff > 0) return 'up'
-  if (diff < 0) return 'down'
-  return 'same'
-}
 
 const getWeightDiff = (index: number): number | null => {
   const stats = bodyStore.bodyStats

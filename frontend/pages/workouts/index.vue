@@ -74,9 +74,11 @@
 
       <!-- Upgrade banner templates -->
       <div v-if="!isPremium && !canCreateTemplate && activeTab === 'workouts'" class="mb-6">
-        <UpgradeBanner
-          title="Limite de templates atteinte"
-          :message="`Vous avez ${templateUsageText} templates. Passez Pro pour en créer autant que vous voulez.`"
+        <ProWall
+          title="Templates illimites"
+          :message="`Vous avez ${templateUsageText} templates. Debloquez Pro pour creer tous les programmes que vous voulez.`"
+          icon="template"
+          compact
         />
       </div>
 

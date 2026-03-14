@@ -55,9 +55,11 @@
 
         <!-- Upgrade banner séances -->
         <div v-if="!isPremium && !canCreateWorkout" class="mb-8 fade-in">
-          <UpgradeBanner
-            title="Limite de séances atteinte"
-            :message="`Vous avez fait ${workoutUsageText} séances cette semaine. Passez Pro pour vous entraîner sans limites.`"
+          <ProWall
+            title="Entrainements illimites"
+            :message="`Vous avez fait ${workoutUsageText} seances cette semaine. Debloquez Pro pour vous entrainer sans limites.`"
+            icon="dumbbell"
+            compact
           />
         </div>
 
