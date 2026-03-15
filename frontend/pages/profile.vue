@@ -18,7 +18,7 @@
     <div class="w-full max-w-lg mx-auto">
       <!-- Page Header -->
       <div class="text-center mb-4 fade-in">
-        <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-white dark:to-primary-100 bg-clip-text text-transparent mb-2">Mon Profil</h1>
+        <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2">Mon Profil</h1>
         <p class="text-sm md:text-base text-primary-600 dark:text-primary-400 text-body-relaxed">Gérez vos informations personnelles</p>
       </div>
 

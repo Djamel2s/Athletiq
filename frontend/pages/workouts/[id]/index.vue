@@ -18,7 +18,7 @@
     <div class="pt-24 md:pt-32 px-4 md:px-6 pb-28 lg:pb-20 max-w-4xl mx-auto">
       <!-- Page Header -->
       <div class="fade-in text-center mb-8">
-        <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-white dark:to-primary-100 bg-clip-text text-transparent mb-2">{{ workout?.name || 'Détail' }}</h1>
+        <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2">{{ workout?.name || 'Détail' }}</h1>
         <p class="text-lg text-primary-600 dark:text-primary-400">Détail du workout</p>
       </div>
 
