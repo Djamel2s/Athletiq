@@ -30,7 +30,7 @@
               :style="{ width: `${m.score}%` }"
             ></div>
           </div>
-          <span class="text-[10px] md:text-xs font-semibold text-primary-700 dark:text-primary-300 w-8 text-right">{{ m.score }}%</span>
+          <span class="text-[10px] md:text-xs font-semibold text-primary-700 dark:text-primary-300 w-9 md:w-10 text-right flex-shrink-0">{{ m.score }}%</span>
         </div>
       </div>
 

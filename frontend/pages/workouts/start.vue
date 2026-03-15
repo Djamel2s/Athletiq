@@ -44,16 +44,6 @@
 
       <!-- Workouts list -->
       <div v-else class="space-y-6">
-        <!-- Header -->
-        <div class="fade-in text-center mb-8">
-          <h2 class="text-4xl md:text-5xl font-bold text-primary-900 dark:text-primary-100 mb-4 text-display">
-            Choisis ton entraînement
-          </h2>
-          <p class="text-lg text-primary-600 dark:text-primary-400">
-            Sélectionne un workout pour commencer ta séance
-          </p>
-        </div>
-
         <!-- Upgrade banner séances -->
         <div v-if="!isPremium && !canCreateWorkout" class="mb-8 fade-in">
           <ProWall
