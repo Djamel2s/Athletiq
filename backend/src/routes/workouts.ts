@@ -114,6 +114,10 @@ router.get('/:id', authenticate, async (req: AuthRequest, res) => {
       return res.status(404).json({ error: 'Workout not found' })
     }
 
+    if (workout.exercises) {
+      workout.exercises.sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0))
+    }
+
     res.json(workout)
   } catch (error) {
     console.error('Error fetching workout:', error)

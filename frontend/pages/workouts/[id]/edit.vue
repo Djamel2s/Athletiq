@@ -18,7 +18,7 @@
     <div class="pt-24 md:pt-32 px-4 md:px-6 pb-20 max-w-5xl mx-auto">
       <!-- Titre + Annuler -->
       <div class="flex items-center justify-between mb-8 fade-in">
-        <h1 class="text-2xl md:text-3xl font-bold text-display bg-gradient-to-r from-sand-500 to-white dark:to-primary-100 bg-clip-text text-transparent">Modifier le Workout</h1>
+        <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-white dark:to-primary-100 bg-clip-text text-transparent">Modifier le Workout</h1>
         <button @click="navigateTo('/workouts')" class="btn-outline text-sm md:text-base">Annuler</button>
       </div>
       <!-- Formulaire du workout -->
