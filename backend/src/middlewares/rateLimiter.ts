@@ -9,11 +9,11 @@ export const globalLimiter = rateLimit({
   legacyHeaders: false
 })
 
-// Rate limiter strict pour auth — 10 tentatives par 15 min par IP
+// Rate limiter strict pour auth — 30 tentatives par 15 min par IP
 // Empêche le brute-force sur login/register
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10,
+  max: 30,
   message: { error: 'Trop de tentatives de connexion, réessayez dans 15 minutes' },
   standardHeaders: true,
   legacyHeaders: false

@@ -163,6 +163,10 @@ export default defineNuxtConfig({
     '/streak': { ssr: false },
     '/wrapped': { ssr: false },
     '/subscription/**': { ssr: false },
+    '/login': { ssr: false },
+    '/register': { ssr: false },
+    '/forgot-password': { ssr: false },
+    '/reset-password': { ssr: false },
   },
 
   robots: {
