@@ -282,10 +282,8 @@ const handleRegister = async () => {
 }
 
 // Rediriger si déjà connecté
-onMounted(() => {
-  authStore.loadFromLocalStorage()
-  if (authStore.isAuthenticated) {
-    navigateTo('/dashboard')
-  }
-})
+authStore.loadFromLocalStorage()
+if (process.client && authStore.isAuthenticated) {
+  navigateTo('/dashboard')
+}
 </script>

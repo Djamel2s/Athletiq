@@ -20,9 +20,9 @@
     <div class="flex items-center gap-4 md:gap-6">
       <!-- Barres de récupération (gauche) -->
       <div class="flex-1 min-w-0 space-y-2.5 bg-white/40 dark:bg-primary-800/40 rounded-2xl p-3 md:p-4 border border-primary-200/50 dark:border-primary-700/50">
-        <h3 class="text-xs font-semibold text-primary-500 dark:text-primary-400 uppercase tracking-wider mb-3">Récupération</h3>
+        <h3 class="text-[10px] md:text-xs font-semibold text-primary-500 dark:text-primary-400 uppercase tracking-wider mb-3 truncate">Récupération</h3>
         <div v-for="m in displayBars" :key="m.muscle" class="flex items-center gap-2">
-          <span class="text-[10px] md:text-xs text-primary-500 dark:text-primary-400 w-20 md:w-24 truncate">{{ muscleLabel(m.muscle) }}</span>
+          <span class="text-[10px] md:text-xs text-primary-500 dark:text-primary-400 w-16 md:w-24 truncate flex-shrink-0">{{ muscleLabel(m.muscle) }}</span>
           <div class="flex-1 h-2 bg-primary-100 dark:bg-primary-800 rounded-full overflow-hidden">
             <div
               class="h-full rounded-full transition-all duration-500"
