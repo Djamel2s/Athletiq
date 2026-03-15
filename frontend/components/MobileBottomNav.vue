@@ -12,52 +12,55 @@
       <div v-if="fanOpen" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" @click="fanOpen = false"></div>
     </Transition>
 
-    <!-- Fan menu items -->
+    <!-- Fan arc background + buttons -->
     <Transition
       enter-active-class="transition duration-250 ease-out"
-      enter-from-class="opacity-0 scale-50"
-      enter-to-class="opacity-100 scale-100"
+      enter-from-class="opacity-0 translate-y-4 scale-95"
+      enter-to-class="opacity-100 translate-y-0 scale-100"
       leave-active-class="transition duration-150 ease-in"
-      leave-from-class="opacity-100 scale-100"
-      leave-to-class="opacity-0 scale-50"
+      leave-from-class="opacity-100 translate-y-0 scale-100"
+      leave-to-class="opacity-0 translate-y-4 scale-95"
     >
-      <div v-if="fanOpen" class="fixed bottom-[90px] left-1/2 -translate-x-1/2 z-50" style="transform-origin: bottom center;">
-        <div class="relative w-[280px] h-[120px]">
-          <!-- Left: Mes Workouts -->
+      <div v-if="fanOpen" class="fixed bottom-[58px] left-1/2 -translate-x-1/2 z-50" style="transform-origin: bottom center;">
+        <!-- Arc shape same bg as nav bar -->
+        <div class="relative w-[300px] h-[150px]">
+          <div class="absolute inset-0 fan-arc bg-white/95 dark:bg-primary-900/95 backdrop-blur-xl border border-primary-200/60 dark:border-primary-700/60 border-b-0"></div>
+
+          <!-- Left: Workouts (above Activité) -->
           <button
             @click="goTo('/workouts')"
-            class="absolute left-0 top-2 flex flex-col items-center gap-1.5 group"
+            class="absolute left-[28px] bottom-[58px] flex flex-col items-center gap-1 group"
           >
-            <div class="w-14 h-14 rounded-2xl bg-white dark:bg-primary-800 shadow-xl border border-primary-200/60 dark:border-primary-700/60 flex items-center justify-center group-active:scale-90 transition-transform">
-              <svg class="w-6 h-6 text-sand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center group-active:scale-90 transition-transform">
+              <svg class="w-6 h-6 text-primary-400 dark:text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
               </svg>
             </div>
-            <span class="text-[10px] font-semibold text-white/90 drop-shadow-md">Workouts</span>
+            <span class="text-[10px] font-medium text-primary-400 dark:text-primary-500">Workouts</span>
           </button>
 
           <!-- Center: GO (Lancer) -->
           <button
             @click="goTo('/workouts/start')"
-            class="absolute left-1/2 -translate-x-1/2 top-[-20px] flex flex-col items-center gap-1.5 group"
+            class="absolute left-1/2 -translate-x-1/2 top-[10px] flex flex-col items-center gap-1 group"
           >
-            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-sand-500 to-sand-700 shadow-xl flex items-center justify-center group-active:scale-90 transition-transform">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-sand-500 to-sand-700 shadow-lg flex items-center justify-center group-active:scale-90 transition-transform">
               <span class="text-white font-black text-lg tracking-wider">GO</span>
             </div>
-            <span class="text-[11px] font-semibold text-white drop-shadow-md">Lancer</span>
+            <span class="text-[10px] font-medium text-primary-400 dark:text-primary-500">Lancer</span>
           </button>
 
-          <!-- Right: Motivation -->
+          <!-- Right: Motivation (above Suivi) -->
           <button
             @click="goTo('/streak')"
-            class="absolute right-0 top-2 flex flex-col items-center gap-1.5 group"
+            class="absolute right-[28px] bottom-[58px] flex flex-col items-center gap-1 group"
           >
-            <div class="w-14 h-14 rounded-2xl bg-white dark:bg-primary-800 shadow-xl border border-primary-200/60 dark:border-primary-700/60 flex items-center justify-center group-active:scale-90 transition-transform">
-              <svg class="w-6 h-6 text-sand-600" fill="currentColor" viewBox="0 0 24 24">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center group-active:scale-90 transition-transform">
+              <svg class="w-6 h-6 text-primary-400 dark:text-primary-500" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/>
               </svg>
             </div>
-            <span class="text-[10px] font-semibold text-white/90 drop-shadow-md">Motivation</span>
+            <span class="text-[10px] font-medium text-primary-400 dark:text-primary-500">Motivation</span>
           </button>
         </div>
       </div>
@@ -65,7 +68,7 @@
 
     <!-- Background bar -->
     <div class="relative bg-white/95 dark:bg-primary-900/95 backdrop-blur-xl border-t border-primary-200/60 dark:border-primary-700/60 z-50">
-      <!-- Notch cutout behind GO button -->
+      <!-- Notch cutout behind button -->
       <div class="absolute -top-[30px] left-1/2 -translate-x-1/2 w-[88px] h-[44px] bg-white/95 dark:bg-primary-900/95 rounded-t-full"></div>
 
       <div class="flex items-end justify-around px-2 pb-2 pt-2.5">
@@ -85,7 +88,7 @@
           <span :class="['text-[10px] mt-1 leading-none', item.path === activePath ? 'font-bold' : 'font-medium']">{{ item.label }}</span>
         </button>
 
-        <!-- Center GO zone -->
+        <!-- Center button -->
         <div class="flex flex-col items-center w-20 -mt-10">
           <button
             @click="toggleFan"
@@ -110,8 +113,17 @@
                 <svg v-if="fanOpen" class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
-                <svg v-else class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 12h1m3 0h10m3 0h1M7 8V6a1 1 0 00-1-1H5a1 1 0 00-1 1v12a1 1 0 001 1h1a1 1 0 001-1v-2m10-8V6a1 1 0 011-1h1a1 1 0 011 1v12a1 1 0 01-1 1h-1a1 1 0 01-1-1v-2"/>
+                <!-- Dumbbell icon -->
+                <svg v-else class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6.5 6.5a2 2 0 013 0L13 10l-3.5 3.5a2 2 0 01-3-3L10 7l-3.5-.5z" fill="none" stroke="none"/>
+                  <!-- bar -->
+                  <line x1="8.5" y1="12" x2="15.5" y2="12" stroke-width="2.2"/>
+                  <!-- left weight -->
+                  <rect x="4" y="8.5" width="3" height="7" rx="1" stroke-width="1.8"/>
+                  <rect x="2" y="10" width="2" height="4" rx="0.7" stroke-width="1.5"/>
+                  <!-- right weight -->
+                  <rect x="17" y="8.5" width="3" height="7" rx="1" stroke-width="1.8"/>
+                  <rect x="20" y="10" width="2" height="4" rx="0.7" stroke-width="1.5"/>
                 </svg>
               </Transition>
             </div>
@@ -176,5 +188,9 @@ const rightItems = [
 <style scoped>
 .go-button:active .relative {
   box-shadow: 0 2px 8px rgba(157, 133, 105, 0.4);
+}
+
+.fan-arc {
+  border-radius: 50% 50% 0 0;
 }
 </style>
