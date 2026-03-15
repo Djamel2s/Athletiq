@@ -152,6 +152,19 @@ export default defineNuxtConfig({
     exclude: ['/**'],
   },
 
+  routeRules: {
+    '/dashboard/**': { ssr: false },
+    '/workouts/**': { ssr: false },
+    '/settings': { ssr: false },
+    '/profile': { ssr: false },
+    '/body': { ssr: false },
+    '/statistics': { ssr: false },
+    '/calendar': { ssr: false },
+    '/streak': { ssr: false },
+    '/wrapped': { ssr: false },
+    '/subscription/**': { ssr: false },
+  },
+
   robots: {
     rules: [
       {
