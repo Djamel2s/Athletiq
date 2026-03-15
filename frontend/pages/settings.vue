@@ -1,13 +1,24 @@
 <template>
-  <div class="min-h-screen px-4 md:px-6 py-8 md:py-12 geometric-bg">
-    <div class="w-full max-w-lg mx-auto">
+  <div class="min-h-screen geometric-bg">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
+      <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-5">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <NuxtLink to="/dashboard">
+              <AppLogo />
+            </NuxtLink>
+          </div>
+          <NavActions />
+        </div>
+      </div>
+    </nav>
+
+    <div class="pt-24 md:pt-32 px-4 md:px-6 pb-20 w-full max-w-lg mx-auto">
       <!-- Header -->
       <div class="text-center mb-10 fade-in">
-        <NuxtLink to="/dashboard" class="inline-block">
-          <AppLogo class="h-10 md:h-14 w-auto mx-auto mb-4 hover:scale-105 transition-transform duration-300" />
-        </NuxtLink>
-        <h1 class="text-lg md:text-2xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-display">Parametres</h1>
-        <p class="text-primary-600 dark:text-primary-400 text-body-relaxed">Configurez votre experience</p>
+        <h1 class="text-2xl md:text-3xl font-bold text-display bg-gradient-to-r from-sand-500 to-white dark:to-primary-100 bg-clip-text text-transparent mb-2">Paramètres</h1>
+        <p class="text-primary-600 dark:text-primary-400 text-body-relaxed">Configurez votre expérience</p>
       </div>
 
       <!-- Sections -->

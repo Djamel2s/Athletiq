@@ -38,7 +38,7 @@ export class Exercise {
   restTime?: number
 
   @Column({ type: 'json', nullable: true })
-  plannedSets?: Array<{ setNumber: number; targetReps: number; targetWeight: number }>
+  plannedSets?: Array<{ setNumber: number; targetReps: number; targetWeight: number; restTime?: number }>
 
   @ManyToOne('Workout', 'exercises', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'workoutId' })

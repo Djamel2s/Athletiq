@@ -4,32 +4,37 @@
     <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
       <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-5">
         <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-2 md:space-x-4">
+          <div class="flex items-center space-x-3">
             <NuxtLink to="/dashboard">
               <AppLogo />
             </NuxtLink>
-            <div class="flex items-center space-x-2 md:space-x-3">
-              <span class="text-2xl text-sand-500 font-light hidden md:inline">|</span>
-              <h1 class="text-lg md:text-2xl font-bold text-display bg-gradient-to-r from-sand-500 to-white dark:to-primary-100 bg-clip-text text-transparent">Mes Entraînements</h1>
-            </div>
           </div>
-
-          <div class="flex items-center space-x-2 md:space-x-4">
-            <div v-if="!isPremium" class="hidden md:block text-xs text-primary-500 dark:text-primary-400">
-              Templates : {{ templateUsageText }}
-            </div>
-            <button @click="handleCreateWorkout" :disabled="!canCreateTemplate && !isPremium" class="btn-primary text-sm md:text-base disabled:opacity-50">
-              <span class="hidden md:inline">+ Créer un workout</span>
-              <span class="md:hidden">+ Créer</span>
-            </button>
-            <NavActions />
-          </div>
+          <NavActions />
         </div>
       </div>
     </nav>
 
     <!-- Contenu principal -->
     <div class="pt-24 md:pt-32 px-4 md:px-6 pb-28 lg:pb-20 max-w-7xl mx-auto">
+      <!-- Page Header -->
+      <div class="fade-in text-center mb-8">
+        <h1 class="text-2xl md:text-3xl font-bold text-display bg-gradient-to-r from-sand-500 to-white dark:to-primary-100 bg-clip-text text-transparent mb-2">Mes Entraînements</h1>
+        <p class="text-lg text-primary-600 dark:text-primary-400">Gérez et lancez vos workouts</p>
+      </div>
+
+      <!-- Créer -->
+      <div class="flex items-center justify-between mb-6 fade-in">
+        <div>
+          <div v-if="!isPremium" class="text-xs text-primary-500 dark:text-primary-400">
+            Templates : {{ templateUsageText }}
+          </div>
+        </div>
+        <button @click="handleCreateWorkout" :disabled="!canCreateTemplate && !isPremium" class="btn-primary text-sm md:text-base disabled:opacity-50">
+          <span class="hidden md:inline">+ Créer un workout</span>
+          <span class="md:hidden">+ Créer</span>
+        </button>
+      </div>
+
       <!-- Tabs -->
       <div class="mb-8 slide-up">
         <div class="flex justify-center">

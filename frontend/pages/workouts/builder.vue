@@ -4,24 +4,23 @@
     <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
       <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-5">
         <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-2 md:space-x-4">
+          <div class="flex items-center space-x-3">
             <NuxtLink to="/dashboard">
-              <AppLogo class="h-10 md:h-14 w-auto" />
+              <AppLogo />
             </NuxtLink>
-            <h1 class="text-lg md:text-2xl font-bold text-primary-900 dark:text-primary-100">
-              Préparer un Workout
-            </h1>
           </div>
-
-          <button @click="navigateTo('/workouts')" class="btn-outline text-sm md:text-base">
-            Annuler
-          </button>
+          <NavActions />
         </div>
       </div>
     </nav>
 
     <!-- Contenu principal -->
     <div class="pt-24 md:pt-32 px-4 md:px-6 pb-20 max-w-5xl mx-auto">
+      <!-- Titre + Annuler -->
+      <div class="flex items-center justify-between mb-8 fade-in">
+        <h1 class="text-2xl md:text-3xl font-bold text-display bg-gradient-to-r from-sand-500 to-white dark:to-primary-100 bg-clip-text text-transparent">Préparer un Workout</h1>
+        <button @click="navigateTo('/workouts')" class="btn-outline text-sm md:text-base">Annuler</button>
+      </div>
       <!-- Formulaire du workout -->
       <div class="card-glass mb-8 fade-in">
         <h2 class="text-2xl font-bold text-primary-900 dark:text-primary-100 mb-6">Informations générales</h2>

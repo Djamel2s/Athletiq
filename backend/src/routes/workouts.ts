@@ -41,7 +41,8 @@ const addExerciseSchema = z.object({
   plannedSets: z.array(z.object({
     setNumber: z.number(),
     targetReps: z.number(),
-    targetWeight: z.number()
+    targetWeight: z.number(),
+    restTime: z.number().optional()
   })).nullish()
 })
 
@@ -57,7 +58,8 @@ const updateExerciseSchema = z.object({
   plannedSets: z.array(z.object({
     setNumber: z.number(),
     targetReps: z.number(),
-    targetWeight: z.number()
+    targetWeight: z.number(),
+    restTime: z.number().optional()
   })).nullish()
 }).partial()
 
@@ -343,6 +345,7 @@ router.post('/:workoutId/exercises', authenticate, async (req: AuthRequest, res)
       targetReps: data.targetReps ?? undefined,
       targetWeight: data.targetWeight ?? undefined,
       restTime: data.restTime ?? undefined,
+      plannedSets: data.plannedSets ?? undefined,
     })
 
     await exerciseRepo.save(exercise)

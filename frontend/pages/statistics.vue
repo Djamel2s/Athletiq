@@ -4,42 +4,43 @@
     <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
       <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-5">
         <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-2 md:space-x-4">
+          <div class="flex items-center space-x-3">
             <NuxtLink to="/dashboard">
               <AppLogo />
             </NuxtLink>
-            <div class="flex items-center space-x-3">
-              <span class="hidden md:inline text-2xl text-sand-500 font-light">|</span>
-              <h1 class="text-lg md:text-2xl font-bold text-display bg-gradient-to-r from-sand-500 to-white dark:to-primary-100 bg-clip-text text-transparent">Statistiques</h1>
-            </div>
           </div>
-
-          <div class="flex items-center space-x-2 md:space-x-4">
-            <!-- Time Range Selector -->
-            <div class="hidden md:flex space-x-2 bg-white dark:bg-primary-900 bg-opacity-50 dark:bg-opacity-50 backdrop-blur-lg rounded-xl p-1">
-              <button
-                v-for="range in timeRanges"
-                :key="range.value || 'all'"
-                @click="selectedTimeRange = range.value"
-                :class="[
-                  'px-4 py-2 rounded-lg text-sm font-semibold transition-all',
-                  selectedTimeRange === range.value
-                    ? 'bg-gradient-primary text-white shadow-sm'
-                    : 'text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100'
-                ]"
-              >
-                {{ range.label }}
-              </button>
-            </div>
-
-            <NavActions />
-          </div>
+          <NavActions />
         </div>
       </div>
     </nav>
 
     <!-- Main Content -->
     <div class="pt-24 md:pt-32 px-4 md:px-6 pb-28 lg:pb-20 max-w-7xl mx-auto">
+      <!-- Page Header -->
+      <div class="fade-in text-center mb-8">
+        <h1 class="text-2xl md:text-3xl font-bold text-display bg-gradient-to-r from-sand-500 to-white dark:to-primary-100 bg-clip-text text-transparent mb-2">Statistiques</h1>
+        <p class="text-lg text-primary-600 dark:text-primary-400">Analysez vos performances</p>
+      </div>
+
+      <!-- Time Range Selector -->
+      <div class="flex justify-center mb-8 fade-in">
+        <div class="flex space-x-2 bg-white dark:bg-primary-900 bg-opacity-50 dark:bg-opacity-50 backdrop-blur-lg rounded-xl p-1">
+          <button
+            v-for="range in timeRanges"
+            :key="range.value || 'all'"
+            @click="selectedTimeRange = range.value"
+            :class="[
+              'px-4 py-2 rounded-lg text-sm font-semibold transition-all',
+              selectedTimeRange === range.value
+                ? 'bg-gradient-primary text-white shadow-sm'
+                : 'text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100'
+            ]"
+          >
+            {{ range.label }}
+          </button>
+        </div>
+      </div>
+
       <!-- Loading State -->
       <div v-if="workoutStore.isLoading" class="text-center py-20">
         <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary-300 dark:border-primary-600 border-t-primary-600 dark:border-t-primary-400"></div>
