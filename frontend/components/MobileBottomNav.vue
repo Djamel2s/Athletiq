@@ -21,17 +21,17 @@
       leave-from-class="opacity-100 translate-y-0 scale-100"
       leave-to-class="opacity-0 translate-y-4 scale-95"
     >
-      <div v-if="fanOpen" class="fixed bottom-[58px] left-1/2 -translate-x-1/2 z-50" style="transform-origin: bottom center;">
-        <!-- Arc shape same bg as nav bar -->
-        <div class="relative w-[300px] h-[150px]">
-          <div class="absolute inset-0 fan-arc bg-white/95 dark:bg-primary-900/95 backdrop-blur-xl border border-primary-200/60 dark:border-primary-700/60 border-b-0"></div>
+      <div v-if="fanOpen" class="fixed bottom-[80px] left-1/2 -translate-x-1/2 z-50" style="transform-origin: bottom center;">
+        <div class="relative w-[220px] h-[140px]">
+          <!-- Bridge/arch shape -->
+          <div class="absolute inset-0 bg-white/95 dark:bg-primary-900/95 backdrop-blur-xl fan-arc"></div>
 
-          <!-- Left: Workouts (above Activité) -->
+          <!-- Left: Workouts -->
           <button
             @click="goTo('/workouts')"
-            class="absolute left-[28px] bottom-[58px] flex flex-col items-center gap-1 group"
+            class="absolute left-[20px] top-[50px] flex flex-col items-center gap-1 group z-10"
           >
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center group-active:scale-90 transition-transform">
+            <div class="w-11 h-5 rounded-xl flex items-center justify-center group-active:scale-90 transition-transform">
               <svg class="w-6 h-6 text-primary-400 dark:text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
               </svg>
@@ -42,20 +42,20 @@
           <!-- Center: GO (Lancer) -->
           <button
             @click="goTo('/workouts/start')"
-            class="absolute left-1/2 -translate-x-1/2 top-[10px] flex flex-col items-center gap-1 group"
+            class="absolute left-1/2 -translate-x-1/2 top-[10px] flex flex-col items-center gap-1 group z-10"
           >
-            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-sand-500 to-sand-700 shadow-lg flex items-center justify-center group-active:scale-90 transition-transform">
-              <span class="text-white font-black text-lg tracking-wider">GO</span>
+            <div class="w-[52px] h-[52px] rounded-2xl bg-gradient-to-br from-sand-500 to-sand-700 shadow-lg flex items-center justify-center group-active:scale-90 transition-transform">
+              <span class="text-white font-black text-base tracking-wider">GO</span>
             </div>
             <span class="text-[10px] font-medium text-primary-400 dark:text-primary-500">Lancer</span>
           </button>
 
-          <!-- Right: Motivation (above Suivi) -->
+          <!-- Right: Motivation -->
           <button
             @click="goTo('/streak')"
-            class="absolute right-[28px] bottom-[58px] flex flex-col items-center gap-1 group"
+            class="absolute right-[20px] top-[50px] flex flex-col items-center gap-1 group z-10"
           >
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center group-active:scale-90 transition-transform">
+            <div class="w-11 h-5 rounded-xl flex items-center justify-center group-active:scale-90 transition-transform">
               <svg class="w-6 h-6 text-primary-400 dark:text-primary-500" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/>
               </svg>
@@ -191,6 +191,7 @@ const rightItems = [
 }
 
 .fan-arc {
-  border-radius: 50% 50% 0 0;
+  border-radius: 120px 120px 15px 15px / 120px 120px 15px 15px;
+  clip-path: path('M 0 120 L 0 55 Q 120 -55 230 55 L 230 140 Q 120 45 0 140 Z');
 }
 </style>
