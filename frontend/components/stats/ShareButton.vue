@@ -71,7 +71,7 @@ const drawFooter = (ctx: CanvasRenderingContext2D) => {
     ctx.fillText(props.userName, M, H - 80)
   }
   ctx.font = `400 28px ${FONT}`; ctx.fillStyle = C.textMuted; ctx.textAlign = 'right'
-  ctx.fillText('athletiq.app', W - M, H - 80)
+  ctx.fillText('athletiq.fr', W - M, H - 80)
 }
 
 const drawStatBox = (ctx: CanvasRenderingContext2D, x: number, y: number, bw: number, bh: number, value: string, label: string, unit?: string) => {

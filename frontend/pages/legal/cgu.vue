@@ -74,7 +74,7 @@
 
         <section>
           <h2 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-3">11. Contact</h2>
-          <p>Pour toute question relative aux présentes CGU, vous pouvez nous contacter à l'adresse : <strong>contact@athletiq.app</strong></p>
+          <p>Pour toute question relative aux présentes CGU, vous pouvez nous contacter à l'adresse : <strong>contact@athletiq.fr</strong></p>
         </section>
       </div>
     </div>

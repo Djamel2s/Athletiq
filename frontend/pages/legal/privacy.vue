@@ -12,7 +12,7 @@
       <div class="prose prose-primary dark:prose-invert max-w-none space-y-6 text-primary-700 dark:text-primary-300">
         <section>
           <h2 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-3">1. Responsable du traitement</h2>
-          <p>Le responsable du traitement des données personnelles collectées via Athletiq est la société éditrice de l'application. Pour toute question, contactez-nous à : <strong>contact@athletiq.app</strong></p>
+          <p>Le responsable du traitement des données personnelles collectées via Athletiq est la société éditrice de l'application. Pour toute question, contactez-nous à : <strong>contact@athletiq.fr</strong></p>
         </section>
 
         <section>
@@ -75,7 +75,7 @@
             <li><strong>Droit d'opposition :</strong> vous opposer au traitement de vos données</li>
             <li><strong>Droit de limitation :</strong> limiter le traitement de vos données</li>
           </ul>
-          <p class="mt-2">Pour exercer ces droits, contactez-nous à : <strong>contact@athletiq.app</strong></p>
+          <p class="mt-2">Pour exercer ces droits, contactez-nous à : <strong>contact@athletiq.fr</strong></p>
         </section>
 
         <section>

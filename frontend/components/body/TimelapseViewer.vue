@@ -364,7 +364,7 @@ const drawVideoFrame = (ctx: CanvasRenderingContext2D, w: number, h: number, img
   ctx.fillText('A T H L E T I Q', w / 2, 60)
   ctx.letterSpacing = '0px'
 
-  // Bottom bar: progress + athletiq.app
+  // Bottom bar: progress + athletiq.fr
   const bottomY = h - 60
 
   // Progress dots
@@ -384,7 +384,7 @@ const drawVideoFrame = (ctx: CanvasRenderingContext2D, w: number, h: number, img
   ctx.font = `400 24px system-ui, -apple-system, sans-serif`
   ctx.fillStyle = '#7a7068'
   ctx.textAlign = 'center'
-  ctx.fillText('athletiq.app', w / 2, h - 24)
+  ctx.fillText('athletiq.fr', w / 2, h - 24)
 
   // Date overlay on image
   const photo = props.photos[index]
@@ -420,7 +420,7 @@ const drawOutroFrame = (ctx: CanvasRenderingContext2D, w: number, h: number) => 
   // Tagline
   ctx.font = `400 32px system-ui, -apple-system, sans-serif`
   ctx.fillStyle = '#7a7068'
-  ctx.fillText('athletiq.app', w / 2, h / 2 + 40)
+  ctx.fillText('athletiq.fr', w / 2, h / 2 + 40)
 }
 
 const roundRect = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) => {

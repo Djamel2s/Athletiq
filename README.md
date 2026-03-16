@@ -961,7 +961,7 @@ Les contributions sont les bienvenues. Merci de créer une issue avant de soumet
 
 ## Contact
 
-Pour toute question : contact@athletiq.app
+Pour toute question : contact@athletiq.fr
 
 ---
 

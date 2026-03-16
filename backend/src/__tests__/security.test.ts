@@ -20,7 +20,7 @@ describe('Security - Input Sanitization', () => {
 
   it('accepte des emails normaux', () => {
     expect(sanitizeEmail('user@example.com')).toBe(true)
-    expect(sanitizeEmail('jean.dupont@athletiq.app')).toBe(true)
+    expect(sanitizeEmail('jean.dupont@athletiq.fr')).toBe(true)
   })
 })
 
@@ -66,8 +66,8 @@ describe('Security - CORS Origin Validation', () => {
   it('rejette une origin inconnue', () => {
     // En prod (CORS_ORIGIN est défini)
     const originalEnv = process.env.CORS_ORIGIN
-    process.env.CORS_ORIGIN = 'https://athletiq.app'
-    expect(isAllowedOrigin('https://evil.com', 'https://athletiq.app')).toBe(false)
+    process.env.CORS_ORIGIN = 'https://athletiq.fr'
+    expect(isAllowedOrigin('https://evil.com', 'https://athletiq.fr')).toBe(false)
     process.env.CORS_ORIGIN = originalEnv
   })
 })

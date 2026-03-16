@@ -98,12 +98,12 @@ describe('JWT Token', () => {
   })
 
   it('décode correctement le payload', () => {
-    const payload = { userId: 42, email: 'user@athletiq.app' }
+    const payload = { userId: 42, email: 'user@athletiq.fr' }
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' })
     const decoded = jwt.verify(token, JWT_SECRET) as any
 
     expect(decoded.userId).toBe(42)
-    expect(decoded.email).toBe('user@athletiq.app')
+    expect(decoded.email).toBe('user@athletiq.fr')
   })
 
   it('rejette un token avec mauvais secret', () => {

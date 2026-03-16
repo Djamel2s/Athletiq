@@ -15,7 +15,7 @@
           <p>L'application Athletiq est éditée par :</p>
           <div class="bg-primary-100 dark:bg-primary-800 rounded-xl p-4 mt-2">
             <p><strong>Athletiq</strong></p>
-            <p>Email : contact@athletiq.app</p>
+            <p>Email : contact@athletiq.fr</p>
             <p class="text-sm text-primary-500 dark:text-primary-400 mt-2 italic">Les informations complètes (raison sociale, SIRET, adresse) seront ajoutées lors de l'immatriculation de la société.</p>
           </div>
         </section>
@@ -47,7 +47,7 @@
 
         <section>
           <h2 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-3">6. Contact</h2>
-          <p>Pour toute question ou réclamation : <strong>contact@athletiq.app</strong></p>
+          <p>Pour toute question ou réclamation : <strong>contact@athletiq.fr</strong></p>
         </section>
       </div>
     </div>
