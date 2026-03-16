@@ -7,9 +7,10 @@ import { Set } from '../entities/Set.js'
 import { WorkoutPhoto } from '../entities/WorkoutPhoto.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { checkAndCreatePRNotifications, checkStreakMilestone } from '../services/notificationService.js'
-import { checkWorkoutLimit, checkTemplateLimit, getUserPlanType } from '../services/limitService.js'
+import { checkWorkoutLimit, checkTemplateLimit, getUserPlanType, withUserLock } from '../services/limitService.js'
 import { PLAN_LIMITS } from '../config/planLimits.js'
 import { MoreThanOrEqual } from 'typeorm'
+import { parseId } from '../utils/validation.js'
 
 const router = express.Router()
 
@@ -21,19 +22,19 @@ const photoRepo = AppDataSource.getRepository(WorkoutPhoto)
 
 // Validation schemas
 const createWorkoutSchema = z.object({
-  name: z.string(),
-  description: z.string().nullish(),
+  name: z.string().max(200),
+  description: z.string().max(2000).nullish(),
   isTemplate: z.boolean().nullish(),
   date: z.string().datetime().nullish(),
   duration: z.number().nullish(),
-  notes: z.string().nullish()
+  notes: z.string().max(2000).nullish()
 })
 
 const addExerciseSchema = z.object({
   exerciseLibraryId: z.number().nullish(),
-  name: z.string(),
+  name: z.string().max(200),
   orderIndex: z.number().nullish(),
-  notes: z.string().nullish(),
+  notes: z.string().max(2000).nullish(),
   targetSets: z.number().nullish(),
   targetReps: z.number().nullish(),
   targetWeight: z.number().nullish(),
@@ -43,14 +44,14 @@ const addExerciseSchema = z.object({
     targetReps: z.number(),
     targetWeight: z.number(),
     restTime: z.number().optional()
-  })).nullish()
+  })).max(20).nullish()
 })
 
 const updateExerciseSchema = z.object({
   exerciseLibraryId: z.number().nullish(),
-  name: z.string().nullish(),
+  name: z.string().max(200).nullish(),
   orderIndex: z.number().nullish(),
-  notes: z.string().nullish(),
+  notes: z.string().max(2000).nullish(),
   targetSets: z.number().nullish(),
   targetReps: z.number().nullish(),
   targetWeight: z.number().nullish(),
@@ -60,7 +61,7 @@ const updateExerciseSchema = z.object({
     targetReps: z.number(),
     targetWeight: z.number(),
     restTime: z.number().optional()
-  })).nullish()
+  })).max(20).nullish()
 }).partial()
 
 const addSetSchema = z.object({
@@ -68,7 +69,7 @@ const addSetSchema = z.object({
   reps: z.number(),
   weight: z.number(),
   rpe: z.number().min(1).max(10).nullish(),
-  notes: z.string().nullish()
+  notes: z.string().max(2000).nullish()
 })
 
 // Get all workouts for user
@@ -76,6 +77,9 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
   try {
     const planType = await getUserPlanType(req.user!.id)
     const historyDays = PLAN_LIMITS[planType].historyDays
+
+    const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 50, 1), 100)
+    const offset = Math.max(parseInt(req.query.offset as string) || 0, 0)
 
     const where: any = { userId: req.user!.id }
 
@@ -86,16 +90,18 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
       where.date = MoreThanOrEqual(cutoff)
     }
 
-    const workouts = await workoutRepo.find({
+    const [workouts, total] = await workoutRepo.findAndCount({
       where,
       relations: ['exercises', 'exercises.sets', 'exercises.exerciseLibrary', 'photos'],
-      order: { date: 'DESC' }
+      order: { date: 'DESC' },
+      take: limit,
+      skip: offset
     })
 
-    res.json({ workouts, historyLimited: historyDays !== Infinity })
+    res.json({ workouts, historyLimited: historyDays !== Infinity, total, limit, offset })
   } catch (error) {
     console.error('Error fetching workouts:', error)
-    res.status(500).json({ error: 'Failed to fetch workouts' })
+    res.status(500).json({ error: 'Erreur lors de la récupération des séances' })
   }
 })
 
@@ -104,14 +110,14 @@ router.get('/:id', authenticate, async (req: AuthRequest, res) => {
   try {
     const workout = await workoutRepo.findOne({
       where: {
-        id: parseInt(req.params.id),
+        id: parseId(req.params.id),
         userId: req.user!.id
       },
       relations: ['exercises', 'exercises.sets', 'exercises.exerciseLibrary', 'photos']
     })
 
     if (!workout) {
-      return res.status(404).json({ error: 'Workout not found' })
+      return res.status(404).json({ error: 'Séance non trouvée' })
     }
 
     if (workout.exercises) {
@@ -121,7 +127,7 @@ router.get('/:id', authenticate, async (req: AuthRequest, res) => {
     res.json(workout)
   } catch (error) {
     console.error('Error fetching workout:', error)
-    res.status(500).json({ error: 'Failed to fetch workout' })
+    res.status(500).json({ error: 'Erreur lors de la récupération de la séance' })
   }
 })
 
@@ -129,18 +135,45 @@ router.get('/:id', authenticate, async (req: AuthRequest, res) => {
 router.post('/', authenticate, async (req: AuthRequest, res) => {
   try {
     const data = createWorkoutSchema.parse(req.body)
+    const userId = req.user!.id
 
-    // Vérifier les limites du plan
+    // Vérifier les limites du plan (avec verrou pour éviter TOCTOU)
     if (data.isTemplate) {
-      const templateCheck = await checkTemplateLimit(req.user!.id)
-      if (!templateCheck.allowed) {
-        return res.status(403).json({
-          error: 'Limite atteinte',
-          code: 'LIMIT_TEMPLATES',
-          current: templateCheck.current,
-          limit: templateCheck.limit
+      const result = await withUserLock(userId, 'create-template', async () => {
+        const templateCheck = await checkTemplateLimit(userId)
+        if (!templateCheck.allowed) {
+          return {
+            status: 403,
+            body: {
+              error: 'Limite atteinte',
+              code: 'LIMIT_TEMPLATES',
+              current: templateCheck.current,
+              limit: templateCheck.limit
+            }
+          }
+        }
+
+        const workout = workoutRepo.create({
+          name: data.name,
+          description: data.description ?? undefined,
+          isTemplate: true,
+          notes: data.notes ?? undefined,
+          duration: data.duration ?? undefined,
+          date: data.date ? new Date(data.date) : new Date(),
+          userId
         })
-      }
+
+        await workoutRepo.save(workout)
+
+        const savedWorkout = await workoutRepo.findOne({
+          where: { id: workout.id },
+          relations: ['exercises', 'exercises.sets', 'exercises.exerciseLibrary']
+        })
+
+        return { status: 201, body: savedWorkout }
+      })
+
+      return res.status(result.status).json(result.body)
     }
 
     const workout = workoutRepo.create({
@@ -150,7 +183,7 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
       notes: data.notes ?? undefined,
       duration: data.duration ?? undefined,
       date: data.date ? new Date(data.date) : new Date(),
-      userId: req.user!.id
+      userId
     })
 
     await workoutRepo.save(workout)
@@ -163,10 +196,10 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
     res.status(201).json(savedWorkout)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation error', details: error.errors })
+      return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
     console.error('Error creating workout:', error)
-    res.status(500).json({ error: 'Failed to create workout' })
+    res.status(500).json({ error: 'Erreur lors de la création de la séance' })
   }
 })
 
@@ -177,13 +210,13 @@ router.put('/:id', authenticate, async (req: AuthRequest, res) => {
 
     const workout = await workoutRepo.findOne({
       where: {
-        id: parseInt(req.params.id),
+        id: parseId(req.params.id),
         userId: req.user!.id
       }
     })
 
     if (!workout) {
-      return res.status(404).json({ error: 'Workout not found' })
+      return res.status(404).json({ error: 'Séance non trouvée' })
     }
 
     // Only assign defined (non-null) values
@@ -196,13 +229,13 @@ router.put('/:id', authenticate, async (req: AuthRequest, res) => {
 
     await workoutRepo.save(workout)
 
-    res.json({ message: 'Workout updated successfully', workout })
+    res.json({ message: 'Séance mise à jour', workout })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation error', details: error.errors })
+      return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
     console.error('Error updating workout:', error)
-    res.status(500).json({ error: 'Failed to update workout' })
+    res.status(500).json({ error: 'Erreur lors de la mise à jour de la séance' })
   }
 })
 
@@ -210,18 +243,18 @@ router.put('/:id', authenticate, async (req: AuthRequest, res) => {
 router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
   try {
     const result = await workoutRepo.delete({
-      id: parseInt(req.params.id),
+      id: parseId(req.params.id),
       userId: req.user!.id
     })
 
     if (result.affected === 0) {
-      return res.status(404).json({ error: 'Workout not found' })
+      return res.status(404).json({ error: 'Séance non trouvée' })
     }
 
-    res.json({ message: 'Workout deleted successfully' })
+    res.json({ message: 'Séance supprimée' })
   } catch (error) {
     console.error('Error deleting workout:', error)
-    res.status(500).json({ error: 'Failed to delete workout' })
+    res.status(500).json({ error: 'Erreur lors de la suppression de la séance' })
   }
 })
 
@@ -230,13 +263,13 @@ router.post('/:id/start', authenticate, async (req: AuthRequest, res) => {
   try {
     const workout = await workoutRepo.findOne({
       where: {
-        id: parseInt(req.params.id),
+        id: parseId(req.params.id),
         userId: req.user!.id
       }
     })
 
     if (!workout) {
-      return res.status(404).json({ error: 'Workout not found' })
+      return res.status(404).json({ error: 'Séance non trouvée' })
     }
 
     workout.startedAt = new Date()
@@ -247,77 +280,90 @@ router.post('/:id/start', authenticate, async (req: AuthRequest, res) => {
       relations: ['exercises', 'exercises.sets', 'exercises.exerciseLibrary']
     })
 
-    res.json({ message: 'Workout started', workout: updatedWorkout })
+    res.json({ message: 'Séance démarrée', workout: updatedWorkout })
   } catch (error) {
     console.error('Error starting workout:', error)
-    res.status(500).json({ error: 'Failed to start workout' })
+    res.status(500).json({ error: 'Erreur lors du démarrage de la séance' })
   }
 })
 
 // Complete workout
 router.post('/:id/complete', authenticate, async (req: AuthRequest, res) => {
   try {
-    const workout = await workoutRepo.findOne({
-      where: {
-        id: parseInt(req.params.id),
-        userId: req.user!.id
-      },
-      relations: ['exercises', 'exercises.sets']
-    })
+    const workoutId = parseId(req.params.id)
+    const userId = req.user!.id
 
-    if (!workout) {
-      return res.status(404).json({ error: 'Workout not found' })
-    }
-
-    // Vérifier la limite de séances par semaine
-    const workoutCheck = await checkWorkoutLimit(req.user!.id)
-    if (!workoutCheck.allowed) {
-      return res.status(403).json({
-        error: 'Limite atteinte',
-        code: 'LIMIT_WORKOUTS_WEEK',
-        current: workoutCheck.current,
-        limit: workoutCheck.limit
+    // Verrou pour éviter le double-clic qui contourne la limite
+    const result = await withUserLock(userId, 'complete-workout', async () => {
+      const workout = await workoutRepo.findOne({
+        where: { id: workoutId, userId },
+        relations: ['exercises', 'exercises.sets']
       })
-    }
 
-    workout.completedAt = new Date()
+      if (!workout) {
+        return { status: 404, body: { error: 'Séance non trouvée' } }
+      }
 
-    // Calculate duration if started
-    if (workout.startedAt) {
-      const duration = Math.floor((workout.completedAt.getTime() - workout.startedAt.getTime()) / 1000)
-      workout.duration = duration
-    }
+      // Vérifier la limite de séances par semaine
+      const workoutCheck = await checkWorkoutLimit(userId)
+      if (!workoutCheck.allowed) {
+        return {
+          status: 403,
+          body: {
+            error: 'Limite atteinte',
+            code: 'LIMIT_WORKOUTS_WEEK',
+            current: workoutCheck.current,
+            limit: workoutCheck.limit
+          }
+        }
+      }
 
-    // Calculate total volume
-    let totalVolume = 0
-    if (workout.exercises) {
-      for (const exercise of workout.exercises) {
-        if (exercise.sets) {
-          for (const set of exercise.sets) {
-            if (set.weight && set.reps) {
-              totalVolume += set.weight * set.reps
+      // Empêcher de compléter une séance déjà terminée
+      if (workout.completedAt) {
+        return { status: 400, body: { error: 'Séance déjà terminée' } }
+      }
+
+      workout.completedAt = new Date()
+
+      // Calculate duration if started (plafonner à 24h pour éviter les valeurs absurdes)
+      if (workout.startedAt) {
+        const duration = Math.floor((workout.completedAt.getTime() - workout.startedAt.getTime()) / 1000)
+        workout.duration = Math.max(0, Math.min(duration, 86400))
+      }
+
+      // Calculate total volume
+      let totalVolume = 0
+      if (workout.exercises) {
+        for (const exercise of workout.exercises) {
+          if (exercise.sets) {
+            for (const set of exercise.sets) {
+              if (set.weight && set.reps) {
+                totalVolume += set.weight * set.reps
+              }
             }
           }
         }
       }
-    }
-    workout.totalVolume = totalVolume
+      workout.totalVolume = totalVolume
 
-    await workoutRepo.save(workout)
+      await workoutRepo.save(workout)
 
-    const updatedWorkout = await workoutRepo.findOne({
-      where: { id: workout.id },
-      relations: ['exercises', 'exercises.sets', 'exercises.exerciseLibrary']
+      const updatedWorkout = await workoutRepo.findOne({
+        where: { id: workout.id },
+        relations: ['exercises', 'exercises.sets', 'exercises.exerciseLibrary']
+      })
+
+      // Fire-and-forget: check for PR and streak notifications
+      checkAndCreatePRNotifications(userId, workout.id).catch(err => console.error('Background job failed:', err))
+      checkStreakMilestone(userId).catch(err => console.error('Background job failed:', err))
+
+      return { status: 200, body: { message: 'Séance terminée', workout: updatedWorkout } }
     })
 
-    // Fire-and-forget: check for PR and streak notifications
-    checkAndCreatePRNotifications(req.user!.id, workout.id).catch(() => {})
-    checkStreakMilestone(req.user!.id).catch(() => {})
-
-    res.json({ message: 'Workout completed', workout: updatedWorkout })
+    res.status(result.status).json(result.body)
   } catch (error) {
     console.error('Error completing workout:', error)
-    res.status(500).json({ error: 'Failed to complete workout' })
+    res.status(500).json({ error: 'Erreur lors de la complétion de la séance' })
   }
 })
 
@@ -326,8 +372,7 @@ router.post('/:id/complete', authenticate, async (req: AuthRequest, res) => {
 // Add exercise to workout
 router.post('/:workoutId/exercises', authenticate, async (req: AuthRequest, res) => {
   try {
-    const workoutId = parseInt(req.params.workoutId)
-    console.log('Received exercise data:', req.body)
+    const workoutId = parseId(req.params.workoutId)
     const data = addExerciseSchema.parse(req.body)
 
     // Verify workout belongs to user
@@ -336,7 +381,7 @@ router.post('/:workoutId/exercises', authenticate, async (req: AuthRequest, res)
     })
 
     if (!workout) {
-      return res.status(404).json({ error: 'Workout not found' })
+      return res.status(404).json({ error: 'Séance non trouvée' })
     }
 
     const exercise = exerciseRepo.create({
@@ -362,18 +407,18 @@ router.post('/:workoutId/exercises', authenticate, async (req: AuthRequest, res)
     res.status(201).json(savedExercise)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation error', details: error.errors })
+      return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
     console.error('Error adding exercise:', error)
-    res.status(500).json({ error: 'Failed to add exercise' })
+    res.status(500).json({ error: 'Erreur lors de l\'ajout de l\'exercice' })
   }
 })
 
 // Update exercise
 router.put('/:workoutId/exercises/:exerciseId', authenticate, async (req: AuthRequest, res) => {
   try {
-    const workoutId = parseInt(req.params.workoutId)
-    const exerciseId = parseInt(req.params.exerciseId)
+    const workoutId = parseId(req.params.workoutId)
+    const exerciseId = parseId(req.params.exerciseId)
     const data = updateExerciseSchema.parse(req.body)
 
     // Verify workout belongs to user
@@ -382,7 +427,7 @@ router.put('/:workoutId/exercises/:exerciseId', authenticate, async (req: AuthRe
     })
 
     if (!workout) {
-      return res.status(404).json({ error: 'Workout not found' })
+      return res.status(404).json({ error: 'Séance non trouvée' })
     }
 
     const exercise = await exerciseRepo.findOne({
@@ -390,27 +435,27 @@ router.put('/:workoutId/exercises/:exerciseId', authenticate, async (req: AuthRe
     })
 
     if (!exercise) {
-      return res.status(404).json({ error: 'Exercise not found' })
+      return res.status(404).json({ error: 'Exercice non trouvé' })
     }
 
     Object.assign(exercise, data)
     await exerciseRepo.save(exercise)
 
-    res.json({ message: 'Exercise updated successfully', exercise })
+    res.json({ message: 'Exercice mis à jour', exercise })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation error', details: error.errors })
+      return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
     console.error('Error updating exercise:', error)
-    res.status(500).json({ error: 'Failed to update exercise' })
+    res.status(500).json({ error: 'Erreur lors de la mise à jour de l\'exercice' })
   }
 })
 
 // Delete exercise
 router.delete('/:workoutId/exercises/:exerciseId', authenticate, async (req: AuthRequest, res) => {
   try {
-    const workoutId = parseInt(req.params.workoutId)
-    const exerciseId = parseInt(req.params.exerciseId)
+    const workoutId = parseId(req.params.workoutId)
+    const exerciseId = parseId(req.params.exerciseId)
 
     // Verify workout belongs to user
     const workout = await workoutRepo.findOne({
@@ -418,7 +463,7 @@ router.delete('/:workoutId/exercises/:exerciseId', authenticate, async (req: Aut
     })
 
     if (!workout) {
-      return res.status(404).json({ error: 'Workout not found' })
+      return res.status(404).json({ error: 'Séance non trouvée' })
     }
 
     const result = await exerciseRepo.delete({
@@ -427,13 +472,13 @@ router.delete('/:workoutId/exercises/:exerciseId', authenticate, async (req: Aut
     })
 
     if (result.affected === 0) {
-      return res.status(404).json({ error: 'Exercise not found' })
+      return res.status(404).json({ error: 'Exercice non trouvé' })
     }
 
-    res.json({ message: 'Exercise deleted successfully' })
+    res.json({ message: 'Exercice supprimé' })
   } catch (error) {
     console.error('Error deleting exercise:', error)
-    res.status(500).json({ error: 'Failed to delete exercise' })
+    res.status(500).json({ error: 'Erreur lors de la suppression de l\'exercice' })
   }
 })
 
@@ -442,8 +487,8 @@ router.delete('/:workoutId/exercises/:exerciseId', authenticate, async (req: Aut
 // Add set to exercise
 router.post('/:workoutId/exercises/:exerciseId/sets', authenticate, async (req: AuthRequest, res) => {
   try {
-    const workoutId = parseInt(req.params.workoutId)
-    const exerciseId = parseInt(req.params.exerciseId)
+    const workoutId = parseId(req.params.workoutId)
+    const exerciseId = parseId(req.params.exerciseId)
     const data = addSetSchema.parse(req.body)
 
     // Verify workout belongs to user
@@ -452,7 +497,7 @@ router.post('/:workoutId/exercises/:exerciseId/sets', authenticate, async (req: 
     })
 
     if (!workout) {
-      return res.status(404).json({ error: 'Workout not found' })
+      return res.status(404).json({ error: 'Séance non trouvée' })
     }
 
     // Verify exercise belongs to workout
@@ -461,7 +506,7 @@ router.post('/:workoutId/exercises/:exerciseId/sets', authenticate, async (req: 
     })
 
     if (!exercise) {
-      return res.status(404).json({ error: 'Exercise not found' })
+      return res.status(404).json({ error: 'Exercice non trouvé' })
     }
 
     const set = setRepo.create({
@@ -478,19 +523,19 @@ router.post('/:workoutId/exercises/:exerciseId/sets', authenticate, async (req: 
     res.status(201).json(set)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation error', details: error.errors })
+      return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
     console.error('Error adding set:', error)
-    res.status(500).json({ error: 'Failed to add set' })
+    res.status(500).json({ error: 'Erreur lors de l\'ajout de la série' })
   }
 })
 
 // Update set
 router.put('/:workoutId/exercises/:exerciseId/sets/:setId', authenticate, async (req: AuthRequest, res) => {
   try {
-    const workoutId = parseInt(req.params.workoutId)
-    const exerciseId = parseInt(req.params.exerciseId)
-    const setId = parseInt(req.params.setId)
+    const workoutId = parseId(req.params.workoutId)
+    const exerciseId = parseId(req.params.exerciseId)
+    const setId = parseId(req.params.setId)
     const data = addSetSchema.partial().parse(req.body)
 
     // Verify workout belongs to user
@@ -499,7 +544,7 @@ router.put('/:workoutId/exercises/:exerciseId/sets/:setId', authenticate, async 
     })
 
     if (!workout) {
-      return res.status(404).json({ error: 'Workout not found' })
+      return res.status(404).json({ error: 'Séance non trouvée' })
     }
 
     const set = await setRepo.findOne({
@@ -508,28 +553,28 @@ router.put('/:workoutId/exercises/:exerciseId/sets/:setId', authenticate, async 
     })
 
     if (!set || set.exercise.workoutId !== workoutId) {
-      return res.status(404).json({ error: 'Set not found' })
+      return res.status(404).json({ error: 'Série non trouvée' })
     }
 
     Object.assign(set, data)
     await setRepo.save(set)
 
-    res.json({ message: 'Set updated successfully', set })
+    res.json({ message: 'Série mise à jour', set })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation error', details: error.errors })
+      return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
     console.error('Error updating set:', error)
-    res.status(500).json({ error: 'Failed to update set' })
+    res.status(500).json({ error: 'Erreur lors de la mise à jour de la série' })
   }
 })
 
 // Delete set
 router.delete('/:workoutId/exercises/:exerciseId/sets/:setId', authenticate, async (req: AuthRequest, res) => {
   try {
-    const workoutId = parseInt(req.params.workoutId)
-    const exerciseId = parseInt(req.params.exerciseId)
-    const setId = parseInt(req.params.setId)
+    const workoutId = parseId(req.params.workoutId)
+    const exerciseId = parseId(req.params.exerciseId)
+    const setId = parseId(req.params.setId)
 
     // Verify workout belongs to user
     const workout = await workoutRepo.findOne({
@@ -537,7 +582,7 @@ router.delete('/:workoutId/exercises/:exerciseId/sets/:setId', authenticate, asy
     })
 
     if (!workout) {
-      return res.status(404).json({ error: 'Workout not found' })
+      return res.status(404).json({ error: 'Séance non trouvée' })
     }
 
     const set = await setRepo.findOne({
@@ -546,41 +591,44 @@ router.delete('/:workoutId/exercises/:exerciseId/sets/:setId', authenticate, asy
     })
 
     if (!set || set.exercise.workoutId !== workoutId) {
-      return res.status(404).json({ error: 'Set not found' })
+      return res.status(404).json({ error: 'Série non trouvée' })
     }
 
     await setRepo.remove(set)
 
-    res.json({ message: 'Set deleted successfully' })
+    res.json({ message: 'Série supprimée' })
   } catch (error) {
     console.error('Error deleting set:', error)
-    res.status(500).json({ error: 'Failed to delete set' })
+    res.status(500).json({ error: 'Erreur lors de la suppression de la série' })
   }
 })
 
 // Get exercise history (last sets for a specific exercise)
 router.get('/history/exercise/:exerciseLibraryId', authenticate, async (req: AuthRequest, res) => {
   try {
-    const exerciseLibraryId = parseInt(req.params.exerciseLibraryId)
+    const exerciseLibraryId = parseId(req.params.exerciseLibraryId)
 
     // Find the most recent completed workout with this exercise
-    const recentExercises = await exerciseRepo
+    // Step 1: get the most recent exercise ID (subquery avoids LIMIT+JOIN bug in TypeORM)
+    const latestExercise = await exerciseRepo
       .createQueryBuilder('exercise')
-      .leftJoinAndSelect('exercise.workout', 'workout')
-      .leftJoinAndSelect('exercise.sets', 'sets')
+      .innerJoin('exercise.workout', 'workout')
+      .select('exercise.id')
       .where('workout.userId = :userId', { userId: req.user!.id })
       .andWhere('exercise.exerciseLibraryId = :exerciseLibraryId', { exerciseLibraryId })
       .andWhere('workout.completedAt IS NOT NULL')
       .orderBy('workout.completedAt', 'DESC')
-      .addOrderBy('sets.setNumber', 'ASC')
-      .getMany() // Récupère tous les exercices pour éviter le bug LIMIT avec JOIN
+      .limit(1)
+      .getRawOne()
 
-    // Prendre le premier exercice (le plus récent)
-    const recentExercise = recentExercises[0]
-
-    console.log('📊 Exercise loaded:', recentExercise?.id)
-    console.log('📋 Sets loaded:', recentExercise?.sets?.length, 'sets')
-    console.log('🔍 Sets data:', recentExercise?.sets)
+    // Step 2: load that exercise with its sets
+    const recentExercise = latestExercise
+      ? await exerciseRepo.findOne({
+          where: { id: latestExercise.exercise_id },
+          relations: ['sets', 'workout'],
+          order: { sets: { setNumber: 'ASC' } }
+        })
+      : null
 
     // Get ALL sets from the most recent exercise
     const lastSets = recentExercise?.sets || []
@@ -592,7 +640,7 @@ router.get('/history/exercise/:exerciseLibraryId', authenticate, async (req: Aut
     })
   } catch (error) {
     console.error('Error fetching exercise history:', error)
-    res.status(500).json({ error: 'Failed to fetch exercise history' })
+    res.status(500).json({ error: 'Erreur lors de la récupération de l\'historique' })
   }
 })
 

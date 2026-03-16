@@ -44,32 +44,31 @@ export const useStatsApi = () => {
   const config = useRuntimeConfig()
   const authStore = useAuthStore()
 
+  const API_TIMEOUT = 30000
+
   const getAuthHeaders = () => ({
     Authorization: `Bearer ${authStore.token}`
   })
 
+  const fetchOpts = () => ({
+    timeout: API_TIMEOUT,
+    headers: getAuthHeaders()
+  })
+
   const getStreak = async () => {
-    return await $fetch<StreakData>(`${config.public.apiUrl}/stats/streak`, {
-      headers: getAuthHeaders()
-    })
+    return await $fetch<StreakData>(`${config.public.apiUrl}/stats/streak`, fetchOpts())
   }
 
   const getWeeklyRecap = async () => {
-    return await $fetch<WeeklyRecapData>(`${config.public.apiUrl}/stats/weekly-recap`, {
-      headers: getAuthHeaders()
-    })
+    return await $fetch<WeeklyRecapData>(`${config.public.apiUrl}/stats/weekly-recap`, fetchOpts())
   }
 
   const getCorrelation = async () => {
-    return await $fetch<CorrelationData>(`${config.public.apiUrl}/stats/correlation`, {
-      headers: getAuthHeaders()
-    })
+    return await $fetch<CorrelationData>(`${config.public.apiUrl}/stats/correlation`, fetchOpts())
   }
 
   const getRecovery = async () => {
-    return await $fetch<RecoveryData>(`${config.public.apiUrl}/stats/recovery`, {
-      headers: getAuthHeaders()
-    })
+    return await $fetch<RecoveryData>(`${config.public.apiUrl}/stats/recovery`, fetchOpts())
   }
 
   return { getStreak, getWeeklyRecap, getCorrelation, getRecovery }

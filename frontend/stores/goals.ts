@@ -28,7 +28,7 @@ export const useGoalStore = defineStore('goals', {
         this.goals = await api.getGoals()
       } catch (error: any) {
         this.error = error.message || 'Erreur lors du chargement des objectifs'
-        console.error('Fetch goals error:', error)
+        logger.error('Fetch goals error:', error)
       } finally {
         this.isLoading = false
       }

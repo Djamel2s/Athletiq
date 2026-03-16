@@ -189,6 +189,43 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal annulation -->
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition duration-150 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div v-if="showCancelModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" @click="showCancelModal = false"></div>
+          <div class="relative bg-white dark:bg-primary-900 rounded-2xl p-6 max-w-md w-full shadow-xl border border-primary-200 dark:border-primary-700">
+            <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-3">Annuler l'abonnement ?</h3>
+            <p class="text-primary-600 dark:text-primary-400 mb-6">
+              Votre abonnement restera actif jusqu'à la fin de la période en cours. Vous passerez ensuite au plan gratuit.
+            </p>
+            <div class="flex gap-3">
+              <button
+                @click="showCancelModal = false"
+                class="flex-1 px-4 py-3 rounded-xl border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors font-medium"
+              >
+                Garder mon abonnement
+              </button>
+              <button
+                @click="doCancel"
+                :disabled="isCancelling"
+                class="flex-1 px-4 py-3 rounded-xl bg-red-600 text-white hover:bg-red-700 transition-colors font-medium disabled:opacity-50"
+              >
+                {{ isCancelling ? 'Annulation...' : 'Confirmer' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -205,6 +242,7 @@ definePageMeta({
 })
 
 const route = useRoute()
+const toast = useToast()
 const authStore = useAuthStore()
 const subscriptionStore = useSubscriptionStore()
 const { isPremium, usage, fetchUsage, workoutUsageText, templateUsageText, photoUsageText, goalUsageText } = useSubscriptionLimits()
@@ -307,17 +345,27 @@ const checkout = async (plan: 'monthly' | 'yearly') => {
   checkoutLoading.value = true
   const result = await subscriptionStore.createCheckout(plan)
   if (result?.error) {
-    alert(result.error)
+    toast.error('Erreur', result.error)
   }
   checkoutLoading.value = false
 }
 
-const confirmCancel = async () => {
-  if (confirm('Êtes-vous sûr de vouloir annuler votre abonnement ? Il restera actif jusqu\'à la fin de la période en cours. Vous passerez ensuite au plan gratuit.')) {
-    const result = await subscriptionStore.cancelSubscription()
-    if (result?.error) {
-      alert(result.error)
-    }
+const showCancelModal = ref(false)
+const isCancelling = ref(false)
+
+const confirmCancel = () => {
+  showCancelModal.value = true
+}
+
+const doCancel = async () => {
+  isCancelling.value = true
+  const result = await subscriptionStore.cancelSubscription()
+  isCancelling.value = false
+  showCancelModal.value = false
+  if (result?.error) {
+    toast.error('Erreur', result.error)
+  } else {
+    toast.success('Abonnement annulé', 'Votre abonnement restera actif jusqu\'à la fin de la période en cours.')
   }
 }
 </script>

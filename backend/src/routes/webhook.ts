@@ -2,6 +2,7 @@ import express from 'express'
 import Stripe from 'stripe'
 import { AppDataSource } from '../config/database.js'
 import { Subscription, SubscriptionStatus, SubscriptionPlan } from '../entities/Subscription.js'
+import { User } from '../entities/User.js'
 
 const router = express.Router()
 const subscriptionRepo = AppDataSource.getRepository(Subscription)
@@ -37,7 +38,14 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req, re
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
         const userId = parseInt(session.metadata?.userId || '0')
-        if (!userId) break
+        if (!userId || isNaN(userId)) break
+
+        // Vérifier que l'utilisateur existe en base
+        const userExists = await AppDataSource.getRepository(User).findOne({ where: { id: userId }, select: ['id'] })
+        if (!userExists) {
+          console.error(`⚠️ Webhook: userId ${userId} introuvable en base`)
+          break
+        }
 
         const stripeSubscriptionId = session.subscription as string
         const stripeSub = await stripe.subscriptions.retrieve(stripeSubscriptionId)
@@ -45,6 +53,15 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req, re
         let subscription = await subscriptionRepo.findOne({ where: { userId } })
         if (!subscription) {
           subscription = subscriptionRepo.create({ userId })
+        }
+
+        // Idempotency: skip if already active with same subscription ID
+        if (
+          subscription.stripeSubscriptionId === stripeSubscriptionId &&
+          subscription.status === SubscriptionStatus.ACTIVE
+        ) {
+          console.log(`⏭️ Subscription already active for user ${userId}, skipping`)
+          break
         }
 
         subscription.stripeCustomerId = session.customer as string

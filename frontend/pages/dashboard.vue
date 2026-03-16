@@ -209,7 +209,7 @@
 
       <!-- Illustration musculaire + Récupération -->
       <div class="mb-8 md:mb-12 slide-up">
-        <DashboardMuscleRecoveryFigure :muscle-recovery="recoveryData?.muscleRecovery || []" />
+        <LazyDashboardMuscleRecoveryFigure :muscle-recovery="recoveryData?.muscleRecovery || []" />
       </div>
 
       <!-- Activité récente -->
@@ -218,7 +218,7 @@
         <p class="mt-4 text-primary-600 dark:text-primary-400">Chargement...</p>
       </div>
 
-      <ActivityTimeline
+      <LazyActivityTimeline
         v-else
         :workouts="workoutStore.recentWorkouts"
         empty-message="Aucun entraînement pour le moment"
@@ -262,7 +262,7 @@ onMounted(async () => {
   // Charger le score de récupération (en arrière-plan)
   statsApi.getRecovery().then(data => {
     recoveryData.value = data
-  }).catch(() => {})
+  }).catch(err => logger.error('Recovery fetch failed:', err))
 })
 
 const handleLogout = () => {

@@ -227,6 +227,32 @@
     </div>
 
     <MobileBottomNav active-path="/workouts" />
+
+    <!-- Modal confirmer suppression -->
+    <Teleport to="body">
+      <div v-if="showDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center px-6" @click.self="showDeleteModal = false">
+        <div class="fixed inset-0 bg-black/40 backdrop-blur-sm"></div>
+        <div class="relative bg-white dark:bg-primary-900 rounded-3xl p-8 max-w-sm w-full shadow-2xl">
+          <div class="text-center">
+            <div class="w-14 h-14 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-7 h-7 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-2">{{ deleteModalTitle }}</h3>
+            <p class="text-primary-600 dark:text-primary-400 text-sm mb-6">Cette action est irréversible.</p>
+            <div class="space-y-3">
+              <button @click="executeDelete" :disabled="!!deletingId" class="w-full py-3 rounded-2xl bg-red-500 text-white font-medium hover:bg-red-600 transition-colors disabled:opacity-50">
+                {{ deletingId ? 'Suppression...' : 'Supprimer' }}
+              </button>
+              <button @click="showDeleteModal = false; pendingDeleteId = null" class="w-full py-3 rounded-2xl bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-200 font-medium hover:bg-primary-200 dark:hover:bg-primary-700 transition-colors">
+                Annuler
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -307,7 +333,7 @@ const startFromHistory = async (workout: Workout) => {
     await workoutStore.startWorkout(newWorkout.id)
     navigateTo(`/workouts/${newWorkout.id}/live`)
   } catch (error) {
-    console.error('Failed to create workout from history:', error)
+    logger.error('Failed to create workout from history:', error)
   }
 }
 
@@ -315,31 +341,43 @@ const editWorkout = (id: number) => {
   navigateTo(`/workouts/${id}/edit`)
 }
 
-const deleteTemplate = async (id: number) => {
-  if (!confirm('Êtes-vous sûr de vouloir supprimer ce template ?')) return
-  deletingId.value = id
-  try {
-    await workoutStore.deleteWorkout(id)
-    toast.success('Supprimé', 'Template supprimé avec succès')
-  } catch (error) {
-    console.error('Failed to delete template:', error)
-    toast.error('Erreur', 'Impossible de supprimer le template')
-  } finally {
-    deletingId.value = null
-  }
+const showDeleteModal = ref(false)
+const pendingDeleteId = ref<number | null>(null)
+const pendingDeleteType = ref<'template' | 'history'>('template')
+
+const deleteModalTitle = computed(() =>
+  pendingDeleteType.value === 'template'
+    ? 'Supprimer ce template ?'
+    : 'Supprimer cet entraînement ?'
+)
+
+const deleteTemplate = (id: number) => {
+  pendingDeleteId.value = id
+  pendingDeleteType.value = 'template'
+  showDeleteModal.value = true
 }
 
-const deleteFromHistory = async (id: number) => {
-  if (!confirm('Supprimer cet entraînement de l\'historique ?')) return
-  deletingId.value = id
+const deleteFromHistory = (id: number) => {
+  pendingDeleteId.value = id
+  pendingDeleteType.value = 'history'
+  showDeleteModal.value = true
+}
+
+const executeDelete = async () => {
+  if (!pendingDeleteId.value) return
+  deletingId.value = pendingDeleteId.value
   try {
-    await workoutStore.deleteWorkout(id)
-    toast.success('Supprimé', 'Entraînement supprimé de l\'historique')
+    await workoutStore.deleteWorkout(pendingDeleteId.value)
+    const msg = pendingDeleteType.value === 'template' ? 'Template supprimé avec succès' : 'Entraînement supprimé de l\'historique'
+    toast.success('Supprimé', msg)
   } catch (error) {
-    console.error('Failed to delete workout from history:', error)
-    toast.error('Erreur', 'Impossible de supprimer l\'entraînement')
+    logger.error('Failed to delete:', error)
+    const errMsg = pendingDeleteType.value === 'template' ? 'Impossible de supprimer le template' : 'Impossible de supprimer l\'entraînement'
+    toast.error('Erreur', errMsg)
   } finally {
     deletingId.value = null
+    pendingDeleteId.value = null
+    showDeleteModal.value = false
   }
 }
 

@@ -231,6 +231,18 @@ const handleAvatarSelect = (event: Event) => {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
   if (!file) return
+
+  if (!file.type.startsWith('image/')) {
+    error.value = 'Le fichier doit être une image'
+    input.value = ''
+    return
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    error.value = 'La photo ne doit pas dépasser 5 Mo'
+    input.value = ''
+    return
+  }
+
   avatarFile.value = file
   avatarPreview.value = URL.createObjectURL(file)
 }

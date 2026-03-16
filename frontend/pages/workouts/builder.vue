@@ -35,6 +35,7 @@
               type="text"
               placeholder="Ex: Push Day, Full Body, etc."
               class="input-primary w-full"
+              maxlength="200"
               required
             />
           </div>
@@ -48,6 +49,7 @@
               placeholder="Décrivez votre entraînement..."
               rows="3"
               class="input-primary w-full"
+              maxlength="2000"
             ></textarea>
           </div>
         </div>
@@ -409,7 +411,9 @@ onMounted(() => {
 })
 
 const createWorkout = async () => {
-  if (!workoutForm.value.name) return
+  if (!workoutForm.value.name?.trim()) return
+  workoutForm.value.name = workoutForm.value.name.trim().slice(0, 200)
+  workoutForm.value.description = workoutForm.value.description?.trim().slice(0, 2000) || ''
 
   isCreating.value = true
   try {
@@ -420,7 +424,7 @@ const createWorkout = async () => {
     })
     workoutId.value = workout.id
   } catch (error) {
-    console.error('Failed to create workout:', error)
+    logger.error('Failed to create workout:', error)
     toast.error('Erreur', 'Impossible de créer le workout')
   } finally {
     isCreating.value = false
@@ -439,7 +443,7 @@ const searchExercises = async () => {
     })
     exerciseLibrary.value = exercises
   } catch (error) {
-    console.error('Failed to load exercises:', error)
+    logger.error('Failed to load exercises:', error)
   } finally {
     isLoadingExercises.value = false
   }
@@ -466,7 +470,7 @@ const addExercise = async (exercise: ExerciseLibrary) => {
     selectedExercises.value.push(addedExercise)
     showExerciseLibrary.value = false
   } catch (error) {
-    console.error('Failed to add exercise:', error)
+    logger.error('Failed to add exercise:', error)
     toast.error('Erreur', 'Impossible d\'ajouter l\'exercice')
   }
 }
@@ -521,16 +525,17 @@ const saveWorkout = async () => {
   try {
     for (const exercise of selectedExercises.value) {
       const sets = getExerciseSets(exercise)
+      const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val))
       const updateData: any = {
-        restTime: exercise.restTime || 60,
-        targetSets: sets.length,
-        targetReps: sets[0]?.targetReps || 10,
-        targetWeight: sets[0]?.targetWeight || 0,
-        plannedSets: sets.map((s: any, i: number) => ({
+        restTime: clamp(exercise.restTime || 60, 0, 600),
+        targetSets: clamp(sets.length, 1, 20),
+        targetReps: clamp(sets[0]?.targetReps || 10, 1, 999),
+        targetWeight: clamp(sets[0]?.targetWeight || 0, 0, 2000),
+        plannedSets: sets.slice(0, 20).map((s: any, i: number) => ({
           setNumber: i + 1,
-          targetReps: Number(s.targetReps) || 10,
-          targetWeight: Number(s.targetWeight) || 0,
-          restTime: Number(s.restTime) || 60
+          targetReps: clamp(Number(s.targetReps) || 10, 1, 999),
+          targetWeight: clamp(Number(s.targetWeight) || 0, 0, 2000),
+          restTime: clamp(Number(s.restTime) || 60, 0, 600)
         }))
       }
 
@@ -541,7 +546,7 @@ const saveWorkout = async () => {
 
     showSavedModal.value = true
   } catch (error) {
-    console.error('Failed to save workout:', error)
+    logger.error('Failed to save workout:', error)
     toast.error('Erreur', 'Impossible de sauvegarder le workout')
   } finally {
     isSaving.value = false

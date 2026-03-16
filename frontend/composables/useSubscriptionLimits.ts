@@ -58,15 +58,13 @@ export function useSubscriptionLimits() {
     isLoading.value = true
     try {
       const config = useRuntimeConfig()
-      const response = await fetch(`${config.public.apiUrl}/subscription/usage`, {
+      const data = await $fetch<{ usage: Usage }>(`${config.public.apiUrl}/subscription/usage`, {
+        timeout: 30000,
         headers: { Authorization: `Bearer ${authStore.token}` }
       })
-      if (response.ok) {
-        const data = await response.json()
-        usage.value = data.usage
-      }
+      usage.value = data.usage
     } catch (error) {
-      console.error('Error fetching usage:', error)
+      logger.error('Error fetching usage:', error)
     } finally {
       isLoading.value = false
     }

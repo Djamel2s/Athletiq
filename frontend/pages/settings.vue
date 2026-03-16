@@ -314,6 +314,27 @@ const setTheme = (theme: string) => {
   colorMode.preference = theme
 }
 
+let settingsTimeout: ReturnType<typeof setTimeout> | null = null
+const debouncedSave = (key: string, value: string) => {
+  if (settingsTimeout) clearTimeout(settingsTimeout)
+  settingsTimeout = setTimeout(() => {
+    try { localStorage.setItem(key, value) } catch {}
+  }, 500)
+}
+
+let syncTimeout: ReturnType<typeof setTimeout> | null = null
+const debouncedSyncReminder = () => {
+  if (syncTimeout) clearTimeout(syncTimeout)
+  syncTimeout = setTimeout(() => {
+    syncReminderSettings()
+  }, 500)
+}
+
+onBeforeUnmount(() => {
+  if (settingsTimeout) clearTimeout(settingsTimeout)
+  if (syncTimeout) clearTimeout(syncTimeout)
+})
+
 const handleLogout = () => {
   authStore.logout()
   navigateTo('/login')
@@ -325,12 +346,13 @@ const handleDeleteAccount = async () => {
     const config = useRuntimeConfig()
     await $fetch(`${config.public.apiUrl}/users/me`, {
       method: 'DELETE',
-      headers: { Authorization: `Bearer ${authStore.token}` }
+      headers: { Authorization: `Bearer ${authStore.token}` },
+      timeout: 30000
     })
     authStore.logout()
     navigateTo('/')
   } catch (error) {
-    console.error('Delete account error:', error)
+    logger.error('Delete account error:', error)
     deleting.value = false
   }
 }
@@ -343,54 +365,57 @@ onMounted(async () => {
   }
 
   if (process.client) {
-    weightUnit.value = localStorage.getItem('pref_weight_unit') || 'kg'
-    restTimer.value = parseInt(localStorage.getItem('pref_rest_timer') || '90')
-    notifPR.value = localStorage.getItem('pref_notif_pr') !== 'false'
-    notifStreak.value = localStorage.getItem('pref_notif_streak') !== 'false'
-    notifGoals.value = localStorage.getItem('pref_notif_goals') !== 'false'
-    reminderEnabled.value = localStorage.getItem('pref_reminder_enabled') !== 'false'
-    inactivityDays.value = parseInt(localStorage.getItem('pref_inactivity_days') || '3')
+    try {
+      weightUnit.value = localStorage.getItem('pref_weight_unit') || 'kg'
+      restTimer.value = parseInt(localStorage.getItem('pref_rest_timer') || '90')
+      notifPR.value = localStorage.getItem('pref_notif_pr') !== 'false'
+      notifStreak.value = localStorage.getItem('pref_notif_streak') !== 'false'
+      notifGoals.value = localStorage.getItem('pref_notif_goals') !== 'false'
+      reminderEnabled.value = localStorage.getItem('pref_reminder_enabled') !== 'false'
+      inactivityDays.value = parseInt(localStorage.getItem('pref_inactivity_days') || '3')
+    } catch {}
   }
 
   // Also sync with backend
   try {
     const config = useRuntimeConfig()
     const user = await $fetch<any>(`${config.public.apiUrl}/users/me`, {
-      headers: { Authorization: `Bearer ${authStore.token}` }
+      headers: { Authorization: `Bearer ${authStore.token}` },
+      timeout: 30000
     })
     if (user.reminderEnabled !== undefined) reminderEnabled.value = user.reminderEnabled
     if (user.inactivityThresholdDays) inactivityDays.value = user.inactivityThresholdDays
-  } catch { /* ignore */ }
+  } catch (err) { logger.error('Settings sync failed:', err) }
 })
 
 watch(weightUnit, (val) => {
-  if (process.client) localStorage.setItem('pref_weight_unit', val)
+  if (process.client) debouncedSave('pref_weight_unit', val)
 })
 
 watch(restTimer, (val) => {
-  if (process.client) localStorage.setItem('pref_rest_timer', String(val))
+  if (process.client) debouncedSave('pref_rest_timer', String(val))
 })
 
 watch(notifPR, (val) => {
-  if (process.client) localStorage.setItem('pref_notif_pr', String(val))
+  if (process.client) debouncedSave('pref_notif_pr', String(val))
 })
 
 watch(notifStreak, (val) => {
-  if (process.client) localStorage.setItem('pref_notif_streak', String(val))
+  if (process.client) debouncedSave('pref_notif_streak', String(val))
 })
 
 watch(notifGoals, (val) => {
-  if (process.client) localStorage.setItem('pref_notif_goals', String(val))
+  if (process.client) debouncedSave('pref_notif_goals', String(val))
 })
 
 watch(reminderEnabled, (val) => {
-  if (process.client) localStorage.setItem('pref_reminder_enabled', String(val))
-  syncReminderSettings()
+  if (process.client) debouncedSave('pref_reminder_enabled', String(val))
+  debouncedSyncReminder()
 })
 
 watch(inactivityDays, (val) => {
-  if (process.client) localStorage.setItem('pref_inactivity_days', String(val))
-  syncReminderSettings()
+  if (process.client) debouncedSave('pref_inactivity_days', String(val))
+  debouncedSyncReminder()
 })
 
 const syncReminderSettings = async () => {
@@ -399,11 +424,12 @@ const syncReminderSettings = async () => {
     await $fetch(`${config.public.apiUrl}/users/me`, {
       method: 'PUT',
       headers: { Authorization: `Bearer ${authStore.token}` },
+      timeout: 30000,
       body: {
         reminderEnabled: reminderEnabled.value,
         inactivityThresholdDays: inactivityDays.value
       }
     })
-  } catch { /* ignore */ }
+  } catch (err) { logger.error('Settings sync failed:', err) }
 }
 </script>

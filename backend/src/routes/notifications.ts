@@ -2,6 +2,7 @@ import express from 'express'
 import { AppDataSource } from '../config/database.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { Notification } from '../entities/Notification.js'
+import { parseId } from '../utils/validation.js'
 
 const router = express.Router()
 
@@ -16,7 +17,7 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
     res.json(notifications)
   } catch (error) {
     console.error('Notifications fetch error:', error)
-    res.status(500).json({ error: 'Failed to fetch notifications' })
+    res.status(500).json({ error: 'Erreur lors de la récupération des notifications' })
   }
 })
 
@@ -29,7 +30,7 @@ router.get('/unread-count', authenticate, async (req: AuthRequest, res) => {
     res.json({ count })
   } catch (error) {
     console.error('Unread count error:', error)
-    res.status(500).json({ error: 'Failed to fetch unread count' })
+    res.status(500).json({ error: 'Erreur lors de la récupération du nombre de non lus' })
   }
 })
 
@@ -38,17 +39,17 @@ router.put('/:id/read', authenticate, async (req: AuthRequest, res) => {
   try {
     const repo = AppDataSource.getRepository(Notification)
     const notification = await repo.findOne({
-      where: { id: parseInt(req.params.id), userId: req.user!.id }
+      where: { id: parseId(req.params.id), userId: req.user!.id }
     })
 
-    if (!notification) return res.status(404).json({ error: 'Notification not found' })
+    if (!notification) return res.status(404).json({ error: 'Notification non trouvée' })
 
     notification.read = true
     await repo.save(notification)
     res.json(notification)
   } catch (error) {
     console.error('Mark read error:', error)
-    res.status(500).json({ error: 'Failed to mark notification as read' })
+    res.status(500).json({ error: 'Erreur lors du marquage de la notification' })
   }
 })
 
@@ -62,10 +63,10 @@ router.put('/read-all', authenticate, async (req: AuthRequest, res) => {
       .where('userId = :userId AND read = false', { userId: req.user!.id })
       .execute()
 
-    res.json({ message: 'All notifications marked as read' })
+    res.json({ message: 'Toutes les notifications marquées comme lues' })
   } catch (error) {
     console.error('Mark all read error:', error)
-    res.status(500).json({ error: 'Failed to mark all as read' })
+    res.status(500).json({ error: 'Erreur lors du marquage des notifications' })
   }
 })
 
@@ -74,16 +75,16 @@ router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
   try {
     const repo = AppDataSource.getRepository(Notification)
     const notification = await repo.findOne({
-      where: { id: parseInt(req.params.id), userId: req.user!.id }
+      where: { id: parseId(req.params.id), userId: req.user!.id }
     })
 
-    if (!notification) return res.status(404).json({ error: 'Notification not found' })
+    if (!notification) return res.status(404).json({ error: 'Notification non trouvée' })
 
     await repo.remove(notification)
-    res.json({ message: 'Notification deleted' })
+    res.json({ message: 'Notification supprimée' })
   } catch (error) {
     console.error('Delete notification error:', error)
-    res.status(500).json({ error: 'Failed to delete notification' })
+    res.status(500).json({ error: 'Erreur lors de la suppression de la notification' })
   }
 })
 

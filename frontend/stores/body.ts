@@ -57,7 +57,7 @@ export const useBodyStore = defineStore('body', {
         this.bodyStats = data
       } catch (error: any) {
         this.error = error.message || 'Erreur lors du chargement des stats corporelles'
-        console.error('Fetch body stats error:', error)
+        logger.error('Fetch body stats error:', error)
       } finally {
         this.isLoading = false
       }
@@ -109,7 +109,7 @@ export const useBodyStore = defineStore('body', {
         this.measurements = data
       } catch (error: any) {
         this.error = error.message || 'Erreur lors du chargement des mensurations'
-        console.error('Fetch measurements error:', error)
+        logger.error('Fetch measurements error:', error)
       } finally {
         this.isLoading = false
       }
@@ -160,7 +160,7 @@ export const useBodyStore = defineStore('body', {
         this.photos = await api.getRecentPhotos(50)
       } catch (error: any) {
         this.error = error.message || 'Erreur lors du chargement des photos'
-        console.error('Fetch photos error:', error)
+        logger.error('Fetch photos error:', error)
       } finally {
         this.isLoading = false
       }
@@ -208,7 +208,7 @@ export const useBodyStore = defineStore('body', {
         this.records = await api.getPersonalRecords()
       } catch (error: any) {
         this.error = error.message || 'Erreur lors du chargement des records'
-        console.error('Fetch records error:', error)
+        logger.error('Fetch records error:', error)
       } finally {
         this.isLoading = false
       }

@@ -875,9 +875,17 @@ onMounted(() => {
   nextTick(() => generate())
 })
 
+let generateTimeout: ReturnType<typeof setTimeout> | null = null
 watch(() => props.data, () => {
-  nextTick(() => generate())
+  if (generateTimeout) clearTimeout(generateTimeout)
+  generateTimeout = setTimeout(() => {
+    nextTick(() => generate())
+  }, 300)
 }, { deep: true })
+
+onBeforeUnmount(() => {
+  if (generateTimeout) clearTimeout(generateTimeout)
+})
 
 defineExpose({ generate, share, download })
 </script>

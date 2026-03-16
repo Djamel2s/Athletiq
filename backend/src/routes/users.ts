@@ -8,9 +8,19 @@ import { authenticate, AuthRequest } from '../middlewares/auth.js'
 
 const router = express.Router()
 const userRepository = AppDataSource.getRepository(User)
+
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024 } // 5 MB max
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB max
+  fileFilter: (req, file, cb) => {
+    if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
+      cb(null, true)
+    } else {
+      cb(new Error('Type de fichier non autorisé. Utilisez JPG, PNG, WebP ou GIF.'))
+    }
+  }
 })
 
 // Get current user profile
@@ -22,12 +32,12 @@ router.get('/me', authenticate, async (req: AuthRequest, res) => {
     })
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' })
+      return res.status(404).json({ error: 'Utilisateur non trouvé' })
     }
 
     res.json(user)
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch user profile' })
+    res.status(500).json({ error: 'Erreur lors de la récupération du profil' })
   }
 })
 
@@ -35,8 +45,8 @@ router.get('/me', authenticate, async (req: AuthRequest, res) => {
 router.put('/me', authenticate, async (req: AuthRequest, res) => {
   try {
     const updateSchema = z.object({
-      firstName: z.string().nullish(),
-      lastName: z.string().nullish(),
+      firstName: z.string().max(100).nullish(),
+      lastName: z.string().max(100).nullish(),
       avatarUrl: z.string().url().nullish(),
       goal: z.enum(['BULK', 'STRENGTH', 'RECOMP', 'CUT']).nullish(),
       gender: z.enum(['male', 'female']).nullish(),
@@ -48,7 +58,15 @@ router.put('/me', authenticate, async (req: AuthRequest, res) => {
 
     const data = updateSchema.parse(req.body)
 
-    await userRepository.update(req.user!.id, data as any)
+    // Build update object with only defined values
+    const updateData: Record<string, unknown> = {}
+    for (const [key, value] of Object.entries(data)) {
+      if (value !== undefined) {
+        updateData[key] = value === null ? undefined : value
+      }
+    }
+
+    await userRepository.update(req.user!.id, updateData)
 
     const user = await userRepository.findOne({
       where: { id: req.user!.id },
@@ -58,9 +76,9 @@ router.put('/me', authenticate, async (req: AuthRequest, res) => {
     res.json(user)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation error', details: error.errors })
+      return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
-    res.status(500).json({ error: 'Failed to update profile' })
+    res.status(500).json({ error: 'Erreur lors de la mise à jour du profil' })
   }
 })
 
@@ -68,16 +86,18 @@ router.put('/me', authenticate, async (req: AuthRequest, res) => {
 router.post('/me/avatar', authenticate, upload.single('avatar'), async (req: AuthRequest, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ error: 'No image provided' })
+      return res.status(400).json({ error: 'Aucune image fournie' })
     }
 
     // Delete old avatar from Cloudinary if exists
     const currentUser = await userRepository.findOne({ where: { id: req.user!.id }, select: ['avatarUrl'] })
     if (currentUser?.avatarUrl) {
       const parts = currentUser.avatarUrl.split('/')
-      const folderAndFile = parts.slice(parts.indexOf('athletiq')).join('/')
-      const publicId = folderAndFile.replace(/\.[^.]+$/, '')
-      await cloudinary.uploader.destroy(publicId).catch(() => {})
+      const athletiqIndex = parts.indexOf('athletiq')
+      if (athletiqIndex !== -1) {
+        const publicId = parts.slice(athletiqIndex).join('/').replace(/\.[^.]+$/, '')
+        await cloudinary.uploader.destroy(publicId).catch(() => {})
+      }
     }
 
     const result = await new Promise<any>((resolve, reject) => {
@@ -97,6 +117,10 @@ router.post('/me/avatar', authenticate, upload.single('avatar'), async (req: Aut
       uploadStream.end(req.file!.buffer)
     })
 
+    if (!result?.secure_url) {
+      return res.status(500).json({ error: 'Erreur Cloudinary : réponse invalide' })
+    }
+
     await userRepository.update(req.user!.id, { avatarUrl: result.secure_url })
 
     const user = await userRepository.findOne({
@@ -107,7 +131,7 @@ router.post('/me/avatar', authenticate, upload.single('avatar'), async (req: Aut
     res.json(user)
   } catch (error) {
     console.error('Avatar upload error:', error)
-    res.status(500).json({ error: 'Failed to upload avatar' })
+    res.status(500).json({ error: 'Erreur lors du téléchargement de l\'avatar' })
   }
 })
 
@@ -116,22 +140,26 @@ router.delete('/me/avatar', authenticate, async (req: AuthRequest, res) => {
   try {
     const user = await userRepository.findOne({ where: { id: req.user!.id }, select: ['id', 'avatarUrl'] })
     if (!user?.avatarUrl) {
-      return res.status(400).json({ error: 'No avatar to delete' })
+      return res.status(400).json({ error: 'Aucun avatar à supprimer' })
     }
 
     // Delete from Cloudinary
     const parts = user.avatarUrl.split('/')
-    const folderAndFile = parts.slice(parts.indexOf('athletiq')).join('/')
-    const publicId = folderAndFile.replace(/\.[^.]+$/, '')
-    await cloudinary.uploader.destroy(publicId).catch(() => {})
+    const athletiqIndex = parts.indexOf('athletiq')
+    if (athletiqIndex === -1) {
+      console.error('Could not extract Cloudinary publicId from URL:', user.avatarUrl)
+    } else {
+      const publicId = parts.slice(athletiqIndex).join('/').replace(/\.[^.]+$/, '')
+      await cloudinary.uploader.destroy(publicId).catch(() => {})
+    }
 
     // Remove from DB
-    await userRepository.update(req.user!.id, { avatarUrl: null as any })
+    await userRepository.update(req.user!.id, { avatarUrl: undefined })
 
-    res.json({ message: 'Avatar deleted' })
+    res.json({ message: 'Avatar supprimé' })
   } catch (error) {
     console.error('Avatar delete error:', error)
-    res.status(500).json({ error: 'Failed to delete avatar' })
+    res.status(500).json({ error: 'Erreur lors de la suppression de l\'avatar' })
   }
 })
 
@@ -139,9 +167,9 @@ router.delete('/me/avatar', authenticate, async (req: AuthRequest, res) => {
 router.delete('/me', authenticate, async (req: AuthRequest, res) => {
   try {
     await userRepository.delete(req.user!.id)
-    res.json({ message: 'Account deleted successfully' })
+    res.json({ message: 'Compte supprimé' })
   } catch (error) {
-    res.status(500).json({ error: 'Failed to delete account' })
+    res.status(500).json({ error: 'Erreur lors de la suppression du compte' })
   }
 })
 

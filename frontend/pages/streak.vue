@@ -345,7 +345,7 @@ onMounted(async () => {
       setTimeout(() => showCelebration.value = false, 3000)
     }
   } catch (e) {
-    console.error('Failed to load streak data:', e)
+    logger.error('Failed to load streak data:', e)
   } finally {
     loading.value = false
   }

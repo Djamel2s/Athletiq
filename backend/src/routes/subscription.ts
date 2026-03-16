@@ -1,4 +1,5 @@
 import express from 'express'
+import { z } from 'zod'
 import Stripe from 'stripe'
 import { AppDataSource } from '../config/database.js'
 import { Subscription, SubscriptionStatus, SubscriptionPlan } from '../entities/Subscription.js'
@@ -158,7 +159,10 @@ router.post('/checkout', authenticate, async (req: AuthRequest, res) => {
       return res.status(503).json({ error: 'Système de paiement non configuré' })
     }
 
-    const { plan } = req.body // 'monthly' ou 'yearly'
+    const checkoutSchema = z.object({
+      plan: z.enum(['monthly', 'yearly'])
+    })
+    const { plan } = checkoutSchema.parse(req.body)
     const priceId = plan === 'yearly' ? PRICES.yearly : PRICES.monthly
 
     if (!priceId) {
@@ -201,6 +205,9 @@ router.post('/checkout', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ url: session.url })
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: 'Plan invalide. Choisissez monthly ou yearly.' })
+    }
     console.error('Error creating checkout session:', error)
     res.status(500).json({ error: 'Erreur lors de la création de la session de paiement' })
   }

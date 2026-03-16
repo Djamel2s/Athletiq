@@ -6,6 +6,27 @@ import { UserGoal } from '../entities/UserGoal.js'
 import { PLAN_LIMITS, PlanType } from '../config/planLimits.js'
 import { MoreThanOrEqual } from 'typeorm'
 
+// Verrou par utilisateur pour éviter les race conditions (TOCTOU)
+const userLocks = new Map<string, Promise<void>>()
+
+export async function withUserLock<T>(userId: number, action: string, fn: () => Promise<T>): Promise<T> {
+  const key = `${userId}:${action}`
+  // Attendre le verrou précédent s'il existe
+  const previous = userLocks.get(key) || Promise.resolve()
+  let resolve: () => void
+  const current = new Promise<void>(r => { resolve = r })
+  userLocks.set(key, current)
+  try {
+    await previous
+    return await fn()
+  } finally {
+    resolve!()
+    if (userLocks.get(key) === current) {
+      userLocks.delete(key)
+    }
+  }
+}
+
 // Détermine si l'utilisateur est premium
 export async function getUserPlanType(userId: number): Promise<PlanType> {
   const subscription = await AppDataSource.getRepository(Subscription).findOne({

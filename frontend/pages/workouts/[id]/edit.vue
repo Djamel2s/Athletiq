@@ -369,7 +369,7 @@ onMounted(async () => {
         selectedExercises.value = workout.exercises || []
       }
     } catch (error) {
-      console.error('Failed to load workout:', error)
+      logger.error('Failed to load workout:', error)
       toast.error('Erreur', 'Impossible de charger le workout')
       navigateTo('/workouts')
     }
@@ -388,7 +388,7 @@ const searchExercises = async () => {
     })
     exerciseLibrary.value = exercises
   } catch (error) {
-    console.error('Failed to load exercises:', error)
+    logger.error('Failed to load exercises:', error)
   } finally {
     isLoadingExercises.value = false
   }
@@ -415,7 +415,7 @@ const addExercise = async (exercise: ExerciseLibrary) => {
     selectedExercises.value.push(addedExercise)
     showExerciseLibrary.value = false
   } catch (error) {
-    console.error('Failed to add exercise:', error)
+    logger.error('Failed to add exercise:', error)
     toast.error('Erreur', 'Impossible d\'ajouter l\'exercice')
   }
 }
@@ -496,7 +496,7 @@ const saveWorkout = async () => {
     toast.success('Sauvegardé', 'Workout modifié avec succès')
     navigateTo('/workouts')
   } catch (error) {
-    console.error('Failed to save workout:', error)
+    logger.error('Failed to save workout:', error)
     toast.error('Erreur', 'Impossible de sauvegarder')
   } finally {
     isSaving.value = false

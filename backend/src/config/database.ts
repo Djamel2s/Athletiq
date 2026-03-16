@@ -40,6 +40,12 @@ export const AppDataSource = new DataSource({
   synchronize: !isProduction || process.env.SYNC_DATABASE === 'true',
   logging: !isProduction,
   entities: [User, Workout, Exercise, Set, WorkoutPhoto, BodyStat, Measurement, ExerciseLibrary, UserGoal, Notification, Subscription],
+  extra: {
+    max: 20,
+    min: 2,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 5000
+  }
 })
 
 // Initialiser la connexion

@@ -500,14 +500,23 @@ const submitWeight = async () => {
     toast.success('Poids enregistré')
   } catch (e) {
     toast.error('Erreur lors de l\'enregistrement')
-    console.error(e)
+    logger.error(e)
   } finally {
     weightSaving.value = false
   }
 }
 
+const deletingIds = ref(new Set<string>())
+
 const deleteWeight = async (id: number) => {
-  await bodyStore.deleteBodyStat(id)
+  const key = `weight-${id}`
+  if (deletingIds.value.has(key)) return
+  deletingIds.value.add(key)
+  try {
+    await bodyStore.deleteBodyStat(id)
+  } finally {
+    deletingIds.value.delete(key)
+  }
 }
 
 const minWeight = computed(() => {
@@ -590,14 +599,21 @@ const submitMeasurement = async () => {
     toast.success('Mensurations enregistrées')
   } catch (e) {
     toast.error('Erreur lors de l\'enregistrement')
-    console.error(e)
+    logger.error(e)
   } finally {
     measurementSaving.value = false
   }
 }
 
 const deleteMeasurement = async (id: number) => {
-  await bodyStore.deleteMeasurement(id)
+  const key = `measurement-${id}`
+  if (deletingIds.value.has(key)) return
+  deletingIds.value.add(key)
+  try {
+    await bodyStore.deleteMeasurement(id)
+  } finally {
+    deletingIds.value.delete(key)
+  }
 }
 
 const getMeasurementVariation = (key: string) => {
@@ -624,6 +640,17 @@ const handlePhotoUpload = async (event: Event) => {
   const file = input.files?.[0]
   if (!file || !photoForm.workoutId) return
 
+  if (!file.type.startsWith('image/')) {
+    toast.error('Erreur', 'Le fichier doit être une image')
+    input.value = ''
+    return
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    toast.error('Erreur', 'La photo ne doit pas dépasser 5 Mo')
+    input.value = ''
+    return
+  }
+
   if (!canUploadPhoto.value) {
     toast.error('Limite atteinte', 'Passez Pro pour uploader plus de photos')
     input.value = ''
@@ -639,7 +666,7 @@ const handlePhotoUpload = async (event: Event) => {
     toast.success('Photo uploadée')
   } catch (e) {
     toast.error('Erreur lors de l\'upload')
-    console.error(e)
+    logger.error(e)
   } finally {
     photoUploading.value = false
   }
@@ -650,8 +677,15 @@ const openPhoto = (photo: ProgressPhoto) => {
 }
 
 const deletePhoto = async (id: number) => {
-  await bodyStore.deletePhoto(id)
-  timelapsePhotos.value = await bodyStore.fetchTimelapse()
+  const key = `photo-${id}`
+  if (deletingIds.value.has(key)) return
+  deletingIds.value.add(key)
+  try {
+    await bodyStore.deletePhoto(id)
+    timelapsePhotos.value = await bodyStore.fetchTimelapse()
+  } finally {
+    deletingIds.value.delete(key)
+  }
 }
 
 // ========== INIT ==========

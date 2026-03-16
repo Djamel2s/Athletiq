@@ -244,7 +244,7 @@ const launchWorkout = async (workout: Workout) => {
     await workoutStore.startWorkout(workoutToStart.id)
     navigateTo(`/workouts/${workoutToStart.id}/live`)
   } catch (error) {
-    console.error('Failed to launch workout:', error)
+    logger.error('Failed to launch workout:', error)
     toast.error('Erreur', 'Impossible de lancer le workout')
   } finally {
     isLaunching.value = null

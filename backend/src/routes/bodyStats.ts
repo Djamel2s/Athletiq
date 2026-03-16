@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { AppDataSource } from '../config/database.js'
 import { BodyStat } from '../entities/BodyStat.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
+import { parseId } from '../utils/validation.js'
 
 const router = express.Router()
 const bodyStatRepository = AppDataSource.getRepository(BodyStat)
@@ -10,8 +11,8 @@ const bodyStatRepository = AppDataSource.getRepository(BodyStat)
 // Get all body stats for current user
 router.get('/', authenticate, async (req: AuthRequest, res) => {
   try {
-    const limit = parseInt(req.query.limit as string) || 50
-    const offset = parseInt(req.query.offset as string) || 0
+    const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 50, 1), 100)
+    const offset = Math.max(parseInt(req.query.offset as string) || 0, 0)
 
     const [stats, total] = await bodyStatRepository.findAndCount({
       where: { userId: req.user!.id },
@@ -22,7 +23,7 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ data: stats, total })
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch body stats' })
+    res.status(500).json({ error: 'Erreur lors de la récupération des stats corporelles' })
   }
 })
 
@@ -30,10 +31,13 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
 router.post('/', authenticate, async (req: AuthRequest, res) => {
   try {
     const schema = z.object({
-      weight: z.number().positive(),
+      weight: z.number().positive().max(1000),
       bodyFat: z.number().min(0).max(100).nullish(),
-      notes: z.string().nullish(),
-      date: z.string().datetime().nullish()
+      notes: z.string().max(2000).nullish(),
+      date: z.string().datetime().nullish().refine(
+        val => !val || (new Date(val).getFullYear() >= 2000 && new Date(val) <= new Date(Date.now() + 86400000)),
+        { message: 'Date invalide' }
+      )
     })
 
     const data = schema.parse(req.body)
@@ -50,9 +54,9 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
     res.status(201).json(saved)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation error', details: error.errors })
+      return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
-    res.status(500).json({ error: 'Failed to create body stat' })
+    res.status(500).json({ error: 'Erreur lors de la création de la stat corporelle' })
   }
 })
 
@@ -62,18 +66,18 @@ router.put('/:id', authenticate, async (req: AuthRequest, res) => {
     const schema = z.object({
       weight: z.number().positive().nullish(),
       bodyFat: z.number().min(0).max(100).nullish(),
-      notes: z.string().nullish(),
+      notes: z.string().max(2000).nullish(),
       date: z.string().datetime().nullish()
     })
 
     const data = schema.parse(req.body)
 
     const stat = await bodyStatRepository.findOne({
-      where: { id: parseInt(req.params.id), userId: req.user!.id }
+      where: { id: parseId(req.params.id), userId: req.user!.id }
     })
 
     if (!stat) {
-      return res.status(404).json({ error: 'Body stat not found' })
+      return res.status(404).json({ error: 'Stat corporelle non trouvée' })
     }
 
     if (data.weight != null) stat.weight = data.weight
@@ -85,9 +89,9 @@ router.put('/:id', authenticate, async (req: AuthRequest, res) => {
     res.json(updated)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation error', details: error.errors })
+      return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
-    res.status(500).json({ error: 'Failed to update body stat' })
+    res.status(500).json({ error: 'Erreur lors de la mise à jour de la stat corporelle' })
   }
 })
 
@@ -95,17 +99,17 @@ router.put('/:id', authenticate, async (req: AuthRequest, res) => {
 router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
   try {
     const stat = await bodyStatRepository.findOne({
-      where: { id: parseInt(req.params.id), userId: req.user!.id }
+      where: { id: parseId(req.params.id), userId: req.user!.id }
     })
 
     if (!stat) {
-      return res.status(404).json({ error: 'Body stat not found' })
+      return res.status(404).json({ error: 'Stat corporelle non trouvée' })
     }
 
     await bodyStatRepository.remove(stat)
-    res.json({ message: 'Body stat deleted successfully' })
+    res.json({ message: 'Stat corporelle supprimée' })
   } catch (error) {
-    res.status(500).json({ error: 'Failed to delete body stat' })
+    res.status(500).json({ error: 'Erreur lors de la suppression de la stat corporelle' })
   }
 })
 

@@ -378,6 +378,58 @@
         </div>
       </div>
     </Teleport>
+
+    <!-- Modal confirmer fin d'entraînement -->
+    <Teleport to="body">
+      <div v-if="showCompleteModal" class="fixed inset-0 z-50 flex items-center justify-center px-6" @click.self="showCompleteModal = false">
+        <div class="fixed inset-0 bg-black/40 backdrop-blur-sm"></div>
+        <div class="relative bg-white dark:bg-primary-900 rounded-3xl p-8 max-w-sm w-full shadow-2xl">
+          <div class="text-center">
+            <div class="w-14 h-14 bg-green-100 dark:bg-green-900/40 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-7 h-7 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-2">Terminer l'entraînement ?</h3>
+            <p class="text-primary-600 dark:text-primary-400 text-sm mb-6">Ta séance sera enregistrée avec toutes les séries validées.</p>
+            <div class="space-y-3">
+              <button @click="showCompleteModal = false; completeWorkout()" class="w-full py-3 rounded-2xl bg-gradient-primary text-white font-medium transition-colors">
+                Terminer
+              </button>
+              <button @click="showCompleteModal = false" class="w-full py-3 rounded-2xl bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-200 font-medium hover:bg-primary-200 dark:hover:bg-primary-700 transition-colors">
+                Continuer
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- Modal confirmer sortie -->
+    <Teleport to="body">
+      <div v-if="showExitModal" class="fixed inset-0 z-50 flex items-center justify-center px-6" @click.self="showExitModal = false">
+        <div class="fixed inset-0 bg-black/40 backdrop-blur-sm"></div>
+        <div class="relative bg-white dark:bg-primary-900 rounded-3xl p-8 max-w-sm w-full shadow-2xl">
+          <div class="text-center">
+            <div class="w-14 h-14 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-7 h-7 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-2">Quitter sans terminer ?</h3>
+            <p class="text-primary-600 dark:text-primary-400 text-sm mb-6">Ta progression ne sera pas enregistrée.</p>
+            <div class="space-y-3">
+              <button @click="showExitModal = false; navigateTo('/workouts')" class="w-full py-3 rounded-2xl bg-red-500 text-white font-medium hover:bg-red-600 transition-colors">
+                Quitter
+              </button>
+              <button @click="showExitModal = false" class="w-full py-3 rounded-2xl bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-200 font-medium hover:bg-primary-200 dark:hover:bg-primary-700 transition-colors">
+                Rester
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -410,10 +462,11 @@ const currentSetData = ref({
 const showRestTimer = ref(false)
 const restTimeRemaining = ref(60)
 const restDuration = ref(60)
-let restInterval: NodeJS.Timeout | null = null
+const restInterval = ref<NodeJS.Timeout | null>(null)
 
 const elapsedTime = ref(0)
-let timerInterval: NodeJS.Timeout | null = null
+const timerInterval = ref<NodeJS.Timeout | null>(null)
+const countdownInterval = ref<NodeJS.Timeout | null>(null)
 
 const currentExercise = computed(() => {
   if (!workout.value?.exercises || workout.value.exercises.length === 0) return null
@@ -480,28 +533,30 @@ onMounted(async () => {
 
   await startCountdown()
 
-  timerInterval = setInterval(() => {
+  timerInterval.value = setInterval(() => {
     elapsedTime.value++
   }, 1000)
 })
 
-onUnmounted(() => {
-  if (timerInterval) clearInterval(timerInterval)
-  if (restInterval) clearInterval(restInterval)
+onBeforeUnmount(() => {
+  if (timerInterval.value) { clearInterval(timerInterval.value); timerInterval.value = null }
+  if (restInterval.value) { clearInterval(restInterval.value); restInterval.value = null }
+  if (countdownInterval.value) { clearInterval(countdownInterval.value); countdownInterval.value = null }
+  workoutStore.clearCurrentWorkout()
 })
 
 const startCountdown = () => {
   return new Promise<void>((resolve) => {
     countdownNumber.value = 3
 
-    const countdownInterval = setInterval(() => {
+    countdownInterval.value = setInterval(() => {
       countdownNumber.value = (countdownNumber.value as number) - 1
 
       if (countdownNumber.value === 0) {
         countdownNumber.value = 'GO'
         setTimeout(() => {
           showCountdown.value = false
-          clearInterval(countdownInterval)
+          if (countdownInterval.value) { clearInterval(countdownInterval.value); countdownInterval.value = null }
           resolve()
         }, 800)
       }
@@ -520,7 +575,7 @@ const loadWorkout = async (id: number) => {
       checkWeightProgression()
     }
   } catch (error) {
-    console.error('Failed to load workout:', error)
+    logger.error('Failed to load workout:', error)
   } finally {
     isLoading.value = false
   }
@@ -531,7 +586,7 @@ const loadExerciseHistory = async (exerciseLibraryId: number) => {
     const api = useWorkoutApi()
     exerciseHistory.value = await api.getExerciseHistory(exerciseLibraryId)
   } catch (error) {
-    console.error('Failed to load exercise history:', error)
+    logger.error('Failed to load exercise history:', error)
     exerciseHistory.value = null
   }
 }
@@ -580,9 +635,9 @@ const applyWeightSuggestion = () => {
 }
 
 const prefillCurrentSet = () => {
-  console.log('🔄 prefillCurrentSet - Série:', currentSetNumber.value)
-  console.log('📋 lastSets:', exerciseHistory.value?.lastSets)
-  console.log('🎯 plannedSets:', currentExercise.value?.plannedSets)
+  logger.log('🔄 prefillCurrentSet - Série:', currentSetNumber.value)
+  logger.log('📋 lastSets:', exerciseHistory.value?.lastSets)
+  logger.log('🎯 plannedSets:', currentExercise.value?.plannedSets)
 
   // 1. Priorité MAXIMALE: historique de l'exercice (ce que tu as fait la dernière fois)
   if (exerciseHistory.value?.lastSets && exerciseHistory.value.lastSets.length > 0) {
@@ -596,11 +651,11 @@ const prefillCurrentSet = () => {
       const setIndex = currentSetNumber.value - 1
       lastSet = exerciseHistory.value.lastSets[setIndex] ||
                 exerciseHistory.value.lastSets[exerciseHistory.value.lastSets.length - 1] // Sinon le dernier
-      console.log('🔍 Index', setIndex, '→', lastSet)
+      logger.log('🔍 Index', setIndex, '→', lastSet)
     }
 
     if (lastSet) {
-      console.log('✅ HISTORIQUE:', lastSet.reps, '×', lastSet.weight, 'kg')
+      logger.log('✅ HISTORIQUE:', lastSet.reps, '×', lastSet.weight, 'kg')
       currentSetData.value.reps = lastSet.reps || 10
       currentSetData.value.weight = lastSet.weight || 20
       return
@@ -613,7 +668,7 @@ const prefillCurrentSet = () => {
       (s) => s.setNumber === currentSetNumber.value
     )
     if (plannedSet) {
-      console.log('✅ PLANNED:', plannedSet.targetReps, '×', plannedSet.targetWeight, 'kg')
+      logger.log('✅ PLANNED:', plannedSet.targetReps, '×', plannedSet.targetWeight, 'kg')
       currentSetData.value.reps = plannedSet.targetReps
       currentSetData.value.weight = plannedSet.targetWeight
       return
@@ -622,7 +677,7 @@ const prefillCurrentSet = () => {
 
   // 3. Sinon: valeurs par défaut de l'exercice
   if (currentExercise.value) {
-    console.log('⚠️ DÉFAUT:', currentExercise.value.targetReps || 10, '×', currentExercise.value.targetWeight || 20)
+    logger.log('⚠️ DÉFAUT:', currentExercise.value.targetReps || 10, '×', currentExercise.value.targetWeight || 20)
     currentSetData.value.reps = currentExercise.value.targetReps || 10
     currentSetData.value.weight = currentExercise.value.targetWeight || 20
   }
@@ -631,11 +686,21 @@ const prefillCurrentSet = () => {
 const validateCurrentSet = async () => {
   if (!workout.value || !currentExercise.value) return
 
+  // Sanitize inputs: prevent negative and NaN values
+  let reps = currentSetData.value.reps
+  let weight = currentSetData.value.weight
+  if (isNaN(reps)) reps = 0
+  if (isNaN(weight)) weight = 0
+  reps = Math.max(0, reps)
+  weight = Math.max(0, weight)
+  currentSetData.value.reps = reps
+  currentSetData.value.weight = weight
+
   try {
     await workoutStore.addSetToExercise(workout.value.id, currentExercise.value.id, {
       setNumber: currentSetNumber.value,
-      reps: currentSetData.value.reps,
-      weight: currentSetData.value.weight
+      reps: reps,
+      weight: weight
     })
 
     completedSets.value.push({
@@ -670,7 +735,7 @@ const validateCurrentSet = async () => {
       startRestTimer(smartRest)
     }
   } catch (error) {
-    console.error('Failed to save set:', error)
+    logger.error('Failed to save set:', error)
   }
 }
 
@@ -718,7 +783,7 @@ const startRestTimer = (duration: number = 60) => {
   restTimeRemaining.value = duration
   restDuration.value = duration
 
-  restInterval = setInterval(() => {
+  restInterval.value = setInterval(() => {
     restTimeRemaining.value--
     if (restTimeRemaining.value <= 0) {
       skipRest()
@@ -728,9 +793,9 @@ const startRestTimer = (duration: number = 60) => {
 
 const skipRest = () => {
   showRestTimer.value = false
-  if (restInterval) {
-    clearInterval(restInterval)
-    restInterval = null
+  if (restInterval.value) {
+    clearInterval(restInterval.value)
+    restInterval.value = null
   }
 }
 
@@ -791,14 +856,14 @@ const completeWorkout = async () => {
     await workoutStore.completeWorkout(workout.value.id)
     await workoutStore.fetchWorkouts()
     // Stop the timer
-    if (timerInterval) { clearInterval(timerInterval); timerInterval = null }
-    if (restInterval) { clearInterval(restInterval); restInterval = null }
+    if (timerInterval.value) { clearInterval(timerInterval.value); timerInterval.value = null }
+    if (restInterval.value) { clearInterval(restInterval.value); restInterval.value = null }
     showRestTimer.value = false
     // Show completion screen instead of navigating away
     showCompletionScreen.value = true
   } catch (error) {
     toast.error('Erreur lors de la complétion')
-    console.error('Failed to complete workout:', error)
+    logger.error('Failed to complete workout:', error)
   }
 }
 
@@ -806,6 +871,17 @@ const onPhotoSelected = (event: Event) => {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
   if (!file) return
+
+  if (!file.type.startsWith('image/')) {
+    toast.error('Erreur', 'Le fichier doit être une image')
+    input.value = ''
+    return
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    toast.error('Erreur', 'La photo ne doit pas dépasser 5 Mo')
+    input.value = ''
+    return
+  }
 
   photoFile.value = file
   photoPreview.value = URL.createObjectURL(file)
@@ -827,7 +903,7 @@ const savePhotoAndExit = async () => {
     await bodyApi.uploadPhoto(workout.value.id, photoFile.value, photoIsPrimary.value)
     toast.success('Photo sauvegardée !')
   } catch (error) {
-    console.error('Failed to upload photo:', error)
+    logger.error('Failed to upload photo:', error)
     toast.error('Erreur lors de l\'envoi de la photo')
   } finally {
     isUploadingPhoto.value = false
@@ -841,16 +917,15 @@ const exitCompletion = () => {
   navigateTo('/dashboard')
 }
 
+const showCompleteModal = ref(false)
+const showExitModal = ref(false)
+
 const confirmComplete = () => {
-  if (confirm('Terminer cet entraînement ?')) {
-    completeWorkout()
-  }
+  showCompleteModal.value = true
 }
 
 const confirmExit = () => {
-  if (confirm('Quitter sans terminer?')) {
-    navigateTo('/workouts')
-  }
+  showExitModal.value = true
 }
 
 definePageMeta({

@@ -27,6 +27,7 @@ export class Workout {
   @Column({ type: 'timestamp', nullable: true })
   startedAt?: Date
 
+  @Index()
   @Column({ type: 'timestamp', nullable: true })
   completedAt?: Date
 

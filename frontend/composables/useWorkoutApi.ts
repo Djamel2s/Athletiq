@@ -4,20 +4,28 @@ export const useWorkoutApi = () => {
   const config = useRuntimeConfig()
   const authStore = useAuthStore()
 
+  const API_TIMEOUT = 30000
+
   const getAuthHeaders = () => ({
     Authorization: `Bearer ${authStore.token}`
+  })
+
+  const fetchOpts = (opts: Record<string, any> = {}) => ({
+    timeout: API_TIMEOUT,
+    headers: getAuthHeaders(),
+    ...opts
   })
 
   // ========== WORKOUTS ==========
   const getWorkouts = async () => {
     return await $fetch<{ workouts: Workout[] }>(`${config.public.apiUrl}/workouts`, {
-      headers: getAuthHeaders()
+      ...fetchOpts()
     })
   }
 
   const getWorkout = async (id: number) => {
     return await $fetch<Workout>(`${config.public.apiUrl}/workouts/${id}`, {
-      headers: getAuthHeaders()
+      ...fetchOpts()
     })
   }
 
@@ -34,7 +42,7 @@ export const useWorkoutApi = () => {
       `${config.public.apiUrl}/workouts/${id}`,
       {
         method: 'PUT',
-        headers: getAuthHeaders(),
+        ...fetchOpts(),
         body: data
       }
     )
@@ -43,7 +51,7 @@ export const useWorkoutApi = () => {
   const deleteWorkout = async (id: number) => {
     return await $fetch<{ message: string }>(`${config.public.apiUrl}/workouts/${id}`, {
       method: 'DELETE',
-      headers: getAuthHeaders()
+      ...fetchOpts()
     })
   }
 
@@ -52,7 +60,7 @@ export const useWorkoutApi = () => {
       `${config.public.apiUrl}/workouts/${id}/start`,
       {
         method: 'POST',
-        headers: getAuthHeaders()
+        ...fetchOpts()
       }
     )
   }
@@ -62,7 +70,7 @@ export const useWorkoutApi = () => {
       `${config.public.apiUrl}/workouts/${id}/complete`,
       {
         method: 'POST',
-        headers: getAuthHeaders()
+        ...fetchOpts()
       }
     )
   }
@@ -90,13 +98,13 @@ export const useWorkoutApi = () => {
       limit: number
       offset: number
     }>(`${config.public.apiUrl}/exercises?${query.toString()}`, {
-      headers: getAuthHeaders()
+      ...fetchOpts()
     })
   }
 
   const getExerciseById = async (id: number) => {
     return await $fetch<ExerciseLibrary>(`${config.public.apiUrl}/exercises/${id}`, {
-      headers: getAuthHeaders()
+      ...fetchOpts()
     })
   }
 
@@ -127,7 +135,7 @@ export const useWorkoutApi = () => {
       `${config.public.apiUrl}/workouts/${workoutId}/exercises`,
       {
         method: 'POST',
-        headers: getAuthHeaders(),
+        ...fetchOpts(),
         body: data
       }
     )
@@ -142,7 +150,7 @@ export const useWorkoutApi = () => {
       `${config.public.apiUrl}/workouts/${workoutId}/exercises/${exerciseId}`,
       {
         method: 'PUT',
-        headers: getAuthHeaders(),
+        ...fetchOpts(),
         body: data
       }
     )
@@ -153,7 +161,7 @@ export const useWorkoutApi = () => {
       `${config.public.apiUrl}/workouts/${workoutId}/exercises/${exerciseId}`,
       {
         method: 'DELETE',
-        headers: getAuthHeaders()
+        ...fetchOpts()
       }
     )
   }
@@ -176,7 +184,7 @@ export const useWorkoutApi = () => {
       `${config.public.apiUrl}/workouts/${workoutId}/exercises/${exerciseId}/sets`,
       {
         method: 'POST',
-        headers: getAuthHeaders(),
+        ...fetchOpts(),
         body: data
       }
     )
@@ -192,7 +200,7 @@ export const useWorkoutApi = () => {
       `${config.public.apiUrl}/workouts/${workoutId}/exercises/${exerciseId}/sets/${setId}`,
       {
         method: 'PUT',
-        headers: getAuthHeaders(),
+        ...fetchOpts(),
         body: data
       }
     )
@@ -203,7 +211,7 @@ export const useWorkoutApi = () => {
       `${config.public.apiUrl}/workouts/${workoutId}/exercises/${exerciseId}/sets/${setId}`,
       {
         method: 'DELETE',
-        headers: getAuthHeaders()
+        ...fetchOpts()
       }
     )
   }
@@ -215,7 +223,7 @@ export const useWorkoutApi = () => {
       lastSets: Set[]
       lastWorkoutDate: string | null
     }>(`${config.public.apiUrl}/workouts/history/exercise/${exerciseLibraryId}`, {
-      headers: getAuthHeaders()
+      ...fetchOpts()
     })
   }
 

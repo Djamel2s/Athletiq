@@ -42,6 +42,9 @@ export class User {
   @Column({ type: 'int', default: 0 })
   bestStreak!: number
 
+  @Column({ type: 'boolean', default: false })
+  isAdmin!: boolean
+
   @Column({ type: 'boolean', default: true })
   reminderEnabled!: boolean
 
@@ -57,6 +60,12 @@ export class User {
 
   @Column({ type: 'varchar', nullable: true })
   emailVerificationToken?: string
+
+  @Column({ type: 'timestamp', nullable: true })
+  emailVerificationExpires?: Date
+
+  @Column({ type: 'varchar', nullable: true })
+  refreshTokenHash?: string
 
   @Column({ type: 'varchar', nullable: true })
   passwordResetToken?: string

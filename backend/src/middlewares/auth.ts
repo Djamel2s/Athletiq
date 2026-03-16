@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
+import { AppDataSource } from '../config/database.js'
+import { User } from '../entities/User.js'
 
 const JWT_SECRET = process.env.JWT_SECRET
 if (!JWT_SECRET) {
@@ -11,6 +13,7 @@ export interface AuthRequest extends Request {
   user?: {
     id: number
     email: string
+    isAdmin: boolean
   }
 }
 
@@ -19,7 +22,7 @@ export interface JWTPayload {
   email: string
 }
 
-export const authenticate = (req: AuthRequest, res: Response, next: NextFunction) => {
+export const authenticate = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers.authorization
 
@@ -31,10 +34,22 @@ export const authenticate = (req: AuthRequest, res: Response, next: NextFunction
 
     const decoded = jwt.verify(token, JWT_SECRET) as JWTPayload
 
+    // Fetch isAdmin from database
+    const userRepo = AppDataSource.getRepository(User)
+    const user = await userRepo.findOne({
+      where: { id: decoded.userId },
+      select: ['id', 'email', 'isAdmin']
+    })
+
+    if (!user) {
+      return res.status(401).json({ error: 'Utilisateur non trouvé' })
+    }
+
     req.userId = decoded.userId
     req.user = {
       id: decoded.userId,
-      email: decoded.email
+      email: decoded.email,
+      isAdmin: user.isAdmin
     }
 
     next()

@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { AppDataSource } from '../config/database.js'
 import { Measurement } from '../entities/Measurement.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
+import { parseId } from '../utils/validation.js'
 
 const router = express.Router()
 const measurementRepository = AppDataSource.getRepository(Measurement)
@@ -10,8 +11,8 @@ const measurementRepository = AppDataSource.getRepository(Measurement)
 // Get all measurements for current user
 router.get('/', authenticate, async (req: AuthRequest, res) => {
   try {
-    const limit = parseInt(req.query.limit as string) || 50
-    const offset = parseInt(req.query.offset as string) || 0
+    const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 50, 1), 100)
+    const offset = Math.max(parseInt(req.query.offset as string) || 0, 0)
 
     const [measurements, total] = await measurementRepository.findAndCount({
       where: { userId: req.user!.id },
@@ -22,7 +23,7 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ data: measurements, total })
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch measurements' })
+    res.status(500).json({ error: 'Erreur lors de la récupération des mensurations' })
   }
 })
 
@@ -39,7 +40,7 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
       date: z.string().datetime().nullish()
     }).refine(
       (data) => data.chest || data.waist || data.hips || data.biceps || data.thighs || data.calves,
-      { message: 'At least one measurement is required' }
+      { message: 'Au moins une mensuration est requise' }
     )
 
     const data = schema.parse(req.body)
@@ -59,9 +60,9 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
     res.status(201).json(saved)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation error', details: error.errors })
+      return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
-    res.status(500).json({ error: 'Failed to create measurement' })
+    res.status(500).json({ error: 'Erreur lors de la création de la mensuration' })
   }
 })
 
@@ -81,11 +82,11 @@ router.put('/:id', authenticate, async (req: AuthRequest, res) => {
     const data = schema.parse(req.body)
 
     const measurement = await measurementRepository.findOne({
-      where: { id: parseInt(req.params.id), userId: req.user!.id }
+      where: { id: parseId(req.params.id), userId: req.user!.id }
     })
 
     if (!measurement) {
-      return res.status(404).json({ error: 'Measurement not found' })
+      return res.status(404).json({ error: 'Mensuration non trouvée' })
     }
 
     if (data.chest !== undefined) measurement.chest = data.chest ?? undefined
@@ -100,9 +101,9 @@ router.put('/:id', authenticate, async (req: AuthRequest, res) => {
     res.json(updated)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation error', details: error.errors })
+      return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
-    res.status(500).json({ error: 'Failed to update measurement' })
+    res.status(500).json({ error: 'Erreur lors de la mise à jour de la mensuration' })
   }
 })
 
@@ -110,17 +111,17 @@ router.put('/:id', authenticate, async (req: AuthRequest, res) => {
 router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
   try {
     const measurement = await measurementRepository.findOne({
-      where: { id: parseInt(req.params.id), userId: req.user!.id }
+      where: { id: parseId(req.params.id), userId: req.user!.id }
     })
 
     if (!measurement) {
-      return res.status(404).json({ error: 'Measurement not found' })
+      return res.status(404).json({ error: 'Mensuration non trouvée' })
     }
 
     await measurementRepository.remove(measurement)
-    res.json({ message: 'Measurement deleted successfully' })
+    res.json({ message: 'Mensuration supprimée' })
   } catch (error) {
-    res.status(500).json({ error: 'Failed to delete measurement' })
+    res.status(500).json({ error: 'Erreur lors de la suppression de la mensuration' })
   }
 })
 

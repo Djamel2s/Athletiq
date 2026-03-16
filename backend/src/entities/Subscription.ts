@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, Index } from 'typeorm'
 import type { User } from './User.js'
 
 export enum SubscriptionStatus {
@@ -21,6 +21,7 @@ export class Subscription {
   @PrimaryGeneratedColumn()
   id!: number
 
+  @Index()
   @Column({ type: 'int' })
   userId!: number
 

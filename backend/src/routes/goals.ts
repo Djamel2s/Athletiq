@@ -5,6 +5,7 @@ import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { UserGoal, GoalType } from '../entities/UserGoal.js'
 import { BodyStat } from '../entities/BodyStat.js'
 import { checkGoalLimit } from '../services/limitService.js'
+import { parseId } from '../utils/validation.js'
 
 const router = express.Router()
 
@@ -13,7 +14,7 @@ const createGoalSchema = z.object({
   title: z.string().min(1).max(100),
   targetValue: z.number().positive(),
   startValue: z.number().min(0),
-  exerciseName: z.string().nullish(),
+  exerciseName: z.string().max(200).nullish(),
   exerciseLibraryId: z.number().nullish(),
   deadline: z.string().nullish()
 })
@@ -25,19 +26,19 @@ const updateGoalSchema = z.object({
 })
 
 // Helper: calculate current value for a goal
-async function calculateCurrentValue(goal: UserGoal): Promise<number> {
+async function calculateCurrentValue(goal: UserGoal, latestBodyStat?: BodyStat | null): Promise<number> {
   const repo = AppDataSource
 
   switch (goal.type) {
     case GoalType.WEIGHT: {
-      const latest = await repo.getRepository(BodyStat).findOne({
+      const latest = latestBodyStat !== undefined ? latestBodyStat : await repo.getRepository(BodyStat).findOne({
         where: { userId: goal.userId },
         order: { date: 'DESC' }
       })
       return latest?.weight ?? goal.startValue
     }
     case GoalType.BODY_FAT: {
-      const latest = await repo.getRepository(BodyStat).findOne({
+      const latest = latestBodyStat !== undefined ? latestBodyStat : await repo.getRepository(BodyStat).findOne({
         where: { userId: goal.userId },
         order: { date: 'DESC' }
       })
@@ -77,8 +78,14 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
       order: { createdAt: 'DESC' }
     })
 
+    // Pre-fetch latest BodyStat once to avoid N+1 queries for WEIGHT/BODY_FAT goals
+    const latestBodyStat = await AppDataSource.getRepository(BodyStat).findOne({
+      where: { userId: req.user!.id },
+      order: { date: 'DESC' }
+    })
+
     const goalsWithProgress = await Promise.all(goals.map(async (goal) => {
-      const currentValue = await calculateCurrentValue(goal)
+      const currentValue = await calculateCurrentValue(goal, latestBodyStat)
       const progress = calculateProgress(goal.startValue, currentValue, goal.targetValue)
       return { ...goal, currentValue, progress }
     }))
@@ -86,7 +93,7 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
     res.json(goalsWithProgress)
   } catch (error) {
     console.error('Goals fetch error:', error)
-    res.status(500).json({ error: 'Failed to fetch goals' })
+    res.status(500).json({ error: 'Erreur lors de la récupération des objectifs' })
   }
 })
 
@@ -125,10 +132,10 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
     res.status(201).json({ ...saved, currentValue, progress })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation failed', details: error.errors })
+      return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
     console.error('Goal create error:', error)
-    res.status(500).json({ error: 'Failed to create goal' })
+    res.status(500).json({ error: 'Erreur lors de la création de l\'objectif' })
   }
 })
 
@@ -139,10 +146,10 @@ router.put('/:id', authenticate, async (req: AuthRequest, res) => {
     const repo = AppDataSource.getRepository(UserGoal)
 
     const goal = await repo.findOne({
-      where: { id: parseInt(req.params.id), userId: req.user!.id }
+      where: { id: parseId(req.params.id), userId: req.user!.id }
     })
 
-    if (!goal) return res.status(404).json({ error: 'Goal not found' })
+    if (!goal) return res.status(404).json({ error: 'Objectif non trouvé' })
 
     if (data.title != null) goal.title = data.title
     if (data.targetValue != null) goal.targetValue = data.targetValue
@@ -155,10 +162,10 @@ router.put('/:id', authenticate, async (req: AuthRequest, res) => {
     res.json({ ...saved, currentValue, progress })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation failed', details: error.errors })
+      return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
     console.error('Goal update error:', error)
-    res.status(500).json({ error: 'Failed to update goal' })
+    res.status(500).json({ error: 'Erreur lors de la mise à jour de l\'objectif' })
   }
 })
 
@@ -167,10 +174,10 @@ router.put('/:id/achieve', authenticate, async (req: AuthRequest, res) => {
   try {
     const repo = AppDataSource.getRepository(UserGoal)
     const goal = await repo.findOne({
-      where: { id: parseInt(req.params.id), userId: req.user!.id }
+      where: { id: parseId(req.params.id), userId: req.user!.id }
     })
 
-    if (!goal) return res.status(404).json({ error: 'Goal not found' })
+    if (!goal) return res.status(404).json({ error: 'Objectif non trouvé' })
 
     goal.achieved = true
     goal.achievedAt = new Date()
@@ -179,7 +186,7 @@ router.put('/:id/achieve', authenticate, async (req: AuthRequest, res) => {
     res.json(saved)
   } catch (error) {
     console.error('Goal achieve error:', error)
-    res.status(500).json({ error: 'Failed to achieve goal' })
+    res.status(500).json({ error: 'Erreur lors de la validation de l\'objectif' })
   }
 })
 
@@ -188,16 +195,16 @@ router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
   try {
     const repo = AppDataSource.getRepository(UserGoal)
     const goal = await repo.findOne({
-      where: { id: parseInt(req.params.id), userId: req.user!.id }
+      where: { id: parseId(req.params.id), userId: req.user!.id }
     })
 
-    if (!goal) return res.status(404).json({ error: 'Goal not found' })
+    if (!goal) return res.status(404).json({ error: 'Objectif non trouvé' })
 
     await repo.remove(goal)
-    res.json({ message: 'Goal deleted' })
+    res.json({ message: 'Objectif supprimé' })
   } catch (error) {
     console.error('Goal delete error:', error)
-    res.status(500).json({ error: 'Failed to delete goal' })
+    res.status(500).json({ error: 'Erreur lors de la suppression de l\'objectif' })
   }
 })
 

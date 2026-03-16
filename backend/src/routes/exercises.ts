@@ -3,6 +3,8 @@ import { z } from 'zod'
 import { AppDataSource } from '../config/database.js'
 import { ExerciseLibrary, MuscleGroup, Equipment, Difficulty } from '../entities/ExerciseLibrary.js'
 import { authenticate } from '../middlewares/auth.js'
+import { requireAdmin } from '../middlewares/admin.js'
+import { parseId } from '../utils/validation.js'
 import { Like } from 'typeorm'
 
 const router = express.Router()
@@ -11,9 +13,9 @@ const exerciseLibraryRepo = AppDataSource.getRepository(ExerciseLibrary)
 
 // Validation schema
 const createExerciseSchema = z.object({
-  name: z.string(),
-  description: z.string().nullish(),
-  instructions: z.string().nullish(),
+  name: z.string().max(200),
+  description: z.string().max(2000).nullish(),
+  instructions: z.string().max(2000).nullish(),
   muscleGroups: z.array(z.nativeEnum(MuscleGroup)).nullish(),
   primaryMuscle: z.nativeEnum(MuscleGroup).nullish(),
   equipment: z.nativeEnum(Equipment),
@@ -29,10 +31,11 @@ router.get('/', authenticate, async (req, res) => {
       search,
       muscleGroup,
       equipment,
-      difficulty,
-      limit = '50',
-      offset = '0'
+      difficulty
     } = req.query
+
+    const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 50, 1), 100)
+    const offset = Math.max(parseInt(req.query.offset as string) || 0, 0)
 
     const queryBuilder = exerciseLibraryRepo.createQueryBuilder('exercise')
 
@@ -43,44 +46,47 @@ router.get('/', authenticate, async (req, res) => {
       })
     }
 
-    // Filter by muscle group
+    // Filter by muscle group (validated against enum)
     if (muscleGroup && typeof muscleGroup === 'string') {
-      queryBuilder.andWhere(':muscleGroup = ANY(exercise.muscleGroups)', {
-        muscleGroup: muscleGroup.toUpperCase()
-      })
+      const mg = muscleGroup.toUpperCase()
+      if (Object.values(MuscleGroup).includes(mg as MuscleGroup)) {
+        queryBuilder.andWhere(':muscleGroup = ANY(exercise.muscleGroups)', { muscleGroup: mg })
+      }
     }
 
-    // Filter by equipment
+    // Filter by equipment (validated against enum)
     if (equipment && typeof equipment === 'string') {
-      queryBuilder.andWhere('exercise.equipment = :equipment', {
-        equipment: equipment.toUpperCase()
-      })
+      const eq = equipment.toUpperCase()
+      if (Object.values(Equipment).includes(eq as Equipment)) {
+        queryBuilder.andWhere('exercise.equipment = :equipment', { equipment: eq })
+      }
     }
 
-    // Filter by difficulty
+    // Filter by difficulty (validated against enum)
     if (difficulty && typeof difficulty === 'string') {
-      queryBuilder.andWhere('exercise.difficulty = :difficulty', {
-        difficulty: difficulty.toUpperCase()
-      })
+      const diff = difficulty.toUpperCase()
+      if (Object.values(Difficulty).includes(diff as Difficulty)) {
+        queryBuilder.andWhere('exercise.difficulty = :difficulty', { difficulty: diff })
+      }
     }
 
     // Pagination
     queryBuilder
       .orderBy('exercise.name', 'ASC')
-      .take(parseInt(limit as string))
-      .skip(parseInt(offset as string))
+      .take(limit)
+      .skip(offset)
 
     const [exercises, total] = await queryBuilder.getManyAndCount()
 
     res.json({
       exercises,
       total,
-      limit: parseInt(limit as string),
-      offset: parseInt(offset as string)
+      limit,
+      offset
     })
   } catch (error) {
     console.error('Error fetching exercises:', error)
-    res.status(500).json({ error: 'Failed to fetch exercises' })
+    res.status(500).json({ error: 'Erreur lors de la récupération des exercices' })
   }
 })
 
@@ -88,17 +94,17 @@ router.get('/', authenticate, async (req, res) => {
 router.get('/:id', authenticate, async (req, res) => {
   try {
     const exercise = await exerciseLibraryRepo.findOne({
-      where: { id: parseInt(req.params.id) }
+      where: { id: parseId(req.params.id) }
     })
 
     if (!exercise) {
-      return res.status(404).json({ error: 'Exercise not found' })
+      return res.status(404).json({ error: 'Exercice non trouvé' })
     }
 
     res.json(exercise)
   } catch (error) {
     console.error('Error fetching exercise:', error)
-    res.status(500).json({ error: 'Failed to fetch exercise' })
+    res.status(500).json({ error: 'Erreur lors de la récupération de l\'exercice' })
   }
 })
 
@@ -106,6 +112,11 @@ router.get('/:id', authenticate, async (req, res) => {
 router.get('/muscle/:muscleGroup', authenticate, async (req, res) => {
   try {
     const muscleGroup = req.params.muscleGroup.toUpperCase()
+
+    // Valider que le groupe musculaire est dans la whitelist
+    if (!Object.values(MuscleGroup).includes(muscleGroup as MuscleGroup)) {
+      return res.status(400).json({ error: 'Groupe musculaire invalide' })
+    }
 
     const exercises = await exerciseLibraryRepo
       .createQueryBuilder('exercise')
@@ -116,12 +127,12 @@ router.get('/muscle/:muscleGroup', authenticate, async (req, res) => {
     res.json(exercises)
   } catch (error) {
     console.error('Error fetching exercises by muscle group:', error)
-    res.status(500).json({ error: 'Failed to fetch exercises' })
+    res.status(500).json({ error: 'Erreur lors de la récupération des exercices' })
   }
 })
 
-// Create new exercise (admin only - you might want to add admin middleware)
-router.post('/', authenticate, async (req, res) => {
+// Create new exercise (admin only)
+router.post('/', authenticate, requireAdmin, async (req, res) => {
   try {
     const data = createExerciseSchema.parse(req.body)
 
@@ -131,7 +142,7 @@ router.post('/', authenticate, async (req, res) => {
     })
 
     if (existing) {
-      return res.status(409).json({ error: 'Exercise already exists' })
+      return res.status(409).json({ error: 'Exercice déjà existant' })
     }
 
     const exercise = exerciseLibraryRepo.create({
@@ -150,52 +161,52 @@ router.post('/', authenticate, async (req, res) => {
     res.status(201).json(exercise)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation error', details: error.errors })
+      return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
     console.error('Error creating exercise:', error)
-    res.status(500).json({ error: 'Failed to create exercise' })
+    res.status(500).json({ error: 'Erreur lors de la création de l\'exercice' })
   }
 })
 
 // Update exercise (admin only)
-router.put('/:id', authenticate, async (req, res) => {
+router.put('/:id', authenticate, requireAdmin, async (req, res) => {
   try {
     const data = createExerciseSchema.partial().parse(req.body)
 
     const exercise = await exerciseLibraryRepo.findOne({
-      where: { id: parseInt(req.params.id) }
+      where: { id: parseId(req.params.id) }
     })
 
     if (!exercise) {
-      return res.status(404).json({ error: 'Exercise not found' })
+      return res.status(404).json({ error: 'Exercice non trouvé' })
     }
 
     Object.assign(exercise, data)
     await exerciseLibraryRepo.save(exercise)
 
-    res.json({ message: 'Exercise updated successfully', exercise })
+    res.json({ message: 'Exercice mis à jour', exercise })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation error', details: error.errors })
+      return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
     console.error('Error updating exercise:', error)
-    res.status(500).json({ error: 'Failed to update exercise' })
+    res.status(500).json({ error: 'Erreur lors de la mise à jour de l\'exercice' })
   }
 })
 
 // Delete exercise (admin only)
-router.delete('/:id', authenticate, async (req, res) => {
+router.delete('/:id', authenticate, requireAdmin, async (req, res) => {
   try {
-    const result = await exerciseLibraryRepo.delete({ id: parseInt(req.params.id) })
+    const result = await exerciseLibraryRepo.delete({ id: parseId(req.params.id) })
 
     if (result.affected === 0) {
-      return res.status(404).json({ error: 'Exercise not found' })
+      return res.status(404).json({ error: 'Exercice non trouvé' })
     }
 
-    res.json({ message: 'Exercise deleted successfully' })
+    res.json({ message: 'Exercice supprimé' })
   } catch (error) {
     console.error('Error deleting exercise:', error)
-    res.status(500).json({ error: 'Failed to delete exercise' })
+    res.status(500).json({ error: 'Erreur lors de la suppression de l\'exercice' })
   }
 })
 

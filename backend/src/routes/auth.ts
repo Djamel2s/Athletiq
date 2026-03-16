@@ -1,26 +1,49 @@
 import express from 'express'
 import bcrypt from 'bcrypt'
+import crypto from 'crypto'
 import { z } from 'zod'
 import jwt from 'jsonwebtoken'
 import { AppDataSource } from '../config/database.js'
 import { User } from '../entities/User.js'
-import { generateToken, generateRefreshToken, JWTPayload } from '../middlewares/auth.js'
+import { generateToken, generateRefreshToken, JWTPayload, authenticate, AuthRequest } from '../middlewares/auth.js'
 
 const router = express.Router()
 const userRepository = AppDataSource.getRepository(User)
 
+const isProduction = process.env.NODE_ENV === 'production'
+
+// Helper pour envoyer le refresh token en httpOnly cookie
+const setRefreshTokenCookie = (res: express.Response, refreshToken: string) => {
+  res.cookie('refresh_token', refreshToken, {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 jours
+    path: '/api/auth'
+  })
+}
+
+const clearRefreshTokenCookie = (res: express.Response) => {
+  res.clearCookie('refresh_token', {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
+    path: '/api/auth'
+  })
+}
+
 // Validation schemas
 const registerSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
-  firstName: z.string().nullish(),
-  lastName: z.string().nullish(),
+  email: z.string().email().max(255),
+  password: z.string().min(8).max(128),
+  firstName: z.string().max(100).nullish(),
+  lastName: z.string().max(100).nullish(),
   gender: z.enum(['male', 'female']).nullish()
 })
 
 const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string()
+  email: z.string().email().max(255),
+  password: z.string().max(128)
 })
 
 // Register
@@ -31,7 +54,7 @@ router.post('/register', async (req, res) => {
     // Check if user exists
     const existingUser = await userRepository.findOne({ where: { email } })
     if (existingUser) {
-      return res.status(400).json({ error: 'Email already registered' })
+      return res.status(400).json({ error: 'Email déjà enregistré' })
     }
 
     // Hash password
@@ -63,12 +86,17 @@ router.post('/register', async (req, res) => {
     const token = generateToken({ userId: user.id, email: user.email })
     const refreshToken = generateRefreshToken({ userId: user.id, email: user.email })
 
-    res.status(201).json({ user, token, refreshToken })
+    // Save hashed refresh token
+    newUser.refreshTokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex')
+    await userRepository.save(newUser)
+
+    setRefreshTokenCookie(res, refreshToken)
+    res.status(201).json({ user, token })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation error', details: error.errors })
+      return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
-    res.status(500).json({ error: 'Failed to register user' })
+    res.status(500).json({ error: 'Erreur lors de la création du compte' })
   }
 })
 
@@ -79,20 +107,25 @@ router.post('/login', async (req, res) => {
 
     // Find user
     const user = await userRepository.findOne({ where: { email } })
-    if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' })
-    }
 
-    // Check password
-    const validPassword = await bcrypt.compare(password, user.password)
-    if (!validPassword) {
-      return res.status(401).json({ error: 'Invalid credentials' })
+    // Toujours exécuter bcrypt.compare pour éviter le timing attack
+    // Si l'utilisateur n'existe pas, on compare avec un hash factice
+    const dummyHash = '$2b$10$dummyHashForTimingAttackProtection000000000000000000'
+    const validPassword = await bcrypt.compare(password, user?.password || dummyHash)
+
+    if (!user || !validPassword) {
+      return res.status(401).json({ error: 'Identifiants invalides' })
     }
 
     // Generate JWT and refresh token
     const token = generateToken({ userId: user.id, email: user.email })
     const refreshToken = generateRefreshToken({ userId: user.id, email: user.email })
 
+    // Save hashed refresh token
+    user.refreshTokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex')
+    await userRepository.save(user)
+
+    setRefreshTokenCookie(res, refreshToken)
     res.json({
       user: {
         id: user.id,
@@ -103,28 +136,31 @@ router.post('/login', async (req, res) => {
         gender: user.gender,
         avatarUrl: user.avatarUrl
       },
-      token,
-      refreshToken
+      token
     })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation error', details: error.errors })
+      return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
-    res.status(500).json({ error: 'Failed to login' })
+    res.status(500).json({ error: 'Erreur lors de la connexion' })
   }
 })
 
 // Refresh token
 router.post('/refresh', async (req, res) => {
   try {
-    const { refreshToken } = req.body
+    // Lire le refresh token depuis le cookie httpOnly, ou fallback sur le body (rétrocompatibilité)
+    const refreshToken = req.cookies?.refresh_token || req.body?.refreshToken
 
     if (!refreshToken) {
       return res.status(401).json({ error: 'Refresh token manquant' })
     }
 
     // Verify refresh token
-    const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+    const JWT_SECRET = process.env.JWT_SECRET
+    if (!JWT_SECRET) {
+      return res.status(500).json({ error: 'Configuration serveur manquante' })
+    }
     const decoded = jwt.verify(refreshToken, JWT_SECRET) as JWTPayload
 
     // Find user
@@ -133,11 +169,22 @@ router.post('/refresh', async (req, res) => {
       return res.status(401).json({ error: 'Utilisateur non trouvé' })
     }
 
+    // Verify refresh token hash matches
+    const receivedHash = crypto.createHash('sha256').update(refreshToken).digest('hex')
+    if (!user.refreshTokenHash || user.refreshTokenHash !== receivedHash) {
+      return res.status(401).json({ error: 'Refresh token invalide' })
+    }
+
     // Generate new tokens
     const newToken = generateToken({ userId: user.id, email: user.email })
     const newRefreshToken = generateRefreshToken({ userId: user.id, email: user.email })
 
-    res.json({ token: newToken, refreshToken: newRefreshToken })
+    // Update hashed refresh token
+    user.refreshTokenHash = crypto.createHash('sha256').update(newRefreshToken).digest('hex')
+    await userRepository.save(user)
+
+    setRefreshTokenCookie(res, newRefreshToken)
+    res.json({ token: newToken })
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
       return res.status(401).json({ error: 'Refresh token expiré' })
@@ -146,6 +193,21 @@ router.post('/refresh', async (req, res) => {
       return res.status(401).json({ error: 'Refresh token invalide' })
     }
     res.status(500).json({ error: 'Échec du rafraîchissement du token' })
+  }
+})
+
+// Logout
+router.post('/logout', authenticate, async (req: AuthRequest, res) => {
+  try {
+    const user = await userRepository.findOne({ where: { id: req.user!.id } })
+    if (user) {
+      user.refreshTokenHash = undefined
+      await userRepository.save(user)
+    }
+    clearRefreshTokenCookie(res)
+    res.json({ message: 'Déconnexion réussie' })
+  } catch {
+    res.status(500).json({ error: 'Erreur lors de la déconnexion' })
   }
 })
 

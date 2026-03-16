@@ -52,7 +52,7 @@ export const useWorkoutStore = defineStore('workout', {
       } catch (error: any) {
         this.error = error.message || 'Erreur lors du chargement des workouts'
         this.workouts = []
-        console.error('Fetch workouts error:', error)
+        logger.error('Fetch workouts error:', error)
       } finally {
         this.isLoading = false
       }
@@ -67,7 +67,7 @@ export const useWorkoutStore = defineStore('workout', {
         return this.currentWorkout
       } catch (error: any) {
         this.error = error.message || 'Erreur lors du chargement du workout'
-        console.error('Fetch workout error:', error)
+        logger.error('Fetch workout error:', error)
         throw error
       } finally {
         this.isLoading = false
@@ -79,9 +79,9 @@ export const useWorkoutStore = defineStore('workout', {
       this.error = null
       try {
         const api = useWorkoutApi()
-        console.log('Creating workout with data:', data)
+        logger.log('Creating workout with data:', data)
         const workout = await api.createWorkout(data)
-        console.log('Workout created:', workout)
+        logger.log('Workout created:', workout)
 
         // Ensure workouts array exists
         if (!this.workouts) {
@@ -90,7 +90,7 @@ export const useWorkoutStore = defineStore('workout', {
         this.workouts.push(workout)
         return workout
       } catch (error: any) {
-        console.error('Create workout error details:', {
+        logger.error('Create workout error details:', {
           message: error.message,
           data: error.data,
           statusCode: error.statusCode,
@@ -119,7 +119,7 @@ export const useWorkoutStore = defineStore('workout', {
         return workout
       } catch (error: any) {
         this.error = error.message || 'Erreur lors de la mise à jour du workout'
-        console.error('Update workout error:', error)
+        logger.error('Update workout error:', error)
         throw error
       } finally {
         this.isLoading = false
@@ -138,7 +138,7 @@ export const useWorkoutStore = defineStore('workout', {
         }
       } catch (error: any) {
         this.error = error.message || 'Erreur lors de la suppression du workout'
-        console.error('Delete workout error:', error)
+        logger.error('Delete workout error:', error)
         throw error
       } finally {
         this.isLoading = false
@@ -157,7 +157,7 @@ export const useWorkoutStore = defineStore('workout', {
         return workout
       } catch (error: any) {
         this.error = error.message || 'Erreur lors du démarrage du workout'
-        console.error('Start workout error:', error)
+        logger.error('Start workout error:', error)
         throw error
       }
     },
@@ -176,7 +176,7 @@ export const useWorkoutStore = defineStore('workout', {
         return workout
       } catch (error: any) {
         this.error = error.message || 'Erreur lors de la complétion du workout'
-        console.error('Complete workout error:', error)
+        logger.error('Complete workout error:', error)
         throw error
       }
     },
@@ -198,7 +198,7 @@ export const useWorkoutStore = defineStore('workout', {
         return exercises
       } catch (error: any) {
         this.error = error.message || 'Erreur lors du chargement des exercices'
-        console.error('Fetch exercise library error:', error)
+        logger.error('Fetch exercise library error:', error)
         throw error
       } finally {
         this.isLoading = false
@@ -234,7 +234,7 @@ export const useWorkoutStore = defineStore('workout', {
         return exercise
       } catch (error: any) {
         this.error = error.message || 'Erreur lors de l\'ajout de l\'exercice'
-        console.error('Add exercise error:', error)
+        logger.error('Add exercise error:', error)
         throw error
       }
     },
@@ -259,7 +259,7 @@ export const useWorkoutStore = defineStore('workout', {
         return exercise
       } catch (error: any) {
         this.error = error.message || 'Erreur lors de la mise à jour de l\'exercice'
-        console.error('Update exercise error:', error)
+        logger.error('Update exercise error:', error)
         throw error
       }
     },
@@ -295,7 +295,7 @@ export const useWorkoutStore = defineStore('workout', {
         return set
       } catch (error: any) {
         this.error = error.message || 'Erreur lors de l\'ajout du set'
-        console.error('Add set error:', error)
+        logger.error('Add set error:', error)
         throw error
       }
     },
@@ -324,9 +324,13 @@ export const useWorkoutStore = defineStore('workout', {
         return set
       } catch (error: any) {
         this.error = error.message || 'Erreur lors de la mise à jour du set'
-        console.error('Update set error:', error)
+        logger.error('Update set error:', error)
         throw error
       }
+    },
+
+    clearCurrentWorkout() {
+      this.currentWorkout = null
     },
 
     clearError() {

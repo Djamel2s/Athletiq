@@ -63,7 +63,7 @@ export const useSubscriptionStore = defineStore('subscription', {
           this.canceledAt = sub.canceledAt
         }
       } catch (error) {
-        console.error('Error fetching subscription:', error)
+        logger.error('Error fetching subscription:', error)
       } finally {
         this.isLoading = false
       }
@@ -87,8 +87,16 @@ export const useSubscriptionStore = defineStore('subscription', {
         const data = await response.json()
 
         if (data.url) {
-          // Redirige vers Stripe Checkout
-          window.location.href = data.url
+          // Validate redirect URL to prevent open redirect
+          try {
+            const url = new URL(data.url)
+            if (!url.hostname.endsWith('.stripe.com')) throw new Error('Invalid redirect')
+            if (url.protocol !== 'https:') throw new Error('Invalid protocol')
+            window.location.href = data.url
+          } catch {
+            logger.error('Invalid redirect URL')
+            return { error: 'URL de redirection invalide' }
+          }
         } else {
           return { error: data.error || 'Erreur' }
         }
@@ -113,10 +121,18 @@ export const useSubscriptionStore = defineStore('subscription', {
 
         const data = await response.json()
         if (data.url) {
-          window.location.href = data.url
+          // Validate redirect URL to prevent open redirect
+          try {
+            const url = new URL(data.url)
+            if (!url.hostname.endsWith('.stripe.com')) throw new Error('Invalid redirect')
+            if (url.protocol !== 'https:') throw new Error('Invalid protocol')
+            window.location.href = data.url
+          } catch {
+            logger.error('Invalid portal redirect URL')
+          }
         }
       } catch (error) {
-        console.error('Error opening portal:', error)
+        logger.error('Error opening portal:', error)
       }
     },
 

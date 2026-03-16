@@ -25,12 +25,22 @@ router.post('/verify/send', authenticate, async (req: AuthRequest, res) => {
       return res.json({ message: 'Email déjà vérifié' })
     }
 
+    // Cooldown : ne pas renvoyer si un token a été envoyé il y a moins de 2 minutes
+    if (user.emailVerificationExpires) {
+      const tokenAge = 24 * 60 * 60 * 1000 - (user.emailVerificationExpires.getTime() - Date.now())
+      if (tokenAge < 2 * 60 * 1000) {
+        return res.json({ message: 'Un email a déjà été envoyé récemment. Réessayez dans quelques minutes.' })
+      }
+    }
+
     // Générer un token unique
     const token = crypto.randomBytes(32).toString('hex')
-    user.emailVerificationToken = token
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
+    user.emailVerificationToken = hashedToken
+    user.emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000)
     await userRepo.save(user)
 
-    // Envoyer l'email
+    // Envoyer l'email avec le token NON hashé
     await sendVerificationEmail(user.email, token)
 
     res.json({ message: 'Email de vérification envoyé' })
@@ -46,17 +56,23 @@ router.post('/verify/send', authenticate, async (req: AuthRequest, res) => {
 router.get('/verify/:token', async (req, res) => {
   try {
     const { token } = req.params
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
 
     const user = await userRepo.findOne({
-      where: { emailVerificationToken: token }
+      where: { emailVerificationToken: hashedToken }
     })
 
     if (!user) {
       return res.status(400).json({ error: 'Token invalide ou expiré' })
     }
 
+    if (!user.emailVerificationExpires || user.emailVerificationExpires < new Date()) {
+      return res.status(400).json({ error: 'Token expiré' })
+    }
+
     user.emailVerified = true
     user.emailVerificationToken = undefined
+    user.emailVerificationExpires = undefined
     await userRepo.save(user)
 
     // Rediriger vers le frontend avec un message de succès
@@ -72,7 +88,7 @@ router.get('/verify/:token', async (req, res) => {
 // POST /api/email/forgot-password — Demander un reset de mot de passe
 // ============================================================
 const forgotSchema = z.object({
-  email: z.string().email()
+  email: z.string().email().max(255)
 })
 
 router.post('/forgot-password', async (req, res) => {
@@ -86,9 +102,18 @@ router.post('/forgot-password', async (req, res) => {
       return res.json({ message: 'Si un compte existe avec cet email, un lien de réinitialisation a été envoyé.' })
     }
 
+    // Cooldown : ne pas renvoyer si un token a été envoyé il y a moins de 2 minutes
+    if (user.passwordResetExpires) {
+      const tokenAge = 60 * 60 * 1000 - (user.passwordResetExpires.getTime() - Date.now())
+      if (tokenAge < 2 * 60 * 1000) {
+        return res.json({ message: 'Si un compte existe avec cet email, un lien de réinitialisation a été envoyé.' })
+      }
+    }
+
     // Générer un token + expiration (1h)
     const token = crypto.randomBytes(32).toString('hex')
-    user.passwordResetToken = token
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
+    user.passwordResetToken = hashedToken
     user.passwordResetExpires = new Date(Date.now() + 60 * 60 * 1000) // 1 heure
     await userRepo.save(user)
 
@@ -109,15 +134,16 @@ router.post('/forgot-password', async (req, res) => {
 // ============================================================
 const resetSchema = z.object({
   token: z.string(),
-  password: z.string().min(8)
+  password: z.string().min(8).max(128)
 })
 
 router.post('/reset-password', async (req, res) => {
   try {
     const { token, password } = resetSchema.parse(req.body)
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
 
     const user = await userRepo.findOne({
-      where: { passwordResetToken: token }
+      where: { passwordResetToken: hashedToken }
     })
 
     if (!user || !user.passwordResetExpires || user.passwordResetExpires < new Date()) {

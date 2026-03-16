@@ -22,7 +22,7 @@ export const useNotificationStore = defineStore('notifications', {
         this.notifications = await api.getNotifications()
         this.unreadCount = this.notifications.filter(n => !n.read).length
       } catch (error) {
-        console.error('Fetch notifications error:', error)
+        logger.error('Fetch notifications error:', error)
       } finally {
         this.isLoading = false
       }
@@ -34,7 +34,7 @@ export const useNotificationStore = defineStore('notifications', {
         const { count } = await api.getUnreadCount()
         this.unreadCount = count
       } catch (error) {
-        console.error('Fetch unread count error:', error)
+        logger.error('Fetch unread count error:', error)
       }
     },
 
@@ -48,7 +48,7 @@ export const useNotificationStore = defineStore('notifications', {
           this.unreadCount = Math.max(0, this.unreadCount - 1)
         }
       } catch (error) {
-        console.error('Mark read error:', error)
+        logger.error('Mark read error:', error)
       }
     },
 
@@ -59,7 +59,7 @@ export const useNotificationStore = defineStore('notifications', {
         this.notifications.forEach(n => { n.read = true })
         this.unreadCount = 0
       } catch (error) {
-        console.error('Mark all read error:', error)
+        logger.error('Mark all read error:', error)
       }
     }
   }

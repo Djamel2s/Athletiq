@@ -6,8 +6,9 @@ dotenv.config()
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
+import cookieParser from 'cookie-parser'
 import { initializeDatabase } from './config/database.js'
-import { globalLimiter, authLimiter } from './middlewares/rateLimiter.js'
+import { globalLimiter, authLimiter, apiLimiter } from './middlewares/rateLimiter.js'
 import authRoutes from './routes/auth.js'
 import workoutRoutes from './routes/workouts.js'
 import exerciseRoutes from './routes/exercises.js'
@@ -41,9 +42,10 @@ app.use(globalLimiter)
 // Middlewares
 app.use(cors({
   origin: (origin, callback) => {
-    const allowed = process.env.CORS_ORIGIN || 'http://localhost:3000'
-    // Allow requests with no origin (mobile apps, curl, etc) and any localhost/LAN IP in dev
-    if (!origin || allowed === origin || (!process.env.CORS_ORIGIN && (origin.match(/^https?:\/\/(localhost|127\.0\.0\.1|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+)(:\d+)?$/)))) {
+    const allowed = process.env.CORS_ORIGIN
+    if (!origin || (allowed && allowed === origin)) {
+      callback(null, true)
+    } else if (!allowed && process.env.NODE_ENV !== 'production' && origin.match(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/)) {
       callback(null, true)
     } else {
       callback(new Error('Not allowed by CORS'))
@@ -51,6 +53,7 @@ app.use(cors({
   },
   credentials: true
 }))
+app.use(cookieParser())
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
@@ -61,17 +64,17 @@ app.get('/health', (req, res) => {
 
 // Routes
 app.use('/api/auth', authLimiter, authRoutes)
-app.use('/api/workouts', workoutRoutes)
-app.use('/api/exercises', exerciseRoutes)
-app.use('/api/users', userRoutes)
-app.use('/api/body-stats', bodyStatRoutes)
-app.use('/api/measurements', measurementRoutes)
-app.use('/api/photos', photoRoutes)
-app.use('/api/records', recordRoutes)
-app.use('/api/goals', goalRoutes)
-app.use('/api/notifications', notificationRoutes)
-app.use('/api/stats', statsRoutes)
-app.use('/api/subscription', subscriptionRoutes)
+app.use('/api/workouts', apiLimiter, workoutRoutes)
+app.use('/api/exercises', apiLimiter, exerciseRoutes)
+app.use('/api/users', apiLimiter, userRoutes)
+app.use('/api/body-stats', apiLimiter, bodyStatRoutes)
+app.use('/api/measurements', apiLimiter, measurementRoutes)
+app.use('/api/photos', apiLimiter, photoRoutes)
+app.use('/api/records', apiLimiter, recordRoutes)
+app.use('/api/goals', apiLimiter, goalRoutes)
+app.use('/api/notifications', apiLimiter, notificationRoutes)
+app.use('/api/stats', apiLimiter, statsRoutes)
+app.use('/api/subscription', apiLimiter, subscriptionRoutes)
 app.use('/api/webhook', webhookRoutes)
 app.use('/api/email', authLimiter, emailRoutes)
 

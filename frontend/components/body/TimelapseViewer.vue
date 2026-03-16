@@ -301,7 +301,7 @@ const exportVideo = async () => {
 
     recorder.stop()
   } catch (e) {
-    console.error('Video export error:', e)
+    logger.error('Video export error:', e)
     exporting.value = false
     exportProgress.value = ''
   }

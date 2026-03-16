@@ -11,7 +11,8 @@ const router = express.Router()
 // Helper: get ISO week string "YYYY-Www" from a date
 function getISOWeek(date: Date): string {
   const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
-  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7))
+  const dayNum = d.getUTCDay() || 7
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum)
   const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
   const weekNo = Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7)
   return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, '0')}`
@@ -44,14 +45,20 @@ router.get('/streak', authenticate, async (req: AuthRequest, res) => {
 
     const goalPerWeek = user.streakGoalPerWeek || 2
 
-    // Fetch all completed workouts
-    const workouts = await workoutRepo.find({
-      where: { userId },
-      order: { completedAt: 'DESC' },
-      select: ['id', 'completedAt']
-    })
+    // Fetch completed workouts (last 2 years max for performance)
+    const twoYearsAgo = new Date()
+    twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2)
 
-    const completedWorkouts = workouts.filter(w => w.completedAt)
+    const workouts = await workoutRepo
+      .createQueryBuilder('w')
+      .select(['w.id', 'w.completedAt'])
+      .where('w.userId = :userId', { userId })
+      .andWhere('w.completedAt IS NOT NULL')
+      .andWhere('w.completedAt >= :since', { since: twoYearsAgo })
+      .orderBy('w.completedAt', 'DESC')
+      .getMany()
+
+    const completedWorkouts = workouts
 
     // Group workouts by ISO week
     const weekMap = new Map<string, number>()
@@ -465,7 +472,7 @@ router.get('/recovery', authenticate, async (req: AuthRequest, res) => {
     const sevenDaysAgo = new Date(now)
     sevenDaysAgo.setDate(now.getDate() - 7)
 
-    // Fetch workouts from last 14 days with exercises and sets
+    // Fetch workouts from last 14 days with exercises and sets (cap à 50 séances)
     const workouts = await AppDataSource.getRepository(Workout)
       .createQueryBuilder('w')
       .leftJoinAndSelect('w.exercises', 'e')
@@ -475,6 +482,7 @@ router.get('/recovery', authenticate, async (req: AuthRequest, res) => {
       .andWhere('w.completedAt IS NOT NULL')
       .andWhere('w.completedAt >= :since', { since: fourteenDaysAgo })
       .orderBy('w.completedAt', 'DESC')
+      .take(50)
       .getMany()
 
     // Check if no workouts in last 7 days

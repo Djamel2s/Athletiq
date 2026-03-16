@@ -9,6 +9,15 @@ export const globalLimiter = rateLimit({
   legacyHeaders: false
 })
 
+// Rate limiter pour les endpoints API authentifiés — 60 req/min par IP
+export const apiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60,
+  message: { error: 'Trop de requêtes, réessayez dans une minute' },
+  standardHeaders: true,
+  legacyHeaders: false
+})
+
 // Rate limiter strict pour auth — 30 tentatives par 15 min par IP
 // Empêche le brute-force sur login/register
 export const authLimiter = rateLimit({

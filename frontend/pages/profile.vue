@@ -214,14 +214,28 @@ const goals = [
 
 const avatarUploading = ref(false)
 
+const toast = useToast()
+
 const handleAvatarUpload = async (event: Event) => {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
   if (!file) return
+
+  if (!file.type.startsWith('image/')) {
+    toast.error('Erreur', 'Le fichier doit être une image')
+    input.value = ''
+    return
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    toast.error('Erreur', 'La photo ne doit pas dépasser 5 Mo')
+    input.value = ''
+    return
+  }
+
   avatarUploading.value = true
   try {
     const result = await authStore.uploadAvatar(file)
-    if (!result.success) console.error('Avatar upload failed:', result.error)
+    if (!result.success) logger.error('Avatar upload failed:', result.error)
   } finally {
     avatarUploading.value = false
     input.value = ''
