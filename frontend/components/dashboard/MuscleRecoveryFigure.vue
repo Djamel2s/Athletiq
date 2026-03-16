@@ -1,41 +1,15 @@
 <template>
-  <div class="card-glass">
-    <!-- Légende -->
-    <div v-if="muscleRecovery.length > 0" class="flex flex-wrap justify-center gap-3 mb-4 text-xs">
-      <div class="flex items-center gap-1.5">
-        <span class="w-3 h-3 rounded-full bg-green-500"></span>
-        <span class="text-primary-600 dark:text-primary-400">Récupéré</span>
-      </div>
-      <div class="flex items-center gap-1.5">
-        <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
-        <span class="text-primary-600 dark:text-primary-400">En cours</span>
-      </div>
-      <div class="flex items-center gap-1.5">
-        <span class="w-3 h-3 rounded-full bg-red-500"></span>
-        <span class="text-primary-600 dark:text-primary-400">Fatigué</span>
-      </div>
-    </div>
+  <div class="card-glass overflow-hidden">
+    <!-- Mobile: slider horizontal avec snap | Desktop: côte à côte -->
+    <div
+      ref="sliderRef"
+      class="flex md:items-center md:gap-6 snap-x snap-mandatory overflow-x-auto md:overflow-visible scrollbar-hide"
+      @scroll="onScroll"
+    >
 
-    <!-- Layout: barres à gauche + figure à droite -->
-    <div class="flex items-center gap-4 md:gap-6">
-      <!-- Barres de récupération (gauche) -->
-      <div class="flex-1 min-w-0 space-y-2.5 bg-white/40 dark:bg-primary-800/40 rounded-2xl p-3 md:p-4 border border-primary-200/50 dark:border-primary-700/50">
-        <h3 class="text-[10px] md:text-xs font-semibold text-primary-500 dark:text-primary-400 uppercase tracking-wider mb-3 truncate">Récupération</h3>
-        <div v-for="m in displayBars" :key="m.muscle" class="flex items-center gap-2">
-          <span class="text-[10px] md:text-xs text-primary-500 dark:text-primary-400 w-16 md:w-24 truncate flex-shrink-0">{{ muscleLabel(m.muscle) }}</span>
-          <div class="flex-1 h-2 bg-primary-100 dark:bg-primary-800 rounded-full overflow-hidden">
-            <div
-              class="h-full rounded-full transition-all duration-500"
-              :class="barClass(m.score)"
-              :style="{ width: `${m.score}%` }"
-            ></div>
-          </div>
-          <span class="text-[10px] md:text-xs font-semibold text-primary-700 dark:text-primary-300 w-9 md:w-10 text-right flex-shrink-0">{{ m.score }}%</span>
-        </div>
-      </div>
-
-      <!-- Figure (droite) -->
-      <div class="h-64 md:h-80 flex items-center justify-center flex-shrink-0">
+      <!-- Slide 1 : Figure -->
+      <div class="w-full flex-shrink-0 snap-center md:w-auto md:flex-shrink md:order-2 flex justify-center">
+        <div class="h-56 md:h-80 flex items-center justify-center py-2">
         <!-- Male SVG -->
         <svg v-if="!isFemale" viewBox="0 0 300 520" xmlns="http://www.w3.org/2000/svg" class="h-full w-auto drop-shadow-lg">
           <defs>
@@ -295,7 +269,57 @@
           <path d="M74 232 Q68 242 66 248 Q64 254 70 256 L86 252 Q90 246 90 238 L90 228Z" fill="url(#shadow-f)"/>
           <path d="M226 232 Q232 242 234 248 Q236 254 230 256 L214 252 Q210 246 210 238 L210 228Z" fill="url(#shadow-f)"/>
         </svg>
+        </div>
       </div>
+
+      <!-- Slide 2 : Barres de récupération -->
+      <div class="w-full flex-shrink-0 snap-center md:w-auto md:flex-1 md:order-1 md:min-w-0 px-1 md:px-0">
+        <!-- Légende -->
+        <div v-if="muscleRecovery.length > 0" class="flex flex-wrap justify-center md:justify-start gap-3 mb-4 text-xs">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+            <span class="text-primary-600 dark:text-primary-400">Récupéré</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+            <span class="text-primary-600 dark:text-primary-400">En cours</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+            <span class="text-primary-600 dark:text-primary-400">Fatigué</span>
+          </div>
+        </div>
+
+        <!-- Barres -->
+        <div class="space-y-2.5">
+          <div v-for="m in displayBars" :key="m.muscle" class="flex items-center gap-2">
+            <span class="text-xs text-primary-500 dark:text-primary-400 w-20 truncate flex-shrink-0">{{ muscleLabel(m.muscle) }}</span>
+            <div class="flex-1 h-2.5 bg-primary-100 dark:bg-primary-800 rounded-full overflow-hidden">
+              <div
+                class="h-full rounded-full transition-all duration-500"
+                :class="barClass(m.score)"
+                :style="{ width: `${m.score}%` }"
+              ></div>
+            </div>
+            <span class="text-xs font-semibold w-10 text-right flex-shrink-0" :class="scoreClass(m.score)">{{ m.score }}%</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Indicateurs de slide (mobile uniquement) -->
+    <div class="flex justify-center gap-2 mt-3 md:hidden">
+      <button
+        @click="scrollToSlide(0)"
+        class="w-2 h-2 rounded-full transition-all duration-300"
+        :class="activeSlide === 0 ? 'bg-sand-500 w-5' : 'bg-primary-300 dark:bg-primary-600'"
+      ></button>
+      <button
+        @click="scrollToSlide(1)"
+        class="w-2 h-2 rounded-full transition-all duration-300"
+        :class="activeSlide === 1 ? 'bg-sand-500 w-5' : 'bg-primary-300 dark:bg-primary-600'"
+      ></button>
     </div>
   </div>
 </template>
@@ -318,6 +342,21 @@ const authStore = useAuthStore()
 const { isRose, accentColors } = useTheme()
 
 const isFemale = computed(() => authStore.user?.gender === 'female')
+
+// Slider mobile
+const sliderRef = ref<HTMLElement | null>(null)
+const activeSlide = ref(0)
+
+const onScroll = () => {
+  if (!sliderRef.value) return
+  const { scrollLeft, clientWidth } = sliderRef.value
+  activeSlide.value = scrollLeft > clientWidth * 0.4 ? 1 : 0
+}
+
+const scrollToSlide = (index: number) => {
+  if (!sliderRef.value) return
+  sliderRef.value.scrollTo({ left: index * sliderRef.value.clientWidth, behavior: 'smooth' })
+}
 
 // Default muscles shown when no data (full energy)
 const defaultMuscles = ['CHEST', 'BACK', 'SHOULDERS', 'QUADS', 'GLUTES', 'ABS', 'BICEPS', 'TRICEPS']
@@ -365,6 +404,13 @@ const getOverlayOpacity = (muscle: string): number => {
   return 0.55
 }
 
+const scoreClass = (score: number): string => {
+  if (score >= 85) return 'text-green-500'
+  if (score >= 60) return 'text-sand-500'
+  if (score >= 30) return 'text-yellow-500'
+  return 'text-red-500'
+}
+
 const barClass = (score: number): string => {
   if (score >= 85) return 'bg-green-500'
   if (score >= 60) return 'bg-sand-500'
@@ -381,3 +427,13 @@ const muscleLabel = (muscle: string) => {
   return labels[muscle] || muscle
 }
 </script>
+
+<style scoped>
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+</style>
