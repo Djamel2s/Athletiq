@@ -398,7 +398,7 @@
               class="relative group aspect-square rounded-xl overflow-hidden cursor-pointer"
               @click="openPhoto(photo)"
             >
-              <img :src="photo.photoUrl" :alt="`Photo ${photo.id}`" class="w-full h-full object-cover" />
+              <img :src="photo.photoUrl" :alt="`Photo ${photo.id}`" loading="lazy" class="w-full h-full object-cover" />
               <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-end">
                 <div class="w-full p-3 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                   <p class="text-white text-sm font-medium">{{ formatDate(photo.workout?.date || photo.createdAt) }}</p>

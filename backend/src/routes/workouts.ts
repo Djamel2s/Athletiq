@@ -4,7 +4,7 @@ import { AppDataSource } from '../config/database.js'
 import { Workout } from '../entities/Workout.js'
 import { Exercise } from '../entities/Exercise.js'
 import { Set } from '../entities/Set.js'
-import { WorkoutPhoto } from '../entities/WorkoutPhoto.js'
+
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { checkAndCreatePRNotifications, checkStreakMilestone } from '../services/notificationService.js'
 import { checkWorkoutLimit, checkTemplateLimit, getUserPlanType, withUserLock } from '../services/limitService.js'
@@ -18,7 +18,7 @@ const router = express.Router()
 const workoutRepo = AppDataSource.getRepository(Workout)
 const exerciseRepo = AppDataSource.getRepository(Exercise)
 const setRepo = AppDataSource.getRepository(Set)
-const photoRepo = AppDataSource.getRepository(WorkoutPhoto)
+
 
 // Validation schemas
 const createWorkoutSchema = z.object({
@@ -92,7 +92,7 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
 
     const [workouts, total] = await workoutRepo.findAndCount({
       where,
-      relations: ['exercises', 'exercises.sets', 'exercises.exerciseLibrary', 'photos'],
+      relations: ['exercises'],
       order: { date: 'DESC' },
       take: limit,
       skip: offset

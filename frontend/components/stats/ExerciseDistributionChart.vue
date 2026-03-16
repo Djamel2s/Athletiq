@@ -4,20 +4,7 @@
 
 <script setup lang="ts">
 import { Doughnut } from 'vue-chartjs'
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend
-} from 'chart.js'
 import type { ChartData as AppChartData } from '~/types/statistics'
-
-// Register Chart.js components
-ChartJS.register(
-  ArcElement,
-  Tooltip,
-  Legend
-)
 
 interface Props {
   data: AppChartData

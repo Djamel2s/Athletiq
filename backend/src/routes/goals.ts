@@ -84,8 +84,35 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
       order: { date: 'DESC' }
     })
 
+    // Pre-fetch all PR maxes in a single query to avoid N+1
+    const prGoals = goals.filter(g => g.type === GoalType.PR && g.exerciseName)
+    const prExerciseNames = [...new Set(prGoals.map(g => g.exerciseName!))]
+    const prMaxMap = new Map<string, number>()
+
+    if (prExerciseNames.length > 0) {
+      const prResults: Array<{ name: string; maxWeight: number }> = await AppDataSource.query(`
+        SELECT e.name, MAX(s.weight) as "maxWeight"
+        FROM sets s
+        INNER JOIN exercises e ON s."exerciseId" = e.id
+        INNER JOIN workouts w ON e."workoutId" = w.id
+        WHERE w."userId" = $1
+          AND e.name = ANY($2)
+          AND w."completedAt" IS NOT NULL
+          AND s.weight > 0
+        GROUP BY e.name
+      `, [req.user!.id, prExerciseNames])
+      for (const r of prResults) {
+        prMaxMap.set(r.name, Number(r.maxWeight) || 0)
+      }
+    }
+
     const goalsWithProgress = await Promise.all(goals.map(async (goal) => {
-      const currentValue = await calculateCurrentValue(goal, latestBodyStat)
+      let currentValue: number
+      if (goal.type === GoalType.PR && goal.exerciseName) {
+        currentValue = prMaxMap.get(goal.exerciseName) ?? goal.startValue
+      } else {
+        currentValue = await calculateCurrentValue(goal, latestBodyStat)
+      }
       const progress = calculateProgress(goal.startValue, currentValue, goal.targetValue)
       return { ...goal, currentValue, progress }
     }))

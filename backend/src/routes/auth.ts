@@ -83,8 +83,8 @@ router.post('/register', async (req, res) => {
     }
 
     // Generate JWT and refresh token
-    const token = generateToken({ userId: user.id, email: user.email })
-    const refreshToken = generateRefreshToken({ userId: user.id, email: user.email })
+    const token = generateToken({ userId: user.id, email: user.email, isAdmin: newUser.isAdmin })
+    const refreshToken = generateRefreshToken({ userId: user.id, email: user.email, isAdmin: newUser.isAdmin })
 
     // Save hashed refresh token
     newUser.refreshTokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex')
@@ -118,8 +118,8 @@ router.post('/login', async (req, res) => {
     }
 
     // Generate JWT and refresh token
-    const token = generateToken({ userId: user.id, email: user.email })
-    const refreshToken = generateRefreshToken({ userId: user.id, email: user.email })
+    const token = generateToken({ userId: user.id, email: user.email, isAdmin: user.isAdmin })
+    const refreshToken = generateRefreshToken({ userId: user.id, email: user.email, isAdmin: user.isAdmin })
 
     // Save hashed refresh token
     user.refreshTokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex')
@@ -176,8 +176,8 @@ router.post('/refresh', async (req, res) => {
     }
 
     // Generate new tokens
-    const newToken = generateToken({ userId: user.id, email: user.email })
-    const newRefreshToken = generateRefreshToken({ userId: user.id, email: user.email })
+    const newToken = generateToken({ userId: user.id, email: user.email, isAdmin: user.isAdmin })
+    const newRefreshToken = generateRefreshToken({ userId: user.id, email: user.email, isAdmin: user.isAdmin })
 
     // Update hashed refresh token
     user.refreshTokenHash = crypto.createHash('sha256').update(newRefreshToken).digest('hex')

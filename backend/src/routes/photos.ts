@@ -128,11 +128,16 @@ router.get('/timelapse', authenticate, async (req: AuthRequest, res) => {
       query.andWhere('workout.date <= :endDate', { endDate: d })
     }
 
-    const photos = await query
-      .orderBy('workout.date', 'ASC')
-      .getMany()
+    const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 100, 1), 500)
+    const offset = Math.max(parseInt(req.query.offset as string) || 0, 0)
 
-    res.json(photos)
+    const [photos, total] = await query
+      .orderBy('workout.date', 'ASC')
+      .take(limit)
+      .skip(offset)
+      .getManyAndCount()
+
+    res.json({ photos, total, limit, offset })
   } catch (error) {
     res.status(500).json({ error: 'Erreur lors de la récupération des photos timelapse' })
   }

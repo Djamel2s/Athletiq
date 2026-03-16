@@ -28,27 +28,37 @@ export async function checkAndCreatePRNotifications(userId: number, workoutId: n
 
     if (!workout?.exercises) return
 
+    // Build a map of exercise name → max weight in this workout
+    const exerciseMaxes = new Map<string, number>()
     for (const exercise of workout.exercises) {
       const name = exercise.exerciseLibrary?.name || exercise.name
-      const maxWeightInWorkout = Math.max(...(exercise.sets?.map(s => s.weight || 0) || [0]))
+      const maxWeight = Math.max(...(exercise.sets?.map(s => s.weight || 0) || [0]))
+      if (maxWeight <= 0) continue
+      const existing = exerciseMaxes.get(name) || 0
+      if (maxWeight > existing) exerciseMaxes.set(name, maxWeight)
+    }
 
-      if (maxWeightInWorkout <= 0) continue
+    if (exerciseMaxes.size === 0) return
 
-      // Check if this is a PR (higher than any previous workout)
-      const result = await AppDataSource.query(`
-        SELECT MAX(s.weight) as "prevMax"
-        FROM sets s
-        INNER JOIN exercises e ON s."exerciseId" = e.id
-        INNER JOIN workouts w ON e."workoutId" = w.id
-        WHERE w."userId" = $1
-          AND e.name = $2
-          AND w."completedAt" IS NOT NULL
-          AND w.id != $3
-          AND s.weight > 0
-      `, [userId, name, workoutId])
+    // Single batch query: get previous max weight for all exercise names at once
+    const names = Array.from(exerciseMaxes.keys())
+    const prevMaxes: Array<{ name: string; prevMax: number }> = await AppDataSource.query(`
+      SELECT e.name, MAX(s.weight) as "prevMax"
+      FROM sets s
+      INNER JOIN exercises e ON s."exerciseId" = e.id
+      INNER JOIN workouts w ON e."workoutId" = w.id
+      WHERE w."userId" = $1
+        AND e.name = ANY($2)
+        AND w."completedAt" IS NOT NULL
+        AND w.id != $3
+        AND s.weight > 0
+      GROUP BY e.name
+    `, [userId, names, workoutId])
 
-      const prevMax = result[0]?.prevMax || 0
+    const prevMaxMap = new Map(prevMaxes.map(r => [r.name, Number(r.prevMax) || 0]))
 
+    for (const [name, maxWeightInWorkout] of exerciseMaxes) {
+      const prevMax = prevMaxMap.get(name) || 0
       if (maxWeightInWorkout > prevMax && prevMax > 0) {
         await createNotification(
           userId,
@@ -74,7 +84,8 @@ export async function checkStreakMilestone(userId: number) {
     const workouts = await AppDataSource.getRepository(Workout).find({
       where: { userId },
       order: { completedAt: 'DESC' },
-      select: ['completedAt']
+      select: ['completedAt'],
+      take: 200
     })
 
     const completedWorkouts = workouts.filter(w => w.completedAt)

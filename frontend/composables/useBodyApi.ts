@@ -98,7 +98,8 @@ export const useBodyApi = () => {
     if (endDate) params.append('endDate', endDate)
     const query = params.toString() ? `?${params.toString()}` : ''
 
-    return await $fetch<ProgressPhoto[]>(`${config.public.apiUrl}/photos/timelapse${query}`, fetchOpts())
+    const res = await $fetch<{ photos: ProgressPhoto[]; total: number }>(`${config.public.apiUrl}/photos/timelapse${query}`, fetchOpts())
+    return res.photos
   }
 
   const getRecentPhotos = async (limit = 10) => {
