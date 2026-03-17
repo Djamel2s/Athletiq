@@ -1,6 +1,14 @@
 import { defineStore } from 'pinia'
 import { useAuthStore } from './auth'
 
+const API_TIMEOUT = 30000
+
+function fetchWithTimeout(url: string, opts: RequestInit = {}): Promise<Response> {
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT)
+  return fetch(url, { ...opts, signal: controller.signal }).finally(() => clearTimeout(timeoutId))
+}
+
 interface SubscriptionState {
   plan: string | null
   status: string | null
@@ -48,7 +56,7 @@ export const useSubscriptionStore = defineStore('subscription', {
       this.isLoading = true
       try {
         const config = useRuntimeConfig()
-        const response = await fetch(`${config.public.apiUrl}/subscription`, {
+        const response = await fetchWithTimeout(`${config.public.apiUrl}/subscription`, {
           headers: { Authorization: `Bearer ${authStore.token}` }
         })
 
@@ -75,7 +83,7 @@ export const useSubscriptionStore = defineStore('subscription', {
 
       try {
         const config = useRuntimeConfig()
-        const response = await fetch(`${config.public.apiUrl}/subscription/checkout`, {
+        const response = await fetchWithTimeout(`${config.public.apiUrl}/subscription/checkout`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -111,7 +119,7 @@ export const useSubscriptionStore = defineStore('subscription', {
 
       try {
         const config = useRuntimeConfig()
-        const response = await fetch(`${config.public.apiUrl}/subscription/portal`, {
+        const response = await fetchWithTimeout(`${config.public.apiUrl}/subscription/portal`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -142,7 +150,7 @@ export const useSubscriptionStore = defineStore('subscription', {
 
       try {
         const config = useRuntimeConfig()
-        const response = await fetch(`${config.public.apiUrl}/subscription/cancel`, {
+        const response = await fetchWithTimeout(`${config.public.apiUrl}/subscription/cancel`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

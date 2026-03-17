@@ -16,7 +16,7 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
     })
     res.json(notifications)
   } catch (error) {
-    console.error('Notifications fetch error:', error)
+    console.error('[Notifications]','Notifications fetch error:', error)
     res.status(500).json({ error: 'Erreur lors de la récupération des notifications' })
   }
 })
@@ -29,7 +29,7 @@ router.get('/unread-count', authenticate, async (req: AuthRequest, res) => {
     })
     res.json({ count })
   } catch (error) {
-    console.error('Unread count error:', error)
+    console.error('[Notifications]','Unread count error:', error)
     res.status(500).json({ error: 'Erreur lors de la récupération du nombre de non lus' })
   }
 })
@@ -48,7 +48,7 @@ router.put('/:id/read', authenticate, async (req: AuthRequest, res) => {
     await repo.save(notification)
     res.json(notification)
   } catch (error) {
-    console.error('Mark read error:', error)
+    console.error('[Notifications]','Mark read error:', error)
     res.status(500).json({ error: 'Erreur lors du marquage de la notification' })
   }
 })
@@ -65,7 +65,7 @@ router.put('/read-all', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ message: 'Toutes les notifications marquées comme lues' })
   } catch (error) {
-    console.error('Mark all read error:', error)
+    console.error('[Notifications]','Mark all read error:', error)
     res.status(500).json({ error: 'Erreur lors du marquage des notifications' })
   }
 })
@@ -83,7 +83,7 @@ router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
     await repo.remove(notification)
     res.json({ message: 'Notification supprimée' })
   } catch (error) {
-    console.error('Delete notification error:', error)
+    console.error('[Notifications]','Delete notification error:', error)
     res.status(500).json({ error: 'Erreur lors de la suppression de la notification' })
   }
 })

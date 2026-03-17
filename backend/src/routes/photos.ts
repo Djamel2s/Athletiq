@@ -176,6 +176,16 @@ router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
       return res.status(404).json({ error: 'Photo non trouvée' })
     }
 
+    // Delete from Cloudinary before removing DB record
+    if (photo.photoUrl) {
+      const parts = photo.photoUrl.split('/')
+      const athletiqIndex = parts.indexOf('athletiq')
+      if (athletiqIndex !== -1) {
+        const publicId = parts.slice(athletiqIndex).join('/').replace(/\.[^.]+$/, '')
+        await cloudinary.uploader.destroy(publicId).catch(() => {})
+      }
+    }
+
     await photoRepository.remove(photo)
     res.json({ message: 'Photo supprimée' })
   } catch (error) {

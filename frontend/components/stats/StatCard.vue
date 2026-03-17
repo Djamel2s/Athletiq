@@ -1,7 +1,9 @@
 <template>
   <div class="card-glass text-center">
     <div class="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center mb-4 mx-auto icon-container">
-      <div v-html="icon" class="w-6 h-6 text-white"></div>
+      <slot name="icon">
+        <div class="w-6 h-6 text-white" />
+      </slot>
     </div>
     <p class="text-sm text-primary-600 dark:text-primary-400 mb-2">{{ title }}</p>
     <p class="text-3xl font-bold text-primary-900 dark:text-primary-100 mb-1">{{ formattedValue }}</p>
@@ -13,7 +15,6 @@
 interface Props {
   title: string
   value: number | string | undefined
-  icon: string
   subtitle?: string
   format?: 'number' | 'time' | 'weight' | 'duration' | 'calories'
 }

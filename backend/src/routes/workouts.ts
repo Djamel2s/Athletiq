@@ -354,8 +354,8 @@ router.post('/:id/complete', authenticate, async (req: AuthRequest, res) => {
       })
 
       // Fire-and-forget: check for PR and streak notifications
-      checkAndCreatePRNotifications(userId, workout.id).catch(err => console.error('Background job failed:', err))
-      checkStreakMilestone(userId).catch(err => console.error('Background job failed:', err))
+      checkAndCreatePRNotifications(userId, workout.id).catch(err => console.error('PR notification job failed:', { userId, workoutId: workout.id, error: err }))
+      checkStreakMilestone(userId).catch(err => console.error('Streak check job failed:', { userId, error: err }))
 
       return { status: 200, body: { message: 'Séance terminée', workout: updatedWorkout } }
     })

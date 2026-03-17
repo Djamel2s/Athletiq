@@ -82,11 +82,15 @@ const handleSubmit = async () => {
 
   try {
     const config = useRuntimeConfig()
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 30000)
     const response = await fetch(`${config.public.apiUrl}/email/forgot-password`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email.value })
+      body: JSON.stringify({ email: email.value }),
+      signal: controller.signal
     })
+    clearTimeout(timeoutId)
 
     if (response.ok) {
       sent.value = true
