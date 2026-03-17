@@ -7,6 +7,7 @@ import { Workout } from '../entities/Workout.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { checkPhotoLimit } from '../services/limitService.js'
 import { parseId } from '../utils/validation.js'
+import { validateImageMagicBytes } from '../utils/fileValidation.js'
 
 const router = express.Router()
 const photoRepository = AppDataSource.getRepository(WorkoutPhoto)
@@ -38,6 +39,10 @@ router.post(
 
       if (!req.file) {
         return res.status(400).json({ error: 'Aucune photo fournie' })
+      }
+
+      if (!validateImageMagicBytes(req.file.buffer)) {
+        return res.status(400).json({ error: 'Type de fichier non autorisé. Le contenu ne correspond pas à une image valide.' })
       }
 
       // Vérifier la limite de photos

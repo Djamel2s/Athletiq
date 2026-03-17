@@ -1,4 +1,5 @@
 import type { Workout, Exercise, Set, ExerciseLibrary } from '~/types/workout'
+import { apiFetch } from '~/utils/apiFetch'
 
 export const useWorkoutApi = () => {
   const config = useRuntimeConfig()
@@ -18,14 +19,14 @@ export const useWorkoutApi = () => {
 
   // ========== WORKOUTS ==========
   const getWorkouts = async () => {
-    return await $fetch<{ workouts: Workout[] }>(`${config.public.apiUrl}/workouts`, {
-      ...fetchOpts()
+    return await apiFetch<{ workouts: Workout[] }>('/workouts', {
+      timeout: API_TIMEOUT
     })
   }
 
   const getWorkout = async (id: number) => {
-    return await $fetch<Workout>(`${config.public.apiUrl}/workouts/${id}`, {
-      ...fetchOpts()
+    return await apiFetch<Workout>(`/workouts/${id}`, {
+      timeout: API_TIMEOUT
     })
   }
 

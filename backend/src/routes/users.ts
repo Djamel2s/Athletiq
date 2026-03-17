@@ -5,6 +5,7 @@ import cloudinary from '../config/cloudinary.js'
 import { AppDataSource } from '../config/database.js'
 import { User } from '../entities/User.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
+import { validateImageMagicBytes } from '../utils/fileValidation.js'
 
 const router = express.Router()
 const userRepository = AppDataSource.getRepository(User)
@@ -88,6 +89,10 @@ router.post('/me/avatar', authenticate, upload.single('avatar'), async (req: Aut
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'Aucune image fournie' })
+    }
+
+    if (!validateImageMagicBytes(req.file.buffer)) {
+      return res.status(400).json({ error: 'Type de fichier non autorisé. Le contenu ne correspond pas à une image valide.' })
     }
 
     // Delete old avatar from Cloudinary if exists

@@ -27,9 +27,10 @@
 
           <button
             @click="confirmComplete"
-            class="btn-primary text-sm py-2 px-4"
+            :disabled="isCompleting"
+            class="btn-primary text-sm py-2 px-4 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Terminer
+            {{ isCompleting ? '...' : 'Terminer' }}
           </button>
         </div>
       </div>
@@ -395,8 +396,8 @@
             <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-2">Terminer l'entraînement ?</h3>
             <p class="text-primary-600 dark:text-primary-400 text-sm mb-6">Ta séance sera enregistrée avec toutes les séries validées.</p>
             <div class="space-y-3">
-              <button @click="showCompleteModal = false; completeWorkout()" class="w-full py-3 rounded-2xl bg-gradient-primary text-white font-medium transition-colors">
-                Terminer
+              <button @click="showCompleteModal = false; completeWorkout()" :disabled="isCompleting" class="w-full py-3 rounded-2xl bg-gradient-primary text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                {{ isCompleting ? 'En cours...' : 'Terminer' }}
               </button>
               <button @click="showCompleteModal = false" class="w-full py-3 rounded-2xl bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-200 font-medium hover:bg-primary-200 dark:hover:bg-primary-700 transition-colors">
                 Continuer
@@ -469,6 +470,7 @@ const restInterval = ref<NodeJS.Timeout | null>(null)
 const elapsedTime = ref(0)
 const timerInterval = ref<NodeJS.Timeout | null>(null)
 const countdownInterval = ref<NodeJS.Timeout | null>(null)
+const countdownTimeout = ref<NodeJS.Timeout | null>(null)
 
 const currentExercise = computed(() => {
   if (!workout.value?.exercises || workout.value.exercises.length === 0) return null
@@ -544,6 +546,7 @@ onBeforeUnmount(() => {
   if (timerInterval.value) { clearInterval(timerInterval.value); timerInterval.value = null }
   if (restInterval.value) { clearInterval(restInterval.value); restInterval.value = null }
   if (countdownInterval.value) { clearInterval(countdownInterval.value); countdownInterval.value = null }
+  if (countdownTimeout.value) { clearTimeout(countdownTimeout.value); countdownTimeout.value = null }
   workoutStore.clearCurrentWorkout()
 })
 
@@ -556,9 +559,10 @@ const startCountdown = () => {
 
       if (countdownNumber.value === 0) {
         countdownNumber.value = 'GO'
-        setTimeout(() => {
+        countdownTimeout.value = setTimeout(() => {
           showCountdown.value = false
           if (countdownInterval.value) { clearInterval(countdownInterval.value); countdownInterval.value = null }
+          countdownTimeout.value = null
           resolve()
         }, 800)
       }
@@ -851,8 +855,11 @@ const receiptData = computed(() => {
   }
 })
 
+const isCompleting = ref(false)
+
 const completeWorkout = async () => {
-  if (!workout.value) return
+  if (!workout.value || isCompleting.value) return
+  isCompleting.value = true
 
   try {
     await workoutStore.completeWorkout(workout.value.id)
@@ -866,6 +873,8 @@ const completeWorkout = async () => {
   } catch (error) {
     toast.error('Erreur lors de la complétion')
     logger.error('Failed to complete workout:', error)
+  } finally {
+    isCompleting.value = false
   }
 }
 

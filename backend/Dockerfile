@@ -20,6 +20,9 @@ RUN npm ci --omit=dev
 
 COPY --from=builder /app/dist ./dist
 
+RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nodejs
+USER nodejs
+
 EXPOSE 3001
 
 CMD ["sh", "-c", "node dist/seeds/run.js; node dist/server.js"]

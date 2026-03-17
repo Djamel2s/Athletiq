@@ -40,6 +40,9 @@ router.get('/', authenticate, async (req, res) => {
     const queryBuilder = exerciseLibraryRepo.createQueryBuilder('exercise')
 
     // Search by name
+    if (search && typeof search === 'string' && search.length > 100) {
+      return res.status(400).json({ error: 'La recherche ne peut pas dépasser 100 caractères' })
+    }
     if (search && typeof search === 'string') {
       queryBuilder.andWhere('exercise.name ILIKE :search', {
         search: `%${search}%`

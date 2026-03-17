@@ -37,7 +37,10 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
       biceps: z.number().positive().nullish(),
       thighs: z.number().positive().nullish(),
       calves: z.number().positive().nullish(),
-      date: z.string().datetime().nullish()
+      date: z.string().datetime().nullish().refine(
+        val => !val || (new Date(val).getFullYear() >= 2000 && new Date(val) <= new Date(Date.now() + 3600000)),
+        { message: 'Date invalide' }
+      )
     }).refine(
       (data) => data.chest || data.waist || data.hips || data.biceps || data.thighs || data.calves,
       { message: 'Au moins une mensuration est requise' }
@@ -76,7 +79,10 @@ router.put('/:id', authenticate, async (req: AuthRequest, res) => {
       biceps: z.number().positive().nullish(),
       thighs: z.number().positive().nullish(),
       calves: z.number().positive().nullish(),
-      date: z.string().datetime().nullish()
+      date: z.string().datetime().nullish().refine(
+        val => !val || (new Date(val).getFullYear() >= 2000 && new Date(val) <= new Date(Date.now() + 3600000)),
+        { message: 'Date invalide' }
+      )
     })
 
     const data = schema.parse(req.body)

@@ -44,10 +44,10 @@
           v-if="authStore.user?.avatarUrl"
           type="button"
           @click="handleAvatarDelete"
-          :disabled="avatarUploading"
-          class="text-xs text-red-500 hover:text-red-600 mt-2 transition-colors"
+          :disabled="avatarUploading || avatarDeleting"
+          class="text-xs text-red-500 hover:text-red-600 mt-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Supprimer la photo
+          {{ avatarDeleting ? 'Suppression...' : 'Supprimer la photo' }}
         </button>
       </div>
 
@@ -213,6 +213,7 @@ const goals = [
 ]
 
 const avatarUploading = ref(false)
+const avatarDeleting = ref(false)
 
 const toast = useToast()
 
@@ -243,11 +244,12 @@ const handleAvatarUpload = async (event: Event) => {
 }
 
 const handleAvatarDelete = async () => {
-  avatarUploading.value = true
+  if (avatarDeleting.value) return
+  avatarDeleting.value = true
   try {
     await authStore.deleteAvatar()
   } finally {
-    avatarUploading.value = false
+    avatarDeleting.value = false
   }
 }
 

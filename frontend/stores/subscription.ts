@@ -126,7 +126,7 @@ export const useSubscriptionStore = defineStore('subscription', {
 
     async openPortal() {
       const authStore = useAuthStore()
-      if (!authStore.token) return
+      if (!authStore.token) return { error: 'Non authentifié' }
 
       try {
         const config = useRuntimeConfig()
@@ -149,10 +149,14 @@ export const useSubscriptionStore = defineStore('subscription', {
             window.location.href = data.url
           } catch {
             logger.error('Invalid portal redirect URL')
+            return { error: 'URL de redirection invalide' }
           }
+        } else {
+          return { error: data.error || 'Impossible d\'ouvrir le portail' }
         }
       } catch (error) {
         logger.error('Error opening portal:', error)
+        return { error: 'Erreur de connexion' }
       }
     },
 
