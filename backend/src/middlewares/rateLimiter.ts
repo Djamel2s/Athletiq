@@ -18,6 +18,15 @@ export const apiLimiter = rateLimit({
   legacyHeaders: false
 })
 
+// Rate limiter pour webhook — 100 req/min par IP
+export const webhookLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 100,
+  message: { error: 'Trop de requêtes webhook, réessayez dans une minute' },
+  standardHeaders: true,
+  legacyHeaders: false
+})
+
 // Rate limiter strict pour auth — 30 tentatives par 15 min par IP
 // Empêche le brute-force sur login/register
 export const authLimiter = rateLimit({

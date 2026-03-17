@@ -177,7 +177,7 @@ const loading = ref(true)
 const workout = computed(() => workoutStore.currentWorkout)
 
 onMounted(async () => {
-  authStore.loadFromLocalStorage()
+  await authStore.initAuth()
   if (!authStore.isAuthenticated) {
     navigateTo('/login')
     return

@@ -12,6 +12,9 @@ const stripe = process.env.STRIPE_SECRET_KEY
   : null
 
 const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || ''
+if (process.env.NODE_ENV === 'production' && !process.env.STRIPE_WEBHOOK_SECRET) {
+  throw new Error('STRIPE_WEBHOOK_SECRET is required in production')
+}
 
 // ============================================================
 // POST /api/webhook/stripe — Reçoit les événements Stripe

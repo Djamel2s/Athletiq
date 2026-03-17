@@ -352,7 +352,7 @@ const filterDifficulty = ref('')
 
 // Auth check and load workout
 onMounted(async () => {
-  authStore.loadFromLocalStorage()
+  await authStore.initAuth()
   if (!authStore.isAuthenticated) {
     navigateTo('/login')
     return

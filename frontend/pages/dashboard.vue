@@ -248,7 +248,7 @@ const recoveryData = ref<{ score: number; muscleRecovery: Array<{ muscle: string
 
 // Charger l'utilisateur depuis le localStorage
 onMounted(async () => {
-  authStore.loadFromLocalStorage()
+  await authStore.initAuth()
 
   // Rediriger vers login si non authentifié
   if (!authStore.isAuthenticated) {

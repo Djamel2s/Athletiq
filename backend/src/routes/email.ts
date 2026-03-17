@@ -58,11 +58,19 @@ router.get('/verify/:token', async (req, res) => {
     const { token } = req.params
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
 
+    // Find users with a pending verification token
     const user = await userRepo.findOne({
       where: { emailVerificationToken: hashedToken }
     })
 
-    if (!user) {
+    if (!user || !user.emailVerificationToken) {
+      return res.status(400).json({ error: 'Token invalide ou expiré' })
+    }
+
+    // Timing-safe comparison to prevent timing attacks
+    const storedTokenBuf = Buffer.from(user.emailVerificationToken, 'hex')
+    const receivedTokenBuf = Buffer.from(hashedToken, 'hex')
+    if (storedTokenBuf.length !== receivedTokenBuf.length || !crypto.timingSafeEqual(storedTokenBuf, receivedTokenBuf)) {
       return res.status(400).json({ error: 'Token invalide ou expiré' })
     }
 
@@ -135,6 +143,9 @@ router.post('/forgot-password', async (req, res) => {
 const resetSchema = z.object({
   token: z.string(),
   password: z.string().min(8).max(128)
+    .regex(/[a-z]/, 'Le mot de passe doit contenir au moins une minuscule')
+    .regex(/[A-Z]/, 'Le mot de passe doit contenir au moins une majuscule')
+    .regex(/[0-9]/, 'Le mot de passe doit contenir au moins un chiffre')
 })
 
 router.post('/reset-password', async (req, res) => {
@@ -151,7 +162,7 @@ router.post('/reset-password', async (req, res) => {
     }
 
     // Mettre à jour le mot de passe
-    user.password = await bcrypt.hash(password, 10)
+    user.password = await bcrypt.hash(password, 12)
     user.passwordResetToken = undefined
     user.passwordResetExpires = undefined
     await userRepo.save(user)

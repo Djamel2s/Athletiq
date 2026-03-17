@@ -249,7 +249,7 @@ const { isPremium, usage, fetchUsage, workoutUsageText, templateUsageText, photo
 const checkoutLoading = ref(false)
 
 onMounted(async () => {
-  authStore.loadFromLocalStorage()
+  await authStore.initAuth()
   if (!authStore.isAuthenticated) {
     navigateTo('/login')
     return

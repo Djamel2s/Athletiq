@@ -227,7 +227,21 @@ const error = ref('')
 const avatarFile = ref<File | null>(null)
 const avatarPreview = ref('')
 
-const handleAvatarSelect = (event: Event) => {
+const validateImageMagicBytes = async (file: File): Promise<boolean> => {
+  const buffer = await file.slice(0, 4).arrayBuffer()
+  const bytes = new Uint8Array(buffer)
+  // JPEG: FF D8 FF
+  if (bytes[0] === 0xFF && bytes[1] === 0xD8 && bytes[2] === 0xFF) return true
+  // PNG: 89 50 4E 47
+  if (bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47) return true
+  // GIF: 47 49 46 38
+  if (bytes[0] === 0x47 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x38) return true
+  // WebP: 52 49 46 46 (RIFF header)
+  if (bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x46) return true
+  return false
+}
+
+const handleAvatarSelect = async (event: Event) => {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
   if (!file) return
@@ -243,7 +257,16 @@ const handleAvatarSelect = (event: Event) => {
     return
   }
 
+  const validBytes = await validateImageMagicBytes(file)
+  if (!validBytes) {
+    error.value = 'Le fichier ne semble pas être une image valide'
+    input.value = ''
+    return
+  }
+
   avatarFile.value = file
+  // Revoke previous object URL if any
+  if (avatarPreview.value) URL.revokeObjectURL(avatarPreview.value)
   avatarPreview.value = URL.createObjectURL(file)
 }
 
@@ -254,6 +277,7 @@ const removeAvatar = () => {
 }
 
 const handleRegister = async () => {
+  if (loading.value) return
   error.value = ''
 
   // Validation
@@ -294,8 +318,15 @@ const handleRegister = async () => {
 }
 
 // Rediriger si déjà connecté
-authStore.loadFromLocalStorage()
-if (process.client && authStore.isAuthenticated) {
-  navigateTo('/dashboard')
-}
+onMounted(async () => {
+  await authStore.initAuth()
+  if (authStore.isAuthenticated) {
+    navigateTo('/dashboard')
+  }
+})
+
+// Clean up object URLs on unmount
+onBeforeUnmount(() => {
+  if (avatarPreview.value) URL.revokeObjectURL(avatarPreview.value)
+})
 </script>

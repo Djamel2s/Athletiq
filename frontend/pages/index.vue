@@ -451,8 +451,8 @@ useHead({
 
 const authStore = useAuthStore()
 
-onMounted(() => {
-  authStore.loadFromLocalStorage()
+onMounted(async () => {
+  await authStore.initAuth()
 })
 
 const logout = () => {

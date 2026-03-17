@@ -4,10 +4,9 @@ services:
     container_name: athletiq-postgres
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: athletiq
-      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres} # TODO: Use a strong password via .env file in production
+      POSTGRES_DB: ${POSTGRES_DB:-athletiq}
     ports:
       - "5433:5432"
     volumes:

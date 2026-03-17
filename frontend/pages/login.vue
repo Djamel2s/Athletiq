@@ -143,8 +143,10 @@ const handleLogin = async () => {
 }
 
 // Rediriger si déjà connecté
-authStore.loadFromLocalStorage()
-if (process.client && authStore.isAuthenticated) {
-  navigateTo('/dashboard')
-}
+onMounted(async () => {
+  await authStore.initAuth()
+  if (authStore.isAuthenticated) {
+    navigateTo('/dashboard')
+  }
+})
 </script>

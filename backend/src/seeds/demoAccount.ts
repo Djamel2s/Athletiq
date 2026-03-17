@@ -133,7 +133,7 @@ export async function seedDemoAccount() {
 
   // ── Create demo user ──
   console.log('  Creating demo user...')
-  const hashedPassword = await bcrypt.hash('Athletiq!Demo2025', 10)
+  const hashedPassword = await bcrypt.hash('Athletiq!Demo2025', 12)
   const user = userRepo.create({
     email: 'demo@athletiq.app',
     password: hashedPassword,
@@ -147,7 +147,7 @@ export async function seedDemoAccount() {
     inactivityThresholdDays: 3,
   })
   await userRepo.save(user)
-  console.log(`  User created: demo@athletiq.app / Athletiq!Demo2025`)
+  console.log(`  User created: demo@athletiq.app`)
 
   // ── Load exercise library for linking ──
   const allLibExercises = await exerciseLibraryRepo.find()
@@ -396,7 +396,7 @@ export async function seedDemoAccount() {
   console.log('  Demo account seeded successfully!')
   console.log('  ────────────────────────────────')
   console.log('  Email:    demo@athletiq.app')
-  console.log('  Password: Athletiq!Demo2025')
+  console.log('  Password: (see seed source)')
   console.log(`  Workouts: ${workoutCount}`)
   console.log('  ────────────────────────────────')
 }

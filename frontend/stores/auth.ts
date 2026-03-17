@@ -13,18 +13,16 @@ interface User {
 interface AuthState {
   user: User | null
   token: string | null
-  refreshToken: string | null
   isAuthenticated: boolean
-  _isRefreshing: boolean
+  _refreshPromise: Promise<boolean> | null
 }
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
     user: null,
     token: null,
-    refreshToken: null,
     isAuthenticated: false,
-    _isRefreshing: false
+    _refreshPromise: null
   }),
 
   getters: {
@@ -76,9 +74,20 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async refreshAccessToken() {
-      if (this._isRefreshing) return false
-      this._isRefreshing = true
+      // If a refresh is already in progress, wait for it (race condition fix)
+      if (this._refreshPromise) {
+        return this._refreshPromise
+      }
 
+      this._refreshPromise = this._doRefresh()
+      try {
+        return await this._refreshPromise
+      } finally {
+        this._refreshPromise = null
+      }
+    },
+
+    async _doRefresh(): Promise<boolean> {
       try {
         const config = useRuntimeConfig()
         const response = await $fetch<{ token: string }>(`${config.public.apiUrl}/auth/refresh`, {
@@ -88,14 +97,11 @@ export const useAuthStore = defineStore('auth', {
         })
 
         this.token = response.token
-        this.saveToLocalStorage()
         return true
       } catch (error) {
         logger.error('Token refresh error:', error)
         this.logout()
         return false
-      } finally {
-        this._isRefreshing = false
       }
     },
 
@@ -109,7 +115,7 @@ export const useAuthStore = defineStore('auth', {
         })
 
         this.user = { ...this.user, ...response }
-        this.saveToLocalStorage()
+        this.saveUserToLocalStorage()
         return { success: true }
       } catch (error: any) {
         logger.error('Update profile error:', error)
@@ -134,7 +140,7 @@ export const useAuthStore = defineStore('auth', {
 
         if (this.user) {
           this.user.avatarUrl = response.avatarUrl
-          this.saveToLocalStorage()
+          this.saveUserToLocalStorage()
         }
         return { success: true, avatarUrl: response.avatarUrl }
       } catch (error: any) {
@@ -156,7 +162,7 @@ export const useAuthStore = defineStore('auth', {
 
         if (this.user) {
           this.user.avatarUrl = null
-          this.saveToLocalStorage()
+          this.saveUserToLocalStorage()
         }
         return { success: true }
       } catch (error: any) {
@@ -171,10 +177,8 @@ export const useAuthStore = defineStore('auth', {
     setAuth(data: any) {
       this.user = data.user
       this.token = data.token
-      // Le refresh token est maintenant géré par un cookie httpOnly côté serveur
-      this.refreshToken = data.refreshToken || null
       this.isAuthenticated = true
-      this.saveToLocalStorage()
+      this.saveUserToLocalStorage()
     },
 
     logout() {
@@ -188,50 +192,69 @@ export const useAuthStore = defineStore('auth', {
         }).catch(() => {}) // Don't block logout on API failure
       }
 
-      this._isRefreshing = false
+      this._refreshPromise = null
       this.user = null
       this.token = null
-      this.refreshToken = null
       this.isAuthenticated = false
       this.clearLocalStorage()
       navigateTo('/login')
     },
 
-    saveToLocalStorage() {
+    saveUserToLocalStorage() {
       if (process.client) {
-        localStorage.setItem('auth_token', this.token || '')
         localStorage.setItem('auth_user', JSON.stringify(this.user))
-        // Le refresh token est géré par un cookie httpOnly, plus besoin en localStorage
       }
     },
 
     clearLocalStorage() {
       if (process.client) {
-        localStorage.removeItem('auth_token')
+        localStorage.removeItem('auth_token') // Nettoyage legacy
         localStorage.removeItem('auth_refresh_token') // Nettoyage legacy
         localStorage.removeItem('auth_user')
       }
     },
 
-    loadFromLocalStorage() {
+    loadUserFromLocalStorage() {
       if (process.client) {
         try {
-          const token = localStorage.getItem('auth_token')
           const userStr = localStorage.getItem('auth_user')
 
-          if (token && userStr) {
+          if (userStr) {
             const user = JSON.parse(userStr)
             if (user && typeof user === 'object' && user.id) {
-              this.token = token
               this.user = user
-              this.isAuthenticated = true
+              // Don't set isAuthenticated yet - need to refresh token first
             } else {
               this.clearLocalStorage()
             }
           }
+          // Clean up legacy token from localStorage if present
+          localStorage.removeItem('auth_token')
         } catch {
           this.clearLocalStorage()
         }
+      }
+    },
+
+    /**
+     * Initialize auth on page load.
+     * Loads cached user data from localStorage for UX, then calls refresh
+     * endpoint to get a new access token via httpOnly cookie.
+     */
+    async initAuth() {
+      if (!process.client) return
+
+      this.loadUserFromLocalStorage()
+
+      // Try to get a fresh access token via the refresh cookie
+      const success = await this.refreshAccessToken()
+      if (success) {
+        this.isAuthenticated = true
+      } else {
+        // Refresh failed - user is not authenticated
+        this.user = null
+        this.token = null
+        this.isAuthenticated = false
       }
     }
   }

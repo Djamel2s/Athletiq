@@ -276,7 +276,7 @@ const activeTab = ref<'workouts' | 'history'>('workouts')
 
 // Auth check
 onMounted(async () => {
-  authStore.loadFromLocalStorage()
+  await authStore.initAuth()
   if (!authStore.isAuthenticated) {
     navigateTo('/login')
     return

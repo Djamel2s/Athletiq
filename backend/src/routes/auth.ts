@@ -35,7 +35,10 @@ const clearRefreshTokenCookie = (res: express.Response) => {
 // Validation schemas
 const registerSchema = z.object({
   email: z.string().email().max(255),
-  password: z.string().min(8).max(128),
+  password: z.string().min(8).max(128)
+    .regex(/[a-z]/, 'Le mot de passe doit contenir au moins une minuscule')
+    .regex(/[A-Z]/, 'Le mot de passe doit contenir au moins une majuscule')
+    .regex(/[0-9]/, 'Le mot de passe doit contenir au moins un chiffre'),
   firstName: z.string().max(100).nullish(),
   lastName: z.string().max(100).nullish(),
   gender: z.enum(['male', 'female']).nullish()
@@ -58,7 +61,7 @@ router.post('/register', async (req, res) => {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10)
+    const hashedPassword = await bcrypt.hash(password, 12)
 
     // Create user
     const newUser = userRepository.create({
@@ -67,6 +70,7 @@ router.post('/register', async (req, res) => {
       firstName: firstName ?? undefined,
       lastName: lastName ?? undefined,
       gender: gender ?? undefined,
+      isAdmin: false,
     })
     await userRepository.save(newUser)
 
@@ -114,6 +118,7 @@ router.post('/login', async (req, res) => {
     const validPassword = await bcrypt.compare(password, user?.password || dummyHash)
 
     if (!user || !validPassword) {
+      console.warn(`[AUTH] Failed login attempt for email="${email}" from IP=${req.ip}`)
       return res.status(401).json({ error: 'Identifiants invalides' })
     }
 

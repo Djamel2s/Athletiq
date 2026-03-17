@@ -232,7 +232,7 @@ const periods = [
 const selectedPeriod = ref<'month' | 'all'>('month')
 
 onMounted(async () => {
-  authStore.loadFromLocalStorage()
+  await authStore.initAuth()
   if (!authStore.isAuthenticated) {
     navigateTo('/login')
     return

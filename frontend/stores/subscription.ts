@@ -98,7 +98,8 @@ export const useSubscriptionStore = defineStore('subscription', {
           // Validate redirect URL to prevent open redirect
           try {
             const url = new URL(data.url)
-            if (!url.hostname.endsWith('.stripe.com')) throw new Error('Invalid redirect')
+            const allowedHosts = ['checkout.stripe.com', 'billing.stripe.com']
+            if (!allowedHosts.includes(url.hostname)) throw new Error('Invalid redirect')
             if (url.protocol !== 'https:') throw new Error('Invalid protocol')
             window.location.href = data.url
           } catch {
@@ -132,7 +133,8 @@ export const useSubscriptionStore = defineStore('subscription', {
           // Validate redirect URL to prevent open redirect
           try {
             const url = new URL(data.url)
-            if (!url.hostname.endsWith('.stripe.com')) throw new Error('Invalid redirect')
+            const allowedHosts = ['checkout.stripe.com', 'billing.stripe.com']
+            if (!allowedHosts.includes(url.hostname)) throw new Error('Invalid redirect')
             if (url.protocol !== 'https:') throw new Error('Invalid protocol')
             window.location.href = data.url
           } catch {

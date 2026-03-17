@@ -258,6 +258,7 @@ const initials = computed(() => {
 })
 
 const handleSave = async () => {
+  if (loading.value) return
   error.value = ''
   success.value = false
   loading.value = true
@@ -285,8 +286,8 @@ const handleSave = async () => {
   }
 }
 
-onMounted(() => {
-  authStore.loadFromLocalStorage()
+onMounted(async () => {
+  await authStore.initAuth()
   if (!authStore.isAuthenticated) {
     navigateTo('/login')
     return

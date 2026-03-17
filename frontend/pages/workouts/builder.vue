@@ -403,8 +403,8 @@ const filterEquipment = ref('')
 const filterDifficulty = ref('')
 
 // Auth check
-onMounted(() => {
-  authStore.loadFromLocalStorage()
+onMounted(async () => {
+  await authStore.initAuth()
   if (!authStore.isAuthenticated) {
     navigateTo('/login')
   }

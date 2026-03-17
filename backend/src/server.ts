@@ -8,7 +8,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
 import { initializeDatabase } from './config/database.js'
-import { globalLimiter, authLimiter, apiLimiter } from './middlewares/rateLimiter.js'
+import { globalLimiter, authLimiter, apiLimiter, webhookLimiter } from './middlewares/rateLimiter.js'
 import authRoutes from './routes/auth.js'
 import workoutRoutes from './routes/workouts.js'
 import exerciseRoutes from './routes/exercises.js'
@@ -75,7 +75,7 @@ app.use('/api/goals', apiLimiter, goalRoutes)
 app.use('/api/notifications', apiLimiter, notificationRoutes)
 app.use('/api/stats', apiLimiter, statsRoutes)
 app.use('/api/subscription', apiLimiter, subscriptionRoutes)
-app.use('/api/webhook', webhookRoutes)
+app.use('/api/webhook', webhookLimiter, webhookRoutes)
 app.use('/api/email', authLimiter, emailRoutes)
 
 // 404 handler

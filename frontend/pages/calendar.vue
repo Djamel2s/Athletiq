@@ -208,7 +208,7 @@ const authStore = useAuthStore()
 const workoutStore = useWorkoutStore()
 
 onMounted(async () => {
-  authStore.loadFromLocalStorage()
+  await authStore.initAuth()
   if (!authStore.isAuthenticated) {
     navigateTo('/login')
     return

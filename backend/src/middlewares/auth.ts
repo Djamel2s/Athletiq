@@ -6,6 +6,12 @@ if (!JWT_SECRET) {
   throw new Error('JWT_SECRET environment variable is required')
 }
 
+// Prevent weak/default JWT secrets in production
+const WEAK_SECRETS = ['secret', 'jwt_secret', 'changeme', 'password', 'default', 'your_jwt_secret', 'test']
+if (process.env.NODE_ENV === 'production' && WEAK_SECRETS.includes(JWT_SECRET.toLowerCase())) {
+  throw new Error('JWT_SECRET is too weak for production. Use a strong, random secret (at least 32 characters).')
+}
+
 export interface AuthRequest extends Request {
   userId?: number
   user?: {
@@ -53,7 +59,7 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
 }
 
 export const generateToken = (payload: JWTPayload): string => {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' })
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '15m' })
 }
 
 export const generateRefreshToken = (payload: JWTPayload): string => {

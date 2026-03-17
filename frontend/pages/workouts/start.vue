@@ -183,7 +183,7 @@ const isLaunching = ref<number | null>(null)
 
 // Auth check
 onMounted(async () => {
-  authStore.loadFromLocalStorage()
+  await authStore.initAuth()
   if (!authStore.isAuthenticated) {
     navigateTo('/login')
     return

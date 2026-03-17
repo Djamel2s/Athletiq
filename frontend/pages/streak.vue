@@ -325,7 +325,7 @@ const showShareModal = ref<'streak' | 'recap' | null>(null)
 const showCelebration = ref(false)
 
 onMounted(async () => {
-  authStore.loadFromLocalStorage()
+  await authStore.initAuth()
   if (!authStore.isAuthenticated) {
     navigateTo('/login')
     return

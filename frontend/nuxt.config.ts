@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
-  devtools: { enabled: true },
+  devtools: { enabled: process.env.NODE_ENV !== 'production' },
 
   modules: [
     '@nuxtjs/tailwindcss',
@@ -49,9 +49,9 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/svg+xml', href: '/athletiq-icon.svg' },
         { rel: 'apple-touch-icon', href: '/athletiq-icon.svg' }
       ],
-      script: [
-        { src: '/_vercel/speed-insights/script.js', defer: true }
-      ]
+      // Vercel Speed Insights removed - loaded automatically by Vercel platform when deployed.
+      // If needed, use the @vercel/speed-insights npm package instead for proper SRI support.
+      script: []
     }
   },
 
@@ -153,6 +153,15 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
+    '/**': {
+      headers: {
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '0',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+        'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://*.fly.dev https://*.stripe.com; frame-src https://*.stripe.com; object-src 'none'; base-uri 'self'"
+      }
+    },
     '/dashboard/**': { ssr: false },
     '/workouts/**': { ssr: false },
     '/settings': { ssr: false },
