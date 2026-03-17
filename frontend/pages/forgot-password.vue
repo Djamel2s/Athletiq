@@ -78,6 +78,13 @@ const sent = ref(false)
 
 const handleSubmit = async () => {
   error.value = ''
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email.value)) {
+    error.value = 'Veuillez entrer une adresse email valide'
+    return
+  }
+
   loading.value = true
 
   try {

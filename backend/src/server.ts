@@ -33,6 +33,14 @@ app.set('trust proxy', 1)
 // Initialiser la base de données
 await initializeDatabase()
 
+// Vérifier les credentials Cloudinary en production
+if (process.env.NODE_ENV === 'production') {
+  const { CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = process.env
+  if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
+    console.warn('⚠️ Missing Cloudinary credentials (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, or CLOUDINARY_API_SECRET). Photo uploads will not work.')
+  }
+}
+
 // Sécurité — headers HTTP (XSS, clickjacking, MIME sniffing, etc.)
 app.use(helmet())
 

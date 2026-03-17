@@ -139,20 +139,19 @@ export const useSubscriptionStore = defineStore('subscription', {
         })
 
         const data = await response.json()
-        if (data.url) {
-          // Validate redirect URL to prevent open redirect
-          try {
-            const url = new URL(data.url)
-            const allowedHosts = ['checkout.stripe.com', 'billing.stripe.com']
-            if (!allowedHosts.includes(url.hostname)) throw new Error('Invalid redirect')
-            if (url.protocol !== 'https:') throw new Error('Invalid protocol')
-            window.location.href = data.url
-          } catch {
-            logger.error('Invalid portal redirect URL')
-            return { error: 'URL de redirection invalide' }
-          }
-        } else {
-          return { error: data.error || 'Impossible d\'ouvrir le portail' }
+        if (!data.url) {
+          return { error: data.error || "Impossible d'ouvrir le portail" }
+        }
+        // Validate redirect URL to prevent open redirect
+        try {
+          const url = new URL(data.url)
+          const allowedHosts = ['checkout.stripe.com', 'billing.stripe.com']
+          if (!allowedHosts.includes(url.hostname)) throw new Error('Invalid redirect')
+          if (url.protocol !== 'https:') throw new Error('Invalid protocol')
+          window.location.href = data.url
+        } catch {
+          logger.error('Invalid portal redirect URL')
+          return { error: 'URL de redirection invalide' }
         }
       } catch (error) {
         logger.error('Error opening portal:', error)

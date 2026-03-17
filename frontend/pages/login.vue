@@ -10,6 +10,7 @@
         <p class="text-primary-600 dark:text-primary-400 text-body-relaxed">Connectez-vous à votre compte</p>
       </div>
 
+      <template v-if="!checking">
       <!-- Email verified banner -->
       <div v-if="emailVerified" class="mb-6 p-4 rounded-2xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 fade-in">
         <div class="flex items-center gap-3">
@@ -96,6 +97,7 @@
           Retour à l'accueil
         </NuxtLink>
       </div>
+      </template>
     </div>
   </div>
 </template>
@@ -121,6 +123,7 @@ const email = ref('')
 const password = ref('')
 const loading = ref(false)
 const error = ref('')
+const checking = ref(true)
 const emailVerified = computed(() => route.query.verified === 'true')
 
 const handleLogin = async () => {
@@ -148,5 +151,6 @@ onMounted(async () => {
   if (authStore.isAuthenticated) {
     navigateTo('/dashboard')
   }
+  checking.value = false
 })
 </script>

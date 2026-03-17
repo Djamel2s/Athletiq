@@ -61,7 +61,7 @@ router.put('/me', authenticate, async (req: AuthRequest, res) => {
 
     // Build update object with only explicitly allowed fields
     const updateData: Record<string, unknown> = {}
-    const allowedFields = ['firstName', 'lastName', 'goal', 'gender', 'reminderEnabled', 'reminderTime', 'streakGoalPerWeek'] as const
+    const allowedFields = ['firstName', 'lastName', 'goal', 'gender', 'reminderEnabled', 'reminderTime', 'streakGoalPerWeek', 'inactivityThresholdDays'] as const
     for (const field of allowedFields) {
       if (data[field] !== undefined) {
         updateData[field] = data[field] === null ? undefined : data[field]

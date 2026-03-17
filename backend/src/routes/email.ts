@@ -25,11 +25,13 @@ router.post('/verify/send', authenticate, async (req: AuthRequest, res) => {
       return res.json({ message: 'Email déjà vérifié' })
     }
 
-    // Cooldown : ne pas renvoyer si un token a été envoyé il y a moins de 2 minutes
+    // Check cooldown: if token was created less than 2 minutes ago, block
     if (user.emailVerificationExpires) {
-      const tokenAge = 24 * 60 * 60 * 1000 - (user.emailVerificationExpires.getTime() - Date.now())
-      if (tokenAge < 2 * 60 * 1000) {
-        return res.json({ message: 'Un email a déjà été envoyé récemment. Réessayez dans quelques minutes.' })
+      const TOKEN_LIFETIME = 24 * 60 * 60 * 1000 // 24h
+      const tokenCreatedAt = user.emailVerificationExpires.getTime() - TOKEN_LIFETIME
+      const timeSinceCreation = Date.now() - tokenCreatedAt
+      if (timeSinceCreation < 2 * 60 * 1000) {
+        return res.json({ message: 'Un email de vérification a déjà été envoyé récemment' })
       }
     }
 

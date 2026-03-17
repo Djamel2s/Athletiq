@@ -73,7 +73,11 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req, re
 
         // Déterminer le plan selon l'intervalle
         const interval = (stripeSub.items.data[0]?.price?.recurring?.interval)
-        subscription.plan = interval === 'year' ? SubscriptionPlan.YEARLY : SubscriptionPlan.MONTHLY
+        if (interval === 'year') {
+          subscription.plan = SubscriptionPlan.YEARLY
+        } else {
+          subscription.plan = SubscriptionPlan.MONTHLY
+        }
 
         subscription.currentPeriodStart = new Date((stripeSub as any).current_period_start * 1000)
         subscription.currentPeriodEnd = new Date((stripeSub as any).current_period_end * 1000)

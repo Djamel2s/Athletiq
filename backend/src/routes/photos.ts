@@ -66,6 +66,7 @@ router.post(
       }
 
       // If primary photo, remove previous primary flag
+      // Note: isPrimary is a string comparison because it comes from multer FormData (always a string)
       if (isPrimary === 'true') {
         await photoRepository.update(
           { workoutId: parseId(workoutId) },

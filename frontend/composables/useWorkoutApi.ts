@@ -2,20 +2,7 @@ import type { Workout, Exercise, Set, ExerciseLibrary } from '~/types/workout'
 import { apiFetch } from '~/utils/apiFetch'
 
 export const useWorkoutApi = () => {
-  const config = useRuntimeConfig()
-  const authStore = useAuthStore()
-
   const API_TIMEOUT = 30000
-
-  const getAuthHeaders = () => ({
-    Authorization: `Bearer ${authStore.token}`
-  })
-
-  const fetchOpts = (opts: Record<string, any> = {}) => ({
-    timeout: API_TIMEOUT,
-    headers: getAuthHeaders(),
-    ...opts
-  })
 
   // ========== WORKOUTS ==========
   const getWorkouts = async () => {
@@ -31,47 +18,47 @@ export const useWorkoutApi = () => {
   }
 
   const createWorkout = async (data: { name: string; description?: string; isTemplate?: boolean }) => {
-    return await $fetch<Workout>(`${config.public.apiUrl}/workouts`, {
+    return await apiFetch<Workout>('/workouts', {
       method: 'POST',
-      headers: getAuthHeaders(),
+      timeout: API_TIMEOUT,
       body: data
     })
   }
 
   const updateWorkout = async (id: number, data: Partial<Workout>) => {
-    return await $fetch<{ message: string; workout: Workout }>(
-      `${config.public.apiUrl}/workouts/${id}`,
+    return await apiFetch<{ message: string; workout: Workout }>(
+      `/workouts/${id}`,
       {
         method: 'PUT',
-        ...fetchOpts(),
+        timeout: API_TIMEOUT,
         body: data
       }
     )
   }
 
   const deleteWorkout = async (id: number) => {
-    return await $fetch<{ message: string }>(`${config.public.apiUrl}/workouts/${id}`, {
+    return await apiFetch<{ message: string }>(`/workouts/${id}`, {
       method: 'DELETE',
-      ...fetchOpts()
+      timeout: API_TIMEOUT
     })
   }
 
   const startWorkout = async (id: number) => {
-    return await $fetch<{ message: string; workout: Workout }>(
-      `${config.public.apiUrl}/workouts/${id}/start`,
+    return await apiFetch<{ message: string; workout: Workout }>(
+      `/workouts/${id}/start`,
       {
         method: 'POST',
-        ...fetchOpts()
+        timeout: API_TIMEOUT
       }
     )
   }
 
   const completeWorkout = async (id: number) => {
-    return await $fetch<{ message: string; workout: Workout }>(
-      `${config.public.apiUrl}/workouts/${id}/complete`,
+    return await apiFetch<{ message: string; workout: Workout }>(
+      `/workouts/${id}/complete`,
       {
         method: 'POST',
-        ...fetchOpts()
+        timeout: API_TIMEOUT
       }
     )
   }
@@ -93,27 +80,27 @@ export const useWorkoutApi = () => {
     if (params?.limit) query.append('limit', params.limit.toString())
     if (params?.offset) query.append('offset', params.offset.toString())
 
-    return await $fetch<{
+    return await apiFetch<{
       exercises: ExerciseLibrary[]
       total: number
       limit: number
       offset: number
-    }>(`${config.public.apiUrl}/exercises?${query.toString()}`, {
-      ...fetchOpts()
+    }>(`/exercises?${query.toString()}`, {
+      timeout: API_TIMEOUT
     })
   }
 
   const getExerciseById = async (id: number) => {
-    return await $fetch<ExerciseLibrary>(`${config.public.apiUrl}/exercises/${id}`, {
-      ...fetchOpts()
+    return await apiFetch<ExerciseLibrary>(`/exercises/${id}`, {
+      timeout: API_TIMEOUT
     })
   }
 
   const getExercisesByMuscleGroup = async (muscleGroup: string) => {
-    return await $fetch<ExerciseLibrary[]>(
-      `${config.public.apiUrl}/exercises/muscle/${muscleGroup}`,
+    return await apiFetch<ExerciseLibrary[]>(
+      `/exercises/muscle/${muscleGroup}`,
       {
-        headers: getAuthHeaders()
+        timeout: API_TIMEOUT
       }
     )
   }
@@ -132,11 +119,11 @@ export const useWorkoutApi = () => {
       orderIndex?: number
     }
   ) => {
-    return await $fetch<Exercise>(
-      `${config.public.apiUrl}/workouts/${workoutId}/exercises`,
+    return await apiFetch<Exercise>(
+      `/workouts/${workoutId}/exercises`,
       {
         method: 'POST',
-        ...fetchOpts(),
+        timeout: API_TIMEOUT,
         body: data
       }
     )
@@ -147,22 +134,22 @@ export const useWorkoutApi = () => {
     exerciseId: number,
     data: Partial<Exercise>
   ) => {
-    return await $fetch<{ message: string; exercise: Exercise }>(
-      `${config.public.apiUrl}/workouts/${workoutId}/exercises/${exerciseId}`,
+    return await apiFetch<{ message: string; exercise: Exercise }>(
+      `/workouts/${workoutId}/exercises/${exerciseId}`,
       {
         method: 'PUT',
-        ...fetchOpts(),
+        timeout: API_TIMEOUT,
         body: data
       }
     )
   }
 
   const deleteExercise = async (workoutId: number, exerciseId: number) => {
-    return await $fetch<{ message: string }>(
-      `${config.public.apiUrl}/workouts/${workoutId}/exercises/${exerciseId}`,
+    return await apiFetch<{ message: string }>(
+      `/workouts/${workoutId}/exercises/${exerciseId}`,
       {
         method: 'DELETE',
-        ...fetchOpts()
+        timeout: API_TIMEOUT
       }
     )
   }
@@ -181,11 +168,11 @@ export const useWorkoutApi = () => {
       notes?: string
     }
   ) => {
-    return await $fetch<Set>(
-      `${config.public.apiUrl}/workouts/${workoutId}/exercises/${exerciseId}/sets`,
+    return await apiFetch<Set>(
+      `/workouts/${workoutId}/exercises/${exerciseId}/sets`,
       {
         method: 'POST',
-        ...fetchOpts(),
+        timeout: API_TIMEOUT,
         body: data
       }
     )
@@ -197,34 +184,34 @@ export const useWorkoutApi = () => {
     setId: number,
     data: Partial<Set>
   ) => {
-    return await $fetch<{ message: string; set: Set }>(
-      `${config.public.apiUrl}/workouts/${workoutId}/exercises/${exerciseId}/sets/${setId}`,
+    return await apiFetch<{ message: string; set: Set }>(
+      `/workouts/${workoutId}/exercises/${exerciseId}/sets/${setId}`,
       {
         method: 'PUT',
-        ...fetchOpts(),
+        timeout: API_TIMEOUT,
         body: data
       }
     )
   }
 
   const deleteSet = async (workoutId: number, exerciseId: number, setId: number) => {
-    return await $fetch<{ message: string }>(
-      `${config.public.apiUrl}/workouts/${workoutId}/exercises/${exerciseId}/sets/${setId}`,
+    return await apiFetch<{ message: string }>(
+      `/workouts/${workoutId}/exercises/${exerciseId}/sets/${setId}`,
       {
         method: 'DELETE',
-        ...fetchOpts()
+        timeout: API_TIMEOUT
       }
     )
   }
 
   // ========== HISTORY ==========
   const getExerciseHistory = async (exerciseLibraryId: number) => {
-    return await $fetch<{
+    return await apiFetch<{
       exerciseLibraryId: number
       lastSets: Set[]
       lastWorkoutDate: string | null
-    }>(`${config.public.apiUrl}/workouts/history/exercise/${exerciseLibraryId}`, {
-      ...fetchOpts()
+    }>(`/workouts/history/exercise/${exerciseLibraryId}`, {
+      timeout: API_TIMEOUT
     })
   }
 
