@@ -314,7 +314,7 @@
           <!-- Yearly -->
           <div class="card-glass text-center relative border-2 border-sand-500/50">
             <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-primary text-white text-xs font-bold rounded-full whitespace-nowrap">
-              2 mois offerts
+              3 mois offerts
             </div>
             <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-2">Annuel</h3>
             <div class="flex items-baseline justify-center gap-1 mb-1">
