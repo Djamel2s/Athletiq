@@ -246,6 +246,9 @@ export const useAuthStore = defineStore('auth', {
 
       this.loadUserFromLocalStorage()
 
+      // Only attempt refresh if we have cached user data (i.e., was previously logged in)
+      if (!this.user) return
+
       // Try to get a fresh access token via the refresh cookie
       const success = await this.refreshAccessToken()
       if (success) {
