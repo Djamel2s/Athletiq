@@ -284,7 +284,7 @@
           <div class="card-glass text-center">
             <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-2">Mensuel</h3>
             <div class="flex items-baseline justify-center gap-1 mb-2">
-              <span class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-sand-500 to-sand-700 bg-clip-text text-transparent">9,99€</span>
+              <span class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-sand-500 to-sand-700 bg-clip-text text-transparent">5,99€</span>
               <span class="text-primary-500 dark:text-primary-400">/mois</span>
             </div>
             <p class="text-sm text-primary-500 dark:text-primary-400 mb-6">Sans engagement</p>
@@ -318,10 +318,10 @@
             </div>
             <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-2">Annuel</h3>
             <div class="flex items-baseline justify-center gap-1 mb-1">
-              <span class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-sand-500 to-sand-700 bg-clip-text text-transparent">79,99€</span>
+              <span class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-sand-500 to-sand-700 bg-clip-text text-transparent">49,99€</span>
               <span class="text-primary-500 dark:text-primary-400">/an</span>
             </div>
-            <p class="text-sm text-primary-500 dark:text-primary-400 mb-6">6,66€/mois — 33% d'economie</p>
+            <p class="text-sm text-primary-500 dark:text-primary-400 mb-6">4,16€/mois — 30% d'economie</p>
             <ul class="space-y-3 mb-8 text-left text-sm">
               <li class="flex items-center gap-3 text-primary-700 dark:text-primary-300">
                 <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
