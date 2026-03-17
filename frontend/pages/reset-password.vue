@@ -11,8 +11,16 @@
       </div>
 
       <div class="card-glass slide-up">
+        <!-- No token error -->
+        <div v-if="!token" class="text-center py-4">
+          <div class="p-4 rounded-2xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800">
+            <p class="text-sm text-red-600">{{ error }}</p>
+          </div>
+          <NuxtLink to="/forgot-password" class="btn-primary inline-block px-8 mt-6">Demander un nouveau lien</NuxtLink>
+        </div>
+
         <!-- Success -->
-        <div v-if="success" class="text-center py-4">
+        <div v-else-if="success" class="text-center py-4">
           <div class="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg class="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>

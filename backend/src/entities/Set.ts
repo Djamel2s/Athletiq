@@ -16,7 +16,7 @@ export class Set {
   @Column('int')
   reps!: number
 
-  @Column('float')
+  @Column({ type: 'decimal', precision: 10, scale: 2, transformer: { to: (v: number) => v, from: (v: string) => v ? parseFloat(v) : v } })
   weight!: number
 
   @Column({ type: 'int', nullable: true })

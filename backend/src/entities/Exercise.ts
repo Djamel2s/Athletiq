@@ -31,7 +31,7 @@ export class Exercise {
   @Column({ type: 'int', nullable: true })
   targetReps?: number
 
-  @Column({ type: 'float', nullable: true })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true, transformer: { to: (v: number) => v, from: (v: string) => v ? parseFloat(v) : v } })
   targetWeight?: number
 
   @Column({ type: 'int', nullable: true })

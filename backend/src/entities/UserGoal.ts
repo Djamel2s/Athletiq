@@ -22,10 +22,10 @@ export class UserGoal {
   @Column('varchar')
   title!: string
 
-  @Column('float')
+  @Column({ type: 'decimal', precision: 10, scale: 2, transformer: { to: (v: number) => v, from: (v: string) => v ? parseFloat(v) : v } })
   targetValue!: number
 
-  @Column('float')
+  @Column({ type: 'decimal', precision: 10, scale: 2, transformer: { to: (v: number) => v, from: (v: string) => v ? parseFloat(v) : v } })
   startValue!: number
 
   @Column({ type: 'varchar', nullable: true })

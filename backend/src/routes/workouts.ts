@@ -79,7 +79,7 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
     const historyDays = PLAN_LIMITS[planType].historyDays
 
     const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 50, 1), 100)
-    const offset = Math.max(parseInt(req.query.offset as string) || 0, 0)
+    const offset = Math.min(Math.max(parseInt(req.query.offset as string) || 0, 0), 100000)
 
     const where: any = { userId: req.user!.id }
 

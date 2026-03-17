@@ -36,6 +36,12 @@ await initializeDatabase()
 // Sécurité — headers HTTP (XSS, clickjacking, MIME sniffing, etc.)
 app.use(helmet())
 
+// Cache-Control: no-store on API responses
+app.use('/api', (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store')
+  next()
+})
+
 // Rate limiting global — 100 req/min par IP
 app.use(globalLimiter)
 

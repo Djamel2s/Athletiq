@@ -105,6 +105,7 @@
               <input
                 v-model.number="currentSetData.reps"
                 type="number"
+                min="0"
                 :disabled="showRestTimer"
                 class="w-full px-4 py-6 input text-center text-primary-900 dark:text-primary-100 text-3xl font-bold disabled:opacity-50 disabled:cursor-not-allowed"
                 placeholder="10"
@@ -117,6 +118,7 @@
                 v-model.number="currentSetData.weight"
                 type="number"
                 step="0.5"
+                min="0"
                 :disabled="showRestTimer"
                 class="w-full px-4 py-6 input text-center text-primary-900 dark:text-primary-100 text-3xl font-bold disabled:opacity-50 disabled:cursor-not-allowed"
                 placeholder="20"

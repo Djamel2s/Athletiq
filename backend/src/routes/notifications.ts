@@ -34,6 +34,23 @@ router.get('/unread-count', authenticate, async (req: AuthRequest, res) => {
   }
 })
 
+// PUT /api/notifications/read-all - Mark all as read
+router.put('/read-all', authenticate, async (req: AuthRequest, res) => {
+  try {
+    await AppDataSource.getRepository(Notification)
+      .createQueryBuilder()
+      .update()
+      .set({ read: true })
+      .where('userId = :userId AND read = false', { userId: req.user!.id })
+      .execute()
+
+    res.json({ message: 'Toutes les notifications marquées comme lues' })
+  } catch (error) {
+    console.error('[Notifications]','Mark all read error:', error)
+    res.status(500).json({ error: 'Erreur lors du marquage des notifications' })
+  }
+})
+
 // PUT /api/notifications/:id/read - Mark as read
 router.put('/:id/read', authenticate, async (req: AuthRequest, res) => {
   try {
@@ -50,23 +67,6 @@ router.put('/:id/read', authenticate, async (req: AuthRequest, res) => {
   } catch (error) {
     console.error('[Notifications]','Mark read error:', error)
     res.status(500).json({ error: 'Erreur lors du marquage de la notification' })
-  }
-})
-
-// PUT /api/notifications/read-all - Mark all as read
-router.put('/read-all', authenticate, async (req: AuthRequest, res) => {
-  try {
-    await AppDataSource.getRepository(Notification)
-      .createQueryBuilder()
-      .update()
-      .set({ read: true })
-      .where('userId = :userId AND read = false', { userId: req.user!.id })
-      .execute()
-
-    res.json({ message: 'Toutes les notifications marquées comme lues' })
-  } catch (error) {
-    console.error('[Notifications]','Mark all read error:', error)
-    res.status(500).json({ error: 'Erreur lors du marquage des notifications' })
   }
 })
 

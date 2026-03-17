@@ -112,8 +112,9 @@ router.post('/forgot-password', async (req, res) => {
 
     // Cooldown : ne pas renvoyer si un token a été envoyé il y a moins de 2 minutes
     if (user.passwordResetExpires) {
-      const tokenAge = 60 * 60 * 1000 - (user.passwordResetExpires.getTime() - Date.now())
-      if (tokenAge < 2 * 60 * 1000) {
+      const tokenCreatedAt = user.passwordResetExpires.getTime() - 60 * 60 * 1000
+      const timeSinceCreation = Date.now() - tokenCreatedAt
+      if (timeSinceCreation < 2 * 60 * 1000) {
         return res.json({ message: 'Si un compte existe avec cet email, un lien de réinitialisation a été envoyé.' })
       }
     }

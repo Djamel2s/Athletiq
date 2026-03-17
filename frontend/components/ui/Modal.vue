@@ -15,6 +15,7 @@
             <button
               v-if="closable"
               @click="close"
+              aria-label="Fermer"
               class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/10 transition-colors"
             >
               ✕
@@ -56,12 +57,19 @@ const close = () => {
 }
 
 // Fermer avec Escape
+let handleEscape: ((e: KeyboardEvent) => void) | null = null
+
 onMounted(() => {
-  const handleEscape = (e: KeyboardEvent) => {
+  handleEscape = (e: KeyboardEvent) => {
     if (e.key === 'Escape') close()
   }
   document.addEventListener('keydown', handleEscape)
-  onUnmounted(() => document.removeEventListener('keydown', handleEscape))
+})
+
+onUnmounted(() => {
+  if (handleEscape) {
+    document.removeEventListener('keydown', handleEscape)
+  }
 })
 </script>
 

@@ -64,6 +64,7 @@
                 type="number"
                 step="0.1"
                 min="0"
+                max="500"
                 placeholder="75.5"
                 class="input-primary"
                 required

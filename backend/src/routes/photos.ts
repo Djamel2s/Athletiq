@@ -128,7 +128,7 @@ router.get('/timelapse', authenticate, async (req: AuthRequest, res) => {
       query.andWhere('workout.date <= :endDate', { endDate: d })
     }
 
-    const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 100, 1), 500)
+    const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 20, 1), 100)
     const offset = Math.max(parseInt(req.query.offset as string) || 0, 0)
 
     const [photos, total] = await query

@@ -58,11 +58,12 @@ router.put('/me', authenticate, async (req: AuthRequest, res) => {
 
     const data = updateSchema.parse(req.body)
 
-    // Build update object with only defined values
+    // Build update object with only explicitly allowed fields
     const updateData: Record<string, unknown> = {}
-    for (const [key, value] of Object.entries(data)) {
-      if (value !== undefined) {
-        updateData[key] = value === null ? undefined : value
+    const allowedFields = ['firstName', 'lastName', 'goal', 'gender', 'reminderEnabled', 'reminderTime', 'streakGoalPerWeek'] as const
+    for (const field of allowedFields) {
+      if (data[field] !== undefined) {
+        updateData[field] = data[field] === null ? undefined : data[field]
       }
     }
 

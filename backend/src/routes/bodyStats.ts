@@ -35,7 +35,7 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
       bodyFat: z.number().min(0).max(100).nullish(),
       notes: z.string().max(2000).nullish(),
       date: z.string().datetime().nullish().refine(
-        val => !val || (new Date(val).getFullYear() >= 2000 && new Date(val) <= new Date(Date.now() + 86400000)),
+        val => !val || (new Date(val).getFullYear() >= 2000 && new Date(val) <= new Date(Date.now() + 3600000)),
         { message: 'Date invalide' }
       )
     })

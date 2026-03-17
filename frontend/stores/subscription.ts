@@ -9,6 +9,8 @@ function fetchWithTimeout(url: string, opts: RequestInit = {}): Promise<Response
   return fetch(url, { ...opts, signal: controller.signal }).finally(() => clearTimeout(timeoutId))
 }
 
+const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+
 interface SubscriptionState {
   plan: string | null
   status: string | null
@@ -17,6 +19,7 @@ interface SubscriptionState {
   currentPeriodEnd: string | null
   canceledAt: string | null
   isLoading: boolean
+  _lastFetchedAt: number | null
 }
 
 export const useSubscriptionStore = defineStore('subscription', {
@@ -27,7 +30,8 @@ export const useSubscriptionStore = defineStore('subscription', {
     trialEndDate: null,
     currentPeriodEnd: null,
     canceledAt: null,
-    isLoading: false
+    isLoading: false,
+    _lastFetchedAt: null
   }),
 
   getters: {
@@ -49,9 +53,14 @@ export const useSubscriptionStore = defineStore('subscription', {
   },
 
   actions: {
-    async fetchSubscription() {
+    async fetchSubscription(forceRefresh = false) {
       const authStore = useAuthStore()
       if (!authStore.token) return
+
+      // Return cached data if fresh enough
+      if (!forceRefresh && this._lastFetchedAt && this.plan !== null && (Date.now() - this._lastFetchedAt < CACHE_TTL)) {
+        return
+      }
 
       this.isLoading = true
       try {
@@ -69,6 +78,7 @@ export const useSubscriptionStore = defineStore('subscription', {
           this.trialEndDate = sub.trialEndDate
           this.currentPeriodEnd = sub.currentPeriodEnd
           this.canceledAt = sub.canceledAt
+          this._lastFetchedAt = Date.now()
         }
       } catch (error) {
         logger.error('Error fetching subscription:', error)

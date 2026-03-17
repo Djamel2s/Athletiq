@@ -21,7 +21,7 @@ export class Subscription {
   @PrimaryGeneratedColumn()
   id!: number
 
-  @Index()
+  @Index({ unique: true })
   @Column({ type: 'int' })
   userId!: number
 
