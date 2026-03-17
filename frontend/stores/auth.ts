@@ -174,7 +174,7 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    setAuth(data: any) {
+    setAuth(data: { user: User; token: string }) {
       this.user = data.user
       this.token = data.token
       this.isAuthenticated = true

@@ -23,7 +23,7 @@
           <!-- Desktop nav -->
           <div class="hidden md:flex items-center space-x-8">
             <a href="#features" class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-all duration-300 font-medium text-lg relative group">
-              Fonctionnalites
+              Fonctionnalités
               <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-primary transition-all duration-300 group-hover:w-full"></span>
             </a>
             <a href="#pricing" class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-all duration-300 font-medium text-lg relative group">
@@ -32,7 +32,7 @@
             </a>
             <template v-if="authStore.isAuthenticated">
               <NuxtLink to="/dashboard" class="btn-glass text-base px-7 py-3">Dashboard</NuxtLink>
-              <button @click="logout" class="btn-primary text-base px-7 py-3">Deconnexion</button>
+              <button @click="logout" class="btn-primary text-base px-7 py-3">Déconnexion</button>
             </template>
             <template v-else>
               <NuxtLink to="/login" class="btn-glass text-base px-7 py-3">Connexion</NuxtLink>
@@ -50,12 +50,12 @@
           <div class="fade-in text-center lg:text-left">
             <p class="text-sm md:text-base font-semibold text-sand-600 dark:text-sand-500 uppercase tracking-wider mb-4">Suivi de musculation</p>
             <h1 class="text-4xl md:text-5xl lg:text-7xl font-bold mb-6 md:mb-8 text-display text-primary-900 dark:text-primary-100 leading-tight">
-              Chaque serie<br>
+              Chaque série<br>
               compte.<br>
               <span class="text-gradient-primary">Suivez-les.</span>
             </h1>
             <p class="text-lg md:text-xl text-primary-600 dark:text-primary-400 mb-8 md:mb-10 max-w-lg mx-auto lg:mx-0">
-              Athletiq enregistre vos entrainements, mesure votre progression et vous montre concretement ce qui fonctionne. 14 jours d'essai, sans carte bancaire.
+              Athletiq enregistre vos entraînements, mesure votre progression et vous montre concrètement ce qui fonctionne. 14 jours d'essai, sans carte bancaire.
             </p>
 
             <div class="flex items-center justify-center lg:justify-start gap-3 md:gap-5 flex-wrap">
@@ -63,7 +63,7 @@
                 {{ authStore.isAuthenticated ? 'Aller au Dashboard' : 'Essayer gratuitement' }}
               </NuxtLink>
               <NuxtLink to="/login" class="btn-glass text-base md:text-lg px-8 md:px-10 py-4 md:py-5">
-                Compte demo
+                Compte démo
               </NuxtLink>
             </div>
           </div>
@@ -91,9 +91,9 @@
                 </svg>
               </div>
               <div>
-                <h3 class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 mb-3">Pendant votre seance</h3>
+                <h3 class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 mb-3">Pendant votre séance</h3>
                 <p class="text-primary-600 dark:text-primary-400 text-lg leading-relaxed">
-                  Chrono, timer de repos, suivi serie par serie. Vous tapez vos poids et vos reps, Athletiq s'occupe du reste. Pas besoin d'un carnet.
+                  Chrono, timer de repos, suivi série par série. Vous tapez vos poids et vos reps, Athletiq s'occupe du reste. Pas besoin d'un carnet.
                 </p>
               </div>
             </div>
@@ -133,9 +133,9 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
                 </svg>
               </div>
-              <h3 class="text-2xl font-bold text-primary-900 dark:text-primary-100 mb-3">Apres votre seance</h3>
+              <h3 class="text-2xl font-bold text-primary-900 dark:text-primary-100 mb-3">Après votre séance</h3>
               <p class="text-primary-600 dark:text-primary-400 leading-relaxed">
-                Volume total, records personnels battus, graphiques de progression par exercice. Vous voyez si vous avez fait mieux que la derniere fois.
+                Volume total, records personnels battus, graphiques de progression par exercice. Vous voyez si vous avez fait mieux que la dernière fois.
               </p>
             </div>
             <div class="mt-6 flex items-end gap-1 h-16">
@@ -164,7 +164,7 @@
               <div>
                 <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-1">Suivi corporel</h3>
                 <p class="text-primary-600 dark:text-primary-400 text-sm leading-relaxed">
-                  Poids, mensurations, photos de progression. Comparez vos photos avant/apres et suivez votre transformation semaine apres semaine.
+                  Poids, mensurations, photos de progression. Comparez vos photos avant/après et suivez votre transformation semaine après semaine.
                 </p>
               </div>
             </div>
@@ -196,7 +196,7 @@
               <div>
                 <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-1">Calendrier & streaks</h3>
                 <p class="text-primary-600 dark:text-primary-400 text-sm leading-relaxed">
-                  Un heatmap de votre activite et un compteur de jours consecutifs. Ca motive de ne pas casser la serie.
+                  Un heatmap de votre activité et un compteur de jours consécutifs. Ça motive de ne pas casser la série.
                 </p>
               </div>
             </div>
@@ -212,7 +212,7 @@
               <div>
                 <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-1">Partage Instagram</h3>
                 <p class="text-primary-600 dark:text-primary-400 text-sm leading-relaxed">
-                  Generez une image Story avec vos stats de seance en un clic. Le design est deja fait, vous avez juste a poster.
+                  Générez une image Story avec vos stats de séance en un clic. Le design est déjà fait, vous avez juste à poster.
                 </p>
               </div>
             </div>
@@ -227,11 +227,11 @@
         <div class="flex flex-wrap justify-center gap-x-8 gap-y-3 text-sm md:text-base text-primary-500 dark:text-primary-400">
           <span class="flex items-center gap-2">
             <svg class="w-4 h-4 text-sand-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-            Optimise mobile
+            Optimisé mobile
           </span>
           <span class="flex items-center gap-2">
             <svg class="w-4 h-4 text-sand-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-            Donnees securisees
+            Données sécurisées
           </span>
         </div>
       </div>
@@ -245,7 +245,7 @@
             Gratuit pour commencer, Pro pour aller plus loin
           </h2>
           <p class="text-lg md:text-xl text-primary-600 dark:text-primary-400 max-w-xl mx-auto">
-            Utilisez Athletiq gratuitement avec des limites, ou passez Pro pour tout debloquer. 14 jours d'essai Pro offerts.
+            Utilisez Athletiq gratuitement avec des limites, ou passez Pro pour tout débloquer. 14 jours d'essai Pro offerts.
           </p>
         </div>
 
@@ -260,7 +260,7 @@
             <ul class="space-y-3 mb-8 text-left text-sm">
               <li class="flex items-center gap-3 text-primary-700 dark:text-primary-300">
                 <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                2 seances / semaine
+                2 séances / semaine
               </li>
               <li class="flex items-center gap-3 text-primary-700 dark:text-primary-300">
                 <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
@@ -291,11 +291,11 @@
             <ul class="space-y-3 mb-8 text-left text-sm">
               <li class="flex items-center gap-3 text-primary-700 dark:text-primary-300">
                 <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                Seances illimitees
+                Séances illimitées
               </li>
               <li class="flex items-center gap-3 text-primary-700 dark:text-primary-300">
                 <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                Templates illimites
+                Templates illimités
               </li>
               <li class="flex items-center gap-3 text-primary-700 dark:text-primary-300">
                 <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
@@ -303,7 +303,7 @@
               </li>
               <li class="flex items-center gap-3 text-primary-700 dark:text-primary-300">
                 <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                Photos & objectifs illimites
+                Photos & objectifs illimités
               </li>
             </ul>
             <NuxtLink to="/register" class="btn-outline w-full text-base py-4">
@@ -321,7 +321,7 @@
               <span class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-sand-500 to-sand-700 bg-clip-text text-transparent">49,99€</span>
               <span class="text-primary-500 dark:text-primary-400">/an</span>
             </div>
-            <p class="text-sm text-primary-500 dark:text-primary-400 mb-6">4,16€/mois — 30% d'economie</p>
+            <p class="text-sm text-primary-500 dark:text-primary-400 mb-6">4,16€/mois — 30% d'économie</p>
             <ul class="space-y-3 mb-8 text-left text-sm">
               <li class="flex items-center gap-3 text-primary-700 dark:text-primary-300">
                 <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
@@ -333,7 +333,7 @@
               </li>
               <li class="flex items-center gap-3 text-primary-700 dark:text-primary-300">
                 <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                Ideal si vous etes regulier
+                Idéal si vous êtes régulier
               </li>
             </ul>
             <NuxtLink to="/register" class="btn-primary w-full text-base py-4">
@@ -343,7 +343,7 @@
         </div>
 
         <p class="text-center text-xs text-primary-400 dark:text-primary-500 mt-6">
-          Carte bancaire, Apple Pay, Google Pay. Paiement securise via Stripe.
+          Carte bancaire, Apple Pay, Google Pay. Paiement sécurisé via Stripe.
         </p>
       </div>
     </section>
@@ -355,14 +355,14 @@
           <div class="flex-1">
             <h2 class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 mb-3">Pas convaincu ? Testez.</h2>
             <p class="text-primary-600 dark:text-primary-400 mb-4">
-              Un compte demo est deja rempli avec des donnees : seances, stats, objectifs, photos. Explorez sans creer de compte.
+              Un compte démo est déjà rempli avec des données : séances, stats, objectifs, photos. Explorez sans créer de compte.
             </p>
             <p class="text-sm text-primary-500 dark:text-primary-400 font-mono glass rounded-lg inline-block px-3 py-1.5">
               demo@athletiq.app / Athletiq!Demo2025
             </p>
           </div>
           <NuxtLink to="/login" class="btn-primary text-base px-8 py-4 flex-shrink-0 w-full md:w-auto text-center">
-            Voir le demo
+            Voir la démo
           </NuxtLink>
         </div>
       </div>
@@ -372,13 +372,13 @@
     <section class="py-16 md:py-24 px-4 md:px-6 geometric-bg">
       <div class="max-w-3xl mx-auto text-center">
         <h2 class="text-3xl md:text-5xl font-bold mb-4 md:mb-6 text-display text-primary-900 dark:text-primary-100">
-          {{ authStore.isAuthenticated ? 'Votre dashboard vous attend' : 'Vous allez quand meme pas noter vos series sur votre telephone dans Notes ?' }}
+          {{ authStore.isAuthenticated ? 'Votre dashboard vous attend' : 'Vous allez quand même pas noter vos séries sur votre téléphone dans Notes ?' }}
         </h2>
         <p class="text-lg text-primary-600 dark:text-primary-400 mb-8 max-w-xl mx-auto">
-          {{ authStore.isAuthenticated ? '' : '14 jours gratuits. Sans carte bancaire. Ca prend 30 secondes.' }}
+          {{ authStore.isAuthenticated ? '' : '14 jours gratuits. Sans carte bancaire. Ça prend 30 secondes.' }}
         </p>
         <NuxtLink :to="authStore.isAuthenticated ? '/dashboard' : '/register'" class="btn-primary text-base md:text-lg px-10 md:px-14 py-4 md:py-5">
-          {{ authStore.isAuthenticated ? 'Dashboard' : 'Creer mon compte' }}
+          {{ authStore.isAuthenticated ? 'Dashboard' : 'Créer mon compte' }}
         </NuxtLink>
       </div>
     </section>

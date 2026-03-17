@@ -66,7 +66,7 @@ router.get('/verify/:token', async (req, res) => {
     })
 
     if (!user || !user.emailVerificationToken) {
-      // Dummy timing-safe comparison to prevent timing attacks when user not found
+      // Dummy timing-safe comparison to ensure constant-time response (result intentionally ignored)
       const dummyBuf = crypto.randomBytes(32)
       const receivedBuf = Buffer.from(hashedToken, 'hex')
       crypto.timingSafeEqual(dummyBuf, receivedBuf)
@@ -165,7 +165,7 @@ router.post('/reset-password', async (req, res) => {
     })
 
     if (!user || !user.passwordResetExpires || user.passwordResetExpires < new Date()) {
-      // Dummy timing-safe comparison to prevent timing attacks when user not found
+      // Dummy timing-safe comparison to ensure constant-time response (result intentionally ignored)
       const dummyBuf = crypto.randomBytes(32)
       const receivedBuf = Buffer.from(hashedToken, 'hex')
       crypto.timingSafeEqual(dummyBuf, receivedBuf)

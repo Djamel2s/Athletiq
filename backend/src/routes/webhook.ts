@@ -40,7 +40,7 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req, re
       // Paiement réussi → activer l'abonnement
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
-        const userId = parseInt(session.metadata?.userId || '0')
+        const userId = parseInt(session.metadata?.userId || '0', 10)
         if (!userId || isNaN(userId)) break
 
         // Vérifier que l'utilisateur existe en base

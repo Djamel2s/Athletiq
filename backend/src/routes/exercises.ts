@@ -34,8 +34,8 @@ router.get('/', authenticate, async (req, res) => {
       difficulty
     } = req.query
 
-    const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 50, 1), 100)
-    const offset = Math.max(parseInt(req.query.offset as string) || 0, 0)
+    const limit = Math.min(Math.max(parseInt(req.query.limit as string, 10) || 50, 1), 100)
+    const offset = Math.max(parseInt(req.query.offset as string, 10) || 0, 0)
 
     const queryBuilder = exerciseLibraryRepo.createQueryBuilder('exercise')
 

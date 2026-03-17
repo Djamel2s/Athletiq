@@ -146,6 +146,8 @@ export const useWorkoutStore = defineStore('workout', {
     },
 
     async startWorkout(id: number) {
+      this.isLoading = true
+      this.error = null
       try {
         const api = useWorkoutApi()
         const { workout } = await api.startWorkout(id)
@@ -159,10 +161,14 @@ export const useWorkoutStore = defineStore('workout', {
         this.error = error.message || 'Erreur lors du démarrage du workout'
         logger.error('Start workout error:', error)
         throw error
+      } finally {
+        this.isLoading = false
       }
     },
 
     async completeWorkout(id: number) {
+      this.isLoading = true
+      this.error = null
       try {
         const api = useWorkoutApi()
         const { workout } = await api.completeWorkout(id)
@@ -178,6 +184,8 @@ export const useWorkoutStore = defineStore('workout', {
         this.error = error.message || 'Erreur lors de la complétion du workout'
         logger.error('Complete workout error:', error)
         throw error
+      } finally {
+        this.isLoading = false
       }
     },
 

@@ -118,7 +118,7 @@ router.post('/login', async (req, res) => {
     const validPassword = await bcrypt.compare(password, user?.password || dummyHash)
 
     if (!user || !validPassword) {
-      console.warn(`[AUTH] Failed login attempt for email="${email}" from IP=${req.ip}`)
+      console.warn(`[AUTH] Failed login attempt from IP=${req.ip}`)
       return res.status(401).json({ error: 'Identifiants invalides' })
     }
 

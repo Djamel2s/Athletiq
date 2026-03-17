@@ -108,8 +108,12 @@ export default defineNuxtConfig({
           }
         },
         {
-          // Appels API
-          urlPattern: /^https:\/\/.*\/api\/.*/i,
+          // Appels API (exclure auth et données sensibles)
+          urlPattern: ({ url }: { url: URL }) => {
+            if (!url.pathname.includes('/api/')) return false
+            const excluded = ['/api/auth/', '/api/users/me', '/api/subscription']
+            return !excluded.some(path => url.pathname.includes(path))
+          },
           handler: 'NetworkFirst',
           options: {
             cacheName: 'api-cache',
@@ -159,7 +163,7 @@ export default defineNuxtConfig({
         'X-Frame-Options': 'DENY',
         'X-XSS-Protection': '0',
         'Referrer-Policy': 'strict-origin-when-cross-origin',
-        'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://*.fly.dev https://*.stripe.com; frame-src https://*.stripe.com; object-src 'none'; base-uri 'self'"
+        'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://*.fly.dev https://*.stripe.com; frame-src https://*.stripe.com; object-src 'none'; base-uri 'self'"
       }
     },
     '/dashboard/**': { ssr: false },

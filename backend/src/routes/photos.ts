@@ -134,8 +134,8 @@ router.get('/timelapse', authenticate, async (req: AuthRequest, res) => {
       query.andWhere('workout.date <= :endDate', { endDate: d })
     }
 
-    const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 20, 1), 100)
-    const offset = Math.max(parseInt(req.query.offset as string) || 0, 0)
+    const limit = Math.min(Math.max(parseInt(req.query.limit as string, 10) || 20, 1), 100)
+    const offset = Math.max(parseInt(req.query.offset as string, 10) || 0, 0)
 
     const [photos, total] = await query
       .orderBy('workout.date', 'ASC')
@@ -152,7 +152,7 @@ router.get('/timelapse', authenticate, async (req: AuthRequest, res) => {
 // Get recent photos
 router.get('/recent', authenticate, async (req: AuthRequest, res) => {
   try {
-    const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 10, 1), 100)
+    const limit = Math.min(Math.max(parseInt(req.query.limit as string, 10) || 10, 1), 100)
 
     const photos = await photoRepository
       .createQueryBuilder('photo')

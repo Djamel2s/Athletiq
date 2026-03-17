@@ -1,13 +1,6 @@
 import { defineStore } from 'pinia'
 import { useAuthStore } from './auth'
-
-const API_TIMEOUT = 30000
-
-function fetchWithTimeout(url: string, opts: RequestInit = {}): Promise<Response> {
-  const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT)
-  return fetch(url, { ...opts, signal: controller.signal }).finally(() => clearTimeout(timeoutId))
-}
+import { apiFetch } from '~/utils/apiFetch'
 
 const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
 
@@ -64,22 +57,15 @@ export const useSubscriptionStore = defineStore('subscription', {
 
       this.isLoading = true
       try {
-        const config = useRuntimeConfig()
-        const response = await fetchWithTimeout(`${config.public.apiUrl}/subscription`, {
-          headers: { Authorization: `Bearer ${authStore.token}` }
-        })
-
-        if (response.ok) {
-          const data = await response.json()
-          const sub = data.subscription
-          this.plan = sub.plan
-          this.status = sub.status
-          this.trialDaysLeft = sub.trialDaysLeft
-          this.trialEndDate = sub.trialEndDate
-          this.currentPeriodEnd = sub.currentPeriodEnd
-          this.canceledAt = sub.canceledAt
-          this._lastFetchedAt = Date.now()
-        }
+        const data = await apiFetch<{ subscription: any }>('/subscription')
+        const sub = data.subscription
+        this.plan = sub.plan
+        this.status = sub.status
+        this.trialDaysLeft = sub.trialDaysLeft
+        this.trialEndDate = sub.trialEndDate
+        this.currentPeriodEnd = sub.currentPeriodEnd
+        this.canceledAt = sub.canceledAt
+        this._lastFetchedAt = Date.now()
       } catch (error) {
         logger.error('Error fetching subscription:', error)
       } finally {
@@ -92,17 +78,10 @@ export const useSubscriptionStore = defineStore('subscription', {
       if (!authStore.token) return
 
       try {
-        const config = useRuntimeConfig()
-        const response = await fetchWithTimeout(`${config.public.apiUrl}/subscription/checkout`, {
+        const data = await apiFetch<{ url?: string; error?: string }>('/subscription/checkout', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authStore.token}`
-          },
-          body: JSON.stringify({ plan })
+          body: { plan }
         })
-
-        const data = await response.json()
 
         if (data.url) {
           // Validate redirect URL to prevent open redirect
@@ -129,16 +108,10 @@ export const useSubscriptionStore = defineStore('subscription', {
       if (!authStore.token) return { error: 'Non authentifié' }
 
       try {
-        const config = useRuntimeConfig()
-        const response = await fetchWithTimeout(`${config.public.apiUrl}/subscription/portal`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authStore.token}`
-          }
+        const data = await apiFetch<{ url?: string; error?: string }>('/subscription/portal', {
+          method: 'POST'
         })
 
-        const data = await response.json()
         if (!data.url) {
           return { error: data.error || "Impossible d'ouvrir le portail" }
         }
@@ -164,24 +137,13 @@ export const useSubscriptionStore = defineStore('subscription', {
       if (!authStore.token) return
 
       try {
-        const config = useRuntimeConfig()
-        const response = await fetchWithTimeout(`${config.public.apiUrl}/subscription/cancel`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authStore.token}`
-          }
+        await apiFetch('/subscription/cancel', {
+          method: 'POST'
         })
-
-        if (response.ok) {
-          await this.fetchSubscription()
-          return { success: true }
-        }
-
-        const data = await response.json()
-        return { error: data.error }
-      } catch (error) {
-        return { error: 'Erreur de connexion' }
+        await this.fetchSubscription(true)
+        return { success: true }
+      } catch (error: any) {
+        return { error: error.data?.error || 'Erreur de connexion' }
       }
     }
   }
