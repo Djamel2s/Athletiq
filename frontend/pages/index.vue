@@ -358,7 +358,7 @@
               Un compte démo est déjà rempli avec des données : séances, stats, objectifs, photos. Explorez sans créer de compte.
             </p>
             <p class="text-sm text-primary-500 dark:text-primary-400 font-mono glass rounded-lg inline-block px-3 py-1.5">
-              demo@athletiq.app / Athletiq!Demo2025
+              demo@athletiq.fr / Athletiq!Demo2025
             </p>
           </div>
           <NuxtLink to="/login" class="btn-primary text-base px-8 py-4 flex-shrink-0 w-full md:w-auto text-center">

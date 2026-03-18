@@ -118,7 +118,7 @@ export async function seedDemoAccount() {
   const subRepo = AppDataSource.getRepository(Subscription)
 
   // ── Check if demo user already exists ──
-  const existingUser = await userRepo.findOne({ where: { email: 'demo@athletiq.app' } })
+  const existingUser = await userRepo.findOne({ where: { email: 'demo@athletiq.fr' } })
   if (existingUser) {
     // Delete all related data first
     console.log('  Cleaning existing demo data...')
@@ -135,7 +135,7 @@ export async function seedDemoAccount() {
   console.log('  Creating demo user...')
   const hashedPassword = await bcrypt.hash('Athletiq!Demo2025', 12)
   const user = userRepo.create({
-    email: 'demo@athletiq.app',
+    email: 'demo@athletiq.fr',
     password: hashedPassword,
     firstName: 'Alexandre',
     lastName: 'Martin',
@@ -147,7 +147,7 @@ export async function seedDemoAccount() {
     inactivityThresholdDays: 3,
   })
   await userRepo.save(user)
-  console.log(`  User created: demo@athletiq.app`)
+  console.log(`  User created: demo@athletiq.fr`)
 
   // ── Load exercise library for linking ──
   const allLibExercises = await exerciseLibraryRepo.find()
@@ -395,7 +395,7 @@ export async function seedDemoAccount() {
 
   console.log('  Demo account seeded successfully!')
   console.log('  ────────────────────────────────')
-  console.log('  Email:    demo@athletiq.app')
+  console.log('  Email:    demo@athletiq.fr')
   console.log('  Password: (see seed source)')
   console.log(`  Workouts: ${workoutCount}`)
   console.log('  ────────────────────────────────')
