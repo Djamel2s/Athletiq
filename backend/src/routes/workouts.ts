@@ -440,7 +440,15 @@ router.put('/:workoutId/exercises/:exerciseId', authenticate, async (req: AuthRe
       return res.status(404).json({ error: 'Exercice non trouvé' })
     }
 
-    Object.assign(exercise, data)
+    if (data.exerciseLibraryId !== undefined) exercise.exerciseLibraryId = data.exerciseLibraryId ?? undefined
+    if (data.name != null) exercise.name = data.name
+    if (data.orderIndex != null) exercise.orderIndex = data.orderIndex
+    if (data.notes !== undefined) exercise.notes = data.notes ?? undefined
+    if (data.targetSets !== undefined) exercise.targetSets = data.targetSets ?? undefined
+    if (data.targetReps !== undefined) exercise.targetReps = data.targetReps ?? undefined
+    if (data.targetWeight !== undefined) exercise.targetWeight = data.targetWeight ?? undefined
+    if (data.restTime !== undefined) exercise.restTime = data.restTime ?? undefined
+    if (data.plannedSets !== undefined) exercise.plannedSets = data.plannedSets ?? undefined
     await exerciseRepo.save(exercise)
 
     res.json({ message: 'Exercice mis à jour', exercise })
@@ -558,7 +566,11 @@ router.put('/:workoutId/exercises/:exerciseId/sets/:setId', authenticate, async 
       return res.status(404).json({ error: 'Série non trouvée' })
     }
 
-    Object.assign(set, data)
+    if (data.setNumber != null) set.setNumber = data.setNumber
+    if (data.reps != null) set.reps = data.reps
+    if (data.weight != null) set.weight = data.weight
+    if (data.rpe !== undefined) set.rpe = data.rpe ?? undefined
+    if (data.notes !== undefined) set.notes = data.notes ?? undefined
     await setRepo.save(set)
 
     res.json({ message: 'Série mise à jour', set })

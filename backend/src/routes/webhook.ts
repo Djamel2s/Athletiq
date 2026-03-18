@@ -7,6 +7,27 @@ import { User } from '../entities/User.js'
 const router = express.Router()
 const subscriptionRepo = AppDataSource.getRepository(Subscription)
 
+// In-memory cache of processed Stripe event IDs to prevent replay attacks
+const processedEvents = new Map<string, number>()
+const EVENT_TTL = 24 * 60 * 60 * 1000 // 24h
+
+const isEventProcessed = (eventId: string): boolean => {
+  const ts = processedEvents.get(eventId)
+  if (ts && Date.now() - ts < EVENT_TTL) return true
+  // Cleanup old entries periodically
+  if (processedEvents.size > 10000) {
+    const now = Date.now()
+    for (const [id, timestamp] of processedEvents) {
+      if (now - timestamp > EVENT_TTL) processedEvents.delete(id)
+    }
+  }
+  return false
+}
+
+const markEventProcessed = (eventId: string) => {
+  processedEvents.set(eventId, Date.now())
+}
+
 const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY)
   : null
@@ -34,6 +55,12 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req, re
     console.error('⚠️ Webhook signature verification failed')
     return res.status(400).json({ error: 'Signature invalide' })
   }
+
+  // Prevent replay attacks
+  if (isEventProcessed(event.id)) {
+    return res.json({ received: true, skipped: 'duplicate' })
+  }
+  markEventProcessed(event.id)
 
   try {
     switch (event.type) {

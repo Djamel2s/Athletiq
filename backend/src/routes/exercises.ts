@@ -184,7 +184,15 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
       return res.status(404).json({ error: 'Exercice non trouvé' })
     }
 
-    Object.assign(exercise, data)
+    if (data.name != null) exercise.name = data.name
+    if (data.description !== undefined) exercise.description = data.description ?? undefined
+    if (data.instructions !== undefined) exercise.instructions = data.instructions ?? undefined
+    if (data.muscleGroups != null) exercise.muscleGroups = data.muscleGroups
+    if (data.primaryMuscle !== undefined) exercise.primaryMuscle = data.primaryMuscle ?? undefined
+    if (data.equipment != null) exercise.equipment = data.equipment
+    if (data.difficulty != null) exercise.difficulty = data.difficulty
+    if (data.videoUrl !== undefined) exercise.videoUrl = data.videoUrl ?? undefined
+    if (data.imageUrl !== undefined) exercise.imageUrl = data.imageUrl ?? undefined
     await exerciseLibraryRepo.save(exercise)
 
     res.json({ message: 'Exercice mis à jour', exercise })
