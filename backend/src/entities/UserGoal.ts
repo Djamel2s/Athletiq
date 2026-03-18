@@ -22,10 +22,10 @@ export class UserGoal {
   @Column('varchar')
   title!: string
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, transformer: { to: (v: number) => v, from: (v: string) => v ? parseFloat(v) : v } })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true, default: 0, transformer: { to: (v: number) => v, from: (v: string) => v ? parseFloat(v) : 0 } })
   targetValue!: number
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, transformer: { to: (v: number) => v, from: (v: string) => v ? parseFloat(v) : v } })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true, default: 0, transformer: { to: (v: number) => v, from: (v: string) => v ? parseFloat(v) : 0 } })
   startValue!: number
 
   @Column({ type: 'varchar', nullable: true })
