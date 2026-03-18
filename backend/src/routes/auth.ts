@@ -17,9 +17,10 @@ const setRefreshTokenCookie = (res: express.Response, refreshToken: string) => {
   res.cookie('refresh_token', refreshToken, {
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction ? 'none' : 'lax',
+    sameSite: 'lax',
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 jours
-    path: '/api/auth'
+    path: '/api/auth',
+    domain: isProduction ? '.athletiq.fr' : undefined
   })
 }
 
@@ -27,8 +28,9 @@ const clearRefreshTokenCookie = (res: express.Response) => {
   res.clearCookie('refresh_token', {
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction ? 'none' : 'lax',
-    path: '/api/auth'
+    sameSite: 'lax',
+    path: '/api/auth',
+    domain: isProduction ? '.athletiq.fr' : undefined
   })
 }
 
