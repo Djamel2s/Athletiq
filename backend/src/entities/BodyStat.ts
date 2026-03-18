@@ -13,7 +13,7 @@ export class BodyStat {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   date!: Date
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, transformer: { to: (v: number) => v, from: (v: string) => v ? parseFloat(v) : v } })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true, default: 0, transformer: { to: (v: number) => v, from: (v: string) => v ? parseFloat(v) : 0 } })
   weight!: number
 
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true, transformer: { to: (v: number) => v, from: (v: string) => v ? parseFloat(v) : v } })
