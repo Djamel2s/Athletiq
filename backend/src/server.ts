@@ -23,6 +23,11 @@ import statsRoutes from './routes/stats.js'
 import subscriptionRoutes from './routes/subscription.js'
 import webhookRoutes from './routes/webhook.js'
 import emailRoutes from './routes/email.js'
+import programRoutes from './routes/programs.js'
+import achievementRoutes from './routes/achievements.js'
+import coachRoutes from './routes/coach.js'
+import calculatorRoutes from './routes/calculators.js'
+import { seedPrograms } from './routes/programs.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -30,8 +35,9 @@ const PORT = process.env.PORT || 3001
 // Trust proxy (Fly.io, Render, etc.) pour rate limiting et IP correcte
 app.set('trust proxy', 1)
 
-// Initialiser la base de données
+// Initialiser la base de données + seed data
 await initializeDatabase()
+await seedPrograms()
 
 // Vérifier les credentials Cloudinary en production
 if (process.env.NODE_ENV === 'production') {
@@ -91,6 +97,10 @@ app.use('/api/stats', apiLimiter, statsRoutes)
 app.use('/api/subscription', apiLimiter, subscriptionRoutes)
 app.use('/api/webhook', webhookLimiter, webhookRoutes)
 app.use('/api/email', authLimiter, emailRoutes)
+app.use('/api/programs', apiLimiter, programRoutes)
+app.use('/api/achievements', apiLimiter, achievementRoutes)
+app.use('/api/coach', apiLimiter, coachRoutes)
+app.use('/api/calculators', apiLimiter, calculatorRoutes)
 
 // 404 handler
 app.use((req, res) => {

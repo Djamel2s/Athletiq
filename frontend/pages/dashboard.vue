@@ -113,6 +113,51 @@
                   Wrapped
                 </span>
               </button>
+
+              <!-- Programmes Button -->
+              <button
+                @click="navigateTo('/programs')"
+                class="flex items-center space-x-3 transition-all"
+              >
+                <div class="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                  </svg>
+                </div>
+                <span class="text-primary-900 dark:text-primary-100 font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  Programmes
+                </span>
+              </button>
+
+              <!-- Badges Button -->
+              <button
+                @click="navigateTo('/achievements')"
+                class="flex items-center space-x-3 transition-all"
+              >
+                <div class="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                  </svg>
+                </div>
+                <span class="text-primary-900 dark:text-primary-100 font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  Badges
+                </span>
+              </button>
+
+              <!-- Calculateurs Button -->
+              <button
+                @click="navigateTo('/calculators')"
+                class="flex items-center space-x-3 transition-all"
+              >
+                <div class="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                  </svg>
+                </div>
+                <span class="text-primary-900 dark:text-primary-100 font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  Calculateurs
+                </span>
+              </button>
             </div>
 
             <!-- Spacer -->
@@ -210,6 +255,11 @@
       <!-- Illustration musculaire + Récupération -->
       <div class="mb-8 md:mb-12 slide-up">
         <LazyDashboardMuscleRecoveryFigure :muscle-recovery="recoveryData?.muscleRecovery || []" />
+      </div>
+
+      <!-- Coach IA Insights -->
+      <div class="mb-8 md:mb-12 slide-up">
+        <CoachInsights />
       </div>
 
       <!-- Activité récente -->
