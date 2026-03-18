@@ -44,7 +44,7 @@ async function seed() {
   // ─── 1. User ───
   console.log('👤 Creating user...')
   const userRepo = AppDataSource.getRepository(User)
-  const hashedPassword = await bcrypt.hash('password123', 10)
+  const hashedPassword = await bcrypt.hash('password123', 12)
   const user = await userRepo.save({
     email: 'thomas@athletiq.fr',
     password: hashedPassword,
@@ -52,7 +52,7 @@ async function seed() {
     lastName: 'Durand',
     goal: 'BULK' as any,
   })
-  console.log(`   → User: ${user.email} / password123`)
+  console.log(`   → User: ${user.email}`)
 
   // ─── 2. Exercise Library ───
   console.log('📚 Creating exercise library...')
@@ -406,7 +406,6 @@ async function seed() {
   console.log('\n✅ Seed terminé avec succès !')
   console.log('─────────────────────────────')
   console.log(`📧 Email:    thomas@athletiq.fr`)
-  console.log(`🔑 Password: password123`)
   console.log(`🏋️ Workouts: ${totalWorkoutsCreated}`)
   console.log(`⚖️ Body stats: ${bodyStats.length}`)
   console.log(`📏 Measurements: ${measurements.length}`)

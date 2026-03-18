@@ -8,6 +8,9 @@ const requiredInProduction = [
   'JWT_SECRET',
   'DATABASE_URL',
   'CORS_ORIGIN',
+  'STRIPE_SECRET_KEY',
+  'STRIPE_WEBHOOK_SECRET',
+  'RESEND_API_KEY',
 ] as const
 
 if (isProduction) {

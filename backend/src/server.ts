@@ -8,7 +8,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
 import { initializeDatabase } from './config/database.js'
-import { globalLimiter, authLimiter, apiLimiter, webhookLimiter } from './middlewares/rateLimiter.js'
+import { globalLimiter, authLimiter, apiLimiter, webhookLimiter, passwordResetLimiter } from './middlewares/rateLimiter.js'
 import authRoutes from './routes/auth.js'
 import workoutRoutes from './routes/workouts.js'
 import exerciseRoutes from './routes/exercises.js'
@@ -31,6 +31,7 @@ import { seedPrograms } from './routes/programs.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
+const isProduction = process.env.NODE_ENV === 'production'
 
 // Trust proxy (Fly.io, Render, etc.) pour rate limiting et IP correcte
 app.set('trust proxy', 1)
@@ -63,9 +64,9 @@ app.use(globalLimiter)
 app.use(cors({
   origin: (origin, callback) => {
     const allowed = process.env.CORS_ORIGIN
-    if (!origin || (allowed && allowed === origin)) {
+    if (!origin || (allowed && origin === allowed)) {
       callback(null, true)
-    } else if (!allowed && process.env.NODE_ENV !== 'production' && origin.match(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/)) {
+    } else if (!allowed && !isProduction && origin.match(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/)) {
       callback(null, true)
     } else {
       callback(new Error('Not allowed by CORS'))
@@ -96,7 +97,9 @@ app.use('/api/notifications', apiLimiter, notificationRoutes)
 app.use('/api/stats', apiLimiter, statsRoutes)
 app.use('/api/subscription', apiLimiter, subscriptionRoutes)
 app.use('/api/webhook', webhookLimiter, webhookRoutes)
-app.use('/api/email', authLimiter, emailRoutes)
+app.use('/api/email/verify', authLimiter, emailRoutes)
+app.use('/api/email/forgot-password', passwordResetLimiter, emailRoutes)
+app.use('/api/email/reset-password', passwordResetLimiter, emailRoutes)
 app.use('/api/programs', apiLimiter, programRoutes)
 app.use('/api/achievements', apiLimiter, achievementRoutes)
 app.use('/api/coach', apiLimiter, coachRoutes)
@@ -114,7 +117,6 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
     stack: err.stack,
     userId: (req as any).user?.id
   })
-  const isProduction = process.env.NODE_ENV === 'production'
   res.status(500).json({
     error: 'Internal server error',
     ...(isProduction ? {} : { message: err.message })

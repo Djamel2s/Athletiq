@@ -36,3 +36,12 @@ export const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false
 })
+
+// Rate limiter strict pour password reset — 5 tentatives par heure par IP
+export const passwordResetLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 heure
+  max: 5,
+  message: { error: 'Trop de demandes de réinitialisation, réessayez dans une heure' },
+  standardHeaders: true,
+  legacyHeaders: false
+})

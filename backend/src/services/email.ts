@@ -5,6 +5,9 @@ const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KE
 const FROM_EMAIL = process.env.FROM_EMAIL || 'Athletiq <noreply@athletiq.fr>'
 const APP_URL = process.env.APP_URL || 'http://localhost:3000'
 
+const escapeHtml = (str: string): string =>
+  str.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!))
+
 // ============================================================
 // Design System — memes couleurs que l'app et les images
 // ============================================================
@@ -187,7 +190,7 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
 // EMAIL : Rappel d'inactivit&eacute;
 // ============================================================
 export const sendInactivityReminder = async (email: string, firstName: string, daysSinceLastWorkout: number) => {
-  const name = firstName || 'l\'athl&egrave;te'
+  const name = escapeHtml(firstName || 'l\'athlète')
   const html = emailLayout(`
     ${heading(`${daysSinceLastWorkout} jours sans entra&icirc;nement`)}
     ${paragraph(`${name}, ta progression t'attend. Chaque s&eacute;ance compte, m&ecirc;me les plus courtes. Reviens maintenir ta dynamique.`)}
@@ -201,7 +204,7 @@ export const sendInactivityReminder = async (email: string, firstName: string, d
 // EMAIL : Bienvenue
 // ============================================================
 export const sendWelcomeEmail = async (email: string, firstName: string) => {
-  const name = firstName || 'champion'
+  const name = escapeHtml(firstName || 'champion')
   const html = emailLayout(`
     ${heading(`Bienvenue, ${name}.`)}
     ${paragraph('Ton compte Athletiq est actif. Tout est pr&ecirc;t pour suivre tes entra&icirc;nements, analyser ta progression et atteindre tes objectifs.')}
@@ -230,7 +233,7 @@ export const sendWelcomeEmail = async (email: string, firstName: string) => {
     ${button('Commencer', `${APP_URL}/dashboard`)}
   `)
 
-  return sendEmail(email, `Bienvenue sur Athletiq, ${name}`, html)
+  return sendEmail(email, `Bienvenue sur Athletiq, ${escapeHtml(firstName || 'champion')}`, html)
 }
 
 // ============================================================
@@ -241,7 +244,7 @@ export const sendWeeklyRecapEmail = async (
   firstName: string,
   data: { workouts: number; duration: number; volume: number; streak: number }
 ) => {
-  const name = firstName || 'champion'
+  const name = escapeHtml(firstName || 'champion')
   const durationMin = Math.round(data.duration / 60)
   const volumeDisplay = data.volume >= 1000 ? `${(data.volume / 1000).toFixed(1)}t` : `${data.volume}kg`
 

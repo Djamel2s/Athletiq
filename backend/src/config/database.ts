@@ -40,7 +40,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DATABASE_URL ? undefined : (process.env.DB_NAME || 'athletiq'),
   schema: 'public',
   ssl: isProduction ? { rejectUnauthorized: true } : false,
-  synchronize: !isProduction || process.env.SYNC_DATABASE === 'true',
+  synchronize: !isProduction,
   logging: !isProduction,
   entities: [User, Workout, Exercise, Set, WorkoutPhoto, BodyStat, Measurement, ExerciseLibrary, UserGoal, Notification, Subscription, UserAchievement, WorkoutProgram, ProgramDay],
   extra: {
