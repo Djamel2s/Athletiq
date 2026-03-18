@@ -27,9 +27,8 @@ const PRICES = {
   yearly: process.env.STRIPE_PRICE_YEARLY || ''
 }
 
-if (process.env.NODE_ENV === 'production') {
-  if (!PRICES.monthly) throw new Error('STRIPE_PRICE_MONTHLY is required in production')
-  if (!PRICES.yearly) throw new Error('STRIPE_PRICE_YEARLY is required in production')
+if (process.env.NODE_ENV === 'production' && !PRICES.monthly) {
+  console.warn('⚠️ STRIPE_PRICE_MONTHLY non configuré — les paiements Stripe seront désactivés')
 }
 
 // ============================================================
