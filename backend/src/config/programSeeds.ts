@@ -12,7 +12,7 @@ export const PROGRAM_SEEDS = [
     goal: ProgramGoal.HYPERTROPHY,
     daysPerWeek: 6,
     durationWeeks: 8,
-    icon: '💪',
+    icon: 'lucide:dumbbell',
     days: [
       {
         name: 'Push A',
@@ -95,7 +95,7 @@ export const PROGRAM_SEEDS = [
     goal: ProgramGoal.HYPERTROPHY,
     daysPerWeek: 4,
     durationWeeks: 10,
-    icon: '⚡',
+    icon: 'lucide:zap',
     days: [
       {
         name: 'Upper A (Force)',
@@ -157,7 +157,7 @@ export const PROGRAM_SEEDS = [
     goal: ProgramGoal.GENERAL,
     daysPerWeek: 3,
     durationWeeks: 12,
-    icon: '🏋️',
+    icon: 'lucide:heart-pulse',
     days: [
       {
         name: 'Full Body A',
@@ -205,7 +205,7 @@ export const PROGRAM_SEEDS = [
     goal: ProgramGoal.STRENGTH,
     daysPerWeek: 4,
     durationWeeks: 12,
-    icon: '🏆',
+    icon: 'lucide:trophy',
     days: [
       {
         name: 'Squat Day',
@@ -261,7 +261,7 @@ export const PROGRAM_SEEDS = [
     goal: ProgramGoal.HYPERTROPHY,
     daysPerWeek: 4,
     durationWeeks: 10,
-    icon: '🔥',
+    icon: 'lucide:flame',
     days: [
       {
         name: 'Upper Power',
@@ -326,7 +326,7 @@ export const PROGRAM_SEEDS = [
     goal: ProgramGoal.GENERAL,
     daysPerWeek: 3,
     durationWeeks: 12,
-    icon: '🌱',
+    icon: 'lucide:sprout',
     days: [
       {
         name: 'Push',
@@ -375,7 +375,7 @@ export const PROGRAM_SEEDS = [
     goal: ProgramGoal.HYPERTROPHY,
     daysPerWeek: 5,
     durationWeeks: 8,
-    icon: '💥',
+    icon: 'lucide:target',
     days: [
       {
         name: 'Chest',
@@ -448,7 +448,7 @@ export const PROGRAM_SEEDS = [
     goal: ProgramGoal.HYPERTROPHY,
     daysPerWeek: 6,
     durationWeeks: 8,
-    icon: '🏛️',
+    icon: 'lucide:crown',
     days: [
       {
         name: 'Chest / Back A',
@@ -535,7 +535,7 @@ export const PROGRAM_SEEDS = [
     goal: ProgramGoal.STRENGTH,
     daysPerWeek: 3,
     durationWeeks: 12,
-    icon: '🏗️',
+    icon: 'lucide:brick-wall',
     days: [
       {
         name: 'Workout A',
@@ -578,7 +578,7 @@ export const PROGRAM_SEEDS = [
     goal: ProgramGoal.HYPERTROPHY,
     daysPerWeek: 5,
     durationWeeks: 10,
-    icon: '⚔️',
+    icon: 'lucide:swords',
     days: [
       {
         name: 'Upper Power',
@@ -654,7 +654,7 @@ export const PROGRAM_SEEDS = [
     goal: ProgramGoal.HYPERTROPHY,
     daysPerWeek: 4,
     durationWeeks: 6,
-    icon: '🇩🇪',
+    icon: 'lucide:repeat',
     days: [
       {
         name: 'Chest / Back',
@@ -709,7 +709,7 @@ export const PROGRAM_SEEDS = [
     goal: ProgramGoal.STRENGTH,
     daysPerWeek: 5,
     durationWeeks: 12,
-    icon: '🚀',
+    icon: 'lucide:rocket',
     days: [
       {
         name: 'Bench / OHP',
@@ -760,6 +760,628 @@ export const PROGRAM_SEEDS = [
           { exerciseName: 'Barbell Curl', sets: 3, reps: '8-12', restSeconds: 60 },
           { exerciseName: 'Tricep Pushdown', sets: 3, reps: '10-12', restSeconds: 60 },
           { exerciseName: 'Face Pull', sets: 3, reps: '15-20', restSeconds: 60 }
+        ]
+      }
+    ]
+  },
+
+  // ═══════════════════════════════════════
+  // 13. Stronglifts 5x5 (3j)
+  // ═══════════════════════════════════════
+  {
+    name: 'Stronglifts 5x5 (3j)',
+    slug: 'stronglifts-5x5-3j',
+    description: 'Programme minimaliste et efficace : 5 séries de 5 sur les mouvements composés. Progression linéaire chaque séance.',
+    difficulty: ProgramDifficulty.BEGINNER,
+    goal: ProgramGoal.STRENGTH,
+    daysPerWeek: 3,
+    durationWeeks: 12,
+    icon: 'lucide:bar-chart-3',
+    days: [
+      {
+        name: 'Workout A',
+        dayIndex: 0,
+        exercises: [
+          { exerciseName: 'Squat', sets: 5, reps: '5', restSeconds: 180, notes: '+2.5kg à chaque séance réussie' },
+          { exerciseName: 'Bench Press', sets: 5, reps: '5', restSeconds: 180 },
+          { exerciseName: 'Barbell Row', sets: 5, reps: '5', restSeconds: 180 }
+        ]
+      },
+      {
+        name: 'Workout B',
+        dayIndex: 1,
+        exercises: [
+          { exerciseName: 'Squat', sets: 5, reps: '5', restSeconds: 180 },
+          { exerciseName: 'Overhead Press', sets: 5, reps: '5', restSeconds: 180 },
+          { exerciseName: 'Deadlift', sets: 1, reps: '5', restSeconds: 300 }
+        ]
+      },
+      {
+        name: 'Workout A (bis)',
+        dayIndex: 2,
+        exercises: [
+          { exerciseName: 'Squat', sets: 5, reps: '5', restSeconds: 180 },
+          { exerciseName: 'Bench Press', sets: 5, reps: '5', restSeconds: 180 },
+          { exerciseName: 'Barbell Row', sets: 5, reps: '5', restSeconds: 180 }
+        ]
+      }
+    ]
+  },
+
+  // ═══════════════════════════════════════
+  // 14. Push Pull (4j)
+  // ═══════════════════════════════════════
+  {
+    name: 'Push / Pull (4j)',
+    slug: 'push-pull-4j',
+    description: 'Split en 2 types de séances : mouvements de poussée et de tirage. Simple et efficace.',
+    difficulty: ProgramDifficulty.INTERMEDIATE,
+    goal: ProgramGoal.HYPERTROPHY,
+    daysPerWeek: 4,
+    durationWeeks: 8,
+    icon: 'lucide:arrow-left-right',
+    days: [
+      {
+        name: 'Push A (Force)',
+        dayIndex: 0,
+        exercises: [
+          { exerciseName: 'Bench Press', sets: 4, reps: '5-6', restSeconds: 180 },
+          { exerciseName: 'Overhead Press', sets: 3, reps: '6-8', restSeconds: 150 },
+          { exerciseName: 'Squat', sets: 4, reps: '5-6', restSeconds: 180 },
+          { exerciseName: 'Incline Dumbbell Press', sets: 3, reps: '8-10', restSeconds: 90 },
+          { exerciseName: 'Lateral Raise', sets: 3, reps: '12-15', restSeconds: 60 },
+          { exerciseName: 'Tricep Pushdown', sets: 3, reps: '10-12', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'Pull A (Force)',
+        dayIndex: 1,
+        exercises: [
+          { exerciseName: 'Deadlift', sets: 4, reps: '5-6', restSeconds: 240 },
+          { exerciseName: 'Barbell Row', sets: 4, reps: '5-6', restSeconds: 150 },
+          { exerciseName: 'Pull-up', sets: 3, reps: '6-10', restSeconds: 120 },
+          { exerciseName: 'Face Pull', sets: 3, reps: '15-20', restSeconds: 60 },
+          { exerciseName: 'Barbell Curl', sets: 3, reps: '8-10', restSeconds: 60 },
+          { exerciseName: 'Leg Curl', sets: 3, reps: '10-12', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'Push B (Volume)',
+        dayIndex: 2,
+        exercises: [
+          { exerciseName: 'Dumbbell Bench Press', sets: 4, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Dumbbell Shoulder Press', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Leg Press', sets: 4, reps: '10-12', restSeconds: 120 },
+          { exerciseName: 'Cable Fly', sets: 3, reps: '12-15', restSeconds: 60 },
+          { exerciseName: 'Cable Lateral Raise', sets: 3, reps: '12-15', restSeconds: 60 },
+          { exerciseName: 'Overhead Tricep Extension', sets: 3, reps: '10-12', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'Pull B (Volume)',
+        dayIndex: 3,
+        exercises: [
+          { exerciseName: 'Romanian Deadlift', sets: 4, reps: '10-12', restSeconds: 120 },
+          { exerciseName: 'Cable Row', sets: 4, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Lat Pulldown', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Rear Delt Fly', sets: 3, reps: '15-20', restSeconds: 60 },
+          { exerciseName: 'Hammer Curl', sets: 3, reps: '10-12', restSeconds: 60 },
+          { exerciseName: 'Leg Curl', sets: 3, reps: '12-15', restSeconds: 60 }
+        ]
+      }
+    ]
+  },
+
+  // ═══════════════════════════════════════
+  // 15. Hypertrophie Pure (6j)
+  // ═══════════════════════════════════════
+  {
+    name: 'Hypertrophie Pure (6j)',
+    slug: 'hypertrophie-pure-6j',
+    description: 'Programme axé 100% volume pour la prise de masse musculaire. Séries hautes, repos courts.',
+    difficulty: ProgramDifficulty.ADVANCED,
+    goal: ProgramGoal.HYPERTROPHY,
+    daysPerWeek: 6,
+    durationWeeks: 6,
+    icon: 'lucide:trending-up',
+    days: [
+      {
+        name: 'Chest / Triceps',
+        dayIndex: 0,
+        exercises: [
+          { exerciseName: 'Incline Dumbbell Press', sets: 4, reps: '10-12', restSeconds: 75 },
+          { exerciseName: 'Bench Press', sets: 4, reps: '8-10', restSeconds: 90 },
+          { exerciseName: 'Cable Fly', sets: 4, reps: '12-15', restSeconds: 60 },
+          { exerciseName: 'Dips', sets: 3, reps: '10-12', restSeconds: 75 },
+          { exerciseName: 'Tricep Pushdown', sets: 3, reps: '12-15', restSeconds: 60 },
+          { exerciseName: 'Overhead Tricep Extension', sets: 3, reps: '12-15', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'Back / Biceps',
+        dayIndex: 1,
+        exercises: [
+          { exerciseName: 'Barbell Row', sets: 4, reps: '8-10', restSeconds: 90 },
+          { exerciseName: 'Lat Pulldown', sets: 4, reps: '10-12', restSeconds: 75 },
+          { exerciseName: 'Cable Row', sets: 3, reps: '10-12', restSeconds: 75 },
+          { exerciseName: 'Face Pull', sets: 3, reps: '15-20', restSeconds: 60 },
+          { exerciseName: 'Barbell Curl', sets: 3, reps: '10-12', restSeconds: 60 },
+          { exerciseName: 'Incline Dumbbell Curl', sets: 3, reps: '10-12', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'Legs A (Quads)',
+        dayIndex: 2,
+        exercises: [
+          { exerciseName: 'Squat', sets: 4, reps: '8-10', restSeconds: 120 },
+          { exerciseName: 'Leg Press', sets: 4, reps: '12-15', restSeconds: 90 },
+          { exerciseName: 'Leg Extension', sets: 4, reps: '12-15', restSeconds: 60 },
+          { exerciseName: 'Bulgarian Split Squat', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Calf Raise', sets: 4, reps: '15-20', restSeconds: 45 }
+        ]
+      },
+      {
+        name: 'Shoulders',
+        dayIndex: 3,
+        exercises: [
+          { exerciseName: 'Overhead Press', sets: 4, reps: '8-10', restSeconds: 90 },
+          { exerciseName: 'Dumbbell Shoulder Press', sets: 3, reps: '10-12', restSeconds: 75 },
+          { exerciseName: 'Lateral Raise', sets: 4, reps: '12-15', restSeconds: 60 },
+          { exerciseName: 'Cable Lateral Raise', sets: 3, reps: '15-20', restSeconds: 45 },
+          { exerciseName: 'Rear Delt Fly', sets: 4, reps: '15-20', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'Legs B (Posterior)',
+        dayIndex: 4,
+        exercises: [
+          { exerciseName: 'Romanian Deadlift', sets: 4, reps: '8-10', restSeconds: 120 },
+          { exerciseName: 'Hip Thrust', sets: 4, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Leg Curl', sets: 4, reps: '12-15', restSeconds: 60 },
+          { exerciseName: 'Bulgarian Split Squat', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Calf Raise', sets: 4, reps: '15-20', restSeconds: 45 }
+        ]
+      },
+      {
+        name: 'Arms',
+        dayIndex: 5,
+        exercises: [
+          { exerciseName: 'Barbell Curl', sets: 4, reps: '8-10', restSeconds: 75 },
+          { exerciseName: 'Skull Crusher', sets: 4, reps: '8-10', restSeconds: 75 },
+          { exerciseName: 'Hammer Curl', sets: 3, reps: '10-12', restSeconds: 60 },
+          { exerciseName: 'Tricep Pushdown', sets: 3, reps: '12-15', restSeconds: 60 },
+          { exerciseName: 'Incline Dumbbell Curl', sets: 3, reps: '10-12', restSeconds: 60 },
+          { exerciseName: 'Overhead Tricep Extension', sets: 3, reps: '10-12', restSeconds: 60 }
+        ]
+      }
+    ]
+  },
+
+  // ═══════════════════════════════════════
+  // 16. Legs Spécialisation (4j)
+  // ═══════════════════════════════════════
+  {
+    name: 'Spécialisation Jambes (4j)',
+    slug: 'specialisation-jambes-4j',
+    description: 'Programme pour rattraper un retard sur les jambes. 2 jours jambes + 2 jours haut du corps maintenance.',
+    difficulty: ProgramDifficulty.INTERMEDIATE,
+    goal: ProgramGoal.HYPERTROPHY,
+    daysPerWeek: 4,
+    durationWeeks: 8,
+    icon: 'lucide:footprints',
+    days: [
+      {
+        name: 'Legs A (Force)',
+        dayIndex: 0,
+        exercises: [
+          { exerciseName: 'Squat', sets: 5, reps: '5-6', restSeconds: 240 },
+          { exerciseName: 'Romanian Deadlift', sets: 4, reps: '6-8', restSeconds: 150 },
+          { exerciseName: 'Leg Press', sets: 4, reps: '8-10', restSeconds: 120 },
+          { exerciseName: 'Leg Curl', sets: 3, reps: '10-12', restSeconds: 60 },
+          { exerciseName: 'Calf Raise', sets: 4, reps: '10-15', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'Upper (Maintenance)',
+        dayIndex: 1,
+        exercises: [
+          { exerciseName: 'Bench Press', sets: 3, reps: '8-10', restSeconds: 120 },
+          { exerciseName: 'Barbell Row', sets: 3, reps: '8-10', restSeconds: 120 },
+          { exerciseName: 'Overhead Press', sets: 3, reps: '8-10', restSeconds: 90 },
+          { exerciseName: 'Pull-up', sets: 3, reps: '6-10', restSeconds: 90 },
+          { exerciseName: 'Lateral Raise', sets: 2, reps: '12-15', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'Legs B (Volume)',
+        dayIndex: 2,
+        exercises: [
+          { exerciseName: 'Front Squat', sets: 4, reps: '8-10', restSeconds: 150 },
+          { exerciseName: 'Hip Thrust', sets: 4, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Bulgarian Split Squat', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Leg Extension', sets: 4, reps: '12-15', restSeconds: 60 },
+          { exerciseName: 'Leg Curl', sets: 4, reps: '12-15', restSeconds: 60 },
+          { exerciseName: 'Calf Raise', sets: 4, reps: '15-20', restSeconds: 45 }
+        ]
+      },
+      {
+        name: 'Upper + Arms',
+        dayIndex: 3,
+        exercises: [
+          { exerciseName: 'Incline Dumbbell Press', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Cable Row', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Dumbbell Shoulder Press', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Barbell Curl', sets: 2, reps: '10-12', restSeconds: 60 },
+          { exerciseName: 'Tricep Pushdown', sets: 2, reps: '10-12', restSeconds: 60 }
+        ]
+      }
+    ]
+  },
+
+  // ═══════════════════════════════════════
+  // 17. Torso / Limbs (4j)
+  // ═══════════════════════════════════════
+  {
+    name: 'Torso / Limbs (4j)',
+    slug: 'torso-limbs-4j',
+    description: 'Split en Torse (chest, back, shoulders) et Membres (arms, legs). Alternative au Upper/Lower.',
+    difficulty: ProgramDifficulty.INTERMEDIATE,
+    goal: ProgramGoal.GENERAL,
+    daysPerWeek: 4,
+    durationWeeks: 10,
+    icon: 'lucide:scan',
+    days: [
+      {
+        name: 'Torso A',
+        dayIndex: 0,
+        exercises: [
+          { exerciseName: 'Bench Press', sets: 4, reps: '6-8', restSeconds: 150 },
+          { exerciseName: 'Barbell Row', sets: 4, reps: '6-8', restSeconds: 150 },
+          { exerciseName: 'Overhead Press', sets: 3, reps: '8-10', restSeconds: 120 },
+          { exerciseName: 'Lat Pulldown', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Cable Fly', sets: 3, reps: '12-15', restSeconds: 60 },
+          { exerciseName: 'Face Pull', sets: 3, reps: '15-20', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'Limbs A',
+        dayIndex: 1,
+        exercises: [
+          { exerciseName: 'Squat', sets: 4, reps: '6-8', restSeconds: 180 },
+          { exerciseName: 'Romanian Deadlift', sets: 3, reps: '8-10', restSeconds: 120 },
+          { exerciseName: 'Barbell Curl', sets: 3, reps: '8-10', restSeconds: 90 },
+          { exerciseName: 'Skull Crusher', sets: 3, reps: '8-10', restSeconds: 90 },
+          { exerciseName: 'Calf Raise', sets: 4, reps: '12-15', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'Torso B',
+        dayIndex: 2,
+        exercises: [
+          { exerciseName: 'Incline Dumbbell Press', sets: 4, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Cable Row', sets: 4, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Dumbbell Shoulder Press', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Pull-up', sets: 3, reps: '6-10', restSeconds: 90 },
+          { exerciseName: 'Lateral Raise', sets: 3, reps: '12-15', restSeconds: 60 },
+          { exerciseName: 'Rear Delt Fly', sets: 3, reps: '15-20', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'Limbs B',
+        dayIndex: 3,
+        exercises: [
+          { exerciseName: 'Leg Press', sets: 4, reps: '10-12', restSeconds: 120 },
+          { exerciseName: 'Hip Thrust', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Leg Curl', sets: 3, reps: '12-15', restSeconds: 60 },
+          { exerciseName: 'Hammer Curl', sets: 3, reps: '10-12', restSeconds: 60 },
+          { exerciseName: 'Overhead Tricep Extension', sets: 3, reps: '10-12', restSeconds: 60 },
+          { exerciseName: 'Calf Raise', sets: 4, reps: '15-20', restSeconds: 45 }
+        ]
+      }
+    ]
+  },
+
+  // ═══════════════════════════════════════
+  // 18. Femme — Glutes & Shape (4j)
+  // ═══════════════════════════════════════
+  {
+    name: 'Glutes & Shape (4j)',
+    slug: 'glutes-shape-4j',
+    description: 'Programme axé fessiers, jambes et silhouette. Spécialement conçu pour sculpter le bas du corps.',
+    difficulty: ProgramDifficulty.BEGINNER,
+    goal: ProgramGoal.HYPERTROPHY,
+    daysPerWeek: 4,
+    durationWeeks: 10,
+    icon: 'lucide:sparkles',
+    days: [
+      {
+        name: 'Lower (Glutes focus)',
+        dayIndex: 0,
+        exercises: [
+          { exerciseName: 'Hip Thrust', sets: 4, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Romanian Deadlift', sets: 4, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Bulgarian Split Squat', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Leg Curl', sets: 3, reps: '12-15', restSeconds: 60 },
+          { exerciseName: 'Calf Raise', sets: 3, reps: '15-20', restSeconds: 45 }
+        ]
+      },
+      {
+        name: 'Upper',
+        dayIndex: 1,
+        exercises: [
+          { exerciseName: 'Dumbbell Bench Press', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Cable Row', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Dumbbell Shoulder Press', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Lat Pulldown', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Lateral Raise', sets: 3, reps: '12-15', restSeconds: 60 },
+          { exerciseName: 'Face Pull', sets: 3, reps: '15-20', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'Lower (Quads + Glutes)',
+        dayIndex: 2,
+        exercises: [
+          { exerciseName: 'Squat', sets: 4, reps: '8-10', restSeconds: 120 },
+          { exerciseName: 'Hip Thrust', sets: 3, reps: '12-15', restSeconds: 90 },
+          { exerciseName: 'Leg Press', sets: 3, reps: '12-15', restSeconds: 90 },
+          { exerciseName: 'Leg Extension', sets: 3, reps: '12-15', restSeconds: 60 },
+          { exerciseName: 'Leg Curl', sets: 3, reps: '12-15', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'Full Body Light',
+        dayIndex: 3,
+        exercises: [
+          { exerciseName: 'Romanian Deadlift', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Incline Dumbbell Press', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Pull-up', sets: 3, reps: '6-10', restSeconds: 90 },
+          { exerciseName: 'Bulgarian Split Squat', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Lateral Raise', sets: 3, reps: '12-15', restSeconds: 60 }
+        ]
+      }
+    ]
+  },
+
+  // ═══════════════════════════════════════
+  // 19. Minimaliste (2j)
+  // ═══════════════════════════════════════
+  {
+    name: 'Minimaliste (2j)',
+    slug: 'minimaliste-2j',
+    description: 'Seulement 2 séances par semaine, mouvements composés essentiels. Pour ceux qui ont peu de temps.',
+    difficulty: ProgramDifficulty.BEGINNER,
+    goal: ProgramGoal.GENERAL,
+    daysPerWeek: 2,
+    durationWeeks: 16,
+    icon: 'lucide:minus-circle',
+    days: [
+      {
+        name: 'Séance A',
+        dayIndex: 0,
+        exercises: [
+          { exerciseName: 'Squat', sets: 3, reps: '5-8', restSeconds: 180 },
+          { exerciseName: 'Bench Press', sets: 3, reps: '5-8', restSeconds: 180 },
+          { exerciseName: 'Barbell Row', sets: 3, reps: '5-8', restSeconds: 180 },
+          { exerciseName: 'Overhead Press', sets: 2, reps: '8-10', restSeconds: 120 },
+          { exerciseName: 'Barbell Curl', sets: 2, reps: '10-12', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'Séance B',
+        dayIndex: 1,
+        exercises: [
+          { exerciseName: 'Deadlift', sets: 3, reps: '5', restSeconds: 240 },
+          { exerciseName: 'Incline Dumbbell Press', sets: 3, reps: '8-10', restSeconds: 120 },
+          { exerciseName: 'Pull-up', sets: 3, reps: '6-10', restSeconds: 120 },
+          { exerciseName: 'Leg Press', sets: 3, reps: '10-12', restSeconds: 120 },
+          { exerciseName: 'Face Pull', sets: 2, reps: '15-20', restSeconds: 60 }
+        ]
+      }
+    ]
+  },
+
+  // ═══════════════════════════════════════
+  // 20. Functional Fitness (4j)
+  // ═══════════════════════════════════════
+  {
+    name: 'Functional Fitness (4j)',
+    slug: 'functional-fitness-4j',
+    description: 'Programme orienté performance fonctionnelle. Mouvements polyarticulaires, stabilité et endurance musculaire.',
+    difficulty: ProgramDifficulty.INTERMEDIATE,
+    goal: ProgramGoal.ENDURANCE,
+    daysPerWeek: 4,
+    durationWeeks: 8,
+    icon: 'lucide:activity',
+    days: [
+      {
+        name: 'Push + Core',
+        dayIndex: 0,
+        exercises: [
+          { exerciseName: 'Overhead Press', sets: 4, reps: '6-8', restSeconds: 120 },
+          { exerciseName: 'Dumbbell Bench Press', sets: 3, reps: '8-10', restSeconds: 90 },
+          { exerciseName: 'Dips', sets: 3, reps: '10-15', restSeconds: 90 },
+          { exerciseName: 'Lateral Raise', sets: 3, reps: '12-15', restSeconds: 60 },
+          { exerciseName: 'Plank', sets: 3, reps: '45-60s', restSeconds: 60 },
+          { exerciseName: 'Hanging Leg Raise', sets: 3, reps: '10-15', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'Pull + Core',
+        dayIndex: 1,
+        exercises: [
+          { exerciseName: 'Deadlift', sets: 4, reps: '5-6', restSeconds: 180 },
+          { exerciseName: 'Pull-up', sets: 4, reps: '6-10', restSeconds: 120 },
+          { exerciseName: 'Dumbbell Row', sets: 3, reps: '8-10', restSeconds: 90 },
+          { exerciseName: 'Face Pull', sets: 3, reps: '15-20', restSeconds: 60 },
+          { exerciseName: 'Barbell Curl', sets: 2, reps: '10-12', restSeconds: 60 },
+          { exerciseName: 'Plank', sets: 3, reps: '45-60s', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'Lower + Explosivité',
+        dayIndex: 2,
+        exercises: [
+          { exerciseName: 'Front Squat', sets: 4, reps: '6-8', restSeconds: 150 },
+          { exerciseName: 'Romanian Deadlift', sets: 3, reps: '8-10', restSeconds: 120 },
+          { exerciseName: 'Bulgarian Split Squat', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Leg Curl', sets: 3, reps: '10-12', restSeconds: 60 },
+          { exerciseName: 'Calf Raise', sets: 3, reps: '15-20', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'Full Body Circuit',
+        dayIndex: 3,
+        exercises: [
+          { exerciseName: 'Squat', sets: 3, reps: '10', restSeconds: 60, notes: 'Enchaîner en circuit, repos minimal' },
+          { exerciseName: 'Bench Press', sets: 3, reps: '10', restSeconds: 60 },
+          { exerciseName: 'Barbell Row', sets: 3, reps: '10', restSeconds: 60 },
+          { exerciseName: 'Overhead Press', sets: 3, reps: '10', restSeconds: 60 },
+          { exerciseName: 'Hanging Leg Raise', sets: 3, reps: '15', restSeconds: 60 }
+        ]
+      }
+    ]
+  },
+
+  // ═══════════════════════════════════════
+  // 21. Recomp (5j)
+  // ═══════════════════════════════════════
+  {
+    name: 'Recomposition (5j)',
+    slug: 'recomp-5j',
+    description: 'Programme pour perdre du gras et gagner du muscle simultanément. Mix force et volume avec séries légères.',
+    difficulty: ProgramDifficulty.INTERMEDIATE,
+    goal: ProgramGoal.GENERAL,
+    daysPerWeek: 5,
+    durationWeeks: 12,
+    icon: 'lucide:refresh-cw',
+    days: [
+      {
+        name: 'Upper Force',
+        dayIndex: 0,
+        exercises: [
+          { exerciseName: 'Bench Press', sets: 4, reps: '5-6', restSeconds: 180 },
+          { exerciseName: 'Barbell Row', sets: 4, reps: '5-6', restSeconds: 180 },
+          { exerciseName: 'Overhead Press', sets: 3, reps: '6-8', restSeconds: 150 },
+          { exerciseName: 'Pull-up', sets: 3, reps: '6-10', restSeconds: 120 },
+          { exerciseName: 'Barbell Curl', sets: 2, reps: '8-10', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'Lower Force',
+        dayIndex: 1,
+        exercises: [
+          { exerciseName: 'Squat', sets: 4, reps: '5-6', restSeconds: 240 },
+          { exerciseName: 'Romanian Deadlift', sets: 3, reps: '6-8', restSeconds: 180 },
+          { exerciseName: 'Leg Press', sets: 3, reps: '8-10', restSeconds: 120 },
+          { exerciseName: 'Leg Curl', sets: 3, reps: '8-10', restSeconds: 90 },
+          { exerciseName: 'Calf Raise', sets: 3, reps: '10-15', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'Upper Volume',
+        dayIndex: 2,
+        exercises: [
+          { exerciseName: 'Incline Dumbbell Press', sets: 4, reps: '10-12', restSeconds: 75 },
+          { exerciseName: 'Cable Row', sets: 4, reps: '10-12', restSeconds: 75 },
+          { exerciseName: 'Dumbbell Shoulder Press', sets: 3, reps: '10-12', restSeconds: 75 },
+          { exerciseName: 'Lat Pulldown', sets: 3, reps: '10-12', restSeconds: 75 },
+          { exerciseName: 'Cable Fly', sets: 3, reps: '12-15', restSeconds: 60 },
+          { exerciseName: 'Lateral Raise', sets: 3, reps: '12-15', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'Lower Volume',
+        dayIndex: 3,
+        exercises: [
+          { exerciseName: 'Front Squat', sets: 4, reps: '8-10', restSeconds: 120 },
+          { exerciseName: 'Hip Thrust', sets: 4, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Bulgarian Split Squat', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Leg Extension', sets: 3, reps: '12-15', restSeconds: 60 },
+          { exerciseName: 'Leg Curl', sets: 3, reps: '12-15', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'Full Body Métabolique',
+        dayIndex: 4,
+        exercises: [
+          { exerciseName: 'Deadlift', sets: 3, reps: '8', restSeconds: 90 },
+          { exerciseName: 'Dumbbell Bench Press', sets: 3, reps: '12', restSeconds: 60 },
+          { exerciseName: 'Dumbbell Row', sets: 3, reps: '12', restSeconds: 60 },
+          { exerciseName: 'Squat', sets: 3, reps: '12', restSeconds: 60 },
+          { exerciseName: 'Face Pull', sets: 3, reps: '15', restSeconds: 45 },
+          { exerciseName: 'Plank', sets: 3, reps: '45s', restSeconds: 45 }
+        ]
+      }
+    ]
+  },
+
+  // ═══════════════════════════════════════
+  // 22. Powerbuilding (5j)
+  // ═══════════════════════════════════════
+  {
+    name: 'Powerbuilding (5j)',
+    slug: 'powerbuilding-5j',
+    description: 'Le meilleur des deux mondes : force sur les composés + hypertrophie en accessoires. Pour devenir fort ET musclé.',
+    difficulty: ProgramDifficulty.ADVANCED,
+    goal: ProgramGoal.STRENGTH,
+    daysPerWeek: 5,
+    durationWeeks: 10,
+    icon: 'lucide:shield',
+    days: [
+      {
+        name: 'Squat + Legs',
+        dayIndex: 0,
+        exercises: [
+          { exerciseName: 'Squat', sets: 5, reps: '3-5', restSeconds: 300, notes: 'Progression: +2.5kg/semaine' },
+          { exerciseName: 'Leg Press', sets: 4, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Romanian Deadlift', sets: 3, reps: '8-10', restSeconds: 120 },
+          { exerciseName: 'Leg Extension', sets: 3, reps: '12-15', restSeconds: 60 },
+          { exerciseName: 'Leg Curl', sets: 3, reps: '12-15', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'Bench + Chest/Triceps',
+        dayIndex: 1,
+        exercises: [
+          { exerciseName: 'Bench Press', sets: 5, reps: '3-5', restSeconds: 300, notes: 'Progression: +2.5kg/semaine' },
+          { exerciseName: 'Incline Dumbbell Press', sets: 4, reps: '8-10', restSeconds: 90 },
+          { exerciseName: 'Cable Fly', sets: 3, reps: '12-15', restSeconds: 60 },
+          { exerciseName: 'Dips', sets: 3, reps: '8-12', restSeconds: 90 },
+          { exerciseName: 'Tricep Pushdown', sets: 3, reps: '12-15', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'Deadlift + Back',
+        dayIndex: 2,
+        exercises: [
+          { exerciseName: 'Deadlift', sets: 5, reps: '3-5', restSeconds: 300, notes: 'Progression: +5kg/semaine' },
+          { exerciseName: 'Barbell Row', sets: 4, reps: '8-10', restSeconds: 120 },
+          { exerciseName: 'Lat Pulldown', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Cable Row', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Face Pull', sets: 3, reps: '15-20', restSeconds: 60 }
+        ]
+      },
+      {
+        name: 'OHP + Shoulders/Arms',
+        dayIndex: 3,
+        exercises: [
+          { exerciseName: 'Overhead Press', sets: 5, reps: '3-5', restSeconds: 240, notes: 'Progression: +1.25kg/semaine' },
+          { exerciseName: 'Lateral Raise', sets: 4, reps: '12-15', restSeconds: 60 },
+          { exerciseName: 'Rear Delt Fly', sets: 3, reps: '15-20', restSeconds: 60 },
+          { exerciseName: 'Barbell Curl', sets: 3, reps: '8-10', restSeconds: 90 },
+          { exerciseName: 'Skull Crusher', sets: 3, reps: '8-10', restSeconds: 90 }
+        ]
+      },
+      {
+        name: 'Volume Day',
+        dayIndex: 4,
+        exercises: [
+          { exerciseName: 'Front Squat', sets: 3, reps: '8-10', restSeconds: 120 },
+          { exerciseName: 'Dumbbell Bench Press', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Pull-up', sets: 3, reps: '8-12', restSeconds: 90 },
+          { exerciseName: 'Hip Thrust', sets: 3, reps: '10-12', restSeconds: 90 },
+          { exerciseName: 'Hammer Curl', sets: 3, reps: '10-12', restSeconds: 60 },
+          { exerciseName: 'Overhead Tricep Extension', sets: 3, reps: '10-12', restSeconds: 60 }
         ]
       }
     ]

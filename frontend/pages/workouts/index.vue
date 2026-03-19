@@ -124,6 +124,14 @@
                     </svg>
                   </button>
                   <button
+                    @click.stop="shareTemplate(workout.id)"
+                    :disabled="sharingId === workout.id"
+                    class="w-8 h-8 flex items-center justify-center rounded-lg text-primary-400 hover:text-sand-600 dark:hover:text-sand-400 hover:bg-sand-500/10 transition-colors disabled:opacity-50"
+                    title="Partager"
+                  >
+                    <Icon name="lucide:share-2" class="w-4 h-4" />
+                  </button>
+                  <button
                     @click.stop="deleteTemplate(workout.id)"
                     :disabled="deletingId === workout.id"
                     class="w-8 h-8 flex items-center justify-center rounded-lg text-primary-300 dark:text-primary-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50"
@@ -274,14 +282,7 @@ const deletingId = ref<number | null>(null)
 
 const activeTab = ref<'workouts' | 'history'>('workouts')
 
-// Auth check
 onMounted(async () => {
-  await authStore.initAuth()
-  if (!authStore.isAuthenticated) {
-    navigateTo('/login')
-    return
-  }
-
   loadWorkouts()
   await subscriptionStore.fetchSubscription()
   await fetchUsage()
@@ -339,6 +340,34 @@ const startFromHistory = async (workout: Workout) => {
 
 const editWorkout = (id: number) => {
   navigateTo(`/workouts/${id}/edit`)
+}
+
+// ── Share Template ──
+const sharingId = ref<number | null>(null)
+
+const shareTemplate = async (id: number) => {
+  if (sharingId.value) return
+  sharingId.value = id
+  try {
+    const { shareToken } = await apiFetch<{ shareToken: string }>(`/share/${id}`, { method: 'POST' })
+    const shareUrl = `${window.location.origin}/shared/${shareToken}`
+
+    if (navigator.share) {
+      await navigator.share({
+        title: 'Mon programme Athletiq',
+        text: 'Regarde mon programme d\'entraînement sur Athletiq !',
+        url: shareUrl
+      })
+    } else {
+      await navigator.clipboard.writeText(shareUrl)
+      toast.success('Lien copié !', 'Le lien de partage est dans ton presse-papier')
+    }
+  } catch (err: any) {
+    if (err?.name === 'AbortError') return // user cancelled share dialog
+    toast.error('Erreur', 'Impossible de partager ce template')
+  } finally {
+    sharingId.value = null
+  }
 }
 
 const showDeleteModal = ref(false)

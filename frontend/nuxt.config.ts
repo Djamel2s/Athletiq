@@ -184,6 +184,7 @@ export default defineNuxtConfig({
     '/achievements': { ssr: false },
     '/calculators': { ssr: false },
     '/onboarding': { ssr: false },
+    '/shared/**': { ssr: false },
   },
 
   robots: {

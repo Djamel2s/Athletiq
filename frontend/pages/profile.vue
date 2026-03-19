@@ -289,11 +289,6 @@ const handleSave = async () => {
 }
 
 onMounted(async () => {
-  await authStore.initAuth()
-  if (!authStore.isAuthenticated) {
-    navigateTo('/login')
-    return
-  }
   firstName.value = authStore.user?.firstName || ''
   lastName.value = authStore.user?.lastName || ''
   selectedGoal.value = authStore.user?.goal || null

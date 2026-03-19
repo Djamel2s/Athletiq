@@ -208,11 +208,6 @@ const authStore = useAuthStore()
 const workoutStore = useWorkoutStore()
 
 onMounted(async () => {
-  await authStore.initAuth()
-  if (!authStore.isAuthenticated) {
-    navigateTo('/login')
-    return
-  }
   if (!workoutStore.workouts.length) {
     await workoutStore.fetchWorkouts()
   }

@@ -325,12 +325,6 @@ const showShareModal = ref<'streak' | 'recap' | null>(null)
 const showCelebration = ref(false)
 
 onMounted(async () => {
-  await authStore.initAuth()
-  if (!authStore.isAuthenticated) {
-    navigateTo('/login')
-    return
-  }
-
   try {
     const [streak, correlation] = await Promise.all([
       statsApi.getStreak().catch(() => null),

@@ -27,6 +27,7 @@ import programRoutes from './routes/programs.js'
 import achievementRoutes from './routes/achievements.js'
 import coachRoutes from './routes/coach.js'
 import calculatorRoutes from './routes/calculators.js'
+import shareRoutes from './routes/share.js'
 import { seedPrograms } from './routes/programs.js'
 
 const app = express()
@@ -104,6 +105,7 @@ app.use('/api/programs', apiLimiter, programRoutes)
 app.use('/api/achievements', apiLimiter, achievementRoutes)
 app.use('/api/coach', apiLimiter, coachRoutes)
 app.use('/api/calculators', apiLimiter, calculatorRoutes)
+app.use('/api/share', apiLimiter, shareRoutes)
 
 // 404 handler
 app.use((req, res) => {

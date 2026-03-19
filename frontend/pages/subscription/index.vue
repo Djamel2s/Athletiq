@@ -249,11 +249,6 @@ const { isPremium, usage, fetchUsage, workoutUsageText, templateUsageText, photo
 const checkoutLoading = ref(false)
 
 onMounted(async () => {
-  await authStore.initAuth()
-  if (!authStore.isAuthenticated) {
-    navigateTo('/login')
-    return
-  }
   await subscriptionStore.fetchSubscription()
   await fetchUsage()
 })

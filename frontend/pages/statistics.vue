@@ -457,14 +457,7 @@ const timeRanges = [
   { label: 'Tout', value: null }
 ]
 
-// Auth check
 onMounted(async () => {
-  await authStore.initAuth()
-  if (!authStore.isAuthenticated) {
-    navigateTo('/login')
-    return
-  }
-
   await Promise.all([
     workoutStore.fetchWorkouts(),
     goalStore.fetchGoals(),

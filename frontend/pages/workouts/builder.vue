@@ -402,13 +402,7 @@ const filterMuscleGroup = ref('')
 const filterEquipment = ref('')
 const filterDifficulty = ref('')
 
-// Auth check
-onMounted(async () => {
-  await authStore.initAuth()
-  if (!authStore.isAuthenticated) {
-    navigateTo('/login')
-  }
-})
+// Auth handled by middleware
 
 const createWorkout = async () => {
   if (!workoutForm.value.name?.trim()) return

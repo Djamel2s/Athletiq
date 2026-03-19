@@ -40,6 +40,10 @@ export class Workout {
   @Column({ type: 'text', nullable: true })
   notes?: string
 
+  @Index({ unique: true })
+  @Column({ type: 'varchar', nullable: true })
+  shareToken?: string
+
   @CreateDateColumn()
   createdAt!: Date
 

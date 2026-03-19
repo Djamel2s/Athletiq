@@ -691,12 +691,6 @@ const deletePhoto = async (id: number) => {
 
 // ========== INIT ==========
 onMounted(async () => {
-  await authStore.initAuth()
-  if (!authStore.isAuthenticated) {
-    navigateTo('/login')
-    return
-  }
-
   await Promise.all([
     bodyStore.fetchBodyStats(),
     bodyStore.fetchMeasurements(),

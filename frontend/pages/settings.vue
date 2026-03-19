@@ -358,12 +358,6 @@ const handleDeleteAccount = async () => {
 }
 
 onMounted(async () => {
-  await authStore.initAuth()
-  if (!authStore.isAuthenticated) {
-    navigateTo('/login')
-    return
-  }
-
   if (process.client) {
     try {
       weightUnit.value = localStorage.getItem('pref_weight_unit') || 'kg'

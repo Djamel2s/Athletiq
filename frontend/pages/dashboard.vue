@@ -296,16 +296,8 @@ const statsApi = useStatsApi()
 
 const recoveryData = ref<{ score: number; muscleRecovery: Array<{ muscle: string; score: number; daysSince: number; lastVolume: number }>; recommendation: string } | null>(null)
 
-// Charger l'utilisateur depuis le localStorage
+// Le middleware 'auth' gère déjà initAuth() + redirection
 onMounted(async () => {
-  await authStore.initAuth()
-
-  // Rediriger vers login si non authentifié
-  if (!authStore.isAuthenticated) {
-    navigateTo('/login')
-    return
-  }
-
   // Charger les workouts récents
   await workoutStore.fetchWorkouts()
 

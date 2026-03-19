@@ -232,11 +232,6 @@ const periods = [
 const selectedPeriod = ref<'month' | 'all'>('month')
 
 onMounted(async () => {
-  await authStore.initAuth()
-  if (!authStore.isAuthenticated) {
-    navigateTo('/login')
-    return
-  }
   if (!workoutStore.workouts.length) {
     await workoutStore.fetchWorkouts()
   }

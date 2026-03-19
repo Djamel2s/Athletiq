@@ -177,12 +177,6 @@ const loading = ref(true)
 const workout = computed(() => workoutStore.currentWorkout)
 
 onMounted(async () => {
-  await authStore.initAuth()
-  if (!authStore.isAuthenticated) {
-    navigateTo('/login')
-    return
-  }
-
   const id = Number(route.params.id)
   if (isNaN(id)) {
     navigateTo('/workouts')

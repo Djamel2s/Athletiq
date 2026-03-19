@@ -526,12 +526,6 @@ const formattedTime = computed(() => {
 })
 
 onMounted(async () => {
-  await authStore.initAuth()
-  if (!authStore.isAuthenticated) {
-    navigateTo('/login')
-    return
-  }
-
   const workoutId = parseInt(route.params.id as string)
   await loadWorkout(workoutId)
 

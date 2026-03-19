@@ -350,14 +350,7 @@ const filterMuscleGroup = ref('')
 const filterEquipment = ref('')
 const filterDifficulty = ref('')
 
-// Auth check and load workout
 onMounted(async () => {
-  await authStore.initAuth()
-  if (!authStore.isAuthenticated) {
-    navigateTo('/login')
-    return
-  }
-
   const id = parseInt(route.params.id as string)
   if (id) {
     try {

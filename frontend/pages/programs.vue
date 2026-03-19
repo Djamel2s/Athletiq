@@ -81,8 +81,7 @@
         <div
           v-for="program in programs"
           :key="program.id"
-          class="group relative rounded-2xl border border-primary-200/60 dark:border-primary-700/60 bg-white/70 dark:bg-primary-800/70 backdrop-blur-sm hover:border-sand-500/50 dark:hover:border-sand-600/40 hover:shadow-xl transition-all cursor-pointer overflow-hidden"
-          @click="toggleDetail(program.slug)"
+          class="group relative rounded-2xl border border-primary-200/60 dark:border-primary-700/60 bg-white/70 dark:bg-primary-800/70 backdrop-blur-sm hover:border-sand-500/50 dark:hover:border-sand-600/40 hover:shadow-xl transition-all overflow-hidden"
         >
           <!-- Accent top bar -->
           <div class="h-1.5 bg-gradient-primary"></div>
@@ -90,8 +89,8 @@
           <div class="p-6">
             <!-- Header: icon + name -->
             <div class="flex items-start gap-3 mb-4">
-              <div class="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center flex-shrink-0 text-2xl">
-                {{ program.icon || '🏋️' }}
+              <div class="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center flex-shrink-0 text-white">
+                <Icon :name="program.icon || 'lucide:dumbbell'" class="w-6 h-6" />
               </div>
               <div class="flex-1 min-w-0">
                 <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 group-hover:text-sand-700 dark:group-hover:text-sand-400 transition-colors leading-tight">
@@ -144,15 +143,18 @@
             </div>
 
             <!-- Expand indicator -->
-            <div class="mt-4 pt-3 border-t border-primary-100 dark:border-primary-700/60 flex items-center justify-center gap-1.5 text-xs font-medium text-primary-400 dark:text-primary-500">
-              <span>{{ expandedSlug === program.slug ? 'Masquer le detail' : 'Voir le detail' }}</span>
+            <button
+              @click="toggleDetail(program.slug)"
+              class="mt-4 pt-3 border-t border-primary-100 dark:border-primary-700/60 flex items-center justify-center gap-1.5 text-xs font-medium text-primary-400 dark:text-primary-500 hover:text-sand-600 dark:hover:text-sand-400 transition-colors w-full cursor-pointer"
+            >
+              <span>{{ expandedSlug === program.slug ? 'Masquer le détail' : 'Voir le détail' }}</span>
               <svg
                 :class="['w-3.5 h-3.5 transition-transform duration-300', expandedSlug === program.slug ? 'rotate-180' : '']"
                 fill="none" stroke="currentColor" viewBox="0 0 24 24"
               >
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
               </svg>
-            </div>
+            </button>
           </div>
 
           <!-- Expanded detail -->
@@ -285,11 +287,11 @@ const handleAdopt = async (program: WorkoutProgram) => {
   try {
     const result = await adoptProgram(program.slug)
     toast.success(
-      'Programme adopte !',
-      `${result.workoutIds.length} templates crees pour "${program.name}"`
+      'Programme adopté !',
+      `${result.workoutIds.length} templates créés pour "${program.name}"`
     )
-    // Refresh to update popularity count
-    await loadPrograms()
+    // Redirect to workouts to see the new templates
+    navigateTo('/workouts')
   } catch (err: any) {
     toast.error(
       'Erreur',

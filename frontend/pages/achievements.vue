@@ -86,7 +86,7 @@
 
         <!-- Empty state -->
         <div v-if="filteredAchievements.length === 0" class="text-center py-16">
-          <p class="text-5xl mb-4">🏅</p>
+          <Icon name="lucide:medal" class="w-12 h-12 mx-auto mb-4 text-primary-300" />
           <p class="text-primary-600 dark:text-primary-400">Aucun badge dans cette catégorie</p>
         </div>
 
@@ -106,13 +106,13 @@
               <!-- Icon -->
               <div
                 :class="[
-                  'w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center text-2xl md:text-3xl mb-3 transition-all',
+                  'w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center mb-3 transition-all',
                   achievement.unlocked
-                    ? 'bg-gradient-primary shadow-lg'
-                    : 'bg-primary-100 dark:bg-primary-700/50'
+                    ? 'bg-gradient-primary shadow-lg text-white'
+                    : 'bg-primary-100 dark:bg-primary-700/50 text-primary-400 dark:text-primary-500'
                 ]"
               >
-                {{ achievement.icon }}
+                <Icon :name="achievement.icon" class="w-7 h-7 md:w-8 md:h-8" />
               </div>
 
               <!-- Name -->

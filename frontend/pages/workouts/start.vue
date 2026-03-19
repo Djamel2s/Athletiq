@@ -181,14 +181,7 @@ const { isPremium, canCreateWorkout, workoutUsageText, fetchUsage } = useSubscri
 const toast = useToast()
 const isLaunching = ref<number | null>(null)
 
-// Auth check
 onMounted(async () => {
-  await authStore.initAuth()
-  if (!authStore.isAuthenticated) {
-    navigateTo('/login')
-    return
-  }
-
   await workoutStore.fetchWorkouts()
   await subscriptionStore.fetchSubscription()
   await fetchUsage()
