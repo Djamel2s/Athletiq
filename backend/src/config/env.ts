@@ -4,10 +4,15 @@ dotenv.config()
 const isProduction = process.env.NODE_ENV === 'production'
 
 // Variables obligatoires en production
+// Variables obligatoires en production (bloquantes)
 const requiredInProduction = [
   'JWT_SECRET',
   'DATABASE_URL',
   'CORS_ORIGIN',
+] as const
+
+// Variables recommandées (warning mais pas bloquantes — features désactivées si absentes)
+const recommendedInProduction = [
   'STRIPE_SECRET_KEY',
   'STRIPE_WEBHOOK_SECRET',
   'RESEND_API_KEY',
@@ -17,6 +22,11 @@ if (isProduction) {
   const missing = requiredInProduction.filter(key => !process.env[key])
   if (missing.length > 0) {
     throw new Error(`Missing required environment variables in production: ${missing.join(', ')}`)
+  }
+
+  const missingRecommended = recommendedInProduction.filter(key => !process.env[key])
+  if (missingRecommended.length > 0) {
+    console.warn(`⚠️ Missing recommended env variables (features disabled): ${missingRecommended.join(', ')}`)
   }
 }
 
