@@ -158,15 +158,7 @@
           </div>
 
           <!-- Expanded detail -->
-          <Transition
-            enter-active-class="transition-all duration-300 ease-out"
-            enter-from-class="max-h-0 opacity-0"
-            enter-to-class="max-h-[2000px] opacity-100"
-            leave-active-class="transition-all duration-200 ease-in"
-            leave-from-class="max-h-[2000px] opacity-100"
-            leave-to-class="max-h-0 opacity-0"
-          >
-            <div v-if="expandedSlug === program.slug" class="overflow-hidden border-t border-primary-100 dark:border-primary-700/60">
+          <div v-if="expandedSlug === program.slug" class="border-t border-primary-100 dark:border-primary-700/60">
               <div class="p-6 pt-5 space-y-4">
                 <!-- Days list -->
                 <div
@@ -226,7 +218,7 @@
                 </button>
               </div>
             </div>
-          </Transition>
+          </div>
         </div>
       </div>
 
