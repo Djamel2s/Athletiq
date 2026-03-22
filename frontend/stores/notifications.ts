@@ -61,6 +61,18 @@ export const useNotificationStore = defineStore('notifications', {
       } catch (error) {
         logger.error('Mark all read error:', error)
       }
+    },
+
+    async deleteNotification(id: number) {
+      try {
+        const api = useNotificationApi()
+        await api.deleteNotification(id)
+        this.notifications = this.notifications.filter(n => n.id !== id)
+        this.unreadCount = this.notifications.filter(n => !n.read).length
+      } catch (error) {
+        logger.error('Delete notification error:', error)
+        throw error
+      }
     }
   }
 })

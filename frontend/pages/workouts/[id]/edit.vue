@@ -322,13 +322,12 @@
 
 <script setup lang="ts">
 import { useWorkoutStore } from '~/stores/workout'
-import { useAuthStore } from '~/stores/auth'
 import type { ExerciseLibrary, Exercise } from '~/types/workout'
 
 useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
 
 const workoutStore = useWorkoutStore()
-const authStore = useAuthStore()
+const workoutApi = useWorkoutApi()
 const toast = useToast()
 const route = useRoute()
 
@@ -413,7 +412,13 @@ const addExercise = async (exercise: ExerciseLibrary) => {
   }
 }
 
+const removedExerciseIds = ref<number[]>([])
+
 const removeExercise = (index: number) => {
+  const exercise = selectedExercises.value[index]
+  if (exercise?.id) {
+    removedExerciseIds.value.push(exercise.id)
+  }
   selectedExercises.value.splice(index, 1)
 }
 
@@ -465,6 +470,11 @@ const saveWorkout = async () => {
       name: workoutForm.value.name,
       description: workoutForm.value.description
     })
+
+    for (const exerciseId of removedExerciseIds.value) {
+      await workoutApi.deleteExercise(workoutId.value, exerciseId)
+    }
+    removedExerciseIds.value = []
 
     for (const exercise of selectedExercises.value) {
       const sets = getExerciseSets(exercise)

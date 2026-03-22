@@ -361,7 +361,7 @@ const saveGoalToProfile = async () => {
       },
     })
   } catch (err: any) {
-    console.error('Failed to save profile:', err)
+    logger.error('Failed to save profile:', err)
   }
 }
 

@@ -79,33 +79,6 @@
 
       <!-- Statistics Content -->
       <div v-else class="space-y-8 md:space-y-12">
-        <!-- Page Header -->
-        <div class="fade-in text-center">
-          <h2 class="text-4xl md:text-5xl font-bold text-primary-900 dark:text-primary-100 mb-4 text-display">
-            Vos Statistiques
-          </h2>
-          <p class="text-lg text-primary-600 dark:text-primary-400">
-            {{ timeRangeLabel }}
-          </p>
-        </div>
-
-        <!-- Mobile Time Range Selector -->
-        <div class="md:hidden flex flex-wrap gap-2 justify-center slide-up">
-          <button
-            v-for="range in timeRanges"
-            :key="range.value || 'all'"
-            @click="selectedTimeRange = range.value"
-            :class="[
-              'px-4 py-2 rounded-lg text-sm font-semibold transition-all',
-              selectedTimeRange === range.value
-                ? 'bg-gradient-primary text-white'
-                : 'bg-white dark:bg-primary-900 bg-opacity-50 dark:bg-opacity-50 text-primary-600 dark:text-primary-400'
-            ]"
-          >
-            {{ range.label }}
-          </button>
-        </div>
-
         <!-- Overview Stats -->
         <div class="flex justify-end -mb-6 slide-up">
           <StatsShareButton

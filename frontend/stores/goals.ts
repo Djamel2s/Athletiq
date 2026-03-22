@@ -57,12 +57,25 @@ export const useGoalStore = defineStore('goals', {
       }
     },
 
+    async updateGoal(id: number, data: Partial<{ title: string; targetValue: number; deadline: string | null }>) {
+      try {
+        const api = useGoalApi()
+        const updated = await api.updateGoal(id, data)
+        const index = this.goals.findIndex(g => g.id === id)
+        if (index !== -1) this.goals[index] = { ...this.goals[index], ...updated }
+        return updated
+      } catch (error: any) {
+        this.error = error.message || 'Erreur lors de la mise à jour'
+        throw error
+      }
+    },
+
     async markAchieved(id: number) {
       try {
         const api = useGoalApi()
         const updated = await api.achieveGoal(id)
         const index = this.goals.findIndex(g => g.id === id)
-        if (index !== -1) this.goals[index] = { ...this.goals[index], ...updated, achieved: true, achievedAt: new Date().toISOString() }
+        if (index !== -1) this.goals[index] = { ...this.goals[index], ...updated }
       } catch (error: any) {
         this.error = error.message || 'Erreur lors de la validation'
         throw error

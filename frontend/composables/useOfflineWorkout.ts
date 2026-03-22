@@ -54,7 +54,7 @@ export const useOfflineWorkout = () => {
       })
       db.close()
     } catch (e) {
-      console.warn('Offline save failed:', e)
+      logger.warn('Offline save failed:', e)
     }
   }
 

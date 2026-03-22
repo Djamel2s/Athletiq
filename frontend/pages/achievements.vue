@@ -235,7 +235,7 @@ onMounted(async () => {
     achievements.value = data.achievements
     stats.value = data.stats
   } catch (e) {
-    console.error('Failed to load achievements:', e)
+    logger.error('Failed to load achievements:', e)
   } finally {
     loading.value = false
   }
