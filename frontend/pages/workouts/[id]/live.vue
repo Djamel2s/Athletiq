@@ -62,18 +62,57 @@
           </div>
         </div>
 
-        <!-- Nom exercice -->
-        <h1 class="text-xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 text-center mb-4">
-          {{ currentExercise.exerciseLibrary?.name || currentExercise.name }}
-        </h1>
+        <!-- Navigation flèches + nom exercice -->
+        <div class="relative">
+          <!-- Flèche gauche -->
+          <button
+            @click="navigateBack"
+            :disabled="!canNavigateBack"
+            class="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full flex items-center justify-center transition-all"
+            :class="canNavigateBack ? 'bg-white/80 dark:bg-primary-800/80 text-primary-900 dark:text-primary-100 shadow-lg hover:bg-white dark:hover:bg-primary-700' : 'text-primary-300 dark:text-primary-700 cursor-not-allowed'"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+          </button>
 
-        <!-- Animation exercice (caché pendant le repos) -->
-        <div v-if="!showRestTimer" class="mb-4">
-          <ExerciseAnimation
-            :image-id="currentExercise.exerciseLibrary?.imageUrl"
-            :name="currentExercise.exerciseLibrary?.name || currentExercise.name"
-            size="lg"
-          />
+          <!-- Flèche droite -->
+          <button
+            @click="navigateForward"
+            :disabled="!canNavigateForward"
+            class="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full flex items-center justify-center transition-all"
+            :class="canNavigateForward ? 'bg-white/80 dark:bg-primary-800/80 text-primary-900 dark:text-primary-100 shadow-lg hover:bg-white dark:hover:bg-primary-700' : 'text-primary-300 dark:text-primary-700 cursor-not-allowed'"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+
+          <!-- Contenu central -->
+          <div class="px-12">
+            <!-- Badge si on regarde une série passée -->
+            <div v-if="isViewingPast" class="text-center mb-2">
+              <span class="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full bg-sand-500/15 text-sand-700 dark:text-sand-400 border border-sand-500/30">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Serie passee — modifiable
+              </span>
+            </div>
+
+            <h1 class="text-xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 text-center mb-4">
+              {{ viewingExerciseName }}
+            </h1>
+
+            <!-- Animation exercice -->
+            <div v-if="!showRestTimer" class="mb-4">
+              <ExerciseAnimation
+                :image-id="viewingExerciseImage"
+                :name="viewingExerciseName"
+                size="lg"
+              />
+            </div>
+          </div>
         </div>
 
         <!-- Weight progression suggestion -->
@@ -93,11 +132,15 @@
           </div>
         </div>
 
-        <!-- Série actuelle (en haut maintenant) -->
+        <!-- Zone de saisie -->
         <div class="card-glass space-y-6">
           <div class="text-center">
-            <p class="text-primary-900 dark:text-primary-100 font-bold text-xl mb-2">Série {{ currentSetNumber }}</p>
-            <p class="text-primary-600 dark:text-primary-400 text-sm">Entre tes performances</p>
+            <p class="text-primary-900 dark:text-primary-100 font-bold text-xl mb-2">
+              {{ isViewingPast ? `Serie ${viewingSetNumber} (passee)` : `Série ${currentSetNumber}` }}
+            </p>
+            <p class="text-primary-600 dark:text-primary-400 text-sm">
+              {{ isViewingPast ? 'Modifie si besoin' : 'Entre tes performances' }}
+            </p>
           </div>
 
           <div class="flex gap-4">
@@ -127,13 +170,39 @@
             </div>
           </div>
 
-          <button
-            @click="validateCurrentSet"
-            :disabled="showRestTimer"
-            class="btn-primary w-full text-xl py-5 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {{ nextButtonLabel }}
-          </button>
+          <!-- Mode passé : bouton modifier -->
+          <div v-if="isViewingPast" class="flex gap-3">
+            <button
+              @click="returnToCurrent"
+              class="btn-outline flex-1 py-4 text-sm"
+            >
+              Retour serie actuelle
+            </button>
+            <button
+              @click="saveViewingSet"
+              class="btn-primary flex-1 py-4 text-base font-semibold"
+            >
+              Modifier
+            </button>
+          </div>
+
+          <!-- Mode actuel : boutons normaux -->
+          <div v-else class="flex gap-3">
+            <button
+              @click="skipCurrentSet"
+              :disabled="showRestTimer"
+              class="btn-outline py-4 px-5 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Passer
+            </button>
+            <button
+              @click="validateCurrentSet"
+              :disabled="showRestTimer"
+              class="btn-primary flex-1 text-xl py-5 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {{ nextButtonLabel }}
+            </button>
+          </div>
         </div>
 
         <!-- Historique -->
@@ -152,24 +221,127 @@
           </div>
         </div>
 
-        <!-- Séries complétées -->
+        <!-- Séries complétées (pastilles) -->
         <div v-if="completedSets.length > 0" class="space-y-2">
-          <p class="text-sm text-primary-900 dark:text-primary-100 font-semibold">Séries complétées:</p>
-          <div
-            v-for="(set, idx) in completedSets"
-            :key="idx"
-            class="card-glass bg-opacity-60 p-4 flex items-center justify-between"
-          >
-            <div class="flex items-center space-x-3">
-              <div class="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center text-white font-bold text-sm">
-                {{ idx + 1 }}
-              </div>
-              <span class="text-primary-900 dark:text-primary-100 font-bold">{{ set.reps }} reps × {{ set.weight }} kg</span>
+          <p class="text-sm text-primary-900 dark:text-primary-100 font-semibold">Séries complétées <span class="text-primary-400 font-normal">(fleches pour modifier)</span>:</p>
+          <div class="flex gap-2 overflow-x-auto">
+            <div
+              v-for="(set, idx) in completedSets"
+              :key="idx"
+              class="flex-shrink-0 bg-primary-100 dark:bg-primary-800 rounded-lg p-3 text-center border border-primary-200 dark:border-primary-700 min-w-[80px]"
+              :class="{ 'ring-2 ring-sand-500': isViewingPast && viewingSet?.setId === set.id }"
+            >
+              <p class="text-xs text-primary-600 dark:text-primary-400 mb-1">S{{ idx + 1 }}</p>
+              <p class="text-primary-900 dark:text-primary-100 font-bold">{{ set.reps }}x{{ set.weight }}kg</p>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Floating add exercise button -->
+    <button
+      v-if="!showCountdown && !showRestTimer && !showCompletionScreen && !showAddExerciseModal"
+      @click="openAddExerciseModal"
+      class="fixed bottom-24 right-4 z-40 w-14 h-14 bg-gradient-primary rounded-full shadow-lg flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-transform"
+    >
+      <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+      </svg>
+    </button>
+
+    <!-- Add Exercise Modal -->
+    <Teleport to="body">
+      <div v-if="showAddExerciseModal" class="fixed inset-0 z-[60] bg-white dark:bg-primary-900 flex flex-col">
+        <!-- Modal header -->
+        <div class="flex items-center justify-between px-4 py-4 border-b border-primary-200 dark:border-primary-700">
+          <h2 class="text-xl font-bold text-primary-900 dark:text-primary-100">Ajouter un exercice</h2>
+          <button @click="showAddExerciseModal = false" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors">
+            <svg class="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Search & filters -->
+        <div class="px-4 py-3 space-y-3 border-b border-primary-200 dark:border-primary-700">
+          <input
+            v-model="liveSearchQuery"
+            @input="searchExercisesLive"
+            type="text"
+            placeholder="Rechercher un exercice..."
+            class="input-primary w-full"
+          />
+          <div class="flex gap-2 overflow-x-auto pb-1">
+            <select v-model="liveFilterMuscle" @change="searchExercisesLive" class="input-primary text-sm py-2">
+              <option value="">Tous les muscles</option>
+              <option value="CHEST">Pectoraux</option>
+              <option value="BACK">Dos</option>
+              <option value="SHOULDERS">Épaules</option>
+              <option value="BICEPS">Biceps</option>
+              <option value="TRICEPS">Triceps</option>
+              <option value="LEGS">Jambes</option>
+              <option value="QUADS">Quadriceps</option>
+              <option value="HAMSTRINGS">Ischio-jambiers</option>
+              <option value="GLUTES">Fessiers</option>
+              <option value="CALVES">Mollets</option>
+              <option value="ABS">Abdos</option>
+              <option value="CARDIO">Cardio</option>
+            </select>
+            <select v-model="liveFilterEquipment" @change="searchExercisesLive" class="input-primary text-sm py-2">
+              <option value="">Tout équipement</option>
+              <option value="BARBELL">Barre</option>
+              <option value="DUMBBELL">Haltères</option>
+              <option value="BODYWEIGHT">Poids du corps</option>
+              <option value="MACHINE">Machine</option>
+              <option value="CABLE">Câble</option>
+              <option value="KETTLEBELL">Kettlebell</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Exercise list -->
+        <div class="flex-1 overflow-y-auto px-4 py-3">
+          <div v-if="isLoadingLiveExercises" class="text-center py-12">
+            <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-primary-200 dark:border-primary-700 border-t-primary-600 dark:border-t-primary-400"></div>
+          </div>
+          <div v-else-if="liveExerciseLibrary.length === 0" class="text-center py-12">
+            <p class="text-primary-500 dark:text-primary-400">Aucun exercice trouvé</p>
+          </div>
+          <div v-else class="space-y-2">
+            <div
+              v-for="exercise in liveExerciseLibrary"
+              :key="exercise.id"
+              @click="addExerciseLive(exercise)"
+              class="p-4 rounded-xl border border-primary-200 dark:border-primary-700 hover:border-sand-500/50 dark:hover:border-sand-600/30 hover:shadow-md transition-all cursor-pointer active:scale-[0.98]"
+            >
+              <div class="flex items-center gap-3">
+                <ExerciseAnimation
+                  :image-id="exercise.imageUrl"
+                  :name="exercise.name"
+                  size="sm"
+                  class="w-12 h-12 flex-shrink-0"
+                />
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-bold text-primary-900 dark:text-primary-100 text-sm truncate">{{ exercise.name }}</h3>
+                  <div class="flex gap-1.5 mt-1">
+                    <span v-if="exercise.primaryMuscle" class="px-1.5 py-0.5 bg-sand-500/10 dark:bg-sand-600/10 text-sand-700 dark:text-sand-400 text-[10px] font-semibold rounded uppercase tracking-wider">
+                      {{ formatMuscleGroupLive(exercise.primaryMuscle) }}
+                    </span>
+                    <span v-if="exercise.equipment" class="px-1.5 py-0.5 bg-primary-100 dark:bg-primary-800 text-primary-600 dark:text-primary-400 text-[10px] font-medium rounded">
+                      {{ formatEquipmentLive(exercise.equipment) }}
+                    </span>
+                  </div>
+                </div>
+                <svg class="w-5 h-5 text-primary-300 dark:text-primary-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
 
     <!-- Écran plein écran de repos -->
     <Transition name="fade">
@@ -452,7 +624,7 @@ const isLoading = ref(true)
 const currentExerciseIndex = ref(0)
 const currentSetNumber = ref(1)
 const exerciseHistory = ref<{ lastSets: Set[], lastWorkoutDate: string | null } | null>(null)
-const completedSets = ref<Array<{ reps: number, weight: number }>>([])
+const completedSets = ref<Array<{ id: number, setNumber: number, reps: number, weight: number }>>([])
 
 const showCountdown = ref(true)
 const countdownNumber = ref<number | string>(3)
@@ -478,6 +650,119 @@ const currentExercise = computed(() => {
 })
 
 const totalSets = computed(() => currentExercise.value?.targetSets || 3)
+
+// === Navigation entre séries passées ===
+// Historique global de toutes les séries faites : [{exerciseIndex, setNumber, reps, weight, setId, exerciseId}]
+const allCompletedSets = ref<Array<{
+  exerciseIndex: number
+  exerciseId: number
+  setNumber: number
+  reps: number
+  weight: number
+  setId: number
+}>>([])
+
+// viewingIndex: null = on est sur la série actuelle, sinon index dans allCompletedSets
+const viewingIndex = ref<number | null>(null)
+
+const isViewingPast = computed(() => viewingIndex.value !== null)
+
+const canNavigateBack = computed(() => {
+  if (isViewingPast.value) return viewingIndex.value! > 0
+  return allCompletedSets.value.length > 0
+})
+
+const canNavigateForward = computed(() => {
+  if (!isViewingPast.value) return false
+  return viewingIndex.value! < allCompletedSets.value.length - 1 || isViewingPast.value
+})
+
+const viewingSet = computed(() => {
+  if (viewingIndex.value === null) return null
+  return allCompletedSets.value[viewingIndex.value]
+})
+
+const viewingExerciseName = computed(() => {
+  if (isViewingPast.value && viewingSet.value) {
+    const ex = workout.value?.exercises?.[viewingSet.value.exerciseIndex]
+    return ex?.exerciseLibrary?.name || ex?.name || ''
+  }
+  return currentExercise.value?.exerciseLibrary?.name || currentExercise.value?.name || ''
+})
+
+const viewingExerciseImage = computed(() => {
+  if (isViewingPast.value && viewingSet.value) {
+    const ex = workout.value?.exercises?.[viewingSet.value.exerciseIndex]
+    return ex?.exerciseLibrary?.imageUrl
+  }
+  return currentExercise.value?.exerciseLibrary?.imageUrl
+})
+
+const viewingSetNumber = computed(() => {
+  return viewingSet.value?.setNumber || 0
+})
+
+const navigateBack = () => {
+  if (!canNavigateBack.value) return
+  if (viewingIndex.value === null) {
+    // On est sur la série actuelle, on recule à la dernière série faite
+    viewingIndex.value = allCompletedSets.value.length - 1
+  } else if (viewingIndex.value > 0) {
+    viewingIndex.value--
+  }
+  // Charger les données de la série qu'on regarde
+  loadViewingSetData()
+}
+
+const navigateForward = () => {
+  if (!canNavigateForward.value) return
+  if (viewingIndex.value !== null) {
+    if (viewingIndex.value < allCompletedSets.value.length - 1) {
+      viewingIndex.value++
+      loadViewingSetData()
+    } else {
+      // On revient à la série actuelle
+      returnToCurrent()
+    }
+  }
+}
+
+const loadViewingSetData = () => {
+  const s = viewingSet.value
+  if (s) {
+    currentSetData.value.reps = s.reps
+    currentSetData.value.weight = s.weight
+  }
+}
+
+const returnToCurrent = () => {
+  viewingIndex.value = null
+  prefillCurrentSet()
+}
+
+const saveViewingSet = async () => {
+  const s = viewingSet.value
+  if (!s || !workout.value) return
+  try {
+    await workoutStore.updateSet(workout.value.id, s.exerciseId, s.setId, {
+      reps: currentSetData.value.reps,
+      weight: currentSetData.value.weight
+    })
+    // Mettre à jour dans l'historique local
+    s.reps = currentSetData.value.reps
+    s.weight = currentSetData.value.weight
+    // Aussi mettre à jour completedSets si c'est le même exercice
+    const matchingCompleted = completedSets.value.find(cs => cs.id === s.setId)
+    if (matchingCompleted) {
+      matchingCompleted.reps = currentSetData.value.reps
+      matchingCompleted.weight = currentSetData.value.weight
+    }
+    toast.success('Serie modifiee !')
+  } catch (error) {
+    logger.error('Failed to update set:', error)
+    toast.error('Erreur lors de la modification')
+  }
+}
 
 // Cercle de progression pour le timer (rayon = 105)
 const restCircumference = computed(() => 2 * Math.PI * 105)
@@ -697,16 +982,30 @@ const validateCurrentSet = async () => {
   currentSetData.value.weight = weight
 
   try {
-    await workoutStore.addSetToExercise(workout.value.id, currentExercise.value.id, {
+    const savedSet = await workoutStore.addSetToExercise(workout.value.id, currentExercise.value.id, {
       setNumber: currentSetNumber.value,
       reps: reps,
       weight: weight
     })
 
     completedSets.value.push({
+      id: savedSet.id,
+      setNumber: currentSetNumber.value,
       reps: currentSetData.value.reps,
       weight: currentSetData.value.weight
     })
+
+    // Ajouter à l'historique global de navigation
+    allCompletedSets.value.push({
+      exerciseIndex: currentExerciseIndex.value,
+      exerciseId: currentExercise.value!.id,
+      setNumber: currentSetNumber.value,
+      reps: currentSetData.value.reps,
+      weight: currentSetData.value.weight,
+      setId: savedSet.id
+    })
+    // S'assurer qu'on est sur la série actuelle
+    viewingIndex.value = null
 
     const isLastSet = currentSetNumber.value >= totalSets.value
     const isLastExercise = currentExerciseIndex.value >= (workout.value?.exercises?.length || 0) - 1
@@ -931,6 +1230,83 @@ const confirmComplete = () => {
 
 const confirmExit = () => {
   showExitModal.value = true
+}
+
+// === Feature 1: Skip set ===
+const skipCurrentSet = () => {
+  currentSetData.value.reps = 0
+  currentSetData.value.weight = 0
+  validateCurrentSet()
+}
+
+// === Feature 3: Add exercise during live session ===
+const showAddExerciseModal = ref(false)
+const liveExerciseLibrary = ref<any[]>([])
+const isLoadingLiveExercises = ref(false)
+const liveSearchQuery = ref('')
+const liveFilterMuscle = ref('')
+const liveFilterEquipment = ref('')
+
+const openAddExerciseModal = () => {
+  showAddExerciseModal.value = true
+  if (liveExerciseLibrary.value.length === 0) {
+    searchExercisesLive()
+  }
+}
+
+const searchExercisesLive = async () => {
+  isLoadingLiveExercises.value = true
+  try {
+    const exercises = await workoutStore.fetchExerciseLibrary({
+      search: liveSearchQuery.value || undefined,
+      muscleGroup: liveFilterMuscle.value || undefined,
+      equipment: liveFilterEquipment.value || undefined,
+      limit: 50
+    })
+    liveExerciseLibrary.value = exercises
+  } catch (error) {
+    logger.error('Failed to load exercises:', error)
+  } finally {
+    isLoadingLiveExercises.value = false
+  }
+}
+
+const addExerciseLive = async (exercise: any) => {
+  if (!workout.value) return
+  try {
+    const addedExercise = await workoutStore.addExerciseToWorkout(workout.value.id, {
+      exerciseLibraryId: exercise.id,
+      name: exercise.name,
+      restTime: 60,
+      orderIndex: workout.value.exercises?.length || 0,
+      plannedSets: [{ setNumber: 1, targetReps: 10, targetWeight: 0, restTime: 60 }]
+    })
+    if (!workout.value.exercises) workout.value.exercises = []
+    workout.value.exercises.push(addedExercise)
+    showAddExerciseModal.value = false
+    toast.success('Exercice ajouté !')
+  } catch (error) {
+    logger.error('Failed to add exercise:', error)
+    toast.error('Erreur lors de l\'ajout')
+  }
+}
+
+const formatMuscleGroupLive = (muscle?: string) => {
+  const labels: Record<string, string> = {
+    CHEST: 'Pectoraux', BACK: 'Dos', SHOULDERS: 'Épaules', LEGS: 'Jambes',
+    BICEPS: 'Biceps', TRICEPS: 'Triceps', ABS: 'Abdos', QUADS: 'Quadriceps',
+    HAMSTRINGS: 'Ischio-jambiers', GLUTES: 'Fessiers', CALVES: 'Mollets', CARDIO: 'Cardio'
+  }
+  return muscle ? labels[muscle] || muscle : ''
+}
+
+const formatEquipmentLive = (equipment?: string) => {
+  const labels: Record<string, string> = {
+    BARBELL: 'Barre', DUMBBELL: 'Haltères', BODYWEIGHT: 'Poids du corps',
+    MACHINE: 'Machine', CABLE: 'Câble', KETTLEBELL: 'Kettlebell',
+    RESISTANCE_BAND: 'Élastique', OTHER: 'Autre'
+  }
+  return equipment ? labels[equipment] || equipment : ''
 }
 
 definePageMeta({

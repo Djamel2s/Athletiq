@@ -101,14 +101,36 @@
                         </span>
                       </div>
                     </div>
-                    <button
-                      @click="removeExercise(index)"
-                      class="w-8 h-8 flex items-center justify-center rounded-lg text-primary-300 dark:text-primary-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex-shrink-0"
-                    >
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                      </svg>
-                    </button>
+                    <div class="flex items-center gap-1 flex-shrink-0">
+                      <button
+                        @click="moveExerciseUp(index)"
+                        :disabled="index === 0"
+                        class="w-7 h-7 flex items-center justify-center rounded-lg text-primary-400 dark:text-primary-500 hover:text-primary-700 dark:hover:text-primary-200 hover:bg-primary-100 dark:hover:bg-primary-700/50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                        title="Monter"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                        </svg>
+                      </button>
+                      <button
+                        @click="moveExerciseDown(index)"
+                        :disabled="index === selectedExercises.length - 1"
+                        class="w-7 h-7 flex items-center justify-center rounded-lg text-primary-400 dark:text-primary-500 hover:text-primary-700 dark:hover:text-primary-200 hover:bg-primary-100 dark:hover:bg-primary-700/50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                        title="Descendre"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                      </button>
+                      <button
+                        @click="removeExercise(index)"
+                        class="w-7 h-7 flex items-center justify-center rounded-lg text-primary-300 dark:text-primary-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                      </button>
+                    </div>
                   </div>
 
                   <!-- Séries -->
@@ -414,6 +436,22 @@ const addExercise = async (exercise: ExerciseLibrary) => {
 
 const removedExerciseIds = ref<number[]>([])
 
+const moveExerciseUp = (index: number) => {
+  if (index <= 0) return
+  const exercises = selectedExercises.value
+  const temp = exercises[index]
+  exercises[index] = exercises[index - 1]
+  exercises[index - 1] = temp
+}
+
+const moveExerciseDown = (index: number) => {
+  if (index >= selectedExercises.value.length - 1) return
+  const exercises = selectedExercises.value
+  const temp = exercises[index]
+  exercises[index] = exercises[index + 1]
+  exercises[index + 1] = temp
+}
+
 const removeExercise = (index: number) => {
   const exercise = selectedExercises.value[index]
   if (exercise?.id) {
@@ -476,9 +514,11 @@ const saveWorkout = async () => {
     }
     removedExerciseIds.value = []
 
-    for (const exercise of selectedExercises.value) {
+    for (let index = 0; index < selectedExercises.value.length; index++) {
+      const exercise = selectedExercises.value[index]
       const sets = getExerciseSets(exercise)
       const updateData: any = {
+        orderIndex: index,
         restTime: exercise.restTime || 60,
         targetSets: sets.length,
         targetReps: sets[0]?.targetReps || 10,
