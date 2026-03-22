@@ -48,6 +48,14 @@
       </div>
 
       <div v-else class="space-y-4">
+        <!-- Superset badge -->
+        <div v-if="currentStepIsSuperset && !isViewingPast" class="text-center mb-2">
+          <span class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-sand-500/15 text-sand-700 dark:text-sand-400 border border-sand-500/30 uppercase tracking-wider">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+            Superset · Round {{ currentSupersetRound }} / {{ currentSupersetTotalRounds }}
+          </span>
+        </div>
+
         <!-- Progress -->
         <div class="text-center mb-6">
           <p class="text-sm text-primary-600 dark:text-primary-400 mb-2">
@@ -347,10 +355,16 @@
     <Transition name="fade">
       <div v-if="showRestTimer" class="fixed inset-0 z-50 bg-white dark:bg-primary-900 flex flex-col items-center justify-center">
         <!-- Exercice suivant info -->
-        <p class="text-sm text-primary-500 dark:text-primary-400 mb-2 tracking-widest uppercase">Repos</p>
-        <p class="text-lg font-semibold text-primary-700 dark:text-primary-300 mb-10">
-          {{ currentExercise?.exerciseLibrary?.name || currentExercise?.name }}
+        <p class="text-sm text-primary-500 dark:text-primary-400 mb-2 tracking-widest uppercase">
+          {{ currentStep?.isSuperset ? 'Repos Superset' : 'Repos' }}
         </p>
+        <p v-if="nextNonRestStep" class="text-lg font-semibold text-primary-700 dark:text-primary-300 mb-2">
+          Prochain: {{ workout?.exercises?.[nextNonRestStep.exerciseIndex]?.exerciseLibrary?.name || workout?.exercises?.[nextNonRestStep.exerciseIndex]?.name }}
+        </p>
+        <p v-if="currentStep?.isSuperset" class="text-xs text-sand-600 dark:text-sand-400 font-bold uppercase tracking-wider mb-8">
+          Round {{ currentStep.supersetRound }} / {{ currentStep.supersetTotalRounds }}
+        </p>
+        <p v-else class="mb-10"></p>
 
         <!-- Cercle de progression avec timer -->
         <div class="relative mb-12">
@@ -651,6 +665,154 @@ const currentExercise = computed(() => {
 
 const totalSets = computed(() => currentExercise.value?.targetSets || 3)
 
+// === Superset session plan ===
+interface SessionStep {
+  exerciseIndex: number
+  setNumber: number
+  isRest: boolean
+  isSuperset: boolean
+  supersetRound: number
+  supersetTotalRounds: number
+  supersetGroupId: number | null
+}
+
+const sessionPlan = computed<SessionStep[]>(() => {
+  const exercises = workout.value?.exercises
+  if (!exercises || exercises.length === 0) return []
+
+  const steps: SessionStep[] = []
+  const visited = new Set<number>()
+
+  for (let i = 0; i < exercises.length; i++) {
+    if (visited.has(i)) continue
+
+    const ex = exercises[i]
+    const group = ex.supersetGroup
+
+    if (group != null) {
+      // Collect all exercises in this superset group (contiguous)
+      const groupExercises: number[] = []
+      for (let j = i; j < exercises.length; j++) {
+        if (exercises[j].supersetGroup === group) {
+          groupExercises.push(j)
+          visited.add(j)
+        } else {
+          break
+        }
+      }
+
+      // Determine max sets across group
+      const maxSets = Math.max(...groupExercises.map(idx => exercises[idx].targetSets || 3))
+
+      // Interleave: for each round, do all exercises, then rest
+      for (let round = 1; round <= maxSets; round++) {
+        for (const exIdx of groupExercises) {
+          const exSets = exercises[exIdx].targetSets || 3
+          if (round <= exSets) {
+            steps.push({
+              exerciseIndex: exIdx,
+              setNumber: round,
+              isRest: false,
+              isSuperset: true,
+              supersetRound: round,
+              supersetTotalRounds: maxSets,
+              supersetGroupId: group
+            })
+          }
+        }
+        // Rest after each round (but not after the very last round if it's the last group)
+        steps.push({
+          exerciseIndex: groupExercises[0],
+          setNumber: round,
+          isRest: true,
+          isSuperset: true,
+          supersetRound: round,
+          supersetTotalRounds: maxSets,
+          supersetGroupId: group
+        })
+      }
+    } else {
+      // Standalone exercise: normal flow
+      visited.add(i)
+      const sets = ex.targetSets || 3
+      for (let s = 1; s <= sets; s++) {
+        steps.push({
+          exerciseIndex: i,
+          setNumber: s,
+          isRest: false,
+          isSuperset: false,
+          supersetRound: 0,
+          supersetTotalRounds: 0,
+          supersetGroupId: null
+        })
+        // Rest after each set (including last - will be skipped at end by navigation)
+        steps.push({
+          exerciseIndex: i,
+          setNumber: s,
+          isRest: true,
+          isSuperset: false,
+          supersetRound: 0,
+          supersetTotalRounds: 0,
+          supersetGroupId: null
+        })
+      }
+    }
+  }
+
+  // Remove trailing rest step
+  if (steps.length > 0 && steps[steps.length - 1].isRest) {
+    steps.pop()
+  }
+
+  return steps
+})
+
+const currentStepIndex = ref(0)
+
+const currentStep = computed<SessionStep | null>(() => {
+  return sessionPlan.value[currentStepIndex.value] || null
+})
+
+const currentStepIsSuperset = computed(() => {
+  return currentStep.value?.isSuperset ?? false
+})
+
+const currentSupersetRound = computed(() => {
+  return currentStep.value?.supersetRound ?? 0
+})
+
+const currentSupersetTotalRounds = computed(() => {
+  return currentStep.value?.supersetTotalRounds ?? 0
+})
+
+const nextNonRestStep = computed<SessionStep | null>(() => {
+  for (let i = currentStepIndex.value + 1; i < sessionPlan.value.length; i++) {
+    if (!sessionPlan.value[i].isRest) return sessionPlan.value[i]
+  }
+  return null
+})
+
+// Sync currentExerciseIndex and currentSetNumber from session plan
+const syncFromPlan = () => {
+  const step = currentStep.value
+  if (!step || step.isRest) return
+  currentExerciseIndex.value = step.exerciseIndex
+  currentSetNumber.value = step.setNumber
+  // Update completedSets to show only sets for the current exercise
+  updateCompletedSetsForCurrentExercise()
+}
+
+const updateCompletedSetsForCurrentExercise = () => {
+  const exId = currentExercise.value?.id
+  if (!exId) {
+    completedSets.value = []
+    return
+  }
+  completedSets.value = allCompletedSets.value
+    .filter(s => s.exerciseId === exId)
+    .map(s => ({ id: s.setId, setNumber: s.setNumber, reps: s.reps, weight: s.weight }))
+}
+
 // === Navigation entre séries passées ===
 // Historique global de toutes les séries faites : [{exerciseIndex, setNumber, reps, weight, setId, exerciseId}]
 const allCompletedSets = ref<Array<{
@@ -773,30 +935,27 @@ const restProgressOffset = computed(() => {
 })
 
 const progress = computed(() => {
-  if (!workout.value?.exercises) return 0
-
-  const totalExercises = workout.value.exercises.length
-  const exercisesCompleted = currentExerciseIndex.value
-  const setsCompleted = completedSets.value.length
-  const currentExerciseTotalSets = totalSets.value
-
-  const totalSteps = totalExercises * 3
-  const completedSteps = exercisesCompleted * 3 + setsCompleted
-
-  return Math.min((completedSteps / totalSteps) * 100, 100)
+  const totalNonRestSteps = sessionPlan.value.filter(s => !s.isRest).length
+  if (totalNonRestSteps === 0) return 0
+  const completedStepsCount = allCompletedSets.value.length
+  return Math.min((completedStepsCount / totalNonRestSteps) * 100, 100)
 })
 
 const nextButtonLabel = computed(() => {
-  const isLastSet = currentSetNumber.value >= totalSets.value
-  const isLastExercise = currentExerciseIndex.value >= (workout.value?.exercises?.length || 0) - 1
-
-  if (isLastSet && isLastExercise) {
+  // Check if the next non-rest step after this one exists
+  const remaining = sessionPlan.value.slice(currentStepIndex.value + 1).filter(s => !s.isRest)
+  if (remaining.length === 0) {
     return "Terminer l'entraînement"
-  } else if (isLastSet) {
-    return "Exercice suivant"
-  } else {
-    return "Suivant"
   }
+  // If next exercise step is a different exercise (not in same superset round)
+  const nextEx = remaining[0]
+  if (currentStepIsSuperset.value && nextEx.isSuperset && nextEx.supersetGroupId === currentStep.value?.supersetGroupId && nextEx.supersetRound === currentStep.value?.supersetRound) {
+    return "Suivant (superset)"
+  }
+  if (nextEx.exerciseIndex !== currentExerciseIndex.value) {
+    return "Exercice suivant"
+  }
+  return "Suivant"
 })
 
 const formattedTime = computed(() => {
@@ -853,6 +1012,10 @@ const loadWorkout = async (id: number) => {
   isLoading.value = true
   try {
     workout.value = await workoutStore.fetchWorkout(id)
+
+    // Initialize session plan: sync from first step
+    currentStepIndex.value = 0
+    syncFromPlan()
 
     if (currentExercise.value?.exerciseLibraryId) {
       await loadExerciseHistory(currentExercise.value.exerciseLibraryId)
@@ -968,6 +1131,43 @@ const prefillCurrentSet = () => {
   }
 }
 
+const advanceSessionPlan = async () => {
+  // Move to the next step in the session plan
+  const prevExerciseIndex = currentExerciseIndex.value
+
+  currentStepIndex.value++
+
+  // Check if we've reached the end
+  if (currentStepIndex.value >= sessionPlan.value.length) {
+    await completeWorkout()
+    return
+  }
+
+  const nextStep = sessionPlan.value[currentStepIndex.value]
+
+  if (nextStep.isRest) {
+    // Show rest timer, then advance again when it ends
+    const exerciseForRest = workout.value?.exercises?.[nextStep.exerciseIndex] || null
+    const smartRest = computeSmartRest(exerciseForRest, currentSetData.value.weight, nextStep.exerciseIndex !== prevExerciseIndex)
+    startRestTimer(smartRest)
+    return
+  }
+
+  // It's an exercise step - sync state
+  syncFromPlan()
+
+  // Load history if exercise changed
+  if (nextStep.exerciseIndex !== prevExerciseIndex) {
+    const newExercise = workout.value?.exercises?.[nextStep.exerciseIndex]
+    if (newExercise?.exerciseLibraryId) {
+      await loadExerciseHistory(newExercise.exerciseLibraryId)
+      checkWeightProgression()
+    }
+  }
+
+  prefillCurrentSet()
+}
+
 const validateCurrentSet = async () => {
   if (!workout.value || !currentExercise.value) return
 
@@ -1007,32 +1207,7 @@ const validateCurrentSet = async () => {
     // S'assurer qu'on est sur la série actuelle
     viewingIndex.value = null
 
-    const isLastSet = currentSetNumber.value >= totalSets.value
-    const isLastExercise = currentExerciseIndex.value >= (workout.value?.exercises?.length || 0) - 1
-
-    if (isLastSet && isLastExercise) {
-      await completeWorkout()
-    } else if (isLastSet) {
-      completedSets.value = []
-      currentSetNumber.value = 1
-      currentExerciseIndex.value++
-
-      if (currentExercise.value?.exerciseLibraryId) {
-        await loadExerciseHistory(currentExercise.value.exerciseLibraryId)
-        prefillCurrentSet()
-        checkWeightProgression()
-      }
-
-      // Smart rest: between exercises
-      const smartRest = computeSmartRest(currentExercise.value, currentSetData.value.weight, true)
-      startRestTimer(smartRest)
-    } else {
-      currentSetNumber.value++
-      prefillCurrentSet()
-      // Smart rest: between sets of same exercise
-      const smartRest = computeSmartRest(currentExercise.value, currentSetData.value.weight, false)
-      startRestTimer(smartRest)
-    }
+    await advanceSessionPlan()
   } catch (error) {
     logger.error('Failed to save set:', error)
   }
@@ -1095,6 +1270,11 @@ const skipRest = () => {
   if (restInterval.value) {
     clearInterval(restInterval.value)
     restInterval.value = null
+  }
+  // After rest, advance to next exercise step in the plan
+  const step = currentStep.value
+  if (step && step.isRest) {
+    advanceSessionPlan()
   }
 }
 

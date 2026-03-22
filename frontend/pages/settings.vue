@@ -227,6 +227,33 @@
           </div>
         </div>
 
+        <!-- Exporter mes donnees -->
+        <div class="card-glass">
+          <h2 class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-5 flex items-center gap-3">
+            <div class="w-10 h-10 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+            </div>
+            Exporter mes donnees
+          </h2>
+          <div class="space-y-1">
+            <div class="flex items-center justify-between p-3">
+              <div>
+                <span class="text-primary-800 dark:text-primary-200">Historique des seances</span>
+                <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">Export CSV de toutes vos seances terminees</p>
+              </div>
+              <button
+                @click="exportCsv"
+                :disabled="exporting"
+                class="px-4 py-2 rounded-xl bg-gradient-primary text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {{ exporting ? 'Export...' : 'Telecharger CSV' }}
+              </button>
+            </div>
+          </div>
+        </div>
+
         <!-- Zone danger -->
         <div class="space-y-3">
           <button
@@ -310,6 +337,30 @@ const reminderEnabled = ref(true)
 const inactivityDays = ref(3)
 const showDeleteConfirm = ref(false)
 const deleting = ref(false)
+const exporting = ref(false)
+
+const exportCsv = async () => {
+  exporting.value = true
+  try {
+    const config = useRuntimeConfig()
+    const blob = await $fetch(`${config.public.apiUrl}/workouts/export/csv`, {
+      headers: { Authorization: `Bearer ${authStore.token}` },
+      responseType: 'blob'
+    })
+    const url = URL.createObjectURL(blob as Blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'athletiq-export.csv'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  } catch (error) {
+    console.error('Export CSV error:', error)
+  } finally {
+    exporting.value = false
+  }
+}
 const setTheme = (theme: string) => {
   colorMode.preference = theme
 }

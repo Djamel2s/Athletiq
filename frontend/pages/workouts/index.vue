@@ -124,6 +124,14 @@
                     </svg>
                   </button>
                   <button
+                    @click.stop="duplicateTemplate(workout.id)"
+                    :disabled="duplicatingId === workout.id"
+                    class="w-8 h-8 flex items-center justify-center rounded-lg text-primary-400 hover:text-sand-600 dark:hover:text-sand-400 hover:bg-sand-500/10 transition-colors disabled:opacity-50"
+                    title="Dupliquer"
+                  >
+                    <Icon name="lucide:copy" class="w-4 h-4" />
+                  </button>
+                  <button
                     @click.stop="shareTemplate(workout.id)"
                     :disabled="sharingId === workout.id"
                     class="w-8 h-8 flex items-center justify-center rounded-lg text-primary-400 hover:text-sand-600 dark:hover:text-sand-400 hover:bg-sand-500/10 transition-colors disabled:opacity-50"
@@ -279,6 +287,7 @@ const subscriptionStore = useSubscriptionStore()
 const { isPremium, canCreateTemplate, templateUsageText, fetchUsage } = useSubscriptionLimits()
 const toast = useToast()
 const deletingId = ref<number | null>(null)
+const duplicatingId = ref<number | null>(null)
 
 const activeTab = ref<'workouts' | 'history'>('workouts')
 
@@ -335,6 +344,19 @@ const startFromHistory = async (workout: Workout) => {
     navigateTo(`/workouts/${newWorkout.id}/live`)
   } catch (error) {
     logger.error('Failed to create workout from history:', error)
+  }
+}
+
+const duplicateTemplate = async (id: number) => {
+  if (duplicatingId.value) return
+  duplicatingId.value = id
+  try {
+    await workoutStore.duplicateWorkout(id)
+    toast.success('Dupliqué', 'Le template a été dupliqué avec succès')
+  } catch (err: any) {
+    toast.error('Erreur', 'Impossible de dupliquer ce template')
+  } finally {
+    duplicatingId.value = null
   }
 }
 

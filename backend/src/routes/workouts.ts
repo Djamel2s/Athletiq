@@ -10,7 +10,7 @@ import { checkAndCreatePRNotifications, checkStreakMilestone } from '../services
 import { checkAndUnlockAchievements } from '../services/achievementService.js'
 import { checkWorkoutLimit, checkTemplateLimit, getUserPlanType, withUserLock } from '../services/limitService.js'
 import { PLAN_LIMITS } from '../config/planLimits.js'
-import { MoreThanOrEqual } from 'typeorm'
+import { MoreThanOrEqual, Not, IsNull } from 'typeorm'
 import { parseId } from '../utils/validation.js'
 
 const router = express.Router()
@@ -40,6 +40,7 @@ const addExerciseSchema = z.object({
   targetReps: z.number().nullish(),
   targetWeight: z.number().nullish(),
   restTime: z.number().nullish(),
+  supersetGroup: z.number().nullish(),
   plannedSets: z.array(z.object({
     setNumber: z.number(),
     targetReps: z.number(),
@@ -57,6 +58,7 @@ const updateExerciseSchema = z.object({
   targetReps: z.number().nullish(),
   targetWeight: z.number().nullish(),
   restTime: z.number().nullish(),
+  supersetGroup: z.number().nullish(),
   plannedSets: z.array(z.object({
     setNumber: z.number(),
     targetReps: z.number(),
@@ -103,6 +105,64 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
   } catch (error) {
     console.error('Error fetching workouts:', error)
     res.status(500).json({ error: 'Erreur lors de la récupération des séances' })
+  }
+})
+
+// Export workouts as CSV
+router.get('/export/csv', authenticate, async (req: AuthRequest, res) => {
+  try {
+    const workouts = await workoutRepo.find({
+      where: { userId: req.user!.id, completedAt: Not(IsNull()) },
+      relations: ['exercises', 'exercises.sets'],
+      order: { date: 'DESC' }
+    })
+
+    const csvEscape = (val: string | undefined | null): string => {
+      if (val == null) return ''
+      const str = String(val)
+      if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+        return `"${str.replace(/"/g, '""')}"`
+      }
+      return str
+    }
+
+    const rows: string[] = ['Date,Workout,Exercise,Set,Reps,Weight(kg),Volume(kg),RPE,Notes']
+
+    for (const workout of workouts) {
+      const dateStr = workout.date ? new Date(workout.date).toISOString().split('T')[0] : ''
+      const workoutName = csvEscape(workout.name)
+
+      if (!workout.exercises || workout.exercises.length === 0) {
+        rows.push(`${dateStr},${workoutName},,,,,,, `)
+        continue
+      }
+
+      for (const exercise of workout.exercises) {
+        const exerciseName = csvEscape(exercise.name)
+
+        if (!exercise.sets || exercise.sets.length === 0) {
+          rows.push(`${dateStr},${workoutName},${exerciseName},,,,,,`)
+          continue
+        }
+
+        const sortedSets = [...exercise.sets].sort((a, b) => a.setNumber - b.setNumber)
+        for (const set of sortedSets) {
+          const volume = (set.weight && set.reps) ? set.weight * set.reps : ''
+          rows.push(
+            `${dateStr},${workoutName},${exerciseName},${set.setNumber},${set.reps ?? ''},${set.weight ?? ''},${volume},${set.rpe ?? ''},${csvEscape(set.notes)}`
+          )
+        }
+      }
+    }
+
+    const csv = rows.join('\n')
+
+    res.setHeader('Content-Type', 'text/csv')
+    res.setHeader('Content-Disposition', 'attachment; filename="athletiq-export.csv"')
+    res.send(csv)
+  } catch (error) {
+    console.error('Error exporting workouts CSV:', error)
+    res.status(500).json({ error: 'Erreur lors de l\'export des séances' })
   }
 })
 
@@ -369,6 +429,83 @@ router.post('/:id/complete', authenticate, async (req: AuthRequest, res) => {
   }
 })
 
+// Duplicate workout template
+router.post('/:id/duplicate', authenticate, async (req: AuthRequest, res) => {
+  try {
+    const userId = req.user!.id
+    const workoutId = parseId(req.params.id)
+
+    // Find the original workout with exercises
+    const original = await workoutRepo.findOne({
+      where: { id: workoutId, userId },
+      relations: ['exercises']
+    })
+
+    if (!original) {
+      return res.status(404).json({ error: 'Séance non trouvée' })
+    }
+
+    // Check template limit
+    const result = await withUserLock(userId, 'create-template', async () => {
+      const templateCheck = await checkTemplateLimit(userId)
+      if (!templateCheck.allowed) {
+        return {
+          status: 403,
+          body: {
+            error: 'Limite atteinte',
+            code: 'LIMIT_TEMPLATES',
+            current: templateCheck.current,
+            limit: templateCheck.limit
+          }
+        }
+      }
+
+      // Create the duplicate workout
+      const duplicate = workoutRepo.create({
+        name: original.name + ' (copie)',
+        description: original.description,
+        isTemplate: true,
+        date: new Date(),
+        userId
+      })
+
+      await workoutRepo.save(duplicate)
+
+      // Copy exercises
+      if (original.exercises && original.exercises.length > 0) {
+        for (const ex of original.exercises) {
+          const newExercise = exerciseRepo.create({
+            workoutId: duplicate.id,
+            name: ex.name,
+            exerciseLibraryId: ex.exerciseLibraryId ?? undefined,
+            orderIndex: ex.orderIndex ?? undefined,
+            targetSets: ex.targetSets ?? undefined,
+            targetReps: ex.targetReps ?? undefined,
+            targetWeight: ex.targetWeight ?? undefined,
+            restTime: ex.restTime ?? undefined,
+            supersetGroup: ex.supersetGroup ?? undefined,
+            plannedSets: ex.plannedSets ?? undefined
+          })
+          await exerciseRepo.save(newExercise)
+        }
+      }
+
+      // Return the full duplicate with relations
+      const savedDuplicate = await workoutRepo.findOne({
+        where: { id: duplicate.id },
+        relations: ['exercises', 'exercises.sets', 'exercises.exerciseLibrary']
+      })
+
+      return { status: 201, body: savedDuplicate }
+    })
+
+    res.status(result.status).json(result.body)
+  } catch (error) {
+    console.error('Error duplicating workout:', error)
+    res.status(500).json({ error: 'Erreur lors de la duplication de la séance' })
+  }
+})
+
 // ===== EXERCISE ROUTES =====
 
 // Add exercise to workout
@@ -396,6 +533,7 @@ router.post('/:workoutId/exercises', authenticate, async (req: AuthRequest, res)
       targetReps: data.targetReps ?? undefined,
       targetWeight: data.targetWeight ?? undefined,
       restTime: data.restTime ?? undefined,
+      supersetGroup: data.supersetGroup ?? undefined,
       plannedSets: data.plannedSets ?? undefined,
     })
 
@@ -448,6 +586,7 @@ router.put('/:workoutId/exercises/:exerciseId', authenticate, async (req: AuthRe
     if (data.targetReps !== undefined) exercise.targetReps = data.targetReps ?? undefined
     if (data.targetWeight !== undefined) exercise.targetWeight = data.targetWeight ?? undefined
     if (data.restTime !== undefined) exercise.restTime = data.restTime ?? undefined
+    if (data.supersetGroup !== undefined) exercise.supersetGroup = data.supersetGroup ?? undefined
     if (data.plannedSets !== undefined) exercise.plannedSets = data.plannedSets ?? undefined
     await exerciseRepo.save(exercise)
 

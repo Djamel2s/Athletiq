@@ -76,6 +76,7 @@ export interface Exercise {
   targetReps?: number
   targetWeight?: number
   restTime?: number
+  supersetGroup?: number
   plannedSets?: PlannedSet[]
   orderIndex: number
   createdAt: string

@@ -72,11 +72,24 @@
             </button>
           </div>
 
-          <div v-else class="space-y-4">
+          <div v-else class="space-y-0">
+            <template v-for="(exercise, index) in selectedExercises" :key="exercise.id">
+            <!-- Superset label at the start of a group -->
             <div
-              v-for="(exercise, index) in selectedExercises"
-              :key="exercise.id"
-              class="rounded-2xl border border-primary-200/60 dark:border-primary-700/60 bg-white/60 dark:bg-primary-800/60 hover:border-sand-500/40 dark:hover:border-sand-600/30 transition-all overflow-hidden"
+              v-if="exercise.supersetGroup != null && (index === 0 || selectedExercises[index - 1]?.supersetGroup !== exercise.supersetGroup)"
+              class="flex items-center gap-2 mb-1 mt-4 first:mt-0"
+            >
+              <span class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-sand-500/15 text-sand-700 dark:text-sand-400 border border-sand-500/30 uppercase tracking-wider">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                Superset
+              </span>
+            </div>
+            <div
+              class="rounded-2xl border bg-white/60 dark:bg-primary-800/60 hover:border-sand-500/40 dark:hover:border-sand-600/30 transition-all overflow-hidden"
+              :class="exercise.supersetGroup != null
+                ? 'border-sand-500/50 dark:border-sand-600/40 ml-3 border-l-4 border-l-sand-500 dark:border-l-sand-600 mb-0'
+                : 'border-primary-200/60 dark:border-primary-700/60 mb-0'"
+              :style="exercise.supersetGroup != null ? '' : 'margin-top: 1rem'"
             >
               <div class="flex items-stretch">
                 <div class="w-12 bg-gradient-primary flex items-center justify-center flex-shrink-0">
@@ -193,6 +206,26 @@
                 </div>
               </div>
             </div>
+            <!-- Chain button between exercises -->
+            <div
+              v-if="index < selectedExercises.length - 1"
+              class="flex items-center justify-center py-1"
+            >
+              <button
+                @click="toggleSupersetLink(index)"
+                type="button"
+                class="group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all"
+                :class="areSupersetLinked(index)
+                  ? 'bg-sand-500/20 text-sand-700 dark:text-sand-400 border border-sand-500/40 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 hover:border-red-300 dark:hover:border-red-700'
+                  : 'bg-primary-100/60 dark:bg-primary-800/60 text-primary-400 dark:text-primary-500 border border-primary-200/60 dark:border-primary-700/60 hover:bg-sand-500/10 hover:text-sand-600 dark:hover:text-sand-400 hover:border-sand-500/30'"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                </svg>
+                {{ areSupersetLinked(index) ? 'Superset' : 'Lier en superset' }}
+              </button>
+            </div>
+            </template>
           </div>
         </div>
 
@@ -491,6 +524,81 @@ const removeSet = (exercise: any, index: number) => {
   })
 }
 
+// === Superset grouping ===
+const areSupersetLinked = (index: number): boolean => {
+  const a = selectedExercises.value[index]
+  const b = selectedExercises.value[index + 1]
+  if (!a || !b) return false
+  return a.supersetGroup != null && a.supersetGroup === b.supersetGroup
+}
+
+const toggleSupersetLink = (index: number) => {
+  const a = selectedExercises.value[index]
+  const b = selectedExercises.value[index + 1]
+  if (!a || !b) return
+
+  if (areSupersetLinked(index)) {
+    // Unlink: split the group at this point
+    // Everything from index+1 onward that shares the same group gets set to null
+    const group = a.supersetGroup
+    // Keep a's group only if it's connected to index-1
+    const aConnectedAbove = index > 0 && selectedExercises.value[index - 1]?.supersetGroup === group
+    if (!aConnectedAbove) {
+      a.supersetGroup = undefined
+    }
+    // For b and everything after it that shares this group, assign a new group or null
+    const bConnectedBelow = index + 2 < selectedExercises.value.length && selectedExercises.value[index + 2]?.supersetGroup === group
+    if (!bConnectedBelow) {
+      b.supersetGroup = undefined
+    } else {
+      // b is still connected below, give them all a new group number
+      const newGroup = getNextSupersetGroup()
+      for (let i = index + 1; i < selectedExercises.value.length; i++) {
+        if (selectedExercises.value[i].supersetGroup === group) {
+          selectedExercises.value[i].supersetGroup = newGroup
+        } else {
+          break
+        }
+      }
+    }
+  } else {
+    // Link: merge groups
+    const groupA = a.supersetGroup
+    const groupB = b.supersetGroup
+
+    if (groupA != null && groupB != null) {
+      // Both already in groups, merge B's group into A's
+      const oldGroup = groupB
+      for (const ex of selectedExercises.value) {
+        if (ex.supersetGroup === oldGroup) {
+          ex.supersetGroup = groupA
+        }
+      }
+    } else if (groupA != null) {
+      // A is in a group, add B to it
+      b.supersetGroup = groupA
+    } else if (groupB != null) {
+      // B is in a group, add A to it
+      a.supersetGroup = groupB
+    } else {
+      // Neither in a group, create new one
+      const newGroup = getNextSupersetGroup()
+      a.supersetGroup = newGroup
+      b.supersetGroup = newGroup
+    }
+  }
+}
+
+const getNextSupersetGroup = (): number => {
+  let max = 0
+  for (const ex of selectedExercises.value) {
+    if (ex.supersetGroup != null && ex.supersetGroup > max) {
+      max = ex.supersetGroup
+    }
+  }
+  return max + 1
+}
+
 const saveWorkout = async () => {
   if (!workoutId.value) {
     toast.warning('Attention', 'Veuillez d\'abord créer le workout')
@@ -532,6 +640,7 @@ const saveWorkout = async () => {
       }
 
       if (exercise.notes !== undefined) updateData.notes = exercise.notes
+      updateData.supersetGroup = exercise.supersetGroup ?? null
 
       await workoutStore.updateExercise(workoutId.value, exercise.id, updateData)
     }

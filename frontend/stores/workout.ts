@@ -126,6 +126,22 @@ export const useWorkoutStore = defineStore('workout', {
       }
     },
 
+    async duplicateWorkout(id: number) {
+      try {
+        const api = useWorkoutApi()
+        const workout = await api.duplicateWorkout(id)
+        if (!this.workouts) {
+          this.workouts = []
+        }
+        this.workouts.push(workout)
+        return workout
+      } catch (error: any) {
+        this.error = error.data?.error || error.message || 'Erreur lors de la duplication du workout'
+        logger.error('Duplicate workout error:', error)
+        throw error
+      }
+    },
+
     async deleteWorkout(id: number) {
       this.isLoading = true
       this.error = null

@@ -37,6 +37,9 @@ export class Exercise {
   @Column({ type: 'int', nullable: true })
   restTime?: number
 
+  @Column({ type: 'int', nullable: true })
+  supersetGroup?: number
+
   @Column({ type: 'json', nullable: true })
   plannedSets?: Array<{ setNumber: number; targetReps: number; targetWeight: number; restTime?: number }>
 

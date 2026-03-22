@@ -63,6 +63,13 @@ export const useWorkoutApi = () => {
     )
   }
 
+  const duplicateWorkout = async (id: number) => {
+    return await apiFetch<Workout>(`/workouts/${id}/duplicate`, {
+      method: 'POST',
+      timeout: API_TIMEOUT
+    })
+  }
+
   // ========== EXERCISES ==========
   const getExerciseLibrary = async (params?: {
     search?: string
@@ -224,6 +231,7 @@ export const useWorkoutApi = () => {
     deleteWorkout,
     startWorkout,
     completeWorkout,
+    duplicateWorkout,
     // Exercises
     getExerciseLibrary,
     getExerciseById,
