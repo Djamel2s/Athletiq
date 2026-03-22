@@ -170,6 +170,18 @@
               </label>
             </div>
 
+            <!-- Notifications push (native only) -->
+            <div v-if="isNativePlatform" class="flex items-center justify-between p-3">
+              <div>
+                <span class="text-primary-800 dark:text-primary-200">Notifications push</span>
+                <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">Recevez des notifications sur votre appareil</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" v-model="pushEnabled" class="sr-only peer" />
+                <div class="w-11 h-6 bg-primary-200 dark:bg-primary-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-sand-500 peer-checked:to-sand-600"></div>
+              </label>
+            </div>
+
             <div class="border-t border-primary-100 dark:border-primary-800 my-2"></div>
 
             <!-- Rappel d'inactivite -->
@@ -254,6 +266,43 @@
           </div>
         </div>
 
+        <!-- Sante (native only) -->
+        <div v-if="isNativePlatform" class="card-glass">
+          <h2 class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-5 flex items-center gap-3">
+            <div class="w-10 h-10 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+              </svg>
+            </div>
+            Sante
+          </h2>
+          <div class="space-y-1">
+            <div class="flex items-center justify-between p-3">
+              <div>
+                <span class="text-primary-800 dark:text-primary-200">Synchroniser avec Apple Sante / Health Connect</span>
+                <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">Enregistrez vos seances et donnees corporelles</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" v-model="healthSyncEnabled" class="sr-only peer" />
+                <div class="w-11 h-6 bg-primary-200 dark:bg-primary-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-sand-500 peer-checked:to-sand-600"></div>
+              </label>
+            </div>
+            <div class="flex items-center justify-between p-3">
+              <div>
+                <span class="text-primary-800 dark:text-primary-200">Synchroniser l'historique</span>
+                <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">Exporter toutes vos seances passees</p>
+              </div>
+              <button
+                @click="syncHealthHistory"
+                :disabled="syncingHealth"
+                class="px-4 py-2 rounded-xl bg-gradient-primary text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {{ syncingHealth ? 'Sync...' : 'Synchroniser' }}
+              </button>
+            </div>
+          </div>
+        </div>
+
         <!-- Zone danger -->
         <div class="space-y-3">
           <button
@@ -317,6 +366,7 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth'
+import { Capacitor } from '@capacitor/core'
 
 definePageMeta({
   layout: false,
@@ -335,6 +385,10 @@ const notifStreak = ref(true)
 const notifGoals = ref(true)
 const reminderEnabled = ref(true)
 const inactivityDays = ref(3)
+const pushEnabled = ref(false)
+const healthSyncEnabled = ref(false)
+const syncingHealth = ref(false)
+const isNativePlatform = ref(false)
 const showDeleteConfirm = ref(false)
 const deleting = ref(false)
 const exporting = ref(false)
@@ -381,6 +435,79 @@ const debouncedSyncReminder = () => {
   }, 500)
 }
 
+const togglePush = async (enabled: boolean) => {
+  if (enabled) {
+    try {
+      const { PushNotifications } = await import('@capacitor/push-notifications')
+      const permResult = await PushNotifications.requestPermissions()
+      if (permResult.receive !== 'granted') {
+        pushEnabled.value = false
+        return
+      }
+      await PushNotifications.register()
+    } catch (error) {
+      logger.error('Push toggle error:', error)
+      pushEnabled.value = false
+    }
+  } else {
+    try {
+      const savedToken = localStorage.getItem('fcmToken')
+      if (savedToken) {
+        const { useFcmTokenApi } = await import('~/composables/useFcmTokenApi')
+        const { removeToken } = useFcmTokenApi()
+        await removeToken(savedToken)
+        localStorage.removeItem('fcmToken')
+      }
+    } catch (error) {
+      logger.error('Push token removal error:', error)
+    }
+  }
+}
+
+const syncHealthHistory = async () => {
+  syncingHealth.value = true
+  try {
+    const { useHealthSync } = await import('~/composables/useHealthSync')
+    const healthSync = useHealthSync()
+    const available = await healthSync.isAvailable()
+    if (!available) {
+      const toast = useToast()
+      toast.error('Sante non disponible', 'Le service de sante n\'est pas disponible sur cet appareil')
+      syncingHealth.value = false
+      return
+    }
+    const granted = await healthSync.requestPermissions()
+    if (!granted) {
+      const toast = useToast()
+      toast.error('Permissions refusees', 'Veuillez autoriser l\'acces aux donnees de sante')
+      syncingHealth.value = false
+      return
+    }
+    // Fetch all completed workouts
+    const config = useRuntimeConfig()
+    const data = await $fetch<{ workouts: any[] }>(`${config.public.apiUrl}/workouts`, {
+      headers: { Authorization: `Bearer ${authStore.token}` },
+      timeout: 30000
+    })
+    const completedWorkouts = (data.workouts || []).filter((w: any) => w.status === 'completed' && w.startedAt && w.completedAt)
+    const result = await healthSync.syncAllWorkouts(completedWorkouts.map((w: any) => ({
+      name: w.name,
+      startedAt: w.startedAt,
+      completedAt: w.completedAt,
+      durationMinutes: w.durationMinutes,
+      caloriesBurned: w.caloriesBurned,
+    })))
+    const toast = useToast()
+    toast.success('Synchronisation terminee', `${result.synced} seance(s) synchronisee(s)`)
+  } catch (error) {
+    logger.error('Health history sync error:', error)
+    const toast = useToast()
+    toast.error('Erreur de synchronisation')
+  } finally {
+    syncingHealth.value = false
+  }
+}
+
 onBeforeUnmount(() => {
   if (settingsTimeout) clearTimeout(settingsTimeout)
   if (syncTimeout) clearTimeout(syncTimeout)
@@ -410,6 +537,7 @@ const handleDeleteAccount = async () => {
 
 onMounted(async () => {
   if (process.client) {
+    isNativePlatform.value = Capacitor.isNativePlatform()
     try {
       weightUnit.value = localStorage.getItem('pref_weight_unit') || 'kg'
       restTimer.value = parseInt(localStorage.getItem('pref_rest_timer') || '90')
@@ -418,6 +546,8 @@ onMounted(async () => {
       notifGoals.value = localStorage.getItem('pref_notif_goals') !== 'false'
       reminderEnabled.value = localStorage.getItem('pref_reminder_enabled') !== 'false'
       inactivityDays.value = parseInt(localStorage.getItem('pref_inactivity_days') || '3')
+      pushEnabled.value = localStorage.getItem('pushEnabled') !== 'false' && isNativePlatform.value
+      healthSyncEnabled.value = localStorage.getItem('healthSyncEnabled') === 'true'
     } catch {}
   }
 
@@ -461,6 +591,40 @@ watch(reminderEnabled, (val) => {
 watch(inactivityDays, (val) => {
   if (process.client) debouncedSave('pref_inactivity_days', String(val))
   debouncedSyncReminder()
+})
+
+watch(pushEnabled, (val) => {
+  if (process.client) {
+    localStorage.setItem('pushEnabled', String(val))
+    togglePush(val)
+  }
+})
+
+watch(healthSyncEnabled, async (val) => {
+  if (process.client) {
+    localStorage.setItem('healthSyncEnabled', String(val))
+    if (val) {
+      try {
+        const { useHealthSync } = await import('~/composables/useHealthSync')
+        const healthSync = useHealthSync()
+        const available = await healthSync.isAvailable()
+        if (!available) {
+          healthSyncEnabled.value = false
+          const toast = useToast()
+          toast.error('Sante non disponible')
+          return
+        }
+        const granted = await healthSync.requestPermissions()
+        if (!granted) {
+          healthSyncEnabled.value = false
+          const toast = useToast()
+          toast.error('Permissions refusees')
+        }
+      } catch {
+        healthSyncEnabled.value = false
+      }
+    }
+  }
 })
 
 const syncReminderSettings = async () => {

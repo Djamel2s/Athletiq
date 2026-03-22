@@ -1,6 +1,7 @@
 import { AppDataSource } from '../config/database.js'
 import { Notification, NotificationType } from '../entities/Notification.js'
 import { Workout } from '../entities/Workout.js'
+import { sendPushToUser } from './pushService.js'
 
 const notificationRepo = () => AppDataSource.getRepository(Notification)
 
@@ -11,7 +12,12 @@ export async function createNotification(
   message?: string
 ) {
   const notification = notificationRepo().create({ userId, type, title, message })
-  return await notificationRepo().save(notification)
+  const saved = await notificationRepo().save(notification)
+
+  // Fire-and-forget push notification
+  sendPushToUser(userId, title, message || '').catch(() => {})
+
+  return saved
 }
 
 /**

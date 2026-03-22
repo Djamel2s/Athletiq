@@ -1343,6 +1343,20 @@ const completeWorkout = async () => {
     showRestTimer.value = false
     // Show completion screen instead of navigating away
     showCompletionScreen.value = true
+
+    // Fire-and-forget health sync
+    if (process.client && localStorage.getItem('healthSyncEnabled') === 'true') {
+      import('~/composables/useHealthSync').then(({ useHealthSync }) => {
+        const healthSync = useHealthSync()
+        healthSync.syncWorkout({
+          name: workout.value!.name,
+          startedAt: workout.value!.startedAt || new Date().toISOString(),
+          completedAt: workout.value!.completedAt || new Date().toISOString(),
+          durationMinutes: (workout.value as any)?.durationMinutes,
+          caloriesBurned: (workout.value as any)?.caloriesBurned,
+        }).catch(() => {})
+      }).catch(() => {})
+    }
   } catch (error) {
     toast.error('Erreur lors de la complétion')
     logger.error('Failed to complete workout:', error)

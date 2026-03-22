@@ -28,7 +28,9 @@ import achievementRoutes from './routes/achievements.js'
 import coachRoutes from './routes/coach.js'
 import calculatorRoutes from './routes/calculators.js'
 import shareRoutes from './routes/share.js'
+import fcmTokenRoutes from './routes/fcmTokens.js'
 import { seedPrograms } from './routes/programs.js'
+import { startScheduler } from './services/schedulerService.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -40,6 +42,7 @@ app.set('trust proxy', 1)
 // Initialiser la base de données + seed data
 await initializeDatabase()
 await seedPrograms()
+startScheduler()
 
 // Vérifier les credentials Cloudinary en production
 if (process.env.NODE_ENV === 'production') {
@@ -106,6 +109,7 @@ app.use('/api/achievements', apiLimiter, achievementRoutes)
 app.use('/api/coach', apiLimiter, coachRoutes)
 app.use('/api/calculators', apiLimiter, calculatorRoutes)
 app.use('/api/share', apiLimiter, shareRoutes)
+app.use('/api/fcm-tokens', apiLimiter, fcmTokenRoutes)
 
 // 404 handler
 app.use((req, res) => {
