@@ -140,6 +140,13 @@
                     <Icon name="lucide:share-2" class="w-4 h-4" />
                   </button>
                   <button
+                    @click.stop="openPlanModal(workout)"
+                    class="w-8 h-8 flex items-center justify-center rounded-lg text-primary-400 hover:text-sand-600 dark:hover:text-sand-400 hover:bg-sand-500/10 transition-colors"
+                    title="Planifier avec un Bro"
+                  >
+                    <Icon name="lucide:calendar-plus" class="w-4 h-4" />
+                  </button>
+                  <button
                     @click.stop="deleteTemplate(workout.id)"
                     :disabled="deletingId === workout.id"
                     class="w-8 h-8 flex items-center justify-center rounded-lg text-primary-300 dark:text-primary-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50"
@@ -244,6 +251,88 @@
 
     <MobileBottomNav active-path="/workouts" />
 
+    <!-- Modal planifier avec un Bro -->
+    <Teleport to="body">
+      <div v-if="showPlanModal" class="fixed inset-0 z-50 flex items-center justify-center px-6" @click.self="showPlanModal = false">
+        <div class="fixed inset-0 bg-black/40 backdrop-blur-sm"></div>
+        <div class="relative bg-white dark:bg-primary-900 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+          <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-1">Planifier avec un Bro</h3>
+          <p class="text-sm text-primary-500 dark:text-primary-400 mb-5">{{ planWorkoutName }}</p>
+
+          <!-- Friend selection -->
+          <label class="block text-sm font-semibold text-primary-700 dark:text-primary-300 mb-2">Inviter un ami</label>
+          <div v-if="friendsLoading" class="text-center py-4">
+            <div class="inline-block animate-spin rounded-full h-6 w-6 border-2 border-primary-200 dark:border-primary-700 border-t-primary-600"></div>
+          </div>
+          <div v-else-if="friendsList.length === 0" class="text-center py-4 text-sm text-primary-500 dark:text-primary-400">
+            Aucun ami pour le moment
+          </div>
+          <div v-else class="space-y-2 mb-5 max-h-40 overflow-y-auto">
+            <button
+              v-for="friend in friendsList"
+              :key="friend.id"
+              @click="selectedFriendId = friend.id"
+              :class="[
+                'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all text-left',
+                selectedFriendId === friend.id
+                  ? 'border-sand-500 bg-sand-500/10 dark:bg-sand-600/10'
+                  : 'border-primary-200 dark:border-primary-700 hover:border-primary-300 dark:hover:border-primary-600'
+              ]"
+            >
+              <div class="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center flex-shrink-0 overflow-hidden">
+                <img v-if="friend.avatarUrl" :src="friend.avatarUrl" class="w-full h-full object-cover" />
+                <span v-else class="text-xs font-bold text-white">{{ (friend.firstName?.[0] || friend.username?.[0] || '?').toUpperCase() }}</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-semibold text-primary-900 dark:text-primary-100 truncate">
+                  {{ friend.username || `${friend.firstName || ''} ${friend.lastName || ''}`.trim() }}
+                </p>
+              </div>
+              <div v-if="selectedFriendId === friend.id" class="w-5 h-5 rounded-full bg-sand-500 flex items-center justify-center flex-shrink-0">
+                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                </svg>
+              </div>
+            </button>
+          </div>
+
+          <!-- Date/time picker -->
+          <label class="block text-sm font-semibold text-primary-700 dark:text-primary-300 mb-2">Date et heure</label>
+          <input
+            v-model="planScheduledAt"
+            type="datetime-local"
+            class="w-full px-4 py-2.5 rounded-xl border border-primary-200 dark:border-primary-700 bg-white dark:bg-primary-800 text-primary-900 dark:text-primary-100 text-sm mb-5 focus:outline-none focus:border-sand-500"
+          />
+
+          <!-- Notes -->
+          <label class="block text-sm font-semibold text-primary-700 dark:text-primary-300 mb-2">Notes (optionnel)</label>
+          <textarea
+            v-model="planNotes"
+            rows="2"
+            placeholder="Ex: On se retrouve a 18h devant la salle"
+            class="w-full px-4 py-2.5 rounded-xl border border-primary-200 dark:border-primary-700 bg-white dark:bg-primary-800 text-primary-900 dark:text-primary-100 text-sm mb-6 focus:outline-none focus:border-sand-500 resize-none"
+          />
+
+          <!-- Actions -->
+          <div class="space-y-3">
+            <button
+              @click="sendPlanInvitation"
+              :disabled="!selectedFriendId || !planScheduledAt || planSending"
+              class="w-full py-3 rounded-2xl bg-gradient-primary text-white font-medium hover:shadow-md transition-all disabled:opacity-50"
+            >
+              {{ planSending ? 'Envoi...' : 'Envoyer l\'invitation' }}
+            </button>
+            <button
+              @click="showPlanModal = false"
+              class="w-full py-3 rounded-2xl bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-200 font-medium hover:bg-primary-200 dark:hover:bg-primary-700 transition-colors"
+            >
+              Annuler
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
     <!-- Modal confirmer suppression -->
     <Teleport to="body">
       <div v-if="showDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center px-6" @click.self="showDeleteModal = false">
@@ -290,6 +379,58 @@ const deletingId = ref<number | null>(null)
 const duplicatingId = ref<number | null>(null)
 
 const activeTab = ref<'workouts' | 'history'>('workouts')
+
+// ── Plan with a Bro ──
+const socialApi = useSocialApi()
+const showPlanModal = ref(false)
+const planWorkoutName = ref('')
+const planWorkoutId = ref<number | null>(null)
+const friendsList = ref<Array<{ id: number; username: string; firstName: string; lastName: string; avatarUrl: string | null }>>([])
+const friendsLoading = ref(false)
+const selectedFriendId = ref<number | null>(null)
+const planScheduledAt = ref('')
+const planNotes = ref('')
+const planSending = ref(false)
+
+const openPlanModal = async (workout: any) => {
+  planWorkoutName.value = workout.name
+  planWorkoutId.value = workout.id
+  selectedFriendId.value = null
+  planScheduledAt.value = ''
+  planNotes.value = ''
+  showPlanModal.value = true
+
+  // Load friends
+  friendsLoading.value = true
+  try {
+    const data = await socialApi.getFriends() as any
+    friendsList.value = data.friends || []
+  } catch {
+    friendsList.value = []
+  } finally {
+    friendsLoading.value = false
+  }
+}
+
+const sendPlanInvitation = async () => {
+  if (!selectedFriendId.value || !planScheduledAt.value || planSending.value) return
+  planSending.value = true
+  try {
+    await socialApi.createPlannedWorkout({
+      inviteeId: selectedFriendId.value,
+      name: planWorkoutName.value,
+      scheduledAt: new Date(planScheduledAt.value).toISOString(),
+      workoutTemplateId: planWorkoutId.value || undefined,
+      notes: planNotes.value || undefined
+    })
+    toast.success('Invitation envoyee', 'Ton bro a ete invite !')
+    showPlanModal.value = false
+  } catch (err: any) {
+    toast.error('Erreur', err?.data?.error || 'Impossible d\'envoyer l\'invitation')
+  } finally {
+    planSending.value = false
+  }
+}
 
 onMounted(async () => {
   loadWorkouts()

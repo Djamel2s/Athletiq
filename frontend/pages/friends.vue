@@ -25,6 +25,59 @@
         </div>
       </div>
 
+      <!-- Add Gym Bro section -->
+      <div class="card-glass !p-4 mb-6 slide-up">
+        <h2 class="text-sm font-semibold text-primary-900 dark:text-primary-100 mb-3">Ajouter un Gym Bro</h2>
+        <div class="flex gap-2 mb-3">
+          <NuxtLink to="/profile" class="btn-glass px-3 py-2 text-xs font-medium inline-flex items-center gap-1.5">
+            <Icon name="lucide:qr-code" class="w-3.5 h-3.5" />
+            Afficher mon QR
+          </NuxtLink>
+        </div>
+        <form @submit.prevent="handleSearchUser" class="flex gap-2">
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Entrer un pseudo..."
+            class="flex-1 px-3 py-2 rounded-xl bg-white/60 dark:bg-primary-800/60 border border-primary-200 dark:border-primary-700 text-sm text-primary-900 dark:text-primary-100 placeholder-primary-400 dark:placeholder-primary-500 focus:outline-none focus:ring-2 focus:ring-sand-500/50"
+          />
+          <button
+            type="submit"
+            :disabled="!searchQuery.trim() || searching"
+            class="px-4 py-2 rounded-xl bg-gradient-primary text-white text-sm font-semibold disabled:opacity-50 transition-opacity"
+          >
+            <Icon v-if="searching" name="lucide:loader-2" class="w-4 h-4 animate-spin" />
+            <Icon v-else name="lucide:search" class="w-4 h-4" />
+          </button>
+        </form>
+        <!-- Search results -->
+        <div v-if="searchResults.length > 0" class="mt-3 space-y-2">
+          <div v-for="user in searchResults" :key="user.id" class="flex items-center gap-3 p-2 rounded-xl bg-white/40 dark:bg-primary-800/40">
+            <NuxtLink :to="`/profile/${user.username}`" class="flex-shrink-0">
+              <div class="w-10 h-10 rounded-full overflow-hidden" :class="user.avatarUrl ? '' : 'bg-gradient-primary flex items-center justify-center'">
+                <img v-if="user.avatarUrl" :src="user.avatarUrl" alt="" class="w-full h-full object-cover" />
+                <span v-else class="text-white text-xs font-bold">{{ (user.firstName?.charAt(0) || '?').toUpperCase() }}</span>
+              </div>
+            </NuxtLink>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-primary-900 dark:text-primary-100 truncate">{{ user.firstName }} {{ user.lastName }}</p>
+              <p v-if="user.username" class="text-xs text-primary-500 dark:text-primary-400">@{{ user.username }}</p>
+            </div>
+            <button
+              @click="handleSendRequest(user)"
+              :disabled="user.requestSent"
+              class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+              :class="user.requestSent
+                ? 'bg-primary-100 dark:bg-primary-800 text-primary-400 dark:text-primary-500 cursor-default'
+                : 'bg-gradient-primary text-white hover:opacity-90'"
+            >
+              {{ user.requestSent ? 'Envoyee' : 'Ajouter' }}
+            </button>
+          </div>
+        </div>
+        <p v-if="searchNoResult" class="mt-3 text-xs text-primary-400 dark:text-primary-500 text-center">Aucun utilisateur trouve</p>
+      </div>
+
       <!-- Tab bar -->
       <div class="flex justify-center mb-6">
         <div class="flex space-x-1 bg-white/50 dark:bg-primary-900/50 backdrop-blur-lg rounded-xl p-1 w-full">
@@ -145,12 +198,44 @@ definePageMeta({
 useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
 
 const toast = useToast()
-const { getFriends, getRequests, acceptRequest, rejectRequest, removeFriend } = useSocialApi()
+const { getFriends, getRequests, acceptRequest, rejectRequest, removeFriend, searchUsers, sendFriendRequest } = useSocialApi()
 
 const activeTab = ref<'friends' | 'requests'>('friends')
 const loading = ref(true)
 const friends = ref<any[]>([])
 const pendingRequests = ref<any[]>([])
+const searchQuery = ref('')
+const searchResults = ref<any[]>([])
+const searching = ref(false)
+const searchNoResult = ref(false)
+
+const handleSearchUser = async () => {
+  const q = searchQuery.value.trim().replace(/^@/, '')
+  if (!q) return
+  searching.value = true
+  searchNoResult.value = false
+  searchResults.value = []
+  try {
+    const data = await searchUsers(q) as any
+    const users = data?.users || data || []
+    searchResults.value = users.map((u: any) => ({ ...u, requestSent: false }))
+    searchNoResult.value = searchResults.value.length === 0
+  } catch {
+    toast.error('Erreur', 'Impossible de rechercher')
+  } finally {
+    searching.value = false
+  }
+}
+
+const handleSendRequest = async (user: any) => {
+  try {
+    await sendFriendRequest(user.id)
+    user.requestSent = true
+    toast.success('Demande envoyee', `Demande envoyee a ${user.firstName || user.username}`)
+  } catch {
+    toast.error('Erreur', 'Impossible d\'envoyer la demande')
+  }
+}
 
 const handleAccept = async (req: any) => {
   try {

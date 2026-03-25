@@ -32,6 +32,7 @@ import fcmTokenRoutes from './routes/fcmTokens.js'
 import profileRoutes from './routes/profile.js'
 import socialRoutes from './routes/social.js'
 import feedRoutes from './routes/feed.js'
+import plannedWorkoutRoutes from './routes/plannedWorkouts.js'
 import { seedPrograms } from './routes/programs.js'
 import { startScheduler } from './services/schedulerService.js'
 
@@ -116,6 +117,7 @@ app.use('/api/fcm-tokens', apiLimiter, fcmTokenRoutes)
 app.use('/api/profile', apiLimiter, profileRoutes)
 app.use('/api/social', apiLimiter, socialRoutes)
 app.use('/api/feed', apiLimiter, feedRoutes)
+app.use('/api/planned-workouts', apiLimiter, plannedWorkoutRoutes)
 
 // 404 handler
 app.use((req, res) => {

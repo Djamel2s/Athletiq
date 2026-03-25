@@ -30,6 +30,7 @@ import { ProgramDay } from '../entities/ProgramDay.js'
 import { FcmToken } from '../entities/FcmToken.js'
 import { Friendship } from '../entities/Friendship.js'
 import { FeedPost } from '../entities/FeedPost.js'
+import { PlannedWorkout } from '../entities/PlannedWorkout.js'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -45,7 +46,7 @@ export const AppDataSource = new DataSource({
   ssl: isProduction ? { rejectUnauthorized: true } : false,
   synchronize: !isProduction,
   logging: !isProduction,
-  entities: [User, Workout, Exercise, Set, WorkoutPhoto, BodyStat, Measurement, ExerciseLibrary, UserGoal, Notification, Subscription, UserAchievement, WorkoutProgram, ProgramDay, FcmToken, Friendship, FeedPost],
+  entities: [User, Workout, Exercise, Set, WorkoutPhoto, BodyStat, Measurement, ExerciseLibrary, UserGoal, Notification, Subscription, UserAchievement, WorkoutProgram, ProgramDay, FcmToken, Friendship, FeedPost, PlannedWorkout],
   extra: {
     max: 20,
     min: 2,

@@ -70,6 +70,14 @@
           <Icon name="lucide:edit-3" class="w-4 h-4" />
           Modifier le profil
         </NuxtLink>
+        <button
+          v-if="profileData?.username"
+          @click="showQrModal = true"
+          class="btn-glass px-4 py-2.5 text-sm font-medium inline-flex items-center gap-2"
+          title="Mon QR Code"
+        >
+          <Icon name="lucide:qr-code" class="w-4 h-4" />
+        </button>
         <NuxtLink to="/settings" class="btn-glass px-4 py-2.5 text-sm font-medium inline-flex items-center gap-2">
           <Icon name="lucide:settings" class="w-4 h-4" />
         </NuxtLink>
@@ -153,6 +161,52 @@
       </div>
     </div>
 
+    <!-- QR Code Modal -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="showQrModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4" @click="showQrModal = false">
+          <div class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+          <div class="relative bg-white dark:bg-primary-900 rounded-2xl p-6 max-w-sm w-full text-center shadow-xl" @click.stop>
+            <!-- Close button -->
+            <button
+              @click="showQrModal = false"
+              class="absolute top-3 right-3 w-8 h-8 rounded-lg flex items-center justify-center text-primary-400 hover:text-primary-600 hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors"
+            >
+              <Icon name="lucide:x" class="w-5 h-5" />
+            </button>
+
+            <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-4">Mon QR Code</h3>
+
+            <!-- QR Code image -->
+            <div class="flex justify-center mb-4">
+              <div class="bg-white p-3 rounded-xl">
+                <img
+                  :src="`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(qrUrl)}`"
+                  alt="QR Code"
+                  width="220"
+                  height="220"
+                  class="block"
+                />
+              </div>
+            </div>
+
+            <!-- User info -->
+            <p class="text-base font-semibold text-primary-900 dark:text-primary-100">{{ authStore.fullName }}</p>
+            <p class="text-sm text-primary-500 dark:text-primary-400 mb-5">@{{ profileData?.username }}</p>
+
+            <!-- Share / Copy button -->
+            <button
+              @click="shareQr"
+              class="w-full py-2.5 rounded-xl bg-gradient-primary text-white text-sm font-semibold inline-flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+            >
+              <Icon name="lucide:share-2" class="w-4 h-4" />
+              Partager
+            </button>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
     <!-- Photo modal -->
     <Teleport to="body">
       <Transition name="modal">
@@ -200,6 +254,30 @@ const photos = ref<any[]>([])
 const posts = ref<any[]>([])
 const selectedPhoto = ref<any>(null)
 const avatarUploading = ref(false)
+const showQrModal = ref(false)
+
+const qrUrl = computed(() => {
+  const username = profileData.value?.username || (authStore.user as any)?.username || ''
+  return `https://athletiq.fr/profile/${username}`
+})
+
+const shareQr = async () => {
+  const text = `Ajoute-moi sur Athletiq ! ${qrUrl.value}`
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: 'Mon profil Athletiq', text, url: qrUrl.value })
+    } catch {
+      // User cancelled or share failed, ignore
+    }
+  } else {
+    try {
+      await navigator.clipboard.writeText(qrUrl.value)
+      toast.success('Lien copie', 'Le lien de ton profil a ete copie dans le presse-papier')
+    } catch {
+      toast.error('Erreur', 'Impossible de copier le lien')
+    }
+  }
+}
 
 const initials = computed(() => {
   const f = authStore.user?.firstName?.charAt(0) || ''

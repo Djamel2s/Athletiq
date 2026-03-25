@@ -248,6 +248,85 @@
         <CoachInsights />
       </div>
 
+      <!-- Seances planifiees -->
+      <div v-if="plannedWorkouts.length > 0" class="mb-8 md:mb-12 slide-up">
+        <h2 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100 mb-4">Seances planifiees</h2>
+        <div class="space-y-3">
+          <div
+            v-for="pw in plannedWorkouts"
+            :key="pw.id"
+            class="rounded-2xl border border-primary-200/60 dark:border-primary-700/60 bg-white/70 dark:bg-primary-800/70 backdrop-blur-sm p-4"
+          >
+            <div class="flex items-start gap-3">
+              <!-- Bro avatar -->
+              <div class="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center flex-shrink-0 overflow-hidden">
+                <img v-if="plannedBro(pw).avatarUrl" :src="plannedBro(pw).avatarUrl" class="w-full h-full object-cover" />
+                <span v-else class="text-xs font-bold text-white">{{ (plannedBro(pw).firstName?.[0] || plannedBro(pw).username?.[0] || '?').toUpperCase() }}</span>
+              </div>
+
+              <div class="flex-1 min-w-0">
+                <h3 class="text-base font-bold text-primary-900 dark:text-primary-100 truncate">{{ pw.name }}</h3>
+                <p class="text-sm text-primary-500 dark:text-primary-400">
+                  avec {{ plannedBro(pw).username || `${plannedBro(pw).firstName || ''} ${plannedBro(pw).lastName || ''}`.trim() }}
+                </p>
+                <p class="text-xs text-primary-400 dark:text-primary-500 mt-1">
+                  {{ formatPlannedDate(pw.scheduledAt) }}
+                </p>
+                <p v-if="pw.notes" class="text-xs text-primary-400 dark:text-primary-500 mt-0.5 italic">{{ pw.notes }}</p>
+              </div>
+
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <!-- Status badge -->
+                <span
+                  :class="[
+                    'text-xs font-semibold px-2 py-1 rounded-lg',
+                    pw.status === 'ACCEPTED'
+                      ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                      : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
+                  ]"
+                >
+                  {{ pw.status === 'ACCEPTED' ? 'Accepte' : 'En attente' }}
+                </span>
+
+                <!-- Accept/Decline buttons if invitee -->
+                <template v-if="pw.inviteeId === currentUserId && pw.status === 'PENDING'">
+                  <button
+                    @click="handleAcceptPlanned(pw.id)"
+                    class="w-8 h-8 flex items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors"
+                    title="Accepter"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                  </button>
+                  <button
+                    @click="handleDeclinePlanned(pw.id)"
+                    class="w-8 h-8 flex items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/30 text-red-500 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                    title="Decliner"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                  </button>
+                </template>
+
+                <!-- Cancel button if inviter -->
+                <button
+                  v-if="pw.inviterId === currentUserId"
+                  @click="handleCancelPlanned(pw.id)"
+                  class="w-8 h-8 flex items-center justify-center rounded-lg text-primary-300 dark:text-primary-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  title="Annuler"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Activité récente -->
       <div v-if="workoutStore.isLoading" class="card-glass text-center py-12">
         <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary-200 dark:border-primary-700 border-t-primary-600"></div>
@@ -282,10 +361,68 @@ const statsApi = useStatsApi()
 
 const recoveryData = ref<{ score: number; muscleRecovery: Array<{ muscle: string; score: number; daysSince: number; lastVolume: number }>; recommendation: string } | null>(null)
 
+// ── Planned workouts ──
+const socialApi = useSocialApi()
+const plannedWorkouts = ref<any[]>([])
+const currentUserId = computed(() => authStore.user?.id)
+
+const plannedBro = (pw: any) => {
+  return pw.inviterId === currentUserId.value ? pw.invitee : pw.inviter
+}
+
+const formatPlannedDate = (dateStr: string) => {
+  return new Intl.DateTimeFormat('fr-FR', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'long',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(new Date(dateStr))
+}
+
+const loadPlannedWorkouts = async () => {
+  try {
+    const data = await socialApi.getPlannedWorkouts()
+    plannedWorkouts.value = data.plannedWorkouts || []
+  } catch {
+    plannedWorkouts.value = []
+  }
+}
+
+const handleAcceptPlanned = async (id: number) => {
+  try {
+    await socialApi.acceptPlannedWorkout(id)
+    await loadPlannedWorkouts()
+  } catch (err) {
+    logger.error('Accept planned workout failed:', err)
+  }
+}
+
+const handleDeclinePlanned = async (id: number) => {
+  try {
+    await socialApi.declinePlannedWorkout(id)
+    await loadPlannedWorkouts()
+  } catch (err) {
+    logger.error('Decline planned workout failed:', err)
+  }
+}
+
+const handleCancelPlanned = async (id: number) => {
+  try {
+    await socialApi.cancelPlannedWorkout(id)
+    await loadPlannedWorkouts()
+  } catch (err) {
+    logger.error('Cancel planned workout failed:', err)
+  }
+}
+
 // Le middleware 'auth' gère déjà initAuth() + redirection
 onMounted(async () => {
   // Charger les workouts récents
   await workoutStore.fetchWorkouts()
+
+  // Charger les seances planifiees (en arrière-plan)
+  loadPlannedWorkouts()
 
   // Charger le score de récupération (en arrière-plan)
   statsApi.getRecovery().then(data => {

@@ -17,6 +17,14 @@ export const useSocialApi = () => {
   const reactToPost = (postId: number) => apiFetch(`/feed/${postId}/react`, { method: 'POST' })
   const deletePost = (postId: number) => apiFetch(`/feed/${postId}`, { method: 'DELETE' })
 
+  // Planned workouts
+  const createPlannedWorkout = (data: { inviteeId: number; name: string; scheduledAt: string; workoutTemplateId?: number; notes?: string }) =>
+    apiFetch('/planned-workouts', { method: 'POST', body: data })
+  const acceptPlannedWorkout = (id: number) => apiFetch(`/planned-workouts/${id}/accept`, { method: 'POST' })
+  const declinePlannedWorkout = (id: number) => apiFetch(`/planned-workouts/${id}/decline`, { method: 'POST' })
+  const getPlannedWorkouts = () => apiFetch<{ plannedWorkouts: any[] }>('/planned-workouts')
+  const cancelPlannedWorkout = (id: number) => apiFetch(`/planned-workouts/${id}`, { method: 'DELETE' })
+
   return {
     getProfile,
     updateProfile,
@@ -32,6 +40,11 @@ export const useSocialApi = () => {
     getFeed,
     createPost,
     reactToPost,
-    deletePost
+    deletePost,
+    createPlannedWorkout,
+    acceptPlannedWorkout,
+    declinePlannedWorkout,
+    getPlannedWorkouts,
+    cancelPlannedWorkout
   }
 }
