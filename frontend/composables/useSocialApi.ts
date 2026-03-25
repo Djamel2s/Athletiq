@@ -1,6 +1,7 @@
 import { apiFetch } from '~/utils/apiFetch'
 
 export const useSocialApi = () => {
+  const getMyProfile = () => apiFetch('/profile/me')
   const getProfile = (username: string) => apiFetch(`/profile/${username}`)
   const updateProfile = (data: { username?: string; bio?: string; isPublic?: boolean }) => apiFetch('/profile', { method: 'PUT', body: data })
   const checkUsername = (username: string) => apiFetch(`/profile/check-username/${username}`)
@@ -26,6 +27,7 @@ export const useSocialApi = () => {
   const cancelPlannedWorkout = (id: number) => apiFetch(`/planned-workouts/${id}`, { method: 'DELETE' })
 
   return {
+    getMyProfile,
     getProfile,
     updateProfile,
     checkUsername,

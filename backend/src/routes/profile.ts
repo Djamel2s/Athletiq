@@ -41,6 +41,26 @@ async function isFriend(viewerId: number, targetId: number): Promise<boolean> {
   return !!friendship
 }
 
+// GET /api/profile/me — get own profile data (authenticated)
+router.get('/me', authenticate, async (req: AuthRequest, res) => {
+  try {
+    const user = await userRepo().findOne({ where: { id: req.user!.id } })
+    if (!user) return res.status(404).json({ error: 'User not found' })
+    res.json({
+      id: user.id,
+      username: user.username,
+      bio: user.bio,
+      isPublic: user.isPublic,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      avatarUrl: user.avatarUrl
+    })
+  } catch (error) {
+    console.error('Error fetching own profile:', error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
 // GET /api/profile/check-username/:username — check if username is available
 router.get('/check-username/:username', async (req, res) => {
   try {

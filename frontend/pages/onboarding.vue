@@ -69,7 +69,7 @@
           </div>
         </Transition>
 
-        <!-- Step 2: Niveau -->
+        <!-- Step 2: Profil -->
         <Transition
           enter-active-class="transition-all duration-300 ease-out"
           enter-from-class="opacity-0 translate-x-8"
@@ -79,6 +79,59 @@
           leave-to-class="opacity-0 -translate-x-8"
         >
           <div v-if="currentStep === 2" key="step2">
+            <h1 class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-center">
+              Ton profil
+            </h1>
+            <p class="text-primary-600 dark:text-primary-400 text-center mb-8">
+              Choisis ton pseudo pour que tes Gym Bros te trouvent
+            </p>
+
+            <div class="space-y-5">
+              <!-- Username -->
+              <div>
+                <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1.5">Pseudo</label>
+                <div class="relative">
+                  <span class="absolute left-3 top-1/2 -translate-y-1/2 text-primary-400 text-sm">@</span>
+                  <input
+                    v-model="selectedUsername"
+                    type="text"
+                    class="w-full px-4 py-3 pl-8 rounded-2xl border-2 border-primary-200 dark:border-primary-700 bg-white/50 dark:bg-primary-800/50 text-primary-900 dark:text-primary-100 text-base font-medium focus:outline-none focus:border-sand-500 dark:focus:border-sand-600 transition-colors"
+                    placeholder="ton_pseudo"
+                  />
+                </div>
+                <p v-if="usernameChecking" class="text-xs text-primary-400 mt-1.5">Verification...</p>
+                <p v-else-if="usernameAvailable === true && selectedUsername.length >= 3" class="text-xs text-green-500 mt-1.5">Disponible</p>
+                <p v-else-if="usernameAvailable === false" class="text-xs text-red-500 mt-1.5">Deja pris</p>
+                <p v-else-if="selectedUsername.length > 0 && selectedUsername.length < 3" class="text-xs text-primary-400 mt-1.5">3 caracteres minimum</p>
+              </div>
+
+              <!-- Public/Private -->
+              <div class="card-glass flex items-center justify-between p-4">
+                <div>
+                  <p class="text-sm font-medium text-primary-900 dark:text-primary-100">Profil public</p>
+                  <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">Les autres peuvent voir tes stats et photos</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" v-model="selectedIsPublic" class="sr-only peer" />
+                  <div class="w-11 h-6 bg-primary-200 dark:bg-primary-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-sand-500 peer-checked:to-sand-600"></div>
+                </label>
+              </div>
+
+              <p class="text-xs text-primary-400 dark:text-primary-500 text-center">Tu pourras modifier tout ca plus tard dans ton profil</p>
+            </div>
+          </div>
+        </Transition>
+
+        <!-- Step 3: Niveau -->
+        <Transition
+          enter-active-class="transition-all duration-300 ease-out"
+          enter-from-class="opacity-0 translate-x-8"
+          enter-to-class="opacity-100 translate-x-0"
+          leave-active-class="transition-all duration-200 ease-in"
+          leave-from-class="opacity-100 translate-x-0"
+          leave-to-class="opacity-0 -translate-x-8"
+        >
+          <div v-if="currentStep === 3" key="step3_level">
             <h1 class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-center">
               Quel est ton niveau ?
             </h1>
@@ -124,7 +177,7 @@
           leave-from-class="opacity-100 translate-x-0"
           leave-to-class="opacity-0 -translate-x-8"
         >
-          <div v-if="currentStep === 3" key="step3">
+          <div v-if="currentStep === 4" key="step4_days">
             <h1 class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-center">
               Combien de jours par semaine ?
             </h1>
@@ -174,7 +227,7 @@
           leave-from-class="opacity-100 translate-x-0"
           leave-to-class="opacity-0 -translate-x-8"
         >
-          <div v-if="currentStep === 4" key="step4">
+          <div v-if="currentStep === 5" key="step5_recap">
             <div class="text-center mb-8">
               <div class="w-20 h-20 bg-gradient-primary rounded-3xl flex items-center justify-center mx-auto mb-4 text-4xl">
                 <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -284,19 +337,47 @@
 <script setup lang="ts">
 import { apiFetch } from '~/utils/apiFetch'
 import { useProgramApi } from '~/composables/useProgramApi'
+import { useSocialApi } from '~/composables/useSocialApi'
 
 useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
 
 const { getPrograms, adoptProgram } = useProgramApi()
+const { updateProfile: updateSocialProfile, checkUsername } = useSocialApi()
 const toast = useToast()
 
-const totalSteps = 4
+const totalSteps = 5
 const currentStep = ref(1)
 
-const stepTitles = ['Objectif', 'Niveau', 'Frequence', 'Recap']
+const stepTitles = ['Objectif', 'Profil', 'Niveau', 'Frequence', 'Recap']
 
 // Step 1
 const selectedGoal = ref<string | null>(null)
+
+// Step 2: Profile
+const selectedUsername = ref('')
+const selectedIsPublic = ref(true)
+const usernameChecking = ref(false)
+const usernameAvailable = ref<boolean | null>(null)
+let usernameCheckTimeout: ReturnType<typeof setTimeout> | null = null
+
+watch(selectedUsername, (val) => {
+  usernameAvailable.value = null
+  const cleaned = val.toLowerCase().replace(/[^a-z0-9_]/g, '')
+  if (cleaned !== val) selectedUsername.value = cleaned
+  if (cleaned.length < 3) return
+  if (usernameCheckTimeout) clearTimeout(usernameCheckTimeout)
+  usernameCheckTimeout = setTimeout(async () => {
+    usernameChecking.value = true
+    try {
+      const res = await checkUsername(cleaned) as any
+      usernameAvailable.value = res?.available === true
+    } catch {
+      usernameAvailable.value = null
+    } finally {
+      usernameChecking.value = false
+    }
+  }, 500)
+})
 const goals = [
   { value: 'BULK', label: 'Prise de masse', icon: '💪', description: 'Gagner du muscle et du poids' },
   { value: 'STRENGTH', label: 'Force', icon: '🏋️', description: 'Devenir plus fort sur les mouvements cles' },
@@ -332,8 +413,9 @@ const adopting = ref(false)
 
 const canProceed = computed(() => {
   if (currentStep.value === 1) return !!selectedGoal.value
-  if (currentStep.value === 2) return !!selectedLevel.value
-  if (currentStep.value === 3) return !!selectedDays.value
+  if (currentStep.value === 2) return selectedUsername.value.length >= 3 && usernameAvailable.value !== false
+  if (currentStep.value === 3) return !!selectedLevel.value
+  if (currentStep.value === 4) return !!selectedDays.value
   return true
 })
 
@@ -360,6 +442,13 @@ const saveGoalToProfile = async () => {
         daysPerWeek: selectedDays.value,
       },
     })
+    // Save social profile (username, public/private)
+    if (selectedUsername.value.length >= 3) {
+      await updateSocialProfile({
+        username: selectedUsername.value,
+        isPublic: selectedIsPublic.value,
+      })
+    }
   } catch (err: any) {
     logger.error('Failed to save profile:', err)
   }

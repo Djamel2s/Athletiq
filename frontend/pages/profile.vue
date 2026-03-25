@@ -69,21 +69,27 @@
         </div>
 
         <!-- Stats Row -->
-        <div class="grid grid-cols-3 gap-3 mb-6 slide-up">
-          <div class="rounded-2xl border border-primary-200/60 dark:border-primary-700/60 bg-white/70 dark:bg-primary-800/70 backdrop-blur-sm p-4 text-center">
-            <p class="text-2xl font-bold bg-gradient-to-r from-sand-500 to-sand-600 bg-clip-text text-transparent">{{ profileData?.stats?.workoutCount ?? 0 }}</p>
-            <p class="text-[11px] text-primary-500 dark:text-primary-400 mt-1 font-medium">Workouts</p>
-          </div>
-          <div class="rounded-2xl border border-primary-200/60 dark:border-primary-700/60 bg-white/70 dark:bg-primary-800/70 backdrop-blur-sm p-4 text-center">
-            <p class="text-2xl font-bold bg-gradient-to-r from-sand-500 to-sand-600 bg-clip-text text-transparent">{{ gymBrosCount }}</p>
-            <p class="text-[11px] text-primary-500 dark:text-primary-400 mt-1 font-medium">Gym Bros</p>
-          </div>
-          <div class="rounded-2xl border border-primary-200/60 dark:border-primary-700/60 bg-white/70 dark:bg-primary-800/70 backdrop-blur-sm p-4 text-center">
-            <div class="flex items-center justify-center gap-1">
-              <p class="text-2xl font-bold bg-gradient-to-r from-sand-500 to-sand-600 bg-clip-text text-transparent">{{ profileData?.stats?.streak ?? 0 }}</p>
-              <Icon v-if="(profileData?.stats?.streak ?? 0) > 0" name="lucide:flame" class="w-5 h-5 text-orange-500" />
+        <div class="flex justify-center gap-8 mb-6 slide-up">
+          <div class="text-center">
+            <div class="flex items-center justify-center gap-1.5">
+              <span class="text-lg font-bold text-primary-900 dark:text-primary-100">{{ profileData?.stats?.workoutCount ?? 0 }}</span>
+              <Icon name="lucide:dumbbell" class="w-4 h-4 text-primary-400 dark:text-primary-500" />
             </div>
-            <p class="text-[11px] text-primary-500 dark:text-primary-400 mt-1 font-medium">Streak</p>
+            <p class="text-[11px] text-primary-500 dark:text-primary-400">Workouts</p>
+          </div>
+          <div class="text-center">
+            <div class="flex items-center justify-center gap-1.5">
+              <span class="text-lg font-bold text-primary-900 dark:text-primary-100">{{ gymBrosCount }}</span>
+              <Icon name="lucide:users" class="w-4 h-4 text-primary-400 dark:text-primary-500" />
+            </div>
+            <p class="text-[11px] text-primary-500 dark:text-primary-400">Gym Bros</p>
+          </div>
+          <div class="text-center">
+            <div class="flex items-center justify-center gap-1.5">
+              <span class="text-lg font-bold text-primary-900 dark:text-primary-100">{{ profileData?.stats?.streak ?? 0 }}</span>
+              <Icon name="lucide:flame" class="w-4 h-4" :class="(profileData?.stats?.streak ?? 0) > 0 ? 'text-orange-500' : 'text-primary-400 dark:text-primary-500'" />
+            </div>
+            <p class="text-[11px] text-primary-500 dark:text-primary-400">Streak</p>
           </div>
         </div>
 
@@ -257,7 +263,7 @@ definePageMeta({
 useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
 
 const authStore = useAuthStore()
-const { getProfile, updateProfile, checkUsername, getFeed, getFriends } = useSocialApi()
+const { getMyProfile, getProfile, updateProfile, checkUsername, getFeed, getFriends } = useSocialApi()
 const { getRecentPhotos } = useBodyApi()
 const toast = useToast()
 
@@ -395,18 +401,23 @@ const handleAvatarUpload = async (event: Event) => {
 }
 
 onMounted(async () => {
-  // Check if user has username
-  const username = (authStore.user as any)?.username
-  if (!username) {
-    showUsernameSetup.value = true
-  }
-
-  // Load profile data
+  // Fetch own profile data (includes username)
+  let myProfile: any = null
   try {
-    if (username) {
+    myProfile = await getMyProfile() as any
+  } catch {}
+
+  const username = myProfile?.username || (authStore.user as any)?.username
+
+  if (username) {
+    showUsernameSetup.value = false
+    try {
       profileData.value = await getProfile(username)
+    } catch {
+      profileData.value = { ...myProfile, stats: { workoutCount: 0, streak: 0 } }
     }
-  } catch {
+  } else {
+    showUsernameSetup.value = true
     profileData.value = { stats: { workoutCount: 0, streak: 0 } }
   }
 
