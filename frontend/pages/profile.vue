@@ -95,7 +95,7 @@
 
         <!-- Action Buttons -->
         <div class="flex justify-center gap-2 mb-8 slide-up">
-          <NuxtLink to="/profile/edit" class="btn-glass px-5 py-2.5 text-sm font-medium inline-flex items-center gap-2">
+          <NuxtLink to="/edit-profile" class="btn-glass px-5 py-2.5 text-sm font-medium inline-flex items-center gap-2">
             <Icon name="lucide:edit-3" class="w-4 h-4" />
             Modifier
           </NuxtLink>

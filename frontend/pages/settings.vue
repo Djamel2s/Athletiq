@@ -34,7 +34,7 @@
             Compte
           </h2>
           <div class="space-y-1">
-            <NuxtLink to="/profile/edit" class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors">
+            <NuxtLink to="/edit-profile" class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors">
               <span class="text-primary-800 dark:text-primary-200">Modifier mon profil</span>
               <svg class="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>

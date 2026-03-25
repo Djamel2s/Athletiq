@@ -170,6 +170,7 @@ export default defineNuxtConfig({
     '/settings': { ssr: false },
     '/profile': { ssr: false },
     '/profile/**': { ssr: false },
+    '/edit-profile': { ssr: false },
     '/feed': { ssr: false },
     '/friends': { ssr: false },
     '/body': { ssr: false },

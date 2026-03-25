@@ -317,11 +317,6 @@ const handleBlock = async () => {
 }
 
 onMounted(async () => {
-  // Avoid capturing /profile/edit as a username
-  if (username.value === 'edit') {
-    return navigateTo('/profile/edit', { replace: true })
-  }
-
   loading.value = true
   try {
     profile.value = await getProfile(username.value)
