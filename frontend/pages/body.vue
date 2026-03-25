@@ -320,137 +320,16 @@
         </div>
       </div>
 
-      <!-- ==================== ONGLET PHOTOS ==================== -->
-      <div v-else-if="activeTab === 'photos'" class="space-y-8 slide-up">
-        <!-- Upgrade banner photos -->
-        <ProWall
-          v-if="!isPremium && !canUploadPhoto"
-          title="Galerie photo illimitee"
-          :message="`Vous avez ${photoUsageText} photos. Debloquez Pro pour capturer chaque etape de votre transformation.`"
-          icon="camera"
-          compact
-        />
-
-        <!-- Upload Section -->
-        <div class="card-glass">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold text-primary-900 dark:text-primary-100">Ajouter une photo</h3>
-            <span v-if="!isPremium" class="text-xs text-primary-500 dark:text-primary-400">{{ photoUsageText }}</span>
-          </div>
-          <div class="flex flex-col md:flex-row gap-4 items-end">
-            <div class="flex-1">
-              <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1">Workout associé</label>
-              <select v-model="photoForm.workoutId" class="input-primary">
-                <option :value="null" disabled>Sélectionner un workout</option>
-                <option v-for="w in completedWorkouts" :key="w.id" :value="w.id">
-                  {{ w.name }} — {{ formatDate(w.completedAt!) }}
-                </option>
-              </select>
-            </div>
-            <div class="flex items-center h-[46px]">
-              <label class="flex items-center space-x-2 text-sm text-primary-700 dark:text-primary-300 cursor-pointer">
-                <input type="checkbox" v-model="photoForm.isPrimary" class="checkbox-primary" />
-                <span>Photo principale (timelapse)</span>
-              </label>
-            </div>
-            <div>
-              <label class="btn-primary cursor-pointer inline-flex items-center space-x-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                </svg>
-                <span>{{ photoUploading ? 'Upload...' : 'Choisir photo' }}</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  class="hidden"
-                  @change="handlePhotoUpload"
-                  :disabled="!photoForm.workoutId || photoUploading"
-                />
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <!-- Timelapse Section -->
-        <div v-if="timelapsePhotos.length > 0" class="card-glass">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-semibold text-primary-900 dark:text-primary-100">Timelapse</h3>
-            <button @click="showTimelapse = !showTimelapse" class="btn-outline !py-2 !px-4 text-sm">
-              {{ showTimelapse ? 'Masquer' : 'Voir le timelapse' }}
-            </button>
-          </div>
-          <BodyTimelapseViewer v-if="showTimelapse" :photos="timelapsePhotos" />
-        </div>
-
-        <!-- Comparaison Avant / Après -->
-        <BodyPhotoComparison
-          v-if="bodyStore.photos.length >= 2"
-          :photos="bodyStore.photos"
-          :user-name="authStore.user?.firstName || ''"
-        />
-
-        <!-- Photo Grid -->
-        <div v-if="bodyStore.photos.length > 0" class="card-glass">
-          <h3 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">Galerie</h3>
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <div
-              v-for="photo in bodyStore.photos"
-              :key="photo.id"
-              class="relative group aspect-square rounded-xl overflow-hidden cursor-pointer"
-              @click="openPhoto(photo)"
-            >
-              <img :src="photo.photoUrl" :alt="`Photo ${photo.id}`" loading="lazy" class="w-full h-full object-cover" />
-              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-end">
-                <div class="w-full p-3 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <p class="text-white text-sm font-medium">{{ formatDate(photo.workout?.date || photo.createdAt) }}</p>
-                  <p v-if="photo.isPrimary" class="text-yellow-300 text-xs">★ Principale</p>
-                </div>
-              </div>
-              <!-- Delete button -->
-              <button
-                @click.stop="deletePhoto(photo.id)"
-                class="absolute top-2 right-2 w-8 h-8 bg-black/50 hover:bg-red-500 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
-              >
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Empty State -->
-        <div v-if="bodyStore.photos.length === 0 && !bodyStore.isLoading" class="card-glass text-center py-16">
-          <svg class="w-20 h-20 mx-auto mb-4 text-primary-300 dark:text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <!-- Photos link -->
+      <div class="mt-8 text-center slide-up">
+        <NuxtLink to="/profile" class="text-sm text-sand-600 dark:text-sand-400 hover:underline inline-flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
           </svg>
-          <p class="text-lg text-primary-600 dark:text-primary-400 mb-2">Aucune photo pour le moment</p>
-          <p class="text-sm text-primary-500 dark:text-primary-500">Ajoutez des photos pour suivre votre transformation</p>
-        </div>
+          Voir mes photos sur mon profil
+        </NuxtLink>
       </div>
-
-      <!-- Fullscreen Photo Modal -->
-      <Teleport to="body">
-        <Transition name="modal">
-          <div v-if="selectedPhoto" class="fixed inset-0 z-[100] flex items-center justify-center p-4" @click="selectedPhoto = null">
-            <div class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
-            <img
-              :src="selectedPhoto.photoUrl"
-              class="relative max-w-full max-h-[90vh] rounded-2xl object-contain"
-              @click.stop
-            />
-            <button
-              @click="selectedPhoto = null"
-              class="absolute top-6 right-6 w-12 h-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl flex items-center justify-center text-white transition-colors"
-            >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-              </svg>
-            </button>
-          </div>
-        </Transition>
-      </Teleport>
     </div>
 
     <MobileBottomNav active-path="/body" />
@@ -460,26 +339,19 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth'
 import { useBodyStore } from '~/stores/body'
-import { useWorkoutStore } from '~/stores/workout'
 
 useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
-import { useSubscriptionStore } from '~/stores/subscription'
-import { useSubscriptionLimits } from '~/composables/useSubscriptionLimits'
-import type { ProgressPhoto, Measurement } from '~/types/body'
+import type { Measurement } from '~/types/body'
 
 const authStore = useAuthStore()
 const bodyStore = useBodyStore()
-const workoutStore = useWorkoutStore()
-const subscriptionStore = useSubscriptionStore()
-const { isPremium, canUploadPhoto, photoUsageText, fetchUsage } = useSubscriptionLimits()
 const toast = useToast()
 
-const activeTab = ref<'weight' | 'measurements' | 'photos'>('weight')
+const activeTab = ref<'weight' | 'measurements'>('weight')
 
 const tabs = [
   { key: 'weight' as const, label: 'Poids' },
-  { key: 'measurements' as const, label: 'Mensurations' },
-  { key: 'photos' as const, label: 'Photos' }
+  { key: 'measurements' as const, label: 'Mensurations' }
 ]
 
 // ========== WEIGHT ==========
@@ -625,86 +497,12 @@ const getMeasurementVariation = (key: string) => {
   return +((latest as number) - (previous as number)).toFixed(1)
 }
 
-// ========== PHOTOS ==========
-const photoForm = reactive({ workoutId: null as number | null, isPrimary: true })
-const photoUploading = ref(false)
-const selectedPhoto = ref<ProgressPhoto | null>(null)
-const showTimelapse = ref(false)
-const timelapsePhotos = ref<ProgressPhoto[]>([])
-
-const completedWorkouts = computed(() => {
-  return workoutStore.workoutHistory
-})
-
-const handlePhotoUpload = async (event: Event) => {
-  const input = event.target as HTMLInputElement
-  const file = input.files?.[0]
-  if (!file || !photoForm.workoutId) return
-
-  if (!file.type.startsWith('image/')) {
-    toast.error('Erreur', 'Le fichier doit être une image')
-    input.value = ''
-    return
-  }
-  if (file.size > 5 * 1024 * 1024) {
-    toast.error('Erreur', 'La photo ne doit pas dépasser 5 Mo')
-    input.value = ''
-    return
-  }
-
-  if (!canUploadPhoto.value) {
-    toast.error('Limite atteinte', 'Passez Pro pour uploader plus de photos')
-    input.value = ''
-    return
-  }
-
-  photoUploading.value = true
-  try {
-    await bodyStore.uploadPhoto(photoForm.workoutId, file, photoForm.isPrimary)
-    input.value = ''
-    // Refresh timelapse
-    timelapsePhotos.value = await bodyStore.fetchTimelapse()
-    toast.success('Photo uploadée')
-  } catch (e) {
-    toast.error('Erreur lors de l\'upload')
-    logger.error(e)
-  } finally {
-    photoUploading.value = false
-  }
-}
-
-const openPhoto = (photo: ProgressPhoto) => {
-  selectedPhoto.value = photo
-}
-
-const deletePhoto = async (id: number) => {
-  const key = `photo-${id}`
-  if (deletingIds.value.has(key)) return
-  deletingIds.value.add(key)
-  try {
-    await bodyStore.deletePhoto(id)
-    timelapsePhotos.value = await bodyStore.fetchTimelapse()
-  } finally {
-    deletingIds.value.delete(key)
-  }
-}
-
 // ========== INIT ==========
 onMounted(async () => {
   await Promise.all([
     bodyStore.fetchBodyStats(),
     bodyStore.fetchMeasurements(),
-    bodyStore.fetchPhotos(),
-    workoutStore.fetchWorkouts(),
-    subscriptionStore.fetchSubscription(),
-    fetchUsage()
   ])
-
-  try {
-    timelapsePhotos.value = await bodyStore.fetchTimelapse()
-  } catch (e) {
-    // Timelapse may be empty
-  }
 })
 
 const formatDate = (dateString: string) => {
@@ -721,16 +519,6 @@ definePageMeta({
 </script>
 
 <style scoped>
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
-
 .bg-gradient-primary {
   background: linear-gradient(135deg, rgb(var(--sand-500)) 0%, rgb(var(--sand-600)) 100%);
 }

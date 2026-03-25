@@ -1,6 +1,7 @@
 import { AppDataSource } from '../config/database.js'
 import { Notification, NotificationType } from '../entities/Notification.js'
 import { Workout } from '../entities/Workout.js'
+import { FeedPost } from '../entities/FeedPost.js'
 import { sendPushToUser } from './pushService.js'
 
 const notificationRepo = () => AppDataSource.getRepository(Notification)
@@ -72,6 +73,9 @@ export async function checkAndCreatePRNotifications(userId: number, workoutId: n
           `Nouveau record : ${name}`,
           `${maxWeightInWorkout} kg (+${(maxWeightInWorkout - prevMax).toFixed(1)} kg)`
         )
+        // Also create a feed post for the PR
+        createFeedPostForPR(userId, name, maxWeightInWorkout, maxWeightInWorkout - prevMax)
+          .catch(err => console.error('PR feed post creation error:', err))
       }
     }
   } catch (error) {
@@ -140,5 +144,57 @@ export async function checkStreakMilestone(userId: number) {
     }
   } catch (error) {
     console.error('Streak milestone check error:', error)
+  }
+}
+
+/**
+ * Create a feed post when a workout is completed.
+ */
+export async function createFeedPostForWorkout(
+  userId: number,
+  workoutName: string,
+  duration: number | undefined,
+  exerciseCount: number,
+  totalVolume: number | undefined
+) {
+  try {
+    const feedPostRepo = AppDataSource.getRepository(FeedPost)
+    await feedPostRepo.save({
+      userId,
+      type: 'WORKOUT_COMPLETED',
+      data: {
+        workoutName,
+        duration: duration || 0,
+        exerciseCount,
+        totalVolume: totalVolume || 0
+      }
+    })
+  } catch (error) {
+    console.error('Feed post creation error:', error)
+  }
+}
+
+/**
+ * Create a feed post when a PR is achieved.
+ */
+export async function createFeedPostForPR(
+  userId: number,
+  exerciseName: string,
+  weight: number,
+  improvement: number
+) {
+  try {
+    const feedPostRepo = AppDataSource.getRepository(FeedPost)
+    await feedPostRepo.save({
+      userId,
+      type: 'PR_ACHIEVED',
+      data: {
+        exerciseName,
+        weight,
+        improvement
+      }
+    })
+  } catch (error) {
+    console.error('Feed post PR creation error:', error)
   }
 }

@@ -14,173 +14,173 @@
       </div>
     </nav>
 
-    <div class="pt-24 md:pt-32 px-4 md:px-6 pb-8 md:pb-12">
-    <div class="w-full max-w-lg mx-auto">
-      <!-- Page Header -->
-      <div class="text-center mb-4 fade-in">
-        <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2">Mon Profil</h1>
-        <p class="text-sm md:text-base text-primary-600 dark:text-primary-400 text-body-relaxed">Gérez vos informations personnelles</p>
-      </div>
-
-      <!-- Avatar -->
-      <div class="flex flex-col items-center mb-6 md:mb-8 fade-in">
-        <div class="relative group">
-          <div class="w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden bg-gradient-primary flex items-center justify-center shadow-lg">
-            <img v-if="authStore.user?.avatarUrl" :src="authStore.user.avatarUrl" alt="Avatar" class="w-full h-full object-cover" />
-            <span v-else class="text-white text-2xl md:text-3xl font-bold">{{ initials }}</span>
+    <div class="pt-20 md:pt-28 px-4 md:px-6 pb-28 lg:pb-20 max-w-lg mx-auto">
+      <!-- Cover area with avatar -->
+      <div class="text-center mb-6 fade-in">
+        <!-- Avatar -->
+        <div class="relative inline-block mb-4">
+          <div class="w-24 h-24 rounded-full overflow-hidden ring-4 ring-sand-500/30 mx-auto">
+            <div class="w-full h-full flex items-center justify-center" :class="authStore.user?.avatarUrl ? '' : 'bg-gradient-primary'">
+              <img v-if="authStore.user?.avatarUrl" :src="authStore.user.avatarUrl" alt="Avatar" class="w-full h-full object-cover" />
+              <span v-else class="text-white text-3xl font-bold">{{ initials }}</span>
+            </div>
           </div>
-          <label class="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/40 rounded-2xl cursor-pointer transition-colors">
-            <svg class="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
-            </svg>
+          <!-- Upload overlay -->
+          <label class="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/40 rounded-full cursor-pointer transition-colors group">
+            <Icon name="lucide:camera" class="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
             <input type="file" accept="image/*" class="hidden" @change="handleAvatarUpload" :disabled="avatarUploading" />
           </label>
-          <div v-if="avatarUploading" class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-2xl">
+          <div v-if="avatarUploading" class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
             <div class="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
           </div>
         </div>
-        <button
-          v-if="authStore.user?.avatarUrl"
-          type="button"
-          @click="handleAvatarDelete"
-          :disabled="avatarUploading || avatarDeleting"
-          class="text-xs text-red-500 hover:text-red-600 mt-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {{ avatarDeleting ? 'Suppression...' : 'Supprimer la photo' }}
-        </button>
+
+        <!-- Name & Username -->
+        <h1 class="text-2xl font-bold text-primary-900 dark:text-primary-100">{{ authStore.fullName }}</h1>
+        <p v-if="profileData?.username" class="text-sm text-primary-500 dark:text-primary-400 mt-0.5">@{{ profileData.username }}</p>
+        <p v-else class="text-sm text-primary-400 dark:text-primary-500 mt-0.5 italic">
+          <NuxtLink to="/settings" class="hover:underline">Choisir un nom d'utilisateur</NuxtLink>
+        </p>
       </div>
 
-      <!-- Formulaire -->
-      <div class="card-glass slide-up">
-        <form @submit.prevent="handleSave" class="space-y-5">
-          <!-- Prenom et Nom -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label for="firstName" class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1.5">
-                Prenom
-              </label>
-              <input
-                id="firstName"
-                v-model="firstName"
-                type="text"
-                autocomplete="given-name"
-                class="input-primary"
-                placeholder="Jean"
-              />
-            </div>
-            <div>
-              <label for="lastName" class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1.5">
-                Nom
-              </label>
-              <input
-                id="lastName"
-                v-model="lastName"
-                type="text"
-                autocomplete="family-name"
-                class="input-primary"
-                placeholder="Dupont"
-              />
-            </div>
-          </div>
+      <!-- Stats Row -->
+      <div class="grid grid-cols-3 gap-3 mb-6 slide-up">
+        <div class="card-glass !p-4 text-center">
+          <p class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">{{ profileData?.stats?.workoutCount ?? 0 }}</p>
+          <p class="text-[11px] text-primary-500 dark:text-primary-400 mt-0.5">Workouts</p>
+        </div>
+        <div class="card-glass !p-4 text-center">
+          <p class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">{{ formatVolume(profileData?.stats?.totalVolume) }}</p>
+          <p class="text-[11px] text-primary-500 dark:text-primary-400 mt-0.5">Volume (kg)</p>
+        </div>
+        <div class="card-glass !p-4 text-center">
+          <p class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">{{ profileData?.stats?.streak ?? 0 }}</p>
+          <p class="text-[11px] text-primary-500 dark:text-primary-400 mt-0.5">Streak</p>
+        </div>
+      </div>
 
-          <!-- Email (lecture seule) -->
-          <div>
-            <label for="email" class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1.5">
-              Email
-            </label>
-            <input
-              id="email"
-              :value="authStore.user?.email"
-              type="email"
-              disabled
-              class="input-primary opacity-60 cursor-not-allowed"
-            />
-          </div>
+      <!-- Bio -->
+      <div v-if="profileData?.bio" class="mb-6 slide-up">
+        <p class="text-sm text-primary-700 dark:text-primary-300 text-center">{{ profileData.bio }}</p>
+      </div>
 
-          <!-- Genre -->
-          <div>
-            <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-3">
-              Genre
-            </label>
-            <div class="grid grid-cols-2 gap-2 md:gap-3">
-              <button
-                v-for="genderOption in genders"
-                :key="genderOption.value"
-                type="button"
-                @click="selectedGender = genderOption.value"
-                class="p-3 md:p-4 rounded-2xl border-2 transition-all duration-300 text-center flex items-center justify-center gap-2 md:gap-3"
-                :class="selectedGender === genderOption.value
-                  ? 'border-sand-500 dark:border-sand-600 bg-sand-500/10 dark:bg-sand-600/15 shadow-md'
-                  : 'border-primary-200 dark:border-primary-700 bg-white/50 dark:bg-primary-800/50 hover:border-primary-300 dark:hover:border-primary-600'"
-              >
-                <span class="font-semibold text-primary-900 dark:text-primary-100 text-sm md:text-base">{{ genderOption.label }}</span>
-              </button>
-            </div>
-          </div>
+      <!-- Edit Profile Button -->
+      <div class="flex justify-center gap-3 mb-8 slide-up">
+        <NuxtLink to="/profile/edit" class="btn-glass px-6 py-2.5 text-sm font-medium inline-flex items-center gap-2">
+          <Icon name="lucide:edit-3" class="w-4 h-4" />
+          Modifier le profil
+        </NuxtLink>
+        <NuxtLink to="/settings" class="btn-glass px-4 py-2.5 text-sm font-medium inline-flex items-center gap-2">
+          <Icon name="lucide:settings" class="w-4 h-4" />
+        </NuxtLink>
+      </div>
 
-          <!-- Objectif -->
-          <div>
-            <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-3">
-              Objectif d'entrainement
-            </label>
-            <div class="grid grid-cols-2 gap-2 md:gap-3">
-              <button
-                v-for="goalOption in goals"
-                :key="goalOption.value"
-                type="button"
-                @click="selectedGoal = goalOption.value"
-                class="p-3 md:p-4 rounded-2xl border-2 transition-all duration-300 text-left flex items-start gap-2 md:gap-3"
-                :class="selectedGoal === goalOption.value
-                  ? 'border-sand-500 dark:border-sand-600 bg-sand-500/10 dark:bg-sand-600/15 shadow-md'
-                  : 'border-primary-200 dark:border-primary-700 bg-white/50 dark:bg-primary-800/50 hover:border-primary-300 dark:hover:border-primary-600'"
-              >
-                <div class="w-7 h-7 md:w-8 md:h-8 rounded-lg flex-shrink-0 flex items-center justify-center mt-0.5"
-                  :class="selectedGoal === goalOption.value ? 'bg-gradient-primary' : 'bg-primary-200 dark:bg-primary-700'">
-                  <svg class="w-3.5 h-3.5 md:w-4 md:h-4" :class="selectedGoal === goalOption.value ? 'text-white' : 'text-primary-600 dark:text-primary-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="goalOption.iconPath"/>
-                  </svg>
-                </div>
-                <div class="min-w-0">
-                  <div class="font-semibold text-primary-900 dark:text-primary-100 text-xs md:text-sm">{{ goalOption.label }}</div>
-                  <div class="text-primary-500 dark:text-primary-400 text-[10px] md:text-xs mt-0.5">{{ goalOption.desc }}</div>
-                </div>
-              </button>
-            </div>
-          </div>
-
-          <!-- Success message -->
-          <div v-if="success" class="p-3 rounded-xl bg-sand-500/15 dark:bg-sand-600/15 border border-sand-500/40 dark:border-sand-600/30">
-            <p class="text-sm text-sand-700 font-medium">Profil mis a jour avec succes</p>
-          </div>
-
-          <!-- Error message -->
-          <div v-if="error" class="p-3 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800">
-            <p class="text-sm text-red-600 dark:text-red-400">{{ error }}</p>
-          </div>
-
-          <!-- Submit button -->
+      <!-- Tab Bar -->
+      <div class="flex justify-center mb-6">
+        <div class="flex space-x-1 bg-white/50 dark:bg-primary-900/50 backdrop-blur-lg rounded-xl p-1">
           <button
-            type="submit"
-            :disabled="loading"
-            class="btn-primary w-full text-base md:text-lg py-3 md:py-4"
+            @click="activeTab = 'photos'"
+            :class="[
+              'px-5 py-2 rounded-lg text-sm font-semibold transition-all',
+              activeTab === 'photos'
+                ? 'bg-gradient-primary text-white shadow-sm'
+                : 'text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100'
+            ]"
           >
-            <span v-if="!loading">Enregistrer</span>
-            <span v-else class="flex items-center justify-center gap-2">
-              <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-              Enregistrement...
-            </span>
+            <Icon name="lucide:image" class="w-4 h-4 inline-block mr-1 -mt-0.5" />
+            Photos
           </button>
-        </form>
+          <button
+            @click="activeTab = 'posts'"
+            :class="[
+              'px-5 py-2 rounded-lg text-sm font-semibold transition-all',
+              activeTab === 'posts'
+                ? 'bg-gradient-primary text-white shadow-sm'
+                : 'text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100'
+            ]"
+          >
+            <Icon name="lucide:file-text" class="w-4 h-4 inline-block mr-1 -mt-0.5" />
+            Posts
+          </button>
+        </div>
       </div>
 
+      <!-- Photos Grid -->
+      <div v-if="activeTab === 'photos'" class="slide-up">
+        <div v-if="photos.length > 0" class="grid grid-cols-3 gap-1.5">
+          <div
+            v-for="photo in photos"
+            :key="photo.id"
+            class="relative aspect-square rounded-lg overflow-hidden cursor-pointer group"
+            @click="selectedPhoto = photo"
+          >
+            <img :src="photo.photoUrl" :alt="`Photo ${photo.id}`" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" />
+          </div>
+        </div>
+        <div v-else class="text-center py-16">
+          <Icon name="lucide:camera" class="w-16 h-16 mx-auto mb-4 text-primary-300 dark:text-primary-600" />
+          <p class="text-primary-500 dark:text-primary-400 text-sm">Aucune photo pour le moment</p>
+          <p class="text-primary-400 dark:text-primary-500 text-xs mt-1">Les photos de tes workouts apparaitront ici</p>
+        </div>
+      </div>
+
+      <!-- Posts List -->
+      <div v-if="activeTab === 'posts'" class="space-y-4 slide-up">
+        <div v-if="posts.length > 0">
+          <div v-for="post in posts" :key="post.id" class="card-glass !p-4">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0" :class="authStore.user?.avatarUrl ? '' : 'bg-gradient-primary flex items-center justify-center'">
+                <img v-if="authStore.user?.avatarUrl" :src="authStore.user.avatarUrl" alt="" class="w-full h-full object-cover" />
+                <span v-else class="text-white text-xs font-bold">{{ initials }}</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-semibold text-primary-900 dark:text-primary-100 truncate">{{ authStore.fullName }}</p>
+                <p class="text-xs text-primary-400 dark:text-primary-500">{{ timeAgo(post.createdAt) }}</p>
+              </div>
+            </div>
+            <p class="text-sm text-primary-700 dark:text-primary-300">{{ getPostText(post) }}</p>
+            <div v-if="post.reactions" class="mt-3 flex items-center gap-1.5">
+              <span class="text-sm">🔥</span>
+              <span class="text-xs text-primary-500 dark:text-primary-400">{{ post.reactions }}</span>
+            </div>
+          </div>
+        </div>
+        <div v-else class="text-center py-16">
+          <Icon name="lucide:file-text" class="w-16 h-16 mx-auto mb-4 text-primary-300 dark:text-primary-600" />
+          <p class="text-primary-500 dark:text-primary-400 text-sm">Aucun post pour le moment</p>
+          <p class="text-primary-400 dark:text-primary-500 text-xs mt-1">Tes activites apparaitront ici</p>
+        </div>
+      </div>
     </div>
-    </div>
+
+    <!-- Photo modal -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="selectedPhoto" class="fixed inset-0 z-[100] flex items-center justify-center p-4" @click="selectedPhoto = null">
+          <div class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+          <img
+            :src="selectedPhoto.photoUrl"
+            class="relative max-w-full max-h-[90vh] rounded-2xl object-contain"
+            @click.stop
+          />
+          <button
+            @click="selectedPhoto = null"
+            class="absolute top-6 right-6 w-12 h-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl flex items-center justify-center text-white transition-colors"
+          >
+            <Icon name="lucide:x" class="w-6 h-6" />
+          </button>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <MobileBottomNav active-path="/profile" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth'
+import { useSocialApi } from '~/composables/useSocialApi'
+import { useBodyApi } from '~/composables/useBodyApi'
 
 definePageMeta({
   layout: false,
@@ -190,32 +190,50 @@ definePageMeta({
 useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
 
 const authStore = useAuthStore()
-const { applyTheme } = useTheme()
-
-const firstName = ref('')
-const lastName = ref('')
-const selectedGoal = ref<string | null>(null)
-const selectedGender = ref<string | null>(null)
-const loading = ref(false)
-const error = ref('')
-const success = ref(false)
-
-const genders = [
-  { value: 'male', label: 'Homme' },
-  { value: 'female', label: 'Femme' }
-]
-
-const goals = [
-  { value: 'BULK', label: 'Prise de masse', desc: 'Gagner du muscle', iconPath: 'M13 10V3L4 14h7v7l9-11h-7z' },
-  { value: 'STRENGTH', label: 'Force', desc: 'Devenir plus fort', iconPath: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4' },
-  { value: 'RECOMP', label: 'Recomposition', desc: 'Muscle & perte de gras', iconPath: 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15' },
-  { value: 'CUT', label: 'Seche', desc: 'Perdre du gras', iconPath: 'M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z' }
-]
-
-const avatarUploading = ref(false)
-const avatarDeleting = ref(false)
-
+const { getProfile, getFeed } = useSocialApi()
+const { getRecentPhotos } = useBodyApi()
 const toast = useToast()
+
+const activeTab = ref<'photos' | 'posts'>('photos')
+const profileData = ref<any>(null)
+const photos = ref<any[]>([])
+const posts = ref<any[]>([])
+const selectedPhoto = ref<any>(null)
+const avatarUploading = ref(false)
+
+const initials = computed(() => {
+  const f = authStore.user?.firstName?.charAt(0) || ''
+  const l = authStore.user?.lastName?.charAt(0) || ''
+  return (f + l).toUpperCase() || '?'
+})
+
+const formatVolume = (vol: number | undefined | null) => {
+  if (!vol) return '0'
+  if (vol >= 1000) return `${(vol / 1000).toFixed(1)}k`
+  return String(Math.round(vol))
+}
+
+const timeAgo = (dateStr: string) => {
+  const now = new Date()
+  const date = new Date(dateStr)
+  const diffMs = now.getTime() - date.getTime()
+  const diffMin = Math.floor(diffMs / 60000)
+  if (diffMin < 1) return "a l'instant"
+  if (diffMin < 60) return `il y a ${diffMin}min`
+  const diffH = Math.floor(diffMin / 60)
+  if (diffH < 24) return `il y a ${diffH}h`
+  const diffD = Math.floor(diffH / 24)
+  if (diffD < 7) return `il y a ${diffD}j`
+  return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+}
+
+const getPostText = (post: any) => {
+  if (post.type === 'WORKOUT_COMPLETED') return `A termine ${post.data?.workoutName || 'un workout'}`
+  if (post.type === 'PR_ACHIEVED') return `Nouveau record ! ${post.data?.exerciseName} ${post.data?.weight}kg`
+  if (post.type === 'PHOTO') return 'A partage une photo'
+  if (post.type === 'TEMPLATE_SHARED') return `A partage le template "${post.data?.templateName}"`
+  return post.type
+}
 
 const handleAvatarUpload = async (event: Event) => {
   const input = event.target as HTMLInputElement
@@ -223,75 +241,63 @@ const handleAvatarUpload = async (event: Event) => {
   if (!file) return
 
   if (!file.type.startsWith('image/')) {
-    toast.error('Erreur', 'Le fichier doit être une image')
+    toast.error('Erreur', 'Le fichier doit etre une image')
     input.value = ''
     return
   }
   if (file.size > 5 * 1024 * 1024) {
-    toast.error('Erreur', 'La photo ne doit pas dépasser 5 Mo')
+    toast.error('Erreur', 'La photo ne doit pas depasser 5 Mo')
     input.value = ''
     return
   }
 
   avatarUploading.value = true
   try {
-    const result = await authStore.uploadAvatar(file)
-    if (!result.success) logger.error('Avatar upload failed:', result.error)
+    await authStore.uploadAvatar(file)
   } finally {
     avatarUploading.value = false
     input.value = ''
   }
 }
 
-const handleAvatarDelete = async () => {
-  if (avatarDeleting.value) return
-  avatarDeleting.value = true
-  try {
-    await authStore.deleteAvatar()
-  } finally {
-    avatarDeleting.value = false
-  }
-}
-
-const initials = computed(() => {
-  const f = firstName.value?.charAt(0) || ''
-  const l = lastName.value?.charAt(0) || ''
-  return (f + l).toUpperCase() || '?'
-})
-
-const handleSave = async () => {
-  if (loading.value) return
-  error.value = ''
-  success.value = false
-  loading.value = true
-
-  try {
-    const data: Record<string, string> = {}
-    if (firstName.value) data.firstName = firstName.value
-    if (lastName.value) data.lastName = lastName.value
-    if (selectedGoal.value) data.goal = selectedGoal.value
-    if (selectedGender.value) data.gender = selectedGender.value
-
-    const result = await authStore.updateProfile(data)
-
-    if (result.success) {
-      success.value = true
-      applyTheme()
-      setTimeout(() => { success.value = false }, 3000)
-    } else {
-      error.value = result.error || 'Une erreur est survenue'
-    }
-  } catch (err) {
-    error.value = 'Une erreur est survenue'
-  } finally {
-    loading.value = false
-  }
-}
-
 onMounted(async () => {
-  firstName.value = authStore.user?.firstName || ''
-  lastName.value = authStore.user?.lastName || ''
-  selectedGoal.value = authStore.user?.goal || null
-  selectedGender.value = authStore.user?.gender || null
+  // Load profile data
+  try {
+    if (authStore.user) {
+      const username = (authStore.user as any).username
+      if (username) {
+        profileData.value = await getProfile(username)
+      }
+    }
+  } catch {
+    // Profile endpoint may not exist yet, use defaults
+    profileData.value = { stats: { workoutCount: 0, totalVolume: 0, streak: 0 } }
+  }
+
+  // Load photos
+  try {
+    photos.value = await getRecentPhotos(30)
+  } catch {
+    photos.value = []
+  }
+
+  // Load posts
+  try {
+    const feedData = await getFeed(0) as any
+    posts.value = feedData?.posts || feedData || []
+  } catch {
+    posts.value = []
+  }
 })
 </script>
+
+<style scoped>
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s ease;
+}
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+</style>

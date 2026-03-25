@@ -29,6 +29,9 @@ import coachRoutes from './routes/coach.js'
 import calculatorRoutes from './routes/calculators.js'
 import shareRoutes from './routes/share.js'
 import fcmTokenRoutes from './routes/fcmTokens.js'
+import profileRoutes from './routes/profile.js'
+import socialRoutes from './routes/social.js'
+import feedRoutes from './routes/feed.js'
 import { seedPrograms } from './routes/programs.js'
 import { startScheduler } from './services/schedulerService.js'
 
@@ -110,6 +113,9 @@ app.use('/api/coach', apiLimiter, coachRoutes)
 app.use('/api/calculators', apiLimiter, calculatorRoutes)
 app.use('/api/share', apiLimiter, shareRoutes)
 app.use('/api/fcm-tokens', apiLimiter, fcmTokenRoutes)
+app.use('/api/profile', apiLimiter, profileRoutes)
+app.use('/api/social', apiLimiter, socialRoutes)
+app.use('/api/feed', apiLimiter, feedRoutes)
 
 // 404 handler
 app.use((req, res) => {

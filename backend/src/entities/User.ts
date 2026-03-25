@@ -27,6 +27,15 @@ export class User {
   @Column({ type: 'varchar', nullable: true })
   lastName?: string
 
+  @Column({ type: 'varchar', nullable: true, unique: true })
+  username?: string
+
+  @Column({ type: 'text', nullable: true })
+  bio?: string
+
+  @Column({ type: 'boolean', default: true })
+  isPublic!: boolean
+
   @Column({ type: 'varchar', nullable: true })
   avatarUrl?: string
 

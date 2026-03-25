@@ -6,7 +6,7 @@ import { Exercise } from '../entities/Exercise.js'
 import { Set } from '../entities/Set.js'
 
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
-import { checkAndCreatePRNotifications, checkStreakMilestone } from '../services/notificationService.js'
+import { checkAndCreatePRNotifications, checkStreakMilestone, createFeedPostForWorkout } from '../services/notificationService.js'
 import { checkAndUnlockAchievements } from '../services/achievementService.js'
 import { checkWorkoutLimit, checkTemplateLimit, getUserPlanType, withUserLock } from '../services/limitService.js'
 import { PLAN_LIMITS } from '../config/planLimits.js'
@@ -418,6 +418,15 @@ router.post('/:id/complete', authenticate, async (req: AuthRequest, res) => {
       checkAndCreatePRNotifications(userId, workout.id).catch(err => console.error('PR notification job failed:', { userId, workoutId: workout.id, error: err }))
       checkStreakMilestone(userId).catch(err => console.error('Streak check job failed:', { userId, error: err }))
       checkAndUnlockAchievements(userId).catch(err => console.error('Achievement check failed:', { userId, error: err }))
+
+      // Auto-post to feed
+      createFeedPostForWorkout(
+        userId,
+        workout.name,
+        workout.duration,
+        workout.exercises?.length || 0,
+        workout.totalVolume
+      ).catch(err => console.error('Feed post creation failed:', { userId, error: err }))
 
       return { status: 200, body: { message: 'Séance terminée', workout: updatedWorkout } }
     })

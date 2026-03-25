@@ -34,7 +34,7 @@
             Compte
           </h2>
           <div class="space-y-1">
-            <NuxtLink to="/profile" class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors">
+            <NuxtLink to="/profile/edit" class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors">
               <span class="text-primary-800 dark:text-primary-200">Modifier mon profil</span>
               <svg class="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -42,6 +42,98 @@
             </NuxtLink>
             <NuxtLink to="/subscription" class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors">
               <span class="text-primary-800 dark:text-primary-200">Abonnement</span>
+              <svg class="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </NuxtLink>
+          </div>
+        </div>
+
+        <!-- Profil social -->
+        <div class="card-glass">
+          <h2 class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-5 flex items-center gap-3">
+            <div class="w-10 h-10 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+              <Icon name="lucide:at-sign" class="w-4 h-4 text-white" />
+            </div>
+            Profil social
+          </h2>
+          <div class="space-y-4 px-1">
+            <!-- Username -->
+            <div>
+              <label for="socialUsername" class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1.5">Nom d'utilisateur</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-primary-400 text-sm">@</span>
+                <input
+                  id="socialUsername"
+                  v-model="socialUsername"
+                  type="text"
+                  class="input-primary !pl-8"
+                  placeholder="mon_pseudo"
+                  @input="debouncedCheckUsername"
+                />
+              </div>
+              <p v-if="usernameChecking" class="text-xs text-primary-400 mt-1">Verification...</p>
+              <p v-else-if="usernameAvailable === true && socialUsername.length >= 3" class="text-xs text-green-500 mt-1">Nom d'utilisateur disponible</p>
+              <p v-else-if="usernameAvailable === false" class="text-xs text-red-500 mt-1">Nom d'utilisateur deja pris</p>
+            </div>
+
+            <!-- Bio -->
+            <div>
+              <label for="socialBio" class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1.5">Bio</label>
+              <textarea
+                id="socialBio"
+                v-model="socialBio"
+                rows="3"
+                class="input-primary resize-none"
+                placeholder="Parle de toi en quelques mots..."
+                maxlength="200"
+              ></textarea>
+              <p class="text-xs text-primary-400 text-right mt-0.5">{{ socialBio.length }}/200</p>
+            </div>
+
+            <!-- Public toggle -->
+            <div class="flex items-center justify-between py-1">
+              <div>
+                <span class="text-primary-800 dark:text-primary-200 text-sm">Profil public</span>
+                <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">Visible par tous les utilisateurs</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" v-model="socialIsPublic" class="sr-only peer" />
+                <div class="w-11 h-6 bg-primary-200 dark:bg-primary-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-sand-500 peer-checked:to-sand-600"></div>
+              </label>
+            </div>
+
+            <!-- Save button -->
+            <button
+              @click="saveSocialProfile"
+              :disabled="savingSocial"
+              class="btn-primary w-full py-2.5 text-sm font-semibold disabled:opacity-60"
+            >
+              {{ savingSocial ? 'Enregistrement...' : 'Enregistrer le profil social' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Gym Bros -->
+        <div class="card-glass">
+          <h2 class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-5 flex items-center gap-3">
+            <div class="w-10 h-10 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+              <Icon name="lucide:users" class="w-4 h-4 text-white" />
+            </div>
+            Gym Bros
+          </h2>
+          <div class="space-y-1">
+            <NuxtLink to="/friends" class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors">
+              <span class="text-primary-800 dark:text-primary-200">Liste des Gym Bros</span>
+              <div class="flex items-center gap-2">
+                <span v-if="pendingRequestsCount > 0" class="inline-flex items-center justify-center w-6 h-6 text-[10px] font-bold bg-red-500 text-white rounded-full">{{ pendingRequestsCount }}</span>
+                <svg class="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </div>
+            </NuxtLink>
+            <NuxtLink to="/feed" class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors">
+              <span class="text-primary-800 dark:text-primary-200">Feed d'activite</span>
               <svg class="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
               </svg>
@@ -366,6 +458,7 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth'
+import { useSocialApi } from '~/composables/useSocialApi'
 import { Capacitor } from '@capacitor/core'
 
 definePageMeta({
@@ -392,6 +485,52 @@ const isNativePlatform = ref(false)
 const showDeleteConfirm = ref(false)
 const deleting = ref(false)
 const exporting = ref(false)
+
+// Social profile
+const { updateProfile: updateSocialProfile, checkUsername, getRequests } = useSocialApi()
+const socialUsername = ref('')
+const socialBio = ref('')
+const socialIsPublic = ref(false)
+const savingSocial = ref(false)
+const usernameChecking = ref(false)
+const usernameAvailable = ref<boolean | null>(null)
+const pendingRequestsCount = ref(0)
+let usernameCheckTimeout: ReturnType<typeof setTimeout> | null = null
+
+const debouncedCheckUsername = () => {
+  usernameAvailable.value = null
+  if (usernameCheckTimeout) clearTimeout(usernameCheckTimeout)
+  if (socialUsername.value.length < 3) return
+  usernameCheckTimeout = setTimeout(async () => {
+    usernameChecking.value = true
+    try {
+      const result = await checkUsername(socialUsername.value) as any
+      usernameAvailable.value = result?.available ?? true
+    } catch {
+      usernameAvailable.value = null
+    } finally {
+      usernameChecking.value = false
+    }
+  }, 500)
+}
+
+const saveSocialProfile = async () => {
+  if (savingSocial.value) return
+  savingSocial.value = true
+  const toast = useToast()
+  try {
+    await updateSocialProfile({
+      username: socialUsername.value || undefined,
+      bio: socialBio.value || undefined,
+      isPublic: socialIsPublic.value
+    })
+    toast.success('Profil social mis a jour')
+  } catch (err: any) {
+    toast.error('Erreur', err?.data?.error || 'Impossible de mettre a jour le profil social')
+  } finally {
+    savingSocial.value = false
+  }
+}
 
 const exportCsv = async () => {
   exporting.value = true
@@ -560,7 +699,18 @@ onMounted(async () => {
     })
     if (user.reminderEnabled !== undefined) reminderEnabled.value = user.reminderEnabled
     if (user.inactivityThresholdDays) inactivityDays.value = user.inactivityThresholdDays
+    // Load social profile data from user
+    if (user.username) socialUsername.value = user.username
+    if (user.bio) socialBio.value = user.bio
+    if (user.isPublic !== undefined) socialIsPublic.value = user.isPublic
   } catch (err) { logger.error('Settings sync failed:', err) }
+
+  // Load pending friend requests count
+  try {
+    const reqData = await getRequests() as any
+    const pending = reqData?.received || reqData?.pending || []
+    pendingRequestsCount.value = Array.isArray(pending) ? pending.length : 0
+  } catch { pendingRequestsCount.value = 0 }
 })
 
 watch(weightUnit, (val) => {
