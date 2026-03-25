@@ -54,6 +54,40 @@
         <!-- Formulaire -->
         <div class="card-glass slide-up">
           <form @submit.prevent="handleSave" class="space-y-5">
+            <!-- Pseudo -->
+            <div>
+              <label for="username" class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1.5">Pseudo</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-primary-400 text-sm">@</span>
+                <input id="username" v-model="usernameInput" type="text" class="input-primary !pl-8" placeholder="ton_pseudo" />
+              </div>
+              <p v-if="usernameChecking" class="text-xs text-primary-400 mt-1">Verification...</p>
+              <p v-else-if="usernameAvailable === true && usernameInput.length >= 3" class="text-xs text-green-500 mt-1">Disponible</p>
+              <p v-else-if="usernameAvailable === false" class="text-xs text-red-500 mt-1">Deja pris</p>
+              <p v-else-if="usernameInput.length > 0 && usernameInput.length < 3" class="text-xs text-primary-400 mt-1">3 caracteres minimum</p>
+            </div>
+
+            <!-- Bio -->
+            <div>
+              <label for="bio" class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1.5">Bio</label>
+              <textarea id="bio" v-model="bioInput" rows="3" class="input-primary resize-none" placeholder="Parle de toi en quelques mots..." maxlength="200"></textarea>
+              <p class="text-xs text-primary-400 text-right mt-0.5">{{ bioInput.length }}/200</p>
+            </div>
+
+            <!-- Profil public -->
+            <div class="flex items-center justify-between py-1">
+              <div>
+                <span class="text-primary-800 dark:text-primary-200 text-sm">Profil public</span>
+                <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">Visible par tous les utilisateurs</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" v-model="isPublicInput" class="sr-only peer" />
+                <div class="w-11 h-6 bg-primary-200 dark:bg-primary-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-sand-500 peer-checked:to-sand-600"></div>
+              </label>
+            </div>
+
+            <div class="border-t border-primary-200 dark:border-primary-700 my-2"></div>
+
             <!-- Prenom et Nom -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -156,6 +190,7 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth'
+import { useSocialApi } from '~/composables/useSocialApi'
 
 definePageMeta({
   layout: false,
@@ -166,6 +201,7 @@ useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
 
 const authStore = useAuthStore()
 const { applyTheme } = useTheme()
+const { updateProfile: updateSocialProfile, checkUsername } = useSocialApi()
 
 const firstName = ref('')
 const lastName = ref('')
@@ -174,6 +210,34 @@ const selectedGender = ref<string | null>(null)
 const loading = ref(false)
 const error = ref('')
 const success = ref(false)
+
+// Social fields
+const usernameInput = ref('')
+const bioInput = ref('')
+const isPublicInput = ref(true)
+const usernameChecking = ref(false)
+const usernameAvailable = ref<boolean | null>(null)
+let usernameCheckTimeout: ReturnType<typeof setTimeout> | null = null
+const originalUsername = ref('')
+
+watch(usernameInput, (val) => {
+  usernameAvailable.value = null
+  const cleaned = val.toLowerCase().replace(/[^a-z0-9_]/g, '')
+  if (cleaned !== val) usernameInput.value = cleaned
+  if (cleaned.length < 3 || cleaned === originalUsername.value) return
+  if (usernameCheckTimeout) clearTimeout(usernameCheckTimeout)
+  usernameCheckTimeout = setTimeout(async () => {
+    usernameChecking.value = true
+    try {
+      const res = await checkUsername(cleaned) as any
+      usernameAvailable.value = res?.available === true
+    } catch {
+      usernameAvailable.value = null
+    } finally {
+      usernameChecking.value = false
+    }
+  }, 500)
+})
 
 const genders = [
   { value: 'male', label: 'Homme' },
@@ -248,6 +312,16 @@ const handleSave = async () => {
 
     const result = await authStore.updateProfile(data)
 
+    // Save social profile (username, bio, isPublic)
+    const socialData: Record<string, any> = {}
+    if (usernameInput.value && usernameInput.value !== originalUsername.value) socialData.username = usernameInput.value
+    if (bioInput.value !== undefined) socialData.bio = bioInput.value
+    socialData.isPublic = isPublicInput.value
+    if (Object.keys(socialData).length > 0) {
+      await updateSocialProfile(socialData)
+      originalUsername.value = usernameInput.value
+    }
+
     if (result.success) {
       success.value = true
       applyTheme()
@@ -267,5 +341,11 @@ onMounted(async () => {
   lastName.value = authStore.user?.lastName || ''
   selectedGoal.value = authStore.user?.goal || null
   selectedGender.value = authStore.user?.gender || null
+  // Social fields
+  const user = authStore.user as any
+  usernameInput.value = user?.username || ''
+  originalUsername.value = user?.username || ''
+  bioInput.value = user?.bio || ''
+  isPublicInput.value = user?.isPublic !== false
 })
 </script>

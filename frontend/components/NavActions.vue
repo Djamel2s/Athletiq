@@ -1,10 +1,5 @@
 <template>
   <div class="flex items-center space-x-3">
-    <!-- Settings -->
-    <NuxtLink to="/settings" class="p-2 rounded-xl hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors">
-      <Icon name="lucide:settings" class="w-5 h-5 text-primary-600 dark:text-primary-400" />
-    </NuxtLink>
-
     <!-- Notifications -->
     <UiNotificationBell />
 
