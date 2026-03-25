@@ -251,17 +251,11 @@ export async function seedTestAccounts() {
   const hashedPassword = await bcrypt.hash('Athletiq!Test2025', 12)
 
   for (const profile of ACCOUNTS) {
-    // ── Clean existing if present ──
+    // ── Skip if already exists ──
     const existing = await userRepo.findOne({ where: { email: profile.email } })
     if (existing) {
-      await subRepo.delete({ userId: existing.id })
-      await achievementRepo.delete({ userId: existing.id })
-      await goalRepo.delete({ userId: existing.id })
-      await notifRepo.delete({ userId: existing.id })
-      await bodyStatRepo.delete({ userId: existing.id })
-      await measurementRepo.delete({ userId: existing.id })
-      await workoutRepo.delete({ userId: existing.id })
-      await userRepo.delete(existing.id)
+      console.log(`  Skipping ${profile.email} (already exists)`)
+      continue
     }
 
     // ── Create user ──

@@ -117,18 +117,11 @@ export async function seedDemoAccount() {
   const notifRepo = AppDataSource.getRepository(Notification)
   const subRepo = AppDataSource.getRepository(Subscription)
 
-  // ── Check if demo user already exists ──
+  // ── Check if demo user already exists — skip if so ──
   const existingUser = await userRepo.findOne({ where: { email: 'demo@athletiq.fr' } })
   if (existingUser) {
-    // Delete all related data first
-    console.log('  Cleaning existing demo data...')
-    await subRepo.delete({ userId: existingUser.id })
-    await workoutRepo.delete({ userId: existingUser.id })
-    await bodyStatRepo.delete({ userId: existingUser.id })
-    await measurementRepo.delete({ userId: existingUser.id })
-    await goalRepo.delete({ userId: existingUser.id })
-    await notifRepo.delete({ userId: existingUser.id })
-    await userRepo.delete(existingUser.id)
+    console.log('  Demo account already exists, skipping.')
+    return
   }
 
   // ── Create demo user ──
