@@ -89,8 +89,7 @@ export default defineNuxtConfig({
       ]
     },
     workbox: {
-      // Pas de navigateFallback car SSR (les pages sont servies par le serveur)
-      navigateFallback: undefined,
+      navigateFallback: '/200.html',
       // Cache les ressources statiques (CSS, JS, images)
       globPatterns: ['**/*.{js,css,png,svg,ico,woff2}'],
       // Strategies runtime
