@@ -89,7 +89,7 @@ export default defineNuxtConfig({
       ]
     },
     workbox: {
-      navigateFallback: '/200.html',
+      navigateFallback: undefined,
       // Cache les ressources statiques (CSS, JS, images)
       globPatterns: ['**/*.{js,css,png,svg,ico,woff2}'],
       // Strategies runtime
