@@ -14,6 +14,7 @@ interface AuthState {
   user: User | null
   token: string | null
   isAuthenticated: boolean
+  isInitializing: boolean
   _refreshPromise: Promise<boolean> | null
 }
 
@@ -22,6 +23,7 @@ export const useAuthStore = defineStore('auth', {
     user: null,
     token: null,
     isAuthenticated: false,
+    isInitializing: true,
     _refreshPromise: null
   }),
 
@@ -244,10 +246,14 @@ export const useAuthStore = defineStore('auth', {
     async initAuth() {
       if (!process.client) return
 
+      this.isInitializing = true
       this.loadUserFromLocalStorage()
 
       // Only attempt refresh if we have cached user data (i.e., was previously logged in)
-      if (!this.user) return
+      if (!this.user) {
+        this.isInitializing = false
+        return
+      }
 
       // Try to get a fresh access token via the refresh cookie
       const success = await this.refreshAccessToken()
@@ -259,6 +265,7 @@ export const useAuthStore = defineStore('auth', {
         this.token = null
         this.isAuthenticated = false
       }
+      this.isInitializing = false
     }
   }
 })

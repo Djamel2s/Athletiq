@@ -203,18 +203,19 @@ const authStore = useAuthStore()
 const { applyTheme } = useTheme()
 const { updateProfile: updateSocialProfile, checkUsername } = useSocialApi()
 
-const firstName = ref('')
-const lastName = ref('')
-const selectedGoal = ref<string | null>(null)
-const selectedGender = ref<string | null>(null)
+const firstName = ref(authStore.user?.firstName || '')
+const lastName = ref(authStore.user?.lastName || '')
+const selectedGoal = ref<string | null>(authStore.user?.goal || null)
+const selectedGender = ref<string | null>(authStore.user?.gender || null)
 const loading = ref(false)
 const error = ref('')
 const success = ref(false)
 
 // Social fields
-const usernameInput = ref('')
-const bioInput = ref('')
-const isPublicInput = ref(true)
+const _user = authStore.user as any
+const usernameInput = ref(_user?.username || '')
+const bioInput = ref(_user?.bio || '')
+const isPublicInput = ref(_user?.isPublic !== false)
 const usernameChecking = ref(false)
 const usernameAvailable = ref<boolean | null>(null)
 let usernameCheckTimeout: ReturnType<typeof setTimeout> | null = null
@@ -336,16 +337,7 @@ const handleSave = async () => {
   }
 }
 
-onMounted(async () => {
-  firstName.value = authStore.user?.firstName || ''
-  lastName.value = authStore.user?.lastName || ''
-  selectedGoal.value = authStore.user?.goal || null
-  selectedGender.value = authStore.user?.gender || null
-  // Social fields
-  const user = authStore.user as any
-  usernameInput.value = user?.username || ''
-  originalUsername.value = user?.username || ''
-  bioInput.value = user?.bio || ''
-  isPublicInput.value = user?.isPublic !== false
+onMounted(() => {
+  originalUsername.value = (_user?.username || '')
 })
 </script>

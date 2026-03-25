@@ -62,9 +62,15 @@
             </div>
           </div>
 
-          <!-- Username (pas nom/prenom pour la confidentialite) -->
-          <h1 v-if="profileData?.username" class="text-2xl font-bold text-primary-900 dark:text-primary-100">@{{ profileData.username }}</h1>
-          <h1 v-else class="text-2xl font-bold text-primary-900 dark:text-primary-100">{{ authStore.fullName }}</h1>
+          <!-- Username + privacy badge -->
+          <div class="flex items-center justify-center gap-2">
+            <h1 v-if="profileData?.username" class="text-2xl font-bold text-primary-900 dark:text-primary-100">@{{ profileData.username }}</h1>
+            <h1 v-else class="text-2xl font-bold text-primary-900 dark:text-primary-100">{{ authStore.fullName }}</h1>
+            <span v-if="profileData?.isPublic === false" class="inline-flex items-center gap-1 text-xs text-primary-400 dark:text-primary-500">
+              <Icon name="lucide:lock" class="w-3.5 h-3.5" />
+              Prive
+            </span>
+          </div>
           <p v-if="profileData?.bio" class="text-sm text-primary-500 dark:text-primary-400 mt-1">{{ profileData.bio }}</p>
         </div>
 

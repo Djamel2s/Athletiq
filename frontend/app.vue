@@ -1,6 +1,8 @@
 <template>
   <div class="min-h-screen bg-dark-900">
-    <NuxtPage />
+    <AuthLoader>
+      <NuxtPage />
+    </AuthLoader>
     <UiToastContainer />
   </div>
 </template>
