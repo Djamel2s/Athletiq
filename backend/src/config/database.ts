@@ -40,7 +40,7 @@ export const AppDataSource = new DataSource({
   host: process.env.DATABASE_URL ? undefined : (process.env.DB_HOST || '127.0.0.1'),
   port: process.env.DATABASE_URL ? undefined : Number(process.env.DB_PORT || 5433),
   username: process.env.DATABASE_URL ? undefined : (process.env.DB_USER || 'postgres'),
-  password: process.env.DATABASE_URL ? undefined : (process.env.DB_PASSWORD || 'postgres'),
+  password: process.env.DATABASE_URL ? undefined : (process.env.DB_PASSWORD || (isProduction ? (() => { throw new Error('DB_PASSWORD is required in production') })() : 'postgres')),
   database: process.env.DATABASE_URL ? undefined : (process.env.DB_NAME || 'athletiq'),
   schema: 'public',
   ssl: isProduction ? { rejectUnauthorized: true } : false,

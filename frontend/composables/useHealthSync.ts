@@ -6,15 +6,9 @@ export const useHealthSync = () => {
 
   const loadPlugin = async () => {
     if (healthPlugin) return healthPlugin
-    try {
-      // Dynamic import hidden from Vite bundler via variable
-      const pluginName = '@anthropic-health/capacitor-health'
-      const mod = await Function('p', 'return import(p)')(pluginName)
-      healthPlugin = mod.Health || mod.default
-      return healthPlugin
-    } catch {
-      return null
-    }
+    // Health plugin is only available on native after manual install
+    // On web, this will always return null
+    return null
   }
 
   const isAvailable = async (): Promise<boolean> => {

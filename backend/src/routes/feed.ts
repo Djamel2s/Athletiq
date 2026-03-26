@@ -101,16 +101,39 @@ router.post('/:postId/react', authenticate, async (req: AuthRequest, res) => {
   try {
     const postId = parseId(req.params.postId)
 
+    const userId = req.user!.id
     const post = await feedPostRepo().findOne({ where: { id: postId } })
     if (!post) {
       return res.status(404).json({ error: 'Post not found' })
     }
 
-    // Simple increment — in a production app you'd track who reacted to allow toggle
-    post.reactions = (post.reactions || 0) + 1
+    // Check if user can react (own post or friend's post)
+    if (post.userId !== userId) {
+      const friendship = await AppDataSource.getRepository(Friendship).findOne({
+        where: [
+          { requesterId: userId, addresseeId: post.userId, status: 'ACCEPTED' },
+          { requesterId: post.userId, addresseeId: userId, status: 'ACCEPTED' }
+        ]
+      })
+      if (!friendship) {
+        return res.status(403).json({ error: 'Not authorized to react to this post' })
+      }
+    }
+
+    // Toggle reaction: add if not reacted, remove if already reacted
+    const reactedBy = post.reactedBy || []
+    const alreadyReacted = reactedBy.includes(userId)
+
+    if (alreadyReacted) {
+      post.reactedBy = reactedBy.filter(id => id !== userId)
+      post.reactions = Math.max(0, (post.reactions || 0) - 1)
+    } else {
+      post.reactedBy = [...reactedBy, userId]
+      post.reactions = (post.reactions || 0) + 1
+    }
     await feedPostRepo().save(post)
 
-    res.json({ message: 'Reaction added', reactions: post.reactions })
+    res.json({ reacted: !alreadyReacted, reactions: post.reactions })
   } catch (error) {
     console.error('Error reacting to post:', error)
     res.status(500).json({ error: 'Internal server error' })

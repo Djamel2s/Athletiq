@@ -18,7 +18,10 @@ export class FeedPost {
   data?: any  // Flexible JSON for different post types
 
   @Column({ type: 'int', default: 0 })
-  reactions!: number  // Simple reaction count
+  reactions!: number
+
+  @Column({ type: 'json', nullable: true, default: '[]' })
+  reactedBy!: number[]  // User IDs who reacted
 
   @CreateDateColumn()
   createdAt!: Date

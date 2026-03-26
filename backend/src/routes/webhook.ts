@@ -41,7 +41,7 @@ if (process.env.NODE_ENV === 'production' && !process.env.STRIPE_WEBHOOK_SECRET)
 // POST /api/webhook/stripe — Reçoit les événements Stripe
 // IMPORTANT : ce endpoint utilise le body RAW (pas JSON parsé)
 // ============================================================
-router.post('/stripe', express.raw({ type: 'application/json' }), async (req, res) => {
+router.post('/stripe', express.raw({ type: 'application/json', limit: '1mb' }), async (req, res) => {
   if (!stripe || !WEBHOOK_SECRET) {
     return res.status(503).json({ error: 'Webhook non configuré' })
   }

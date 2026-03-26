@@ -75,7 +75,8 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
   try {
     const goals = await AppDataSource.getRepository(UserGoal).find({
       where: { userId: req.user!.id },
-      order: { createdAt: 'DESC' }
+      order: { createdAt: 'DESC' },
+      take: 100
     })
 
     // Pre-fetch latest BodyStat once to avoid N+1 queries for WEIGHT/BODY_FAT goals

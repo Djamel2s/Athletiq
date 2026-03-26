@@ -21,10 +21,20 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
     const existing = await repo.findOne({ where: { token } })
 
     if (existing) {
-      // Update ownership if token belongs to a different user
-      existing.userId = userId
-      existing.platform = platform || existing.platform
-      await repo.save(existing)
+      if (existing.userId !== userId) {
+        // Token belongs to another device/user, delete old and create new
+        await repo.delete(existing.id)
+        const fcmToken = repo.create({
+          userId,
+          token,
+          platform: platform || 'android'
+        })
+        await repo.save(fcmToken)
+      } else {
+        // Same user, just update platform
+        existing.platform = platform || existing.platform
+        await repo.save(existing)
+      }
     } else {
       const fcmToken = repo.create({
         userId,

@@ -156,8 +156,8 @@ router.post('/login', async (req, res) => {
 // Refresh token
 router.post('/refresh', async (req, res) => {
   try {
-    // Lire le refresh token depuis le cookie httpOnly, ou fallback sur le body (rétrocompatibilité)
-    const refreshToken = req.cookies?.refresh_token || req.body?.refreshToken
+    // Lire le refresh token depuis le cookie httpOnly uniquement
+    const refreshToken = req.cookies?.refresh_token
 
     if (!refreshToken) {
       return res.status(401).json({ error: 'Refresh token manquant' })

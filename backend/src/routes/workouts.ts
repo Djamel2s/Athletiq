@@ -12,8 +12,11 @@ import { checkWorkoutLimit, checkTemplateLimit, getUserPlanType, withUserLock } 
 import { PLAN_LIMITS } from '../config/planLimits.js'
 import { MoreThanOrEqual, Not, IsNull } from 'typeorm'
 import { parseId } from '../utils/validation.js'
+import rateLimit from 'express-rate-limit'
 
 const router = express.Router()
+
+const exportLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 5, message: { error: 'Too many export requests' } })
 
 // Repositories
 const workoutRepo = AppDataSource.getRepository(Workout)
@@ -109,7 +112,7 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
 })
 
 // Export workouts as CSV
-router.get('/export/csv', authenticate, async (req: AuthRequest, res) => {
+router.get('/export/csv', authenticate, exportLimiter, async (req: AuthRequest, res) => {
   try {
     const workouts = await workoutRepo.find({
       where: { userId: req.user!.id, completedAt: Not(IsNull()) },

@@ -203,8 +203,14 @@ export const useAuthStore = defineStore('auth', {
     },
 
     saveUserToLocalStorage() {
-      if (process.client) {
-        localStorage.setItem('auth_user', JSON.stringify(this.user))
+      if (process.client && this.user) {
+        localStorage.setItem('auth_user', JSON.stringify({
+          id: this.user.id,
+          firstName: this.user.firstName,
+          avatarUrl: this.user.avatarUrl,
+          goal: this.user.goal,
+          gender: this.user.gender
+        }))
       }
     },
 

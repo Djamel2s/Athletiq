@@ -29,13 +29,13 @@ export default defineNuxtPlugin(async () => {
       await registerToken(token.value, platform)
       localStorage.setItem('fcmToken', token.value)
     } catch (error) {
-      console.error('Failed to register FCM token:', error)
+      console.warn('Failed to register FCM token:', error)
     }
   })
 
   // On registration error
   PushNotifications.addListener('registrationError', (error) => {
-    console.error('Push registration error:', error)
+    console.warn('Push registration error:', error)
   })
 
   // On push received in foreground
