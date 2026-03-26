@@ -84,6 +84,27 @@
           </button>
         </div>
 
+        <!-- Group workout -->
+        <div class="mb-6 slide-up">
+          <button
+            @click="navigateTo('/workouts/session')"
+            class="w-full card-glass hover:shadow-xl hover:border-sand-500/40 dark:hover:border-sand-600/30 transition-all cursor-pointer text-left border-2 border-primary-200/60 dark:border-primary-700/60"
+          >
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-gradient-primary rounded-2xl flex items-center justify-center flex-shrink-0">
+                <Icon name="lucide:users" class="w-6 h-6 text-white" />
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-base font-bold text-primary-900 dark:text-primary-100">Entrainement en groupe</p>
+                <p class="text-sm text-primary-500 dark:text-primary-400">Entraine-toi avec tes Gym Bros</p>
+              </div>
+              <svg class="w-5 h-5 text-primary-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </button>
+        </div>
+
         <!-- Workouts Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 slide-up">
           <div
