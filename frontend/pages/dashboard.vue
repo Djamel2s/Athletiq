@@ -16,8 +16,15 @@
       </div>
     </nav>
 
+    <!-- Loading -->
+    <div v-if="!pageReady" class="pt-24 md:pt-32 pb-28 lg:pb-20 flex items-center justify-center min-h-[60vh]">
+      <div class="text-center">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary-200 dark:border-primary-700 border-t-sand-500"></div>
+      </div>
+    </div>
+
     <!-- Contenu principal -->
-    <div class="pt-24 md:pt-32 pb-28 lg:pb-20 max-w-7xl mx-auto">
+    <div v-else class="pt-24 md:pt-32 pb-28 lg:pb-20 max-w-7xl mx-auto">
       <div class="flex px-4 md:px-4">
         <!-- Vertical Sidebar Navigation -->
         <div class="hidden lg:block lg:mr-8 flex-shrink-0">
@@ -359,6 +366,7 @@ const authStore = useAuthStore()
 const workoutStore = useWorkoutStore()
 const statsApi = useStatsApi()
 
+const pageReady = ref(false)
 const recoveryData = ref<{ score: number; muscleRecovery: Array<{ muscle: string; score: number; daysSince: number; lastVolume: number }>; recommendation: string } | null>(null)
 
 // ── Planned workouts ──
@@ -420,6 +428,7 @@ const handleCancelPlanned = async (id: number) => {
 onMounted(async () => {
   // Charger les workouts récents
   await workoutStore.fetchWorkouts()
+  pageReady.value = true
 
   // Charger les seances planifiees (en arrière-plan)
   loadPlannedWorkouts()

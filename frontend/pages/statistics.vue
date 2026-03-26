@@ -14,8 +14,13 @@
       </div>
     </nav>
 
+    <!-- Loading -->
+    <div v-if="!pageReady" class="pt-24 md:pt-32 pb-28 lg:pb-20 flex items-center justify-center min-h-[60vh]">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary-200 dark:border-primary-700 border-t-sand-500"></div>
+    </div>
+
     <!-- Main Content -->
-    <div class="pt-24 md:pt-32 px-4 md:px-6 pb-28 lg:pb-20 max-w-7xl mx-auto">
+    <div v-else class="pt-24 md:pt-32 px-4 md:px-6 pb-28 lg:pb-20 max-w-7xl mx-auto">
       <!-- Page Header -->
       <div class="fade-in text-center mb-8">
         <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2">Statistiques</h1>
@@ -414,6 +419,7 @@ import type { CreateGoalPayload } from '~/types/goals'
 const workoutStore = useWorkoutStore()
 const authStore = useAuthStore()
 const goalStore = useGoalStore()
+const pageReady = ref(false)
 const bodyStore = useBodyStore()
 const subscriptionStore = useSubscriptionStore()
 const { isPremium, canCreateGoal, goalUsageText, fetchUsage } = useSubscriptionLimits()
@@ -438,6 +444,7 @@ onMounted(async () => {
     subscriptionStore.fetchSubscription(),
     fetchUsage()
   ])
+  pageReady.value = true
 })
 
 // Calculate statistics — destructure all computeds so Vue auto-unwraps them in template
