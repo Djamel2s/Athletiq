@@ -29,10 +29,17 @@
             Templates : {{ templateUsageText }}
           </div>
         </div>
-        <button @click="handleCreateWorkout" :disabled="!canCreateTemplate && !isPremium" class="btn-primary text-sm md:text-base disabled:opacity-50">
-          <span class="hidden md:inline">+ Créer un workout</span>
-          <span class="md:hidden">+ Créer</span>
-        </button>
+        <div class="flex items-center gap-2">
+          <button @click="navigateTo('/workouts/session')" class="btn-outline text-sm md:text-base inline-flex items-center gap-1.5">
+            <Icon name="lucide:users" class="w-4 h-4" />
+            <span class="hidden md:inline">Entrainement en groupe</span>
+            <span class="md:hidden">Groupe</span>
+          </button>
+          <button @click="handleCreateWorkout" :disabled="!canCreateTemplate && !isPremium" class="btn-primary text-sm md:text-base disabled:opacity-50">
+            <span class="hidden md:inline">+ Créer un workout</span>
+            <span class="md:hidden">+ Créer</span>
+          </button>
+        </div>
       </div>
 
       <!-- Tabs -->

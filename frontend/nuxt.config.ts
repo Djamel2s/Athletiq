@@ -162,11 +162,12 @@ export default defineNuxtConfig({
         'X-Frame-Options': 'DENY',
         'X-XSS-Protection': '0',
         'Referrer-Policy': 'strict-origin-when-cross-origin',
-        'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://*.athletiq.fr https://*.stripe.com; frame-src https://*.stripe.com; object-src 'none'; base-uri 'self'"
+        'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://*.athletiq.fr wss://*.athletiq.fr https://*.stripe.com; frame-src https://*.stripe.com; object-src 'none'; base-uri 'self'"
       }
     },
     '/dashboard/**': { ssr: false },
     '/workouts/**': { ssr: false },
+    '/workouts/session': { ssr: false },
     '/settings': { ssr: false },
     '/profile': { ssr: false },
     '/profile/**': { ssr: false },

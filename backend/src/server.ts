@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 // IMPORTANT: Charger .env AVANT tous les autres imports
 dotenv.config()
 
+import http from 'http'
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
@@ -33,8 +34,10 @@ import profileRoutes from './routes/profile.js'
 import socialRoutes from './routes/social.js'
 import feedRoutes from './routes/feed.js'
 import plannedWorkoutRoutes from './routes/plannedWorkouts.js'
+import sessionRoutes from './routes/sessions.js'
 import { seedPrograms } from './routes/programs.js'
 import { startScheduler } from './services/schedulerService.js'
+import { setupWebSocket } from './websocket.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -118,6 +121,7 @@ app.use('/api/profile', apiLimiter, profileRoutes)
 app.use('/api/social', apiLimiter, socialRoutes)
 app.use('/api/feed', apiLimiter, feedRoutes)
 app.use('/api/planned-workouts', apiLimiter, plannedWorkoutRoutes)
+app.use('/api/sessions', apiLimiter, sessionRoutes)
 
 // 404 handler
 app.use((req, res) => {
@@ -137,7 +141,10 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
   })
 })
 
-app.listen(PORT, () => {
+const httpServer = http.createServer(app)
+setupWebSocket(httpServer)
+
+httpServer.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`)
   console.log(`📊 Health check: http://localhost:${PORT}/health`)
 })
