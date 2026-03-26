@@ -73,7 +73,7 @@ router.delete('/:workoutId', authenticate, async (req: AuthRequest, res) => {
 router.get('/view/:token', async (req, res) => {
   try {
     const { token } = req.params
-    if (!token || token.length < 8 || token.length > 100) return res.status(400).json({ error: 'Token invalide' })
+    if (!token || !/^[A-Za-z0-9_-]{6,20}$/.test(token)) return res.status(400).json({ error: 'Token invalide' })
 
     const workout = await workoutRepo.findOne({
       where: { shareToken: token, isTemplate: true },
@@ -131,7 +131,7 @@ router.get('/view/:token', async (req, res) => {
 router.post('/import/:token', authenticate, async (req: AuthRequest, res) => {
   try {
     const { token } = req.params
-    if (!token || token.length < 8 || token.length > 100) return res.status(400).json({ error: 'Token invalide' })
+    if (!token || !/^[A-Za-z0-9_-]{6,20}$/.test(token)) return res.status(400).json({ error: 'Token invalide' })
 
     const userId = req.user!.id
 

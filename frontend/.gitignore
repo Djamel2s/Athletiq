@@ -22,3 +22,7 @@ logs
 .env
 .env.*
 !.env.example
+
+# Firebase config files
+android/app/google-services.json
+ios/App/App/GoogleService-Info.plist

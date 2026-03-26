@@ -18,7 +18,7 @@ const userRepo = AppDataSource.getRepository(User)
 // ============================================================
 router.post('/verify/send', authenticate, async (req: AuthRequest, res) => {
   try {
-    const user = await userRepo.findOne({ where: { id: req.userId } })
+    const user = await userRepo.findOne({ where: { id: req.user!.id } })
     if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' })
 
     if (user.emailVerified) {

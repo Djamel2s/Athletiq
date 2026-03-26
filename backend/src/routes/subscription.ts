@@ -37,19 +37,19 @@ if (process.env.NODE_ENV === 'production' && !PRICES.monthly) {
 router.get('/', authenticate, async (req: AuthRequest, res) => {
   try {
     // Vérifier que l'utilisateur existe
-    const user = await userRepo.findOne({ where: { id: req.userId } })
+    const user = await userRepo.findOne({ where: { id: req.user!.id } })
     if (!user) {
       return res.status(401).json({ error: 'Utilisateur non trouvé' })
     }
 
     let subscription = await subscriptionRepo.findOne({
-      where: { userId: req.userId }
+      where: { userId: req.user!.id }
     })
 
     // Si pas d'abonnement, créer un essai gratuit
     if (!subscription) {
       subscription = subscriptionRepo.create({
-        userId: req.userId!,
+        userId: req.user!.id,
         plan: SubscriptionPlan.FREE_TRIAL,
         status: SubscriptionStatus.TRIAL,
         trialStartDate: new Date(),
@@ -173,11 +173,11 @@ router.post('/checkout', authenticate, async (req: AuthRequest, res) => {
       return res.status(400).json({ error: 'Plan invalide ou non configuré' })
     }
 
-    const user = await userRepo.findOne({ where: { id: req.userId } })
+    const user = await userRepo.findOne({ where: { id: req.user!.id } })
     if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' })
 
     // Récupérer ou créer le customer Stripe
-    let subscription = await subscriptionRepo.findOne({ where: { userId: req.userId } })
+    let subscription = await subscriptionRepo.findOne({ where: { userId: req.user!.id } })
     let customerId = subscription?.stripeCustomerId
 
     if (!customerId) {
@@ -226,7 +226,7 @@ router.post('/portal', authenticate, async (req: AuthRequest, res) => {
       return res.status(503).json({ error: 'Système de paiement non configuré' })
     }
 
-    const subscription = await subscriptionRepo.findOne({ where: { userId: req.userId } })
+    const subscription = await subscriptionRepo.findOne({ where: { userId: req.user!.id } })
     if (!subscription?.stripeCustomerId) {
       return res.status(400).json({ error: 'Pas d\'abonnement actif' })
     }
@@ -252,7 +252,7 @@ router.post('/cancel', authenticate, async (req: AuthRequest, res) => {
       return res.status(503).json({ error: 'Système de paiement non configuré' })
     }
 
-    const subscription = await subscriptionRepo.findOne({ where: { userId: req.userId } })
+    const subscription = await subscriptionRepo.findOne({ where: { userId: req.user!.id } })
     if (!subscription?.stripeSubscriptionId) {
       return res.status(400).json({ error: 'Pas d\'abonnement actif' })
     }

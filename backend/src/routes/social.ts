@@ -1,4 +1,5 @@
 import express from 'express'
+import rateLimit from 'express-rate-limit'
 import { AppDataSource } from '../config/database.js'
 import { User } from '../entities/User.js'
 import { Friendship } from '../entities/Friendship.js'
@@ -263,8 +264,17 @@ router.get('/requests', authenticate, async (req: AuthRequest, res) => {
   }
 })
 
+// Rate limiter for search endpoint
+const searchLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 10,
+  message: { error: 'Too many search requests, please try again later' },
+  standardHeaders: true,
+  legacyHeaders: false
+})
+
 // GET /api/social/search?q=query — search users
-router.get('/search', authenticate, async (req: AuthRequest, res) => {
+router.get('/search', authenticate, searchLimiter, async (req: AuthRequest, res) => {
   try {
     const userId = req.user!.id
     const q = (req.query.q as string || '').trim()

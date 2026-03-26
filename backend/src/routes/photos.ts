@@ -134,6 +134,19 @@ router.get('/timelapse', authenticate, async (req: AuthRequest, res) => {
       query.andWhere('workout.date <= :endDate', { endDate: d })
     }
 
+    // Validate max date range of 730 days (2 years)
+    if (startDate && endDate) {
+      const start = new Date(startDate as string)
+      const end = new Date(endDate as string)
+      const diffDays = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
+      if (diffDays > 730) {
+        return res.status(400).json({ error: 'La plage de dates ne peut pas dépasser 2 ans (730 jours)' })
+      }
+      if (diffDays < 0) {
+        return res.status(400).json({ error: 'La date de début doit être antérieure à la date de fin' })
+      }
+    }
+
     const limit = Math.min(Math.max(parseInt(req.query.limit as string, 10) || 20, 1), 100)
     const offset = Math.max(parseInt(req.query.offset as string, 10) || 0, 0)
 
