@@ -39,9 +39,19 @@ function extractSessionCode(data: any): string | null {
 }
 
 export function setupWebSocket(httpServer: HttpServer) {
+  const isProduction = process.env.NODE_ENV === 'production'
   const io = new SocketServer(httpServer, {
     cors: {
-      origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3000'],
+      origin: (origin, callback) => {
+        const allowed = process.env.CORS_ORIGIN
+        if (!origin || (allowed && origin === allowed)) {
+          callback(null, true)
+        } else if (!allowed && !isProduction && origin?.match(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/)) {
+          callback(null, true)
+        } else {
+          callback(new Error('Not allowed by CORS'))
+        }
+      },
       credentials: true
     }
   })
@@ -227,23 +237,23 @@ export function setupWebSocket(httpServer: HttpServer) {
       // Clean up rate limit entry
       socketRateLimits.delete(socket.id)
 
-      // Remove from all session rooms
-      for (const [code, sockets] of sessionRooms) {
-        sockets.delete(socket.id)
-        if (sockets.size === 0) {
-          sessionRooms.delete(code)
-          sessionParticipants.delete(code)
-        } else {
-          io.to(`session:${code}`).emit('session:participant-disconnected', {
-            userId: socket.data.userId
-          })
-        }
-      }
-
-      // Remove from participant tracking
-      if (socket.data.sessionCodes) {
-        for (const code of socket.data.sessionCodes) {
-          sessionParticipants.get(code)?.delete(socket.data.userId)
+      // Remove from all session rooms and participant tracking
+      const codes = socket.data.sessionCodes || []
+      for (const code of codes) {
+        // Remove socket from room
+        const sockets = sessionRooms.get(code)
+        if (sockets) {
+          sockets.delete(socket.id)
+          if (sockets.size === 0) {
+            sessionRooms.delete(code)
+            sessionParticipants.delete(code)
+          } else {
+            // Remove from participant tracking
+            sessionParticipants.get(code)?.delete(socket.data.userId)
+            io.to(`session:${code}`).emit('session:participant-disconnected', {
+              userId: socket.data.userId
+            })
+          }
         }
       }
     })

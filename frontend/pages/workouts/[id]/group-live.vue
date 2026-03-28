@@ -867,7 +867,8 @@ const setupSocket = async () => {
   })
 
   socket.on('session:participant-disconnected', (data: any) => {
-    disconnectedParticipantName.value = data.name || 'Un participant'
+    const p = participants.value.find((pp: any) => pp.userId === data.userId)
+    disconnectedParticipantName.value = p?.firstName || p?.username || 'Un participant'
     showDisconnectWarning.value = true
     isPaused.value = true
     pauseReason.value = `${disconnectedParticipantName.value} s'est deconnecte`
