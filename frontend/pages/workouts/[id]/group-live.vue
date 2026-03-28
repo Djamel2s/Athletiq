@@ -657,7 +657,7 @@ const validateCurrentSet = async () => {
   const socket = getSocket()
   if (socket) {
     socket.emit('session:set-validated', {
-      sessionId: sessionId.value,
+      sessionCode: sessionCode.value,
       userId: authStore.user?.id,
       exerciseIndex: currentExerciseIndex.value,
       setNumber: currentSetNumber.value,
@@ -743,7 +743,7 @@ const moveTurnToNext = () => {
   const socket = getSocket()
   if (socket) {
     socket.emit('session:turn-change', {
-      sessionId: sessionId.value,
+      sessionCode: sessionCode.value,
       turnIndex: nextIndex,
       turnUserId: activeParticipants.value[nextIndex]?.userId
     })
@@ -757,7 +757,7 @@ const handleMyFinished = () => {
   const socket = getSocket()
   if (socket) {
     socket.emit('session:participant-finished', {
-      sessionId: sessionId.value,
+      sessionCode: sessionCode.value,
       userId: authStore.user?.id
     })
   }
@@ -818,7 +818,7 @@ const setupSocket = async () => {
   const socket = await connect(authStore.token)
   if (!socket) return
 
-  socket.emit('session:join', { sessionId: sessionId.value })
+  socket.emit('session:join', { sessionCode: sessionCode.value })
 
   socket.on('session:set-validated', (data: any) => {
     // Update the participant's state
@@ -884,7 +884,7 @@ const setupSocket = async () => {
     const me = participants.value.find(p => p.userId === authStore.user?.id)
     if (me && socket.connected) {
       socket.emit('session:timer-update', {
-        sessionId: sessionId.value,
+        sessionCode: sessionCode.value,
         userId: authStore.user?.id,
         restRemaining: myRestRemaining.value
       })

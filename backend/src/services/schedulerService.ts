@@ -1,6 +1,7 @@
 import { AppDataSource } from '../config/database.js'
 import { User } from '../entities/User.js'
 import { Workout } from '../entities/Workout.js'
+import { WorkoutSession } from '../entities/WorkoutSession.js'
 import { Notification, NotificationType } from '../entities/Notification.js'
 import { createNotification } from './notificationService.js'
 import { sendPushToUser } from './pushService.js'
@@ -121,8 +122,30 @@ async function checkInactivity() {
   }
 }
 
+/**
+ * Session cleanup: runs every hour.
+ * Deletes completed sessions older than 7 days and
+ * waiting/paused sessions older than 24 hours.
+ */
+async function cleanupSessions() {
+  try {
+    const sessionRepo = AppDataSource.getRepository(WorkoutSession)
+    // Delete completed sessions older than 7 days
+    await sessionRepo.createQueryBuilder().delete()
+      .where('status = :completed AND "createdAt" < NOW() - INTERVAL \'7 days\'', { completed: 'COMPLETED' })
+      .execute()
+    // Delete waiting/paused sessions older than 24 hours
+    await sessionRepo.createQueryBuilder().delete()
+      .where('status IN (:...statuses) AND "createdAt" < NOW() - INTERVAL \'24 hours\'', { statuses: ['WAITING', 'PAUSED'] })
+      .execute()
+  } catch (err) {
+    console.error('[Scheduler] Session cleanup error:', err)
+  }
+}
+
 let reminderInterval: ReturnType<typeof setInterval> | null = null
 let inactivityInterval: ReturnType<typeof setInterval> | null = null
+let sessionCleanupInterval: ReturnType<typeof setInterval> | null = null
 
 export function startScheduler() {
   console.log('Scheduler started')
@@ -133,14 +156,21 @@ export function startScheduler() {
   // Inactivity check: every hour
   inactivityInterval = setInterval(checkInactivity, 60 * 60 * 1000)
 
+  // Session cleanup: every hour
+  sessionCleanupInterval = setInterval(cleanupSessions, 60 * 60 * 1000)
+
   // Run inactivity check once on startup (delayed by 30s to let things settle)
   setTimeout(checkInactivity, 30 * 1000)
+  // Run session cleanup once on startup (delayed by 60s)
+  setTimeout(cleanupSessions, 60 * 1000)
 }
 
 export function stopScheduler() {
   if (reminderInterval) clearInterval(reminderInterval)
   if (inactivityInterval) clearInterval(inactivityInterval)
+  if (sessionCleanupInterval) clearInterval(sessionCleanupInterval)
   reminderInterval = null
   inactivityInterval = null
+  sessionCleanupInterval = null
   console.log('Scheduler stopped')
 }

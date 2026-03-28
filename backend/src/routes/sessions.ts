@@ -86,7 +86,7 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
 
     res.status(201).json({ session })
   } catch (error) {
-    console.error('Error creating session:', error)
+    // Session creation failed
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -139,7 +139,7 @@ router.post('/:code/join', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ session })
   } catch (error) {
-    console.error('Error joining session:', error)
+    // Session join failed
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -207,7 +207,7 @@ router.post('/:code/join-local', authenticate, async (req: AuthRequest, res) => 
 
     res.json({ session })
   } catch (error) {
-    console.error('Error joining session locally:', error)
+    // Local session join failed
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -238,7 +238,7 @@ router.post('/:id/start', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ session })
   } catch (error) {
-    console.error('Error starting session:', error)
+    // Session start failed
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -267,7 +267,7 @@ router.post('/:id/pause', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ session })
   } catch (error) {
-    console.error('Error pausing session:', error)
+    // Session pause failed
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -296,7 +296,7 @@ router.post('/:id/resume', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ session })
   } catch (error) {
-    console.error('Error resuming session:', error)
+    // Session resume failed
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -337,7 +337,7 @@ router.post('/:id/leave', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ session })
   } catch (error) {
-    console.error('Error leaving session:', error)
+    // Session leave failed
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -362,7 +362,7 @@ router.post('/:id/end', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ session })
   } catch (error) {
-    console.error('Error ending session:', error)
+    // Session end failed
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -371,14 +371,21 @@ router.post('/:id/end', authenticate, async (req: AuthRequest, res) => {
 router.get('/:code', authenticate, async (req: AuthRequest, res) => {
   try {
     const { code } = req.params
+    const userId = req.user!.id
     const session = await sessionRepo().findOne({ where: { sessionCode: code.toUpperCase() } })
     if (!session) {
       return res.status(404).json({ error: 'Session not found' })
     }
 
+    // Verify requesting user is host or participant (#5)
+    const isParticipant = session.hostId === userId || session.participants.some(p => p.userId === userId)
+    if (!isParticipant) {
+      return res.status(404).json({ error: 'Session not found' })
+    }
+
     res.json({ session })
   } catch (error) {
-    console.error('Error getting session:', error)
+    // Minimal logging (#8)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -421,7 +428,7 @@ router.post('/:id/set-workout', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ session })
   } catch (error) {
-    console.error('Error setting workout:', error)
+    // Set workout failed
     res.status(500).json({ error: 'Internal server error' })
   }
 })

@@ -365,6 +365,8 @@ const handleJoinLocal = async () => {
   } catch (err: any) {
     toast.error('Erreur', err?.data?.error || 'Impossible d\'ajouter le participant')
   } finally {
+    localEmail.value = ''
+    localPassword.value = ''
     isJoining.value = false
   }
 }
@@ -430,7 +432,7 @@ const setupSocket = async () => {
   if (!socket) return
 
   // Join session room
-  socket.emit('session:join', { sessionId: session.value.id })
+  socket.emit('session:join', { sessionCode: session.value.sessionCode || session.value.code })
 
   // Listen for events
   socket.on('session:participant-joined', (data: any) => {
