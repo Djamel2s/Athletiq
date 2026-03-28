@@ -50,7 +50,7 @@ router.get('/me', authenticate, async (req: AuthRequest, res) => {
       id: user.id,
       username: user.username,
       bio: user.bio,
-      isPublic: user.isPublic,
+      isPublic: user.isPublic !== false,
       firstName: user.firstName,
       lastName: user.lastName,
       avatarUrl: user.avatarUrl
@@ -114,7 +114,7 @@ router.put('/', authenticate, async (req: AuthRequest, res) => {
       id: user.id,
       username: user.username,
       bio: user.bio,
-      isPublic: user.isPublic,
+      isPublic: user.isPublic !== false,
       firstName: user.firstName,
       lastName: user.lastName,
       avatarUrl: user.avatarUrl
@@ -140,7 +140,8 @@ router.get('/:username', optionalAuth, async (req: AuthRequest, res) => {
     const isFriendOfUser = viewerId && !isOwnProfile ? await isFriend(viewerId, user.id) : false
 
     // If profile is private and viewer is not a friend and not own profile
-    if (!user.isPublic && !isOwnProfile && !isFriendOfUser) {
+    const isPublicProfile = user.isPublic !== false  // null or true = public
+    if (!isPublicProfile && !isOwnProfile && !isFriendOfUser) {
       return res.json({
         id: user.id,
         username: user.username,
@@ -232,7 +233,7 @@ router.get('/:username', optionalAuth, async (req: AuthRequest, res) => {
       lastName: user.lastName,
       avatarUrl: user.avatarUrl,
       bio: user.bio,
-      isPublic: user.isPublic,
+      isPublic: user.isPublic !== false,
       memberSince: user.createdAt,
       restricted: false,
       isFriend: !!isFriendOfUser,

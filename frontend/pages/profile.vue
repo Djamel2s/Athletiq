@@ -74,7 +74,7 @@
             <h1 v-else class="text-2xl font-bold text-primary-900 dark:text-primary-100">{{ authStore.fullName }}</h1>
             <span v-if="profileData?.isPublic === false" class="inline-flex items-center gap-1 text-xs text-primary-400 dark:text-primary-500">
               <Icon name="lucide:lock" class="w-3.5 h-3.5" />
-              Prive
+              Privé
             </span>
           </div>
           <p v-if="profileData?.bio" class="text-sm text-primary-500 dark:text-primary-400 mt-1">{{ profileData.bio }}</p>
@@ -89,13 +89,13 @@
             </div>
             <p class="text-[11px] text-primary-500 dark:text-primary-400">Workouts</p>
           </div>
-          <div class="text-center">
+          <NuxtLink to="/friends" class="text-center hover:opacity-70 transition-opacity cursor-pointer">
             <div class="flex items-center justify-center gap-1.5">
               <span class="text-lg font-bold text-primary-900 dark:text-primary-100">{{ gymBrosCount }}</span>
               <Icon name="lucide:users" class="w-4 h-4 text-primary-400 dark:text-primary-500" />
             </div>
             <p class="text-[11px] text-primary-500 dark:text-primary-400">Gym Bros</p>
-          </div>
+          </NuxtLink>
           <div class="text-center">
             <div class="flex items-center justify-center gap-1.5">
               <span class="text-lg font-bold text-primary-900 dark:text-primary-100">{{ profileData?.stats?.streak ?? 0 }}</span>

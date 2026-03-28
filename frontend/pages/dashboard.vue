@@ -27,8 +27,8 @@
     <div v-else class="pt-24 md:pt-32 pb-28 lg:pb-20 max-w-7xl mx-auto">
       <div class="flex px-4 md:px-4">
         <!-- Vertical Sidebar Navigation -->
-        <div class="hidden lg:block lg:mr-8 flex-shrink-0">
-          <div class="sticky top-32 group bg-white/70 dark:bg-primary-800/70 backdrop-blur-md rounded-xl border border-primary-200 dark:border-primary-700 hover:shadow-lg hover:border-primary-400 dark:hover:border-primary-500 p-4 flex flex-col w-[72px] hover:w-[200px] overflow-hidden" style="height: calc(100vh - 10rem); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease;">
+        <div class="hidden lg:block lg:mr-8 flex-shrink-0 self-start sticky top-32">
+          <div class="group bg-white/70 dark:bg-primary-800/70 backdrop-blur-md rounded-xl border border-primary-200 dark:border-primary-700 hover:shadow-lg hover:border-primary-400 dark:hover:border-primary-500 p-4 flex flex-col w-[72px] hover:w-[200px] overflow-hidden" style="height: calc(100vh - 10rem); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease;">
             <!-- Navigation Buttons -->
             <div class="flex flex-col space-y-6">
               <!-- Statistics Button -->
@@ -148,6 +148,36 @@
                 </div>
                 <span class="text-primary-900 dark:text-primary-100 font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300">
                   Badges
+                </span>
+              </button>
+
+              <!-- Feed Button -->
+              <button
+                @click="navigateTo('/feed')"
+                class="flex items-center space-x-3 transition-all"
+              >
+                <div class="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+                  </svg>
+                </div>
+                <span class="text-primary-900 dark:text-primary-100 font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  Feed
+                </span>
+              </button>
+
+              <!-- Gym Bros Button -->
+              <button
+                @click="navigateTo('/friends')"
+                class="flex items-center space-x-3 transition-all"
+              >
+                <div class="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                </div>
+                <span class="text-primary-900 dark:text-primary-100 font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  Gym Bros
                 </span>
               </button>
 
