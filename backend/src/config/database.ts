@@ -32,6 +32,7 @@ import { Friendship } from '../entities/Friendship.js'
 import { FeedPost } from '../entities/FeedPost.js'
 import { PlannedWorkout } from '../entities/PlannedWorkout.js'
 import { WorkoutSession } from '../entities/WorkoutSession.js'
+import { logger } from '../utils/logger.js'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -61,10 +62,10 @@ export const initializeDatabase = async () => {
   try {
     if (!AppDataSource.isInitialized) {
       await AppDataSource.initialize()
-      console.log('✅ Database connected successfully with TypeORM')
+      logger.info('Database connected successfully with TypeORM')
     }
   } catch (error) {
-    console.error('❌ Error connecting to database:', error)
+    logger.error({ err: error }, 'Error connecting to database')
     throw error
   }
 }

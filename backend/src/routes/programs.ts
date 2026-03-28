@@ -7,6 +7,7 @@ import { Exercise } from '../entities/Exercise.js'
 import { ExerciseLibrary } from '../entities/ExerciseLibrary.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { PROGRAM_SEEDS } from '../config/programSeeds.js'
+import { logger } from '../utils/logger.js'
 
 const router = express.Router()
 const programRepo = AppDataSource.getRepository(WorkoutProgram)
@@ -43,7 +44,7 @@ export async function seedPrograms() {
       await programDayRepo.save(programDay)
     }
   }
-  console.log(`✅ ${PROGRAM_SEEDS.length} programmes seedés`)
+  logger.info({ count: PROGRAM_SEEDS.length }, 'Programmes seeded')
 }
 
 // GET /api/programs — Liste tous les programmes
@@ -56,7 +57,7 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
     })
     res.json(programs)
   } catch (error) {
-    console.error('Error fetching programs:', error)
+    logger.error({ err: error, route: 'programs' }, 'Error fetching programs')
     res.status(500).json({ error: 'Erreur lors de la récupération des programmes' })
   }
 })
@@ -83,7 +84,7 @@ router.get('/:slug', authenticate, async (req: AuthRequest, res) => {
     program.days.sort((a, b) => a.dayIndex - b.dayIndex)
     res.json(program)
   } catch (error) {
-    console.error('Error fetching program:', error)
+    logger.error({ err: error, route: 'programs' }, 'Error fetching program')
     res.status(500).json({ error: 'Erreur' })
   }
 })
@@ -149,7 +150,7 @@ router.post('/:slug/adopt', authenticate, async (req: AuthRequest, res) => {
       workoutIds: createdWorkouts.map(w => w.id)
     })
   } catch (error) {
-    console.error('Error adopting program:', error)
+    logger.error({ err: error, route: 'programs' }, 'Error adopting program')
     res.status(500).json({ error: 'Erreur lors de l\'adoption du programme' })
   }
 })

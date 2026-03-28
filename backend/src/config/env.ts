@@ -1,6 +1,8 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
+import { logger } from '../utils/logger.js'
+
 const isProduction = process.env.NODE_ENV === 'production'
 
 // Variables obligatoires en production
@@ -26,7 +28,7 @@ if (isProduction) {
 
   const missingRecommended = recommendedInProduction.filter(key => !process.env[key])
   if (missingRecommended.length > 0) {
-    console.warn(`⚠️ Missing recommended env variables (features disabled): ${missingRecommended.join(', ')}`)
+    logger.warn({ missing: missingRecommended }, 'Missing recommended env variables (features disabled)')
   }
 }
 

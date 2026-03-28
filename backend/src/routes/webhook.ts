@@ -3,6 +3,7 @@ import Stripe from 'stripe'
 import { AppDataSource } from '../config/database.js'
 import { Subscription, SubscriptionStatus, SubscriptionPlan } from '../entities/Subscription.js'
 import { User } from '../entities/User.js'
+import { logger } from '../utils/logger.js'
 
 const router = express.Router()
 const subscriptionRepo = AppDataSource.getRepository(Subscription)
@@ -34,7 +35,7 @@ const stripe = process.env.STRIPE_SECRET_KEY
 
 const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || ''
 if (process.env.NODE_ENV === 'production' && !process.env.STRIPE_WEBHOOK_SECRET) {
-  console.warn('⚠️ STRIPE_WEBHOOK_SECRET non configuré — les webhooks Stripe renverront 503')
+  logger.warn('STRIPE_WEBHOOK_SECRET non configure — les webhooks Stripe renverront 503')
 }
 
 // ============================================================
@@ -52,7 +53,7 @@ router.post('/stripe', express.raw({ type: 'application/json', limit: '1mb' }), 
     const signature = req.headers['stripe-signature'] as string
     event = stripe.webhooks.constructEvent(req.body, signature, WEBHOOK_SECRET)
   } catch (err) {
-    console.error('⚠️ Webhook signature verification failed')
+    logger.error({ route: 'webhook' }, 'Webhook signature verification failed')
     return res.status(400).json({ error: 'Signature invalide' })
   }
 
@@ -73,7 +74,7 @@ router.post('/stripe', express.raw({ type: 'application/json', limit: '1mb' }), 
         // Vérifier que l'utilisateur existe en base
         const userExists = await AppDataSource.getRepository(User).findOne({ where: { id: userId }, select: ['id'] })
         if (!userExists) {
-          console.error(`⚠️ Webhook: userId ${userId} introuvable en base`)
+          logger.error({ userId, route: 'webhook' }, 'Webhook: userId introuvable en base')
           break
         }
 
@@ -90,7 +91,7 @@ router.post('/stripe', express.raw({ type: 'application/json', limit: '1mb' }), 
           subscription.stripeSubscriptionId === stripeSubscriptionId &&
           subscription.status === SubscriptionStatus.ACTIVE
         ) {
-          console.log(`⏭️ Subscription already active for user ${userId}, skipping`)
+          logger.info({ userId }, 'Subscription already active, skipping')
           break
         }
 
@@ -110,7 +111,7 @@ router.post('/stripe', express.raw({ type: 'application/json', limit: '1mb' }), 
         subscription.currentPeriodEnd = new Date((stripeSub as any).current_period_end * 1000)
 
         await subscriptionRepo.save(subscription)
-        console.log(`✅ Abonnement activé pour user ${userId}`)
+        logger.info({ userId }, 'Abonnement active')
         break
       }
 
@@ -145,7 +146,7 @@ router.post('/stripe', express.raw({ type: 'application/json', limit: '1mb' }), 
         if (subscription) {
           subscription.status = SubscriptionStatus.PAST_DUE
           await subscriptionRepo.save(subscription)
-          console.log(`⚠️ Paiement échoué pour subscription ${subId}`)
+          logger.warn({ subId }, 'Paiement echoue pour subscription')
         }
         break
       }
@@ -160,7 +161,7 @@ router.post('/stripe', express.raw({ type: 'application/json', limit: '1mb' }), 
           subscription.status = SubscriptionStatus.CANCELED
           subscription.canceledAt = new Date()
           await subscriptionRepo.save(subscription)
-          console.log(`🚫 Abonnement annulé: ${stripeSub.id}`)
+          logger.info({ stripeSubId: stripeSub.id }, 'Abonnement annule')
         }
         break
       }
@@ -168,7 +169,7 @@ router.post('/stripe', express.raw({ type: 'application/json', limit: '1mb' }), 
 
     res.json({ received: true })
   } catch (error) {
-    console.error('Error processing webhook:', error)
+    logger.error({ err: error, route: 'webhook' }, 'Error processing webhook')
     res.status(500).json({ error: 'Erreur traitement webhook' })
   }
 })

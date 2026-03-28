@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { AppDataSource } from '../config/database.js'
 import { Workout } from '../entities/Workout.js'
 import { Exercise } from '../entities/Exercise.js'
+import { logger } from '../utils/logger.js'
 import { Set } from '../entities/Set.js'
 
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
@@ -106,7 +107,7 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ workouts, historyLimited: historyDays !== Infinity, total, limit, offset })
   } catch (error) {
-    console.error('Error fetching workouts:', error)
+    logger.error({ err: error, route: 'workouts' }, 'Error fetching workouts')
     res.status(500).json({ error: 'Erreur lors de la récupération des séances' })
   }
 })
@@ -164,7 +165,7 @@ router.get('/export/csv', authenticate, exportLimiter, async (req: AuthRequest, 
     res.setHeader('Content-Disposition', 'attachment; filename="athletiq-export.csv"')
     res.send(csv)
   } catch (error) {
-    console.error('Error exporting workouts CSV:', error)
+    logger.error({ err: error, route: 'workouts' }, 'Error exporting workouts CSV')
     res.status(500).json({ error: 'Erreur lors de l\'export des séances' })
   }
 })
@@ -190,7 +191,7 @@ router.get('/:id', authenticate, async (req: AuthRequest, res) => {
 
     res.json(workout)
   } catch (error) {
-    console.error('Error fetching workout:', error)
+    logger.error({ err: error, route: 'workouts' }, 'Error fetching workout')
     res.status(500).json({ error: 'Erreur lors de la récupération de la séance' })
   }
 })
@@ -262,7 +263,7 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
-    console.error('Error creating workout:', error)
+    logger.error({ err: error, route: 'workouts' }, 'Error creating workout')
     res.status(500).json({ error: 'Erreur lors de la création de la séance' })
   }
 })
@@ -298,7 +299,7 @@ router.put('/:id', authenticate, async (req: AuthRequest, res) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
-    console.error('Error updating workout:', error)
+    logger.error({ err: error, route: 'workouts' }, 'Error updating workout')
     res.status(500).json({ error: 'Erreur lors de la mise à jour de la séance' })
   }
 })
@@ -317,7 +318,7 @@ router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ message: 'Séance supprimée' })
   } catch (error) {
-    console.error('Error deleting workout:', error)
+    logger.error({ err: error, route: 'workouts' }, 'Error deleting workout')
     res.status(500).json({ error: 'Erreur lors de la suppression de la séance' })
   }
 })
@@ -346,7 +347,7 @@ router.post('/:id/start', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ message: 'Séance démarrée', workout: updatedWorkout })
   } catch (error) {
-    console.error('Error starting workout:', error)
+    logger.error({ err: error, route: 'workouts' }, 'Error starting workout')
     res.status(500).json({ error: 'Erreur lors du démarrage de la séance' })
   }
 })
@@ -418,9 +419,9 @@ router.post('/:id/complete', authenticate, async (req: AuthRequest, res) => {
       })
 
       // Fire-and-forget: check for PR, streak notifications and achievements
-      checkAndCreatePRNotifications(userId, workout.id).catch(err => console.error('PR notification job failed:', { userId, workoutId: workout.id, error: err }))
-      checkStreakMilestone(userId).catch(err => console.error('Streak check job failed:', { userId, error: err }))
-      checkAndUnlockAchievements(userId).catch(err => console.error('Achievement check failed:', { userId, error: err }))
+      checkAndCreatePRNotifications(userId, workout.id).catch(err => logger.error({ err, userId, workoutId: workout.id, route: 'workouts' }, 'PR notification job failed'))
+      checkStreakMilestone(userId).catch(err => logger.error({ err, userId, route: 'workouts' }, 'Streak check job failed'))
+      checkAndUnlockAchievements(userId).catch(err => logger.error({ err, userId, route: 'workouts' }, 'Achievement check failed'))
 
       // Auto-post to feed
       createFeedPostForWorkout(
@@ -429,14 +430,14 @@ router.post('/:id/complete', authenticate, async (req: AuthRequest, res) => {
         workout.duration,
         workout.exercises?.length || 0,
         workout.totalVolume
-      ).catch(err => console.error('Feed post creation failed:', { userId, error: err }))
+      ).catch(err => logger.error({ err, userId, route: 'workouts' }, 'Feed post creation failed'))
 
       return { status: 200, body: { message: 'Séance terminée', workout: updatedWorkout } }
     })
 
     res.status(result.status).json(result.body)
   } catch (error) {
-    console.error('Error completing workout:', error)
+    logger.error({ err: error, route: 'workouts' }, 'Error completing workout')
     res.status(500).json({ error: 'Erreur lors de la complétion de la séance' })
   }
 })
@@ -513,7 +514,7 @@ router.post('/:id/duplicate', authenticate, async (req: AuthRequest, res) => {
 
     res.status(result.status).json(result.body)
   } catch (error) {
-    console.error('Error duplicating workout:', error)
+    logger.error({ err: error, route: 'workouts' }, 'Error duplicating workout')
     res.status(500).json({ error: 'Erreur lors de la duplication de la séance' })
   }
 })
@@ -561,7 +562,7 @@ router.post('/:workoutId/exercises', authenticate, async (req: AuthRequest, res)
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
-    console.error('Error adding exercise:', error)
+    logger.error({ err: error, route: 'workouts' }, 'Error adding exercise')
     res.status(500).json({ error: 'Erreur lors de l\'ajout de l\'exercice' })
   }
 })
@@ -607,7 +608,7 @@ router.put('/:workoutId/exercises/:exerciseId', authenticate, async (req: AuthRe
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
-    console.error('Error updating exercise:', error)
+    logger.error({ err: error, route: 'workouts' }, 'Error updating exercise')
     res.status(500).json({ error: 'Erreur lors de la mise à jour de l\'exercice' })
   }
 })
@@ -638,7 +639,7 @@ router.delete('/:workoutId/exercises/:exerciseId', authenticate, async (req: Aut
 
     res.json({ message: 'Exercice supprimé' })
   } catch (error) {
-    console.error('Error deleting exercise:', error)
+    logger.error({ err: error, route: 'workouts' }, 'Error deleting exercise')
     res.status(500).json({ error: 'Erreur lors de la suppression de l\'exercice' })
   }
 })
@@ -686,7 +687,7 @@ router.post('/:workoutId/exercises/:exerciseId/sets', authenticate, async (req: 
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
-    console.error('Error adding set:', error)
+    logger.error({ err: error, route: 'workouts' }, 'Error adding set')
     res.status(500).json({ error: 'Erreur lors de l\'ajout de la série' })
   }
 })
@@ -729,7 +730,7 @@ router.put('/:workoutId/exercises/:exerciseId/sets/:setId', authenticate, async 
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
-    console.error('Error updating set:', error)
+    logger.error({ err: error, route: 'workouts' }, 'Error updating set')
     res.status(500).json({ error: 'Erreur lors de la mise à jour de la série' })
   }
 })
@@ -763,7 +764,7 @@ router.delete('/:workoutId/exercises/:exerciseId/sets/:setId', authenticate, asy
 
     res.json({ message: 'Série supprimée' })
   } catch (error) {
-    console.error('Error deleting set:', error)
+    logger.error({ err: error, route: 'workouts' }, 'Error deleting set')
     res.status(500).json({ error: 'Erreur lors de la suppression de la série' })
   }
 })
@@ -804,7 +805,7 @@ router.get('/history/exercise/:exerciseLibraryId', authenticate, async (req: Aut
       lastWorkoutDate: recentExercise?.workout?.completedAt || null
     })
   } catch (error) {
-    console.error('Error fetching exercise history:', error)
+    logger.error({ err: error, route: 'workouts' }, 'Error fetching exercise history')
     res.status(500).json({ error: 'Erreur lors de la récupération de l\'historique' })
   }
 })

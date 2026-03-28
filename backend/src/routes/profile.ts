@@ -3,6 +3,7 @@ import { AppDataSource } from '../config/database.js'
 import { User } from '../entities/User.js'
 import { Workout } from '../entities/Workout.js'
 import { WorkoutPhoto } from '../entities/WorkoutPhoto.js'
+import { logger } from '../utils/logger.js'
 import { Friendship } from '../entities/Friendship.js'
 import { FeedPost } from '../entities/FeedPost.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
@@ -56,7 +57,7 @@ router.get('/me', authenticate, async (req: AuthRequest, res) => {
       avatarUrl: user.avatarUrl
     })
   } catch (error) {
-    console.error('Error fetching own profile:', error)
+    logger.error({ err: error, route: 'profile' }, 'Error fetching own profile')
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -71,7 +72,7 @@ router.get('/check-username/:username', async (req, res) => {
     const existing = await userRepo().findOne({ where: { username } })
     res.json({ available: !existing })
   } catch (error) {
-    console.error('Error checking username:', error)
+    logger.error({ err: error, route: 'profile' }, 'Error checking username')
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -120,7 +121,7 @@ router.put('/', authenticate, async (req: AuthRequest, res) => {
       avatarUrl: user.avatarUrl
     })
   } catch (error) {
-    console.error('Error updating profile:', error)
+    logger.error({ err: error, route: 'profile' }, 'Error updating profile')
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -247,7 +248,7 @@ router.get('/:username', optionalAuth, async (req: AuthRequest, res) => {
       posts: feedPosts
     })
   } catch (error) {
-    console.error('Error fetching profile:', error)
+    logger.error({ err: error, route: 'profile' }, 'Error fetching profile')
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -288,7 +289,7 @@ router.get('/:username/photos', optionalAuth, async (req: AuthRequest, res) => {
       offset
     })
   } catch (error) {
-    console.error('Error fetching photos:', error)
+    logger.error({ err: error, route: 'profile' }, 'Error fetching photos')
     res.status(500).json({ error: 'Internal server error' })
   }
 })

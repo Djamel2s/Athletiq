@@ -3,6 +3,7 @@ import { AppDataSource } from '../config/database.js'
 import { User } from '../entities/User.js'
 import { Workout } from '../entities/Workout.js'
 import { Notification, NotificationType } from '../entities/Notification.js'
+import { logger } from '../utils/logger.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { createNotification } from '../services/notificationService.js'
 
@@ -135,7 +136,7 @@ router.get('/streak', authenticate, async (req: AuthRequest, res) => {
       nextMilestone
     })
   } catch (error) {
-    console.error('Streak error:', error)
+    logger.error({ err: error, route: 'stats' }, 'Streak error')
     res.status(500).json({ error: 'Failed to fetch streak data' })
   }
 })
@@ -276,7 +277,7 @@ router.get('/weekly-recap', authenticate, async (req: AuthRequest, res) => {
       }
     })
   } catch (error) {
-    console.error('Weekly recap error:', error)
+    logger.error({ err: error, route: 'stats' }, 'Weekly recap error')
     res.status(500).json({ error: 'Failed to fetch weekly recap' })
   }
 })
@@ -382,7 +383,7 @@ router.get('/correlation', authenticate, async (req: AuthRequest, res) => {
       lowFreqAvgProgress
     })
   } catch (error) {
-    console.error('Correlation error:', error)
+    logger.error({ err: error, route: 'stats' }, 'Correlation error')
     res.status(500).json({ error: 'Failed to fetch correlation data' })
   }
 })
@@ -453,7 +454,7 @@ router.post('/check-inactivity', authenticate, async (req: AuthRequest, res) => 
 
     res.json({ sent: true, daysSince })
   } catch (error) {
-    console.error('Inactivity check error:', error)
+    logger.error({ err: error, route: 'stats' }, 'Inactivity check error')
     res.status(500).json({ error: 'Failed to check inactivity' })
   }
 })
@@ -602,7 +603,7 @@ router.get('/recovery', authenticate, async (req: AuthRequest, res) => {
       recommendation
     })
   } catch (error) {
-    console.error('Recovery error:', error)
+    logger.error({ err: error, route: 'stats' }, 'Recovery error')
     res.status(500).json({ error: 'Failed to fetch recovery data' })
   }
 })

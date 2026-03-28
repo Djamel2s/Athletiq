@@ -5,6 +5,7 @@ import { WorkoutSession } from '../entities/WorkoutSession.js'
 import { Notification, NotificationType } from '../entities/Notification.js'
 import { createNotification } from './notificationService.js'
 import { sendPushToUser } from './pushService.js'
+import { logger } from '../utils/logger.js'
 
 /**
  * Check if a user has completed a workout today.
@@ -61,7 +62,7 @@ async function checkWorkoutReminders() {
       sendPushToUser(user.id, title, message).catch(() => {})
     }
   } catch (error) {
-    console.error('[Scheduler] Workout reminder error:', error)
+    logger.error({ err: error, route: 'scheduler' }, 'Workout reminder error')
   }
 }
 
@@ -118,7 +119,7 @@ async function checkInactivity() {
       sendPushToUser(user.id, title, message).catch(() => {})
     }
   } catch (error) {
-    console.error('[Scheduler] Inactivity check error:', error)
+    logger.error({ err: error, route: 'scheduler' }, 'Inactivity check error')
   }
 }
 
@@ -139,7 +140,7 @@ async function cleanupSessions() {
       .where('status IN (:...statuses) AND "createdAt" < NOW() - INTERVAL \'24 hours\'', { statuses: ['WAITING', 'PAUSED'] })
       .execute()
   } catch (err) {
-    console.error('[Scheduler] Session cleanup error:', err)
+    logger.error({ err, route: 'scheduler' }, 'Session cleanup error')
   }
 }
 
@@ -148,7 +149,7 @@ let inactivityInterval: ReturnType<typeof setInterval> | null = null
 let sessionCleanupInterval: ReturnType<typeof setInterval> | null = null
 
 export function startScheduler() {
-  console.log('Scheduler started')
+  logger.info('Scheduler started')
 
   // Workout reminders: every 60 seconds
   reminderInterval = setInterval(checkWorkoutReminders, 60 * 1000)
@@ -172,5 +173,5 @@ export function stopScheduler() {
   reminderInterval = null
   inactivityInterval = null
   sessionCleanupInterval = null
-  console.log('Scheduler stopped')
+  logger.info('Scheduler stopped')
 }

@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { AppDataSource } from '../config/database.js'
 import { ExerciseLibrary, MuscleGroup, Equipment, Difficulty } from '../entities/ExerciseLibrary.js'
 import { authenticate } from '../middlewares/auth.js'
+import { logger } from '../utils/logger.js'
 import { requireAdmin } from '../middlewares/admin.js'
 import { parseId } from '../utils/validation.js'
 import { Like } from 'typeorm'
@@ -88,7 +89,7 @@ router.get('/', authenticate, async (req, res) => {
       offset
     })
   } catch (error) {
-    console.error('Error fetching exercises:', error)
+    logger.error({ err: error, route: 'exercises' }, 'Error fetching exercises')
     res.status(500).json({ error: 'Erreur lors de la récupération des exercices' })
   }
 })
@@ -106,7 +107,7 @@ router.get('/:id', authenticate, async (req, res) => {
 
     res.json(exercise)
   } catch (error) {
-    console.error('Error fetching exercise:', error)
+    logger.error({ err: error, route: 'exercises' }, 'Error fetching exercise')
     res.status(500).json({ error: 'Erreur lors de la récupération de l\'exercice' })
   }
 })
@@ -129,7 +130,7 @@ router.get('/muscle/:muscleGroup', authenticate, async (req, res) => {
 
     res.json(exercises)
   } catch (error) {
-    console.error('Error fetching exercises by muscle group:', error)
+    logger.error({ err: error, route: 'exercises' }, 'Error fetching exercises by muscle group')
     res.status(500).json({ error: 'Erreur lors de la récupération des exercices' })
   }
 })
@@ -166,7 +167,7 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
-    console.error('Error creating exercise:', error)
+    logger.error({ err: error, route: 'exercises' }, 'Error creating exercise')
     res.status(500).json({ error: 'Erreur lors de la création de l\'exercice' })
   }
 })
@@ -200,7 +201,7 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
-    console.error('Error updating exercise:', error)
+    logger.error({ err: error, route: 'exercises' }, 'Error updating exercise')
     res.status(500).json({ error: 'Erreur lors de la mise à jour de l\'exercice' })
   }
 })
@@ -216,7 +217,7 @@ router.delete('/:id', authenticate, requireAdmin, async (req, res) => {
 
     res.json({ message: 'Exercice supprimé' })
   } catch (error) {
-    console.error('Error deleting exercise:', error)
+    logger.error({ err: error, route: 'exercises' }, 'Error deleting exercise')
     res.status(500).json({ error: 'Erreur lors de la suppression de l\'exercice' })
   }
 })

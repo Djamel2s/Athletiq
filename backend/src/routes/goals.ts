@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { AppDataSource } from '../config/database.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { UserGoal, GoalType } from '../entities/UserGoal.js'
+import { logger } from '../utils/logger.js'
 import { BodyStat } from '../entities/BodyStat.js'
 import { checkGoalLimit } from '../services/limitService.js'
 import { parseId } from '../utils/validation.js'
@@ -120,7 +121,7 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
 
     res.json(goalsWithProgress)
   } catch (error) {
-    console.error('Goals fetch error:', error)
+    logger.error({ err: error, route: 'goals' }, 'Goals fetch error')
     res.status(500).json({ error: 'Erreur lors de la récupération des objectifs' })
   }
 })
@@ -162,7 +163,7 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
-    console.error('Goal create error:', error)
+    logger.error({ err: error, route: 'goals' }, 'Goal create error')
     res.status(500).json({ error: 'Erreur lors de la création de l\'objectif' })
   }
 })
@@ -192,7 +193,7 @@ router.put('/:id', authenticate, async (req: AuthRequest, res) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
-    console.error('Goal update error:', error)
+    logger.error({ err: error, route: 'goals' }, 'Goal update error')
     res.status(500).json({ error: 'Erreur lors de la mise à jour de l\'objectif' })
   }
 })
@@ -213,7 +214,7 @@ router.put('/:id/achieve', authenticate, async (req: AuthRequest, res) => {
     const saved = await repo.save(goal)
     res.json(saved)
   } catch (error) {
-    console.error('Goal achieve error:', error)
+    logger.error({ err: error, route: 'goals' }, 'Goal achieve error')
     res.status(500).json({ error: 'Erreur lors de la validation de l\'objectif' })
   }
 })
@@ -231,7 +232,7 @@ router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
     await repo.remove(goal)
     res.json({ message: 'Objectif supprimé' })
   } catch (error) {
-    console.error('Goal delete error:', error)
+    logger.error({ err: error, route: 'goals' }, 'Goal delete error')
     res.status(500).json({ error: 'Erreur lors de la suppression de l\'objectif' })
   }
 })

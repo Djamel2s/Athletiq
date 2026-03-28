@@ -3,6 +3,7 @@ import { Notification, NotificationType } from '../entities/Notification.js'
 import { Workout } from '../entities/Workout.js'
 import { FeedPost } from '../entities/FeedPost.js'
 import { sendPushToUser } from './pushService.js'
+import { logger } from '../utils/logger.js'
 
 const notificationRepo = () => AppDataSource.getRepository(Notification)
 
@@ -75,11 +76,11 @@ export async function checkAndCreatePRNotifications(userId: number, workoutId: n
         )
         // Also create a feed post for the PR
         createFeedPostForPR(userId, name, maxWeightInWorkout, maxWeightInWorkout - prevMax)
-          .catch(err => console.error('PR feed post creation error:', err))
+          .catch(err => logger.error({ err, route: 'notificationService' }, 'PR feed post creation error'))
       }
     }
   } catch (error) {
-    console.error('PR notification check error:', error)
+    logger.error({ err: error, route: 'notificationService' }, 'PR notification check error')
   }
 }
 
@@ -143,7 +144,7 @@ export async function checkStreakMilestone(userId: number) {
       }
     }
   } catch (error) {
-    console.error('Streak milestone check error:', error)
+    logger.error({ err: error, route: 'notificationService' }, 'Streak milestone check error')
   }
 }
 
@@ -170,7 +171,7 @@ export async function createFeedPostForWorkout(
       }
     })
   } catch (error) {
-    console.error('Feed post creation error:', error)
+    logger.error({ err: error, route: 'notificationService' }, 'Feed post creation error')
   }
 }
 
@@ -195,6 +196,6 @@ export async function createFeedPostForPR(
       }
     })
   } catch (error) {
-    console.error('Feed post PR creation error:', error)
+    logger.error({ err: error, route: 'notificationService' }, 'Feed post PR creation error')
   }
 }

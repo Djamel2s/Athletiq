@@ -1,6 +1,7 @@
 import express from 'express'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { getUserAchievements, checkAndUnlockAchievements } from '../services/achievementService.js'
+import { logger } from '../utils/logger.js'
 
 const router = express.Router()
 
@@ -21,7 +22,7 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
       }
     })
   } catch (error) {
-    console.error('Error fetching achievements:', error)
+    logger.error({ err: error, route: 'achievements' }, 'Error fetching achievements')
     res.status(500).json({ error: 'Erreur lors de la récupération des badges' })
   }
 })
@@ -34,7 +35,7 @@ router.post('/check', authenticate, async (req: AuthRequest, res) => {
       newlyUnlocked: newlyUnlocked.map(ua => ua.achievementId)
     })
   } catch (error) {
-    console.error('Error checking achievements:', error)
+    logger.error({ err: error, route: 'achievements' }, 'Error checking achievements')
     res.status(500).json({ error: 'Erreur' })
   }
 })

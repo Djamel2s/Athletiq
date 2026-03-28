@@ -3,6 +3,7 @@ import crypto from 'crypto'
 import { AppDataSource } from '../config/database.js'
 import { Workout } from '../entities/Workout.js'
 import { Exercise } from '../entities/Exercise.js'
+import { logger } from '../utils/logger.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { checkTemplateLimit, withUserLock } from '../services/limitService.js'
 
@@ -38,7 +39,7 @@ router.post('/:workoutId', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ shareToken: token })
   } catch (error) {
-    console.error('Error sharing workout:', error)
+    logger.error({ err: error, route: 'share' }, 'Error sharing workout')
     res.status(500).json({ error: 'Erreur lors du partage' })
   }
 })
@@ -62,7 +63,7 @@ router.delete('/:workoutId', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ message: 'Partage désactivé' })
   } catch (error) {
-    console.error('Error unsharing workout:', error)
+    logger.error({ err: error, route: 'share' }, 'Error unsharing workout')
     res.status(500).json({ error: 'Erreur' })
   }
 })
@@ -120,7 +121,7 @@ router.get('/view/:token', async (req, res) => {
       createdAt: workout.createdAt,
     })
   } catch (error) {
-    console.error('Error viewing shared workout:', error)
+    logger.error({ err: error, route: 'share' }, 'Error viewing shared workout')
     res.status(500).json({ error: 'Erreur' })
   }
 })
@@ -201,7 +202,7 @@ router.post('/import/:token', authenticate, async (req: AuthRequest, res) => {
 
     res.status(result.status).json(result.body)
   } catch (error) {
-    console.error('Error importing shared workout:', error)
+    logger.error({ err: error, route: 'share' }, 'Error importing shared workout')
     res.status(500).json({ error: 'Erreur lors de l\'import' })
   }
 })

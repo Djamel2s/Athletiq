@@ -2,6 +2,7 @@ import express from 'express'
 import { AppDataSource } from '../config/database.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { FcmToken } from '../entities/FcmToken.js'
+import { logger } from '../utils/logger.js'
 
 const router = express.Router()
 
@@ -46,7 +47,7 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ message: 'Token registered' })
   } catch (error) {
-    console.error('[FCM Tokens] Register error:', error)
+    logger.error({ err: error, route: 'fcmTokens' }, 'Register error')
     res.status(500).json({ error: 'Failed to register token' })
   }
 })
@@ -65,7 +66,7 @@ router.delete('/', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ message: 'Token removed' })
   } catch (error) {
-    console.error('[FCM Tokens] Delete error:', error)
+    logger.error({ err: error, route: 'fcmTokens' }, 'Delete error')
     res.status(500).json({ error: 'Failed to remove token' })
   }
 })

@@ -38,6 +38,7 @@ import sessionRoutes from './routes/sessions.js'
 import { seedPrograms } from './routes/programs.js'
 import { startScheduler } from './services/schedulerService.js'
 import { setupWebSocket } from './websocket.js'
+import { logger } from './utils/logger.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -55,7 +56,7 @@ startScheduler()
 if (process.env.NODE_ENV === 'production') {
   const { CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = process.env
   if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
-    console.warn('⚠️ Missing Cloudinary credentials (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, or CLOUDINARY_API_SECRET). Photo uploads will not work.')
+    logger.warn('Missing Cloudinary credentials (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, or CLOUDINARY_API_SECRET). Photo uploads will not work.')
   }
 }
 
@@ -88,6 +89,18 @@ app.use(cors({
 app.use(cookieParser())
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
+
+// Request logging
+app.use((req, res, next) => {
+  const start = Date.now()
+  res.on('finish', () => {
+    const duration = Date.now() - start
+    if (req.path !== '/health') {
+      logger.info({ method: req.method, path: req.path, status: res.statusCode, duration: `${duration}ms` }, 'request')
+    }
+  })
+  next()
+})
 
 // Health check
 app.get('/health', (req, res) => {
@@ -130,11 +143,7 @@ app.use((req, res) => {
 
 // Error handler
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error(`[ERROR] ${req.method} ${req.path}`, {
-    error: err.message,
-    stack: err.stack,
-    userId: (req as any).user?.id
-  })
+  logger.error({ err, method: req.method, path: req.path, userId: (req as any).user?.id }, 'Unhandled error')
   res.status(500).json({
     error: 'Internal server error',
     ...(isProduction ? {} : { message: err.message })
@@ -145,6 +154,6 @@ const httpServer = http.createServer(app)
 setupWebSocket(httpServer)
 
 httpServer.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`)
-  console.log(`📊 Health check: http://localhost:${PORT}/health`)
+  logger.info({ port: PORT }, 'Server running')
+  logger.info({ url: `http://localhost:${PORT}/health` }, 'Health check available')
 })

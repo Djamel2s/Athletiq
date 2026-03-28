@@ -1182,11 +1182,29 @@ const validateCurrentSet = async () => {
   currentSetData.value.weight = weight
 
   try {
-    const savedSet = await workoutStore.addSetToExercise(workout.value.id, currentExercise.value.id, {
-      setNumber: currentSetNumber.value,
-      reps: reps,
-      weight: weight
-    })
+    let savedSet: any
+    try {
+      savedSet = await workoutStore.addSetToExercise(workout.value.id, currentExercise.value.id, {
+        setNumber: currentSetNumber.value,
+        reps: reps,
+        weight: weight
+      })
+    } catch (err) {
+      // If offline, queue the action and continue locally
+      if (!navigator.onLine) {
+        const { addToQueue } = useOfflineStorage()
+        await addToQueue({
+          type: 'ADD_SET',
+          endpoint: `/workouts/${workout.value!.id}/exercises/${currentExercise.value!.id}/sets`,
+          method: 'POST',
+          body: { setNumber: currentSetNumber.value, reps, weight }
+        })
+        // Create a fake savedSet for local UI
+        savedSet = { id: Date.now(), setNumber: currentSetNumber.value, reps, weight }
+      } else {
+        throw err
+      }
+    }
 
     completedSets.value.push({
       id: savedSet.id,

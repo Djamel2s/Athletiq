@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt'
 import crypto from 'crypto'
 import { z } from 'zod'
 import jwt from 'jsonwebtoken'
+import { logger } from '../utils/logger.js'
 import { AppDataSource } from '../config/database.js'
 import { User } from '../entities/User.js'
 import { generateToken, generateRefreshToken, JWTPayload, authenticate, AuthRequest } from '../middlewares/auth.js'
@@ -120,7 +121,7 @@ router.post('/login', async (req, res) => {
     const validPassword = await bcrypt.compare(password, user?.password || dummyHash)
 
     if (!user || !validPassword) {
-      console.warn(`[AUTH] Failed login attempt from IP=${req.ip}`)
+      logger.warn({ ip: req.ip }, 'Failed login attempt')
       return res.status(401).json({ error: 'Identifiants invalides' })
     }
 

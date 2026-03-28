@@ -3,6 +3,7 @@ import multer from 'multer'
 import { z } from 'zod'
 import cloudinary from '../config/cloudinary.js'
 import { AppDataSource } from '../config/database.js'
+import { logger } from '../utils/logger.js'
 import { User } from '../entities/User.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { validateImageMagicBytes } from '../utils/fileValidation.js'
@@ -136,7 +137,7 @@ router.post('/me/avatar', authenticate, upload.single('avatar'), async (req: Aut
 
     res.json(user)
   } catch (error) {
-    console.error('Avatar upload error:', error)
+    logger.error({ err: error, route: 'users' }, 'Avatar upload error')
     res.status(500).json({ error: 'Erreur lors du téléchargement de l\'avatar' })
   }
 })
@@ -153,7 +154,7 @@ router.delete('/me/avatar', authenticate, async (req: AuthRequest, res) => {
     const parts = user.avatarUrl.split('/')
     const athletiqIndex = parts.indexOf('athletiq')
     if (athletiqIndex === -1) {
-      console.error('Could not extract Cloudinary publicId from URL:', user.avatarUrl)
+      logger.error({ avatarUrl: user.avatarUrl, route: 'users' }, 'Could not extract Cloudinary publicId from URL')
     } else {
       const publicId = parts.slice(athletiqIndex).join('/').replace(/\.[^.]+$/, '')
       await cloudinary.uploader.destroy(publicId).catch(() => {})
@@ -164,7 +165,7 @@ router.delete('/me/avatar', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ message: 'Avatar supprimé' })
   } catch (error) {
-    console.error('Avatar delete error:', error)
+    logger.error({ err: error, route: 'users' }, 'Avatar delete error')
     res.status(500).json({ error: 'Erreur lors de la suppression de l\'avatar' })
   }
 })

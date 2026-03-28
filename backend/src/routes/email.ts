@@ -2,6 +2,7 @@ import express from 'express'
 import crypto from 'crypto'
 import bcrypt from 'bcrypt'
 import { z } from 'zod'
+import { logger } from '../utils/logger.js'
 import { AppDataSource } from '../config/database.js'
 import { User } from '../entities/User.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
@@ -47,7 +48,7 @@ router.post('/verify/send', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ message: 'Email de vérification envoyé' })
   } catch (error) {
-    console.error('Error sending verification email:', error)
+    logger.error({ err: error, route: 'email' }, 'Error sending verification email')
     res.status(500).json({ error: 'Erreur lors de l\'envoi' })
   }
 })
@@ -93,7 +94,7 @@ router.get('/verify/:token', async (req, res) => {
     const appUrl = process.env.APP_URL || 'http://localhost:3000'
     res.redirect(`${appUrl}/login?verified=true`)
   } catch (error) {
-    console.error('Error verifying email:', error)
+    logger.error({ err: error, route: 'email' }, 'Error verifying email')
     res.status(500).json({ error: 'Erreur de vérification' })
   }
 })
@@ -139,7 +140,7 @@ router.post('/forgot-password', async (req, res) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Email invalide' })
     }
-    console.error('Error forgot password:', error)
+    logger.error({ err: error, route: 'email' }, 'Error forgot password')
     res.status(500).json({ error: 'Erreur' })
   }
 })
@@ -183,7 +184,7 @@ router.post('/reset-password', async (req, res) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Données invalides' })
     }
-    console.error('Error resetting password:', error)
+    logger.error({ err: error, route: 'email' }, 'Error resetting password')
     res.status(500).json({ error: 'Erreur lors de la réinitialisation' })
   }
 })

@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import { logger } from '../utils/logger.js'
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
@@ -283,7 +284,7 @@ export const sendWeeklyRecapEmail = async (
 // ============================================================
 const sendEmail = async (to: string, subject: string, html: string) => {
   if (!resend) {
-    console.warn(`[Email] Resend non configure, email non envoye a ${to}: ${subject}`)
+    logger.warn({ to, subject }, 'Resend non configure, email non envoye')
     return { success: false, error: 'Resend API key not configured' }
   }
   try {
@@ -295,14 +296,14 @@ const sendEmail = async (to: string, subject: string, html: string) => {
     })
 
     if (error) {
-      console.error(`Erreur envoi email a ${to}:`, error)
+      logger.error({ err: error, to }, 'Erreur envoi email')
       return { success: false, error }
     }
 
-    console.log(`Email envoye a ${to}: ${subject} (id: ${data?.id})`)
+    logger.info({ to, subject, messageId: data?.id }, 'Email envoye')
     return { success: true, messageId: data?.id }
   } catch (error) {
-    console.error(`Erreur envoi email a ${to}:`, error)
+    logger.error({ err: error, to }, 'Erreur envoi email')
     return { success: false, error }
   }
 }

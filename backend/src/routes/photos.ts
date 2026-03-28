@@ -3,6 +3,7 @@ import multer from 'multer'
 import cloudinary from '../config/cloudinary.js'
 import { AppDataSource } from '../config/database.js'
 import { WorkoutPhoto } from '../entities/WorkoutPhoto.js'
+import { logger } from '../utils/logger.js'
 import { Workout } from '../entities/Workout.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { checkPhotoLimit } from '../services/limitService.js'
@@ -106,7 +107,7 @@ router.post(
       const saved = await photoRepository.save(photo)
       res.status(201).json(saved)
     } catch (error) {
-      console.error('Upload error:', error)
+      logger.error({ err: error, route: 'photos' }, 'Upload error')
       res.status(500).json({ error: 'Erreur lors du téléchargement de la photo' })
     }
   }

@@ -3,6 +3,7 @@ import { In } from 'typeorm'
 import { AppDataSource } from '../config/database.js'
 import { FeedPost } from '../entities/FeedPost.js'
 import { Friendship } from '../entities/Friendship.js'
+import { logger } from '../utils/logger.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { parseId } from '../utils/validation.js'
 
@@ -61,7 +62,7 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ posts: formattedPosts, total, limit, offset })
   } catch (error) {
-    console.error('Error fetching feed:', error)
+    logger.error({ err: error, route: 'feed' }, 'Error fetching feed')
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -91,7 +92,7 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
 
     res.status(201).json(post)
   } catch (error) {
-    console.error('Error creating post:', error)
+    logger.error({ err: error, route: 'feed' }, 'Error creating post')
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -135,7 +136,7 @@ router.post('/:postId/react', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ reacted: !alreadyReacted, reactions: post.reactions })
   } catch (error) {
-    console.error('Error reacting to post:', error)
+    logger.error({ err: error, route: 'feed' }, 'Error reacting to post')
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -154,7 +155,7 @@ router.delete('/:postId', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ message: 'Post deleted' })
   } catch (error) {
-    console.error('Error deleting post:', error)
+    logger.error({ err: error, route: 'feed' }, 'Error deleting post')
     res.status(500).json({ error: 'Internal server error' })
   }
 })

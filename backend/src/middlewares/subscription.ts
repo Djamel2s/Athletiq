@@ -2,6 +2,7 @@ import { Response, NextFunction } from 'express'
 import { AppDataSource } from '../config/database.js'
 import { Subscription, SubscriptionStatus, SubscriptionPlan } from '../entities/Subscription.js'
 import { AuthRequest } from './auth.js'
+import { logger } from '../utils/logger.js'
 
 const subscriptionRepo = AppDataSource.getRepository(Subscription)
 
@@ -41,7 +42,7 @@ export const requireActiveSubscription = async (req: AuthRequest, res: Response,
     // On laisse passer — les limites sont gérées par route
     next()
   } catch (error) {
-    console.error('Subscription check error:', error)
+    logger.error({ err: error, route: 'subscription' }, 'Subscription check error')
     res.status(500).json({ error: 'Erreur de vérification d\'abonnement' })
   }
 }
@@ -75,7 +76,7 @@ export const requirePremium = async (req: AuthRequest, res: Response, next: Next
 
     next()
   } catch (error) {
-    console.error('Premium check error:', error)
+    logger.error({ err: error, route: 'subscription' }, 'Premium check error')
     res.status(500).json({ error: 'Erreur de vérification d\'abonnement' })
   }
 }

@@ -1,6 +1,7 @@
 import express from 'express'
 import { AppDataSource } from '../config/database.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
+import { logger } from '../utils/logger.js'
 
 const router = express.Router()
 
@@ -26,7 +27,7 @@ router.get('/personal', authenticate, async (req: AuthRequest, res) => {
 
     res.json(records)
   } catch (error) {
-    console.error('Records error:', error)
+    logger.error({ err: error, route: 'records' }, 'Records error')
     res.status(500).json({ error: 'Failed to fetch personal records' })
   }
 })

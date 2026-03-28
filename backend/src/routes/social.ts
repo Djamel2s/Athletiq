@@ -3,6 +3,7 @@ import rateLimit from 'express-rate-limit'
 import { AppDataSource } from '../config/database.js'
 import { User } from '../entities/User.js'
 import { Friendship } from '../entities/Friendship.js'
+import { logger } from '../utils/logger.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { createNotification } from '../services/notificationService.js'
 import { NotificationType } from '../entities/Notification.js'
@@ -73,11 +74,11 @@ router.post('/request/:userId', authenticate, async (req: AuthRequest, res) => {
       NotificationType.FRIEND_REQUEST,
       'New friend request',
       `${requesterName} sent you a friend request`
-    ).catch(err => console.error('Friend request notification failed:', err))
+    ).catch(err => logger.error({ err, route: 'social' }, 'Friend request notification failed'))
 
     res.status(201).json({ message: 'Friend request sent', friendship })
   } catch (error) {
-    console.error('Error sending friend request:', error)
+    logger.error({ err: error, route: 'social' }, 'Error sending friend request')
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -107,11 +108,11 @@ router.post('/accept/:friendshipId', authenticate, async (req: AuthRequest, res)
       NotificationType.FRIEND_ACCEPTED,
       'Friend request accepted',
       `${accepterName} accepted your friend request`
-    ).catch(err => console.error('Friend accepted notification failed:', err))
+    ).catch(err => logger.error({ err, route: 'social' }, 'Friend accepted notification failed'))
 
     res.json({ message: 'Friend request accepted', friendship })
   } catch (error) {
-    console.error('Error accepting friend request:', error)
+    logger.error({ err: error, route: 'social' }, 'Error accepting friend request')
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -134,7 +135,7 @@ router.post('/reject/:friendshipId', authenticate, async (req: AuthRequest, res)
 
     res.json({ message: 'Friend request rejected' })
   } catch (error) {
-    console.error('Error rejecting friend request:', error)
+    logger.error({ err: error, route: 'social' }, 'Error rejecting friend request')
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -172,7 +173,7 @@ router.post('/block/:userId', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ message: 'User blocked' })
   } catch (error) {
-    console.error('Error blocking user:', error)
+    logger.error({ err: error, route: 'social' }, 'Error blocking user')
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -198,7 +199,7 @@ router.delete('/remove/:userId', authenticate, async (req: AuthRequest, res) => 
 
     res.json({ message: 'Friend removed' })
   } catch (error) {
-    console.error('Error removing friend:', error)
+    logger.error({ err: error, route: 'social' }, 'Error removing friend')
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -231,7 +232,7 @@ router.get('/friends', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ friends })
   } catch (error) {
-    console.error('Error fetching friends:', error)
+    logger.error({ err: error, route: 'social' }, 'Error fetching friends')
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -259,7 +260,7 @@ router.get('/requests', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ requests: pendingRequests })
   } catch (error) {
-    console.error('Error fetching friend requests:', error)
+    logger.error({ err: error, route: 'social' }, 'Error fetching friend requests')
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -320,7 +321,7 @@ router.get('/search', authenticate, searchLimiter, async (req: AuthRequest, res)
       }))
     })
   } catch (error) {
-    console.error('Error searching users:', error)
+    logger.error({ err: error, route: 'social' }, 'Error searching users')
     res.status(500).json({ error: 'Internal server error' })
   }
 })

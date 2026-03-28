@@ -1,4 +1,5 @@
 import admin from 'firebase-admin'
+import { logger } from '../utils/logger.js'
 
 let firebaseApp: admin.app.App | null = null
 
@@ -12,13 +13,13 @@ if (FIREBASE_SERVICE_ACCOUNT) {
     firebaseApp = admin.initializeApp({
       credential: admin.credential.cert(serviceAccount)
     })
-    console.log('Firebase Admin initialized successfully')
+    logger.info('Firebase Admin initialized successfully')
   } catch (error) {
-    console.error('Failed to initialize Firebase Admin:', error)
+    logger.error({ err: error }, 'Failed to initialize Firebase Admin')
     firebaseApp = null
   }
 } else {
-  console.warn('FIREBASE_SERVICE_ACCOUNT env var not set - push notifications disabled')
+  logger.warn('FIREBASE_SERVICE_ACCOUNT env var not set - push notifications disabled')
 }
 
 export { firebaseApp }

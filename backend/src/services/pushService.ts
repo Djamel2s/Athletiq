@@ -2,6 +2,7 @@ import admin, { firebaseApp } from '../config/firebase.js'
 import { AppDataSource } from '../config/database.js'
 import { FcmToken } from '../entities/FcmToken.js'
 import { In } from 'typeorm'
+import { logger } from '../utils/logger.js'
 
 const fcmTokenRepo = () => AppDataSource.getRepository(FcmToken)
 
@@ -42,10 +43,10 @@ export async function sendPushToUser(
 
       if (tokensToDelete.length > 0) {
         await fcmTokenRepo().delete({ token: In(tokensToDelete) })
-        console.log(`Deleted ${tokensToDelete.length} invalid FCM tokens for user ${userId}`)
+        logger.info({ userId, count: tokensToDelete.length }, 'Deleted invalid FCM tokens')
       }
     }
   } catch (error) {
-    console.error(`Push notification error for user ${userId}:`, error)
+    logger.error({ err: error, userId }, 'Push notification error')
   }
 }

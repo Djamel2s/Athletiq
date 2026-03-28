@@ -3,6 +3,7 @@ import { z } from 'zod'
 import Stripe from 'stripe'
 import { AppDataSource } from '../config/database.js'
 import { Subscription, SubscriptionStatus, SubscriptionPlan } from '../entities/Subscription.js'
+import { logger } from '../utils/logger.js'
 import { Workout } from '../entities/Workout.js'
 import { WorkoutPhoto } from '../entities/WorkoutPhoto.js'
 import { UserGoal } from '../entities/UserGoal.js'
@@ -28,7 +29,7 @@ const PRICES = {
 }
 
 if (process.env.NODE_ENV === 'production' && !PRICES.monthly) {
-  console.warn('⚠️ STRIPE_PRICE_MONTHLY non configuré — les paiements Stripe seront désactivés')
+  logger.warn('STRIPE_PRICE_MONTHLY non configure — les paiements Stripe seront desactives')
 }
 
 // ============================================================
@@ -97,7 +98,7 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
       }
     })
   } catch (error) {
-    console.error('Error fetching subscription:', error)
+    logger.error({ err: error, route: 'subscription' }, 'Error fetching subscription')
     res.status(500).json({ error: 'Erreur lors de la récupération de l\'abonnement' })
   }
 })
@@ -149,7 +150,7 @@ router.get('/usage', authenticate, async (req: AuthRequest, res) => {
       }
     })
   } catch (error) {
-    console.error('Error fetching usage:', error)
+    logger.error({ err: error, route: 'subscription' }, 'Error fetching usage')
     res.status(500).json({ error: 'Erreur lors de la récupération de l\'usage' })
   }
 })
@@ -212,7 +213,7 @@ router.post('/checkout', authenticate, async (req: AuthRequest, res) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Plan invalide. Choisissez monthly ou yearly.' })
     }
-    console.error('Error creating checkout session:', error)
+    logger.error({ err: error, route: 'subscription' }, 'Error creating checkout session')
     res.status(500).json({ error: 'Erreur lors de la création de la session de paiement' })
   }
 })
@@ -238,7 +239,7 @@ router.post('/portal', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ url: session.url })
   } catch (error) {
-    console.error('Error creating portal session:', error)
+    logger.error({ err: error, route: 'subscription' }, 'Error creating portal session')
     res.status(500).json({ error: 'Erreur lors de l\'accès au portail' })
   }
 })
@@ -267,7 +268,7 @@ router.post('/cancel', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ message: 'Abonnement annulé. Il reste actif jusqu\'à la fin de la période.' })
   } catch (error) {
-    console.error('Error canceling subscription:', error)
+    logger.error({ err: error, route: 'subscription' }, 'Error canceling subscription')
     res.status(500).json({ error: 'Erreur lors de l\'annulation' })
   }
 })

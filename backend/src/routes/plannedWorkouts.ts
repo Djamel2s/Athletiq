@@ -3,6 +3,7 @@ import { MoreThanOrEqual, In } from 'typeorm'
 import { AppDataSource } from '../config/database.js'
 import { PlannedWorkout } from '../entities/PlannedWorkout.js'
 import { Friendship } from '../entities/Friendship.js'
+import { logger } from '../utils/logger.js'
 import { User } from '../entities/User.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { createNotification } from '../services/notificationService.js'
@@ -88,11 +89,11 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
       NotificationType.WORKOUT_INVITATION,
       'Invitation workout',
       `${inviterName} te propose : ${name} le ${dateStr}`
-    ).catch(err => console.error('Planned workout notification failed:', err))
+    ).catch(err => logger.error({ err, route: 'plannedWorkouts' }, 'Planned workout notification failed'))
 
     res.status(201).json(saved)
   } catch (error) {
-    console.error('Error creating planned workout:', error)
+    logger.error({ err: error, route: 'plannedWorkouts' }, 'Error creating planned workout')
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -122,11 +123,11 @@ router.post('/:id/accept', authenticate, async (req: AuthRequest, res) => {
       NotificationType.WORKOUT_INVITATION_ACCEPTED,
       'Invitation acceptee',
       `${accepterName} a accepte ${planned.name}`
-    ).catch(err => console.error('Accept notification failed:', err))
+    ).catch(err => logger.error({ err, route: 'plannedWorkouts' }, 'Accept notification failed'))
 
     res.json({ message: 'Invitation accepted', planned })
   } catch (error) {
-    console.error('Error accepting planned workout:', error)
+    logger.error({ err: error, route: 'plannedWorkouts' }, 'Error accepting planned workout')
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -150,7 +151,7 @@ router.post('/:id/decline', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ message: 'Invitation declined' })
   } catch (error) {
-    console.error('Error declining planned workout:', error)
+    logger.error({ err: error, route: 'plannedWorkouts' }, 'Error declining planned workout')
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -197,7 +198,7 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ plannedWorkouts: result })
   } catch (error) {
-    console.error('Error fetching planned workouts:', error)
+    logger.error({ err: error, route: 'plannedWorkouts' }, 'Error fetching planned workouts')
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -220,7 +221,7 @@ router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ message: 'Planned workout cancelled' })
   } catch (error) {
-    console.error('Error cancelling planned workout:', error)
+    logger.error({ err: error, route: 'plannedWorkouts' }, 'Error cancelling planned workout')
     res.status(500).json({ error: 'Internal server error' })
   }
 })
