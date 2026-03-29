@@ -102,7 +102,7 @@
               <Icon name="lucide:flame" class="w-4 h-4" :class="(profileData?.stats?.streak ?? 0) > 0 ? 'text-orange-500' : 'text-primary-400 dark:text-primary-500'" />
             </div>
             <p class="text-[11px] text-primary-500 dark:text-primary-400">Streak</p>
-          </div>
+          </NuxtLink>
         </div>
 
         <!-- Action Buttons -->
