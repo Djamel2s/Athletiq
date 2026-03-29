@@ -320,16 +320,48 @@
         </div>
       </div>
 
-      <!-- Photos link -->
-      <div class="mt-8 text-center slide-up">
-        <NuxtLink to="/profile" class="text-sm text-sand-600 dark:text-sand-400 hover:underline inline-flex items-center gap-1.5">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
-          </svg>
-          Voir mes photos sur mon profil
-        </NuxtLink>
+      <!-- Photos Tab -->
+      <div v-else-if="activeTab === 'photos'" class="space-y-6 slide-up">
+        <!-- Loading -->
+        <div v-if="photosLoading" class="text-center py-12">
+          <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-primary-200 dark:border-primary-700 border-t-sand-500"></div>
+        </div>
+
+        <!-- Photos grid -->
+        <div v-else-if="photos.length > 0">
+          <div class="grid grid-cols-3 md:grid-cols-4 gap-2">
+            <div
+              v-for="photo in photos"
+              :key="photo.id"
+              class="relative aspect-square rounded-xl overflow-hidden cursor-pointer group"
+              @click="selectedPhoto = photo"
+            >
+              <img :src="photo.photoUrl" :alt="`Photo`" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" />
+              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty state -->
+        <div v-else class="text-center py-16">
+          <Icon name="lucide:camera" class="w-16 h-16 mx-auto mb-4 text-primary-300 dark:text-primary-600" />
+          <p class="text-primary-500 dark:text-primary-400 text-sm mb-1">Aucune photo pour le moment</p>
+          <p class="text-primary-400 dark:text-primary-500 text-xs">Les photos prises a la fin de tes workouts apparaitront ici</p>
+        </div>
       </div>
+
+      <!-- Photo modal -->
+      <Teleport to="body">
+        <Transition name="fade">
+          <div v-if="selectedPhoto" class="fixed inset-0 z-[100] flex items-center justify-center p-4" @click="selectedPhoto = null">
+            <div class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+            <img :src="selectedPhoto.photoUrl" class="relative max-w-full max-h-[90vh] rounded-2xl object-contain" @click.stop />
+            <button @click="selectedPhoto = null" class="absolute top-6 right-6 w-12 h-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl flex items-center justify-center text-white transition-colors">
+              <Icon name="lucide:x" class="w-6 h-6" />
+            </button>
+          </div>
+        </Transition>
+      </Teleport>
     </div>
 
     <MobileBottomNav active-path="/body" />
@@ -347,12 +379,34 @@ const authStore = useAuthStore()
 const bodyStore = useBodyStore()
 const toast = useToast()
 
-const activeTab = ref<'weight' | 'measurements'>('weight')
+const activeTab = ref<'weight' | 'measurements' | 'photos'>('weight')
 
 const tabs = [
   { key: 'weight' as const, label: 'Poids' },
-  { key: 'measurements' as const, label: 'Mensurations' }
+  { key: 'measurements' as const, label: 'Mensurations' },
+  { key: 'photos' as const, label: 'Photos' }
 ]
+
+// ========== PHOTOS ==========
+const photos = ref<any[]>([])
+const selectedPhoto = ref<any>(null)
+const photosLoading = ref(false)
+
+const loadPhotos = async () => {
+  photosLoading.value = true
+  try {
+    const { getRecentPhotos } = useBodyApi()
+    photos.value = await getRecentPhotos(50)
+  } catch {
+    photos.value = []
+  } finally {
+    photosLoading.value = false
+  }
+}
+
+watch(activeTab, (tab) => {
+  if (tab === 'photos' && photos.value.length === 0) loadPhotos()
+})
 
 // ========== WEIGHT ==========
 const weightForm = reactive({ weight: null as number | null, bodyFat: null as number | null, notes: '' })
