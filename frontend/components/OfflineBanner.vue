@@ -2,7 +2,7 @@
   <Transition name="offline-toast">
     <div
       v-if="!isOnline || isSyncing"
-      class="fixed bottom-20 lg:bottom-6 left-1/2 -translate-x-1/2 z-[200] px-4 py-2 rounded-full backdrop-blur-md border text-xs font-medium inline-flex items-center gap-2 shadow-lg"
+      class="fixed bottom-[88px] left-4 z-[200] px-4 py-2 rounded-full backdrop-blur-md border text-xs font-medium inline-flex items-center gap-2 shadow-lg"
       :class="isSyncing
         ? 'bg-white/80 dark:bg-primary-800/80 border-primary-200/60 dark:border-primary-700/60 text-primary-600 dark:text-primary-400'
         : 'bg-white/80 dark:bg-primary-800/80 border-primary-200/60 dark:border-primary-700/60 text-primary-500 dark:text-primary-400'"
@@ -25,6 +25,7 @@ const { isOnline, isSyncing, pendingCount } = useOfflineStorage()
 }
 .offline-toast-enter-from, .offline-toast-leave-to {
   opacity: 0;
-  transform: translate(-50%, 10px);
+  opacity: 0;
+  transform: translateY(10px);
 }
 </style>

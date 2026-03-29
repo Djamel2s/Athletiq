@@ -27,6 +27,18 @@
         <p class="text-lg text-primary-600 dark:text-primary-400">Analysez vos performances</p>
       </div>
 
+      <!-- Quick links -->
+      <div class="flex justify-center gap-3 mb-6 fade-in lg:hidden">
+        <NuxtLink to="/body" class="btn-glass px-4 py-2 text-sm font-medium inline-flex items-center gap-2">
+          <Icon name="lucide:ruler" class="w-4 h-4" />
+          Suivi corporel
+        </NuxtLink>
+        <NuxtLink to="/calendar" class="btn-glass px-4 py-2 text-sm font-medium inline-flex items-center gap-2">
+          <Icon name="lucide:calendar" class="w-4 h-4" />
+          Calendrier
+        </NuxtLink>
+      </div>
+
       <!-- Time Range Selector -->
       <div class="flex justify-center mb-8 fade-in">
         <div class="flex space-x-2 bg-white dark:bg-primary-900 bg-opacity-50 dark:bg-opacity-50 backdrop-blur-lg rounded-xl p-1">

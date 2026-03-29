@@ -332,6 +332,8 @@ const saveUsername = async () => {
   try {
     await updateProfile({ username: usernameInput.value })
     showUsernameSetup.value = false
+    // Cache username for offline
+    if (process.client) localStorage.setItem('athletiq_username', usernameInput.value)
     // Reload profile
     profileData.value = await getProfile(usernameInput.value)
     toast.success('Pseudo enregistre !')
@@ -415,23 +417,37 @@ const handleAvatarUpload = async (event: Event) => {
 }
 
 onMounted(async () => {
+  // Try cached username first (for offline)
+  const cachedUsername = process.client ? localStorage.getItem('athletiq_username') : null
+
   // Fetch own profile data (includes username)
   let myProfile: any = null
   try {
     myProfile = await getMyProfile() as any
+    // Cache username for offline use
+    if (myProfile?.username && process.client) {
+      localStorage.setItem('athletiq_username', myProfile.username)
+    }
   } catch {}
 
-  const username = myProfile?.username || (authStore.user as any)?.username
+  const username = myProfile?.username || (authStore.user as any)?.username || cachedUsername
 
   if (username) {
     showUsernameSetup.value = false
     try {
       profileData.value = await getProfile(username)
     } catch {
-      profileData.value = { ...myProfile, stats: { workoutCount: 0, streak: 0 } }
+      // Offline fallback — show basic profile from cache
+      profileData.value = {
+        ...myProfile,
+        username,
+        stats: { workoutCount: 0, streak: 0 }
+      }
     }
   } else {
-    showUsernameSetup.value = true
+    // Only show username setup if we're actually online (not just failing due to network)
+    const { isOnline } = useOfflineStorage()
+    showUsernameSetup.value = isOnline.value
     profileData.value = { stats: { workoutCount: 0, streak: 0 } }
   }
 
