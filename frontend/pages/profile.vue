@@ -182,22 +182,47 @@
           </div>
         </div>
 
-        <!-- Photos Grid -->
-        <div v-if="activeTab === 'photos'" class="slide-up">
-          <div v-if="photos.length > 0" class="grid grid-cols-3 gap-1.5">
+        <!-- Photos Tab -->
+        <div v-if="activeTab === 'photos'" class="slide-up space-y-4">
+          <!-- Timelapse + Avant/Apres buttons -->
+          <div v-if="primaryPhotos.length >= 2" class="flex gap-2">
+            <button @click="showTimelapseModal = true" class="btn-glass px-3 py-2 text-xs font-medium inline-flex items-center gap-1.5 flex-1 justify-center">
+              <Icon name="lucide:film" class="w-3.5 h-3.5" />
+              Timelapse
+            </button>
+            <button @click="openBeforeAfter" class="btn-glass px-3 py-2 text-xs font-medium inline-flex items-center gap-1.5 flex-1 justify-center">
+              <Icon name="lucide:git-compare" class="w-3.5 h-3.5" />
+              Avant / Apres
+            </button>
+          </div>
+
+          <!-- Photos grid with add button -->
+          <div class="grid grid-cols-3 gap-1.5">
+            <!-- Add photo button -->
+            <div
+              @click="showUploadModal = true"
+              class="aspect-square rounded-lg border-2 border-dashed border-primary-300 dark:border-primary-600 flex flex-col items-center justify-center cursor-pointer hover:border-sand-500 dark:hover:border-sand-400 hover:bg-sand-500/5 transition-colors"
+            >
+              <Icon name="lucide:plus" class="w-6 h-6 text-primary-400 dark:text-primary-500" />
+              <span class="text-[10px] text-primary-400 dark:text-primary-500 mt-1">Ajouter</span>
+            </div>
+
+            <!-- Photo items -->
             <div
               v-for="photo in photos"
               :key="photo.id"
               class="relative aspect-square rounded-lg overflow-hidden cursor-pointer group"
               @click="selectedPhoto = photo"
             >
-              <img :src="photo.photoUrl" :alt="`Photo ${photo.id}`" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" />
+              <img :src="photo.photoUrl" :alt="`Photo`" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" />
+              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors"></div>
+              <span v-if="photo.isPrimary" class="absolute top-1 left-1 text-yellow-400 text-xs">&#9733;</span>
             </div>
           </div>
-          <div v-else class="text-center py-16">
-            <Icon name="lucide:camera" class="w-16 h-16 mx-auto mb-4 text-primary-300 dark:text-primary-600" />
-            <p class="text-primary-500 dark:text-primary-400 text-sm">Aucune photo pour le moment</p>
-            <p class="text-primary-400 dark:text-primary-500 text-xs mt-1">Les photos de tes workouts apparaitront ici</p>
+
+          <!-- Empty state (no photos at all) -->
+          <div v-if="photos.length === 0" class="text-center py-8">
+            <p class="text-primary-400 dark:text-primary-500 text-xs">Prends des photos apres tes workouts pour suivre ta transformation</p>
           </div>
         </div>
       </template>
@@ -259,6 +284,110 @@
       </Transition>
     </Teleport>
 
+    <!-- Upload Photo Modal -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="showUploadModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4" @click="showUploadModal = false">
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+          <div class="relative bg-white dark:bg-primary-900 rounded-2xl p-6 max-w-sm w-full shadow-xl" @click.stop>
+            <button @click="showUploadModal = false" class="absolute top-3 right-3 w-8 h-8 rounded-lg flex items-center justify-center text-primary-400 hover:text-primary-600 hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors">
+              <Icon name="lucide:x" class="w-5 h-5" />
+            </button>
+            <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-4">Ajouter une photo</h3>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1.5">Workout associe</label>
+                <select v-model="uploadWorkoutId" class="w-full px-3 py-2.5 rounded-xl border border-primary-200 dark:border-primary-700 bg-white/60 dark:bg-primary-800/60 text-sm text-primary-900 dark:text-primary-100 focus:outline-none focus:ring-2 focus:ring-sand-500/50">
+                  <option :value="null" disabled>Selectionner...</option>
+                  <option v-for="w in completedWorkouts" :key="w.id" :value="w.id">
+                    {{ w.name }} — {{ formatDate(w.completedAt || w.createdAt) }}
+                  </option>
+                </select>
+              </div>
+              <label class="flex items-center gap-2 text-sm text-primary-700 dark:text-primary-300 cursor-pointer">
+                <input type="checkbox" v-model="uploadIsPrimary" class="w-4 h-4 rounded border-primary-300 dark:border-primary-600 text-sand-600 focus:ring-sand-600" />
+                Photo principale (timelapse)
+              </label>
+              <label class="btn-primary w-full cursor-pointer inline-flex items-center justify-center gap-2">
+                <Icon name="lucide:camera" class="w-4 h-4" />
+                <span>{{ uploadingPhoto ? 'Upload...' : 'Choisir une photo' }}</span>
+                <input type="file" accept="image/*" class="hidden" @change="handlePhotoUpload" :disabled="!uploadWorkoutId || uploadingPhoto" />
+              </label>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <!-- Timelapse Modal -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="showTimelapseModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4" @click="showTimelapseModal = false">
+          <div class="absolute inset-0 bg-black/90"></div>
+          <div class="relative max-w-lg w-full" @click.stop>
+            <button @click="showTimelapseModal = false" class="absolute -top-12 right-0 w-10 h-10 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center text-white transition-colors">
+              <Icon name="lucide:x" class="w-5 h-5" />
+            </button>
+            <h3 class="text-white text-center font-bold text-lg mb-4">Timelapse</h3>
+            <div class="relative aspect-[3/4] rounded-2xl overflow-hidden bg-black">
+              <Transition name="fade" mode="out-in">
+                <img :key="timelapseIndex" :src="primaryPhotos[timelapseIndex]?.photoUrl" class="w-full h-full object-cover" />
+              </Transition>
+              <div class="absolute bottom-4 left-0 right-0 text-center">
+                <p class="text-white/80 text-sm">{{ timelapseIndex + 1 }} / {{ primaryPhotos.length }}</p>
+              </div>
+            </div>
+            <div class="flex justify-center gap-3 mt-4">
+              <button @click="timelapseIndex = Math.max(0, timelapseIndex - 1)" :disabled="timelapseIndex === 0" class="w-10 h-10 bg-white/20 hover:bg-white/30 disabled:opacity-30 rounded-xl flex items-center justify-center text-white transition-colors">
+                <Icon name="lucide:chevron-left" class="w-5 h-5" />
+              </button>
+              <button @click="toggleTimelapsePlay" class="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center text-white transition-colors">
+                <Icon :name="timelapseAutoPlay ? 'lucide:pause' : 'lucide:play'" class="w-5 h-5" />
+              </button>
+              <button @click="timelapseIndex = Math.min(primaryPhotos.length - 1, timelapseIndex + 1)" :disabled="timelapseIndex >= primaryPhotos.length - 1" class="w-10 h-10 bg-white/20 hover:bg-white/30 disabled:opacity-30 rounded-xl flex items-center justify-center text-white transition-colors">
+                <Icon name="lucide:chevron-right" class="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <!-- Before/After Modal -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="showBeforeAfterModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4" @click="showBeforeAfterModal = false">
+          <div class="absolute inset-0 bg-black/90"></div>
+          <div class="relative max-w-2xl w-full" @click.stop>
+            <button @click="showBeforeAfterModal = false" class="absolute -top-12 right-0 w-10 h-10 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center text-white transition-colors">
+              <Icon name="lucide:x" class="w-5 h-5" />
+            </button>
+            <h3 class="text-white text-center font-bold text-lg mb-4">Avant / Apres</h3>
+            <!-- Photo selectors -->
+            <div class="flex gap-4 mb-4">
+              <select v-model="beforePhotoIndex" class="flex-1 px-3 py-2 rounded-xl bg-white/10 border border-white/20 text-white text-sm focus:outline-none">
+                <option v-for="(p, i) in primaryPhotos" :key="'b'+p.id" :value="i" class="text-black">{{ formatDate(p.createdAt) }}</option>
+              </select>
+              <select v-model="afterPhotoIndex" class="flex-1 px-3 py-2 rounded-xl bg-white/10 border border-white/20 text-white text-sm focus:outline-none">
+                <option v-for="(p, i) in primaryPhotos" :key="'a'+p.id" :value="i" class="text-black">{{ formatDate(p.createdAt) }}</option>
+              </select>
+            </div>
+            <!-- Photos side by side -->
+            <div class="grid grid-cols-2 gap-2">
+              <div class="relative aspect-[3/4] rounded-xl overflow-hidden">
+                <img :src="primaryPhotos[beforePhotoIndex]?.photoUrl" class="w-full h-full object-cover" />
+                <span class="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded-lg">Avant</span>
+              </div>
+              <div class="relative aspect-[3/4] rounded-xl overflow-hidden">
+                <img :src="primaryPhotos[afterPhotoIndex]?.photoUrl" class="w-full h-full object-cover" />
+                <span class="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded-lg">Apres</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
     <MobileBottomNav active-path="/profile" />
   </div>
 </template>
@@ -277,8 +406,10 @@ useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
 
 const authStore = useAuthStore()
 const { getMyProfile, getProfile, updateProfile, checkUsername, getFeed, getFriends } = useSocialApi()
-const { getRecentPhotos } = useBodyApi()
+const bodyApi = useBodyApi()
+const { getRecentPhotos } = bodyApi
 const toast = useToast()
+const workoutStore = useWorkoutStore()
 
 const pageLoading = ref(true)
 const activeTab = ref<'photos' | 'posts'>('posts')
@@ -289,6 +420,91 @@ const selectedPhoto = ref<any>(null)
 const avatarUploading = ref(false)
 const showQrModal = ref(false)
 const gymBrosCount = ref(0)
+
+// Photo upload
+const showUploadModal = ref(false)
+const uploadWorkoutId = ref<number | null>(null)
+const uploadIsPrimary = ref(false)
+const uploadingPhoto = ref(false)
+const completedWorkouts = computed(() => {
+  return (workoutStore.workouts || []).filter((w: any) => w.completedAt)
+})
+
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return ''
+  return new Date(dateStr).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
+const handlePhotoUpload = async (event: Event) => {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file || !uploadWorkoutId.value) return
+  if (!file.type.startsWith('image/')) { toast.error('Le fichier doit etre une image'); input.value = ''; return }
+  if (file.size > 5 * 1024 * 1024) { toast.error('La photo ne doit pas depasser 5 Mo'); input.value = ''; return }
+  uploadingPhoto.value = true
+  try {
+    await bodyApi.uploadPhoto(uploadWorkoutId.value, file, uploadIsPrimary.value)
+    toast.success('Photo ajoutee !')
+    showUploadModal.value = false
+    uploadWorkoutId.value = null
+    uploadIsPrimary.value = false
+    // Reload photos
+    photos.value = await getRecentPhotos(50)
+  } catch {
+    toast.error('Erreur lors de l\'upload')
+  } finally {
+    uploadingPhoto.value = false
+    input.value = ''
+  }
+}
+
+// Timelapse
+const showTimelapseModal = ref(false)
+const timelapseIndex = ref(0)
+const timelapseAutoPlay = ref(false)
+let timelapseInterval: NodeJS.Timeout | null = null
+
+const primaryPhotos = computed(() => {
+  return photos.value.filter((p: any) => p.isPrimary).sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+})
+
+const toggleTimelapsePlay = () => {
+  if (timelapseAutoPlay.value) {
+    timelapseAutoPlay.value = false
+    if (timelapseInterval) { clearInterval(timelapseInterval); timelapseInterval = null }
+  } else {
+    timelapseAutoPlay.value = true
+    timelapseIndex.value = 0
+    timelapseInterval = setInterval(() => {
+      if (timelapseIndex.value < primaryPhotos.value.length - 1) {
+        timelapseIndex.value++
+      } else {
+        timelapseAutoPlay.value = false
+        if (timelapseInterval) { clearInterval(timelapseInterval); timelapseInterval = null }
+      }
+    }, 1500)
+  }
+}
+
+watch(showTimelapseModal, (val) => {
+  if (!val) {
+    timelapseAutoPlay.value = false
+    if (timelapseInterval) { clearInterval(timelapseInterval); timelapseInterval = null }
+    timelapseIndex.value = 0
+  }
+})
+
+// Before/After
+const showBeforeAfterModal = ref(false)
+const beforePhotoIndex = ref(0)
+const afterPhotoIndex = ref(0)
+
+const openBeforeAfter = () => {
+  if (primaryPhotos.value.length < 2) return
+  beforePhotoIndex.value = 0
+  afterPhotoIndex.value = primaryPhotos.value.length - 1
+  showBeforeAfterModal.value = true
+}
 
 // Username setup
 const showUsernameSetup = ref(false)
@@ -473,6 +689,11 @@ onMounted(async () => {
     posts.value = (feedData?.posts || feedData || []).filter((p: any) => p.userId === authStore.user?.id)
   } catch {
     posts.value = []
+  }
+
+  // Load workouts for photo upload selector
+  if (!workoutStore.workouts.length) {
+    workoutStore.fetchWorkouts().catch(() => {})
   }
 
   pageLoading.value = false
