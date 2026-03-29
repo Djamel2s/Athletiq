@@ -82,13 +82,13 @@
 
         <!-- Stats Row -->
         <div class="flex justify-center gap-8 mb-6 slide-up">
-          <div class="text-center">
+          <NuxtLink to="/workouts" class="text-center hover:opacity-70 transition-opacity cursor-pointer">
             <div class="flex items-center justify-center gap-1.5">
               <span class="text-lg font-bold text-primary-900 dark:text-primary-100">{{ profileData?.stats?.workoutCount ?? 0 }}</span>
               <Icon name="lucide:dumbbell" class="w-4 h-4 text-primary-400 dark:text-primary-500" />
             </div>
             <p class="text-[11px] text-primary-500 dark:text-primary-400">Workouts</p>
-          </div>
+          </NuxtLink>
           <NuxtLink to="/friends" class="text-center hover:opacity-70 transition-opacity cursor-pointer">
             <div class="flex items-center justify-center gap-1.5">
               <span class="text-lg font-bold text-primary-900 dark:text-primary-100">{{ gymBrosCount }}</span>
@@ -96,7 +96,7 @@
             </div>
             <p class="text-[11px] text-primary-500 dark:text-primary-400">Gym Bros</p>
           </NuxtLink>
-          <div class="text-center">
+          <NuxtLink to="/streak" class="text-center hover:opacity-70 transition-opacity cursor-pointer">
             <div class="flex items-center justify-center gap-1.5">
               <span class="text-lg font-bold text-primary-900 dark:text-primary-100">{{ profileData?.stats?.streak ?? 0 }}</span>
               <Icon name="lucide:flame" class="w-4 h-4" :class="(profileData?.stats?.streak ?? 0) > 0 ? 'text-orange-500' : 'text-primary-400 dark:text-primary-500'" />
@@ -325,19 +325,27 @@
         <div v-if="showTimelapseModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4" @click="showTimelapseModal = false">
           <div class="absolute inset-0 bg-black/90"></div>
           <div class="relative max-w-lg w-full" @click.stop>
-            <button @click="showTimelapseModal = false" class="absolute -top-12 right-0 w-10 h-10 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center text-white transition-colors">
-              <Icon name="lucide:x" class="w-5 h-5" />
-            </button>
-            <h3 class="text-white text-center font-bold text-lg mb-4">Timelapse</h3>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-white font-bold text-lg">Timelapse</h3>
+              <div class="flex items-center gap-2">
+                <button @click="shareTimelapse" class="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center text-white transition-colors" title="Partager">
+                  <Icon name="lucide:share-2" class="w-5 h-5" />
+                </button>
+                <button @click="showTimelapseModal = false" class="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center text-white transition-colors">
+                  <Icon name="lucide:x" class="w-5 h-5" />
+                </button>
+              </div>
+            </div>
             <div class="relative aspect-[3/4] rounded-2xl overflow-hidden bg-black">
               <Transition name="fade" mode="out-in">
                 <img :key="timelapseIndex" :src="primaryPhotos[timelapseIndex]?.photoUrl" class="w-full h-full object-cover" />
               </Transition>
-              <div class="absolute bottom-4 left-0 right-0 text-center">
-                <p class="text-white/80 text-sm">{{ timelapseIndex + 1 }} / {{ primaryPhotos.length }}</p>
+              <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+                <span class="bg-black/60 text-white text-xs px-2 py-1 rounded-lg">{{ formatDate(primaryPhotos[timelapseIndex]?.createdAt) }}</span>
+                <span class="bg-black/60 text-white text-xs px-2 py-1 rounded-lg">{{ timelapseIndex + 1 }} / {{ primaryPhotos.length }}</span>
               </div>
             </div>
-            <div class="flex justify-center gap-3 mt-4">
+            <div class="flex items-center justify-center gap-3 mt-4">
               <button @click="timelapseIndex = Math.max(0, timelapseIndex - 1)" :disabled="timelapseIndex === 0" class="w-10 h-10 bg-white/20 hover:bg-white/30 disabled:opacity-30 rounded-xl flex items-center justify-center text-white transition-colors">
                 <Icon name="lucide:chevron-left" class="w-5 h-5" />
               </button>
@@ -346,6 +354,19 @@
               </button>
               <button @click="timelapseIndex = Math.min(primaryPhotos.length - 1, timelapseIndex + 1)" :disabled="timelapseIndex >= primaryPhotos.length - 1" class="w-10 h-10 bg-white/20 hover:bg-white/30 disabled:opacity-30 rounded-xl flex items-center justify-center text-white transition-colors">
                 <Icon name="lucide:chevron-right" class="w-5 h-5" />
+              </button>
+              <!-- Speed controls -->
+              <div class="h-6 w-px bg-white/20 mx-1"></div>
+              <button
+                v-for="speed in timelapseSpeeds"
+                :key="speed"
+                @click="timelapseSpeed = speed"
+                :class="[
+                  'px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors',
+                  timelapseSpeed === speed ? 'bg-white/30 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'
+                ]"
+              >
+                {{ speed }}x
               </button>
             </div>
           </div>
@@ -358,13 +379,20 @@
       <Transition name="modal">
         <div v-if="showBeforeAfterModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4" @click="showBeforeAfterModal = false">
           <div class="absolute inset-0 bg-black/90"></div>
-          <div class="relative max-w-2xl w-full" @click.stop>
-            <button @click="showBeforeAfterModal = false" class="absolute -top-12 right-0 w-10 h-10 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center text-white transition-colors">
-              <Icon name="lucide:x" class="w-5 h-5" />
-            </button>
-            <h3 class="text-white text-center font-bold text-lg mb-4">Avant / Apres</h3>
+          <div class="relative max-w-md w-full" @click.stop>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-white font-bold text-lg">Avant / Apres</h3>
+              <div class="flex items-center gap-2">
+                <button @click="shareBeforeAfter" class="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center text-white transition-colors" title="Partager">
+                  <Icon name="lucide:share-2" class="w-5 h-5" />
+                </button>
+                <button @click="showBeforeAfterModal = false" class="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center text-white transition-colors">
+                  <Icon name="lucide:x" class="w-5 h-5" />
+                </button>
+              </div>
+            </div>
             <!-- Photo selectors -->
-            <div class="flex gap-4 mb-4">
+            <div class="flex gap-3 mb-4">
               <select v-model="beforePhotoIndex" class="flex-1 px-3 py-2 rounded-xl bg-white/10 border border-white/20 text-white text-sm focus:outline-none">
                 <option v-for="(p, i) in primaryPhotos" :key="'b'+p.id" :value="i" class="text-black">{{ formatDate(p.createdAt) }}</option>
               </select>
@@ -372,16 +400,33 @@
                 <option v-for="(p, i) in primaryPhotos" :key="'a'+p.id" :value="i" class="text-black">{{ formatDate(p.createdAt) }}</option>
               </select>
             </div>
-            <!-- Photos side by side -->
-            <div class="grid grid-cols-2 gap-2">
-              <div class="relative aspect-[3/4] rounded-xl overflow-hidden">
-                <img :src="primaryPhotos[beforePhotoIndex]?.photoUrl" class="w-full h-full object-cover" />
-                <span class="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded-lg">Avant</span>
+            <!-- Slider comparison -->
+            <div
+              class="relative aspect-[3/4] rounded-2xl overflow-hidden cursor-col-resize select-none"
+              @mousedown="startSliderDrag"
+              @mousemove="onSliderDrag"
+              @mouseup="stopSliderDrag"
+              @mouseleave="stopSliderDrag"
+              @touchstart.prevent="startSliderTouch"
+              @touchmove.prevent="onSliderTouch"
+              @touchend="stopSliderDrag"
+              ref="sliderContainer"
+            >
+              <!-- After photo (full, behind) -->
+              <img :src="primaryPhotos[afterPhotoIndex]?.photoUrl" class="absolute inset-0 w-full h-full object-cover" />
+              <!-- Before photo (clipped) -->
+              <div class="absolute inset-0 overflow-hidden" :style="{ width: sliderPosition + '%' }">
+                <img :src="primaryPhotos[beforePhotoIndex]?.photoUrl" class="absolute inset-0 w-full h-full object-cover" :style="{ minWidth: sliderContainerWidth + 'px' }" />
               </div>
-              <div class="relative aspect-[3/4] rounded-xl overflow-hidden">
-                <img :src="primaryPhotos[afterPhotoIndex]?.photoUrl" class="w-full h-full object-cover" />
-                <span class="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded-lg">Apres</span>
+              <!-- Slider line -->
+              <div class="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg" :style="{ left: sliderPosition + '%' }">
+                <div class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center">
+                  <Icon name="lucide:move-horizontal" class="w-4 h-4 text-primary-900" />
+                </div>
               </div>
+              <!-- Labels -->
+              <span class="absolute top-3 left-3 bg-black/60 text-white text-xs px-2 py-1 rounded-lg">Avant</span>
+              <span class="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-lg">Apres</span>
             </div>
           </div>
         </div>
@@ -462,11 +507,15 @@ const handlePhotoUpload = async (event: Event) => {
 const showTimelapseModal = ref(false)
 const timelapseIndex = ref(0)
 const timelapseAutoPlay = ref(false)
+const timelapseSpeed = ref(1)
+const timelapseSpeeds = [0.5, 1, 2, 3]
 let timelapseInterval: NodeJS.Timeout | null = null
 
 const primaryPhotos = computed(() => {
   return photos.value.filter((p: any) => p.isPrimary).sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
 })
+
+const getTimelapseDelay = () => Math.round(1500 / timelapseSpeed.value)
 
 const toggleTimelapsePlay = () => {
   if (timelapseAutoPlay.value) {
@@ -475,35 +524,91 @@ const toggleTimelapsePlay = () => {
   } else {
     timelapseAutoPlay.value = true
     timelapseIndex.value = 0
-    timelapseInterval = setInterval(() => {
-      if (timelapseIndex.value < primaryPhotos.value.length - 1) {
-        timelapseIndex.value++
-      } else {
-        timelapseAutoPlay.value = false
-        if (timelapseInterval) { clearInterval(timelapseInterval); timelapseInterval = null }
-      }
-    }, 1500)
+    startTimelapseInterval()
   }
 }
+
+const startTimelapseInterval = () => {
+  if (timelapseInterval) clearInterval(timelapseInterval)
+  timelapseInterval = setInterval(() => {
+    if (timelapseIndex.value < primaryPhotos.value.length - 1) {
+      timelapseIndex.value++
+    } else {
+      timelapseAutoPlay.value = false
+      if (timelapseInterval) { clearInterval(timelapseInterval); timelapseInterval = null }
+    }
+  }, getTimelapseDelay())
+}
+
+// Restart interval when speed changes during playback
+watch(timelapseSpeed, () => {
+  if (timelapseAutoPlay.value) startTimelapseInterval()
+})
 
 watch(showTimelapseModal, (val) => {
   if (!val) {
     timelapseAutoPlay.value = false
     if (timelapseInterval) { clearInterval(timelapseInterval); timelapseInterval = null }
     timelapseIndex.value = 0
+    timelapseSpeed.value = 1
   }
 })
+
+const shareTimelapse = async () => {
+  const text = `Ma transformation sur Athletiq ! ${primaryPhotos.value.length} photos`
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: 'Mon timelapse Athletiq', text })
+    } catch {}
+  } else {
+    toast.success('Partage non disponible sur cet appareil')
+  }
+}
 
 // Before/After
 const showBeforeAfterModal = ref(false)
 const beforePhotoIndex = ref(0)
 const afterPhotoIndex = ref(0)
+const sliderPosition = ref(50)
+const isDragging = ref(false)
+const sliderContainer = ref<HTMLElement | null>(null)
+const sliderContainerWidth = ref(400)
 
 const openBeforeAfter = () => {
   if (primaryPhotos.value.length < 2) return
   beforePhotoIndex.value = 0
   afterPhotoIndex.value = primaryPhotos.value.length - 1
+  sliderPosition.value = 50
   showBeforeAfterModal.value = true
+  nextTick(() => {
+    if (sliderContainer.value) sliderContainerWidth.value = sliderContainer.value.offsetWidth
+  })
+}
+
+const getSliderPercent = (clientX: number) => {
+  if (!sliderContainer.value) return 50
+  const rect = sliderContainer.value.getBoundingClientRect()
+  const x = clientX - rect.left
+  return Math.max(0, Math.min(100, (x / rect.width) * 100))
+}
+
+const startSliderDrag = (e: MouseEvent) => { isDragging.value = true; sliderPosition.value = getSliderPercent(e.clientX) }
+const onSliderDrag = (e: MouseEvent) => { if (isDragging.value) sliderPosition.value = getSliderPercent(e.clientX) }
+const stopSliderDrag = () => { isDragging.value = false }
+const startSliderTouch = (e: TouchEvent) => { isDragging.value = true; sliderPosition.value = getSliderPercent(e.touches[0].clientX) }
+const onSliderTouch = (e: TouchEvent) => { if (isDragging.value) sliderPosition.value = getSliderPercent(e.touches[0].clientX) }
+
+const shareBeforeAfter = async () => {
+  const before = primaryPhotos.value[beforePhotoIndex.value]
+  const after = primaryPhotos.value[afterPhotoIndex.value]
+  const text = `Ma transformation Athletiq ! Du ${formatDate(before?.createdAt)} au ${formatDate(after?.createdAt)}`
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: 'Avant / Apres - Athletiq', text })
+    } catch {}
+  } else {
+    toast.success('Partage non disponible sur cet appareil')
+  }
 }
 
 // Username setup
