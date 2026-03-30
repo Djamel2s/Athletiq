@@ -23,7 +23,7 @@ export const useAuthStore = defineStore('auth', {
     user: null,
     token: null,
     isAuthenticated: false,
-    isInitializing: true,
+    isInitializing: false,
     _refreshPromise: null
   }),
 
