@@ -3,6 +3,7 @@
     <div
       v-if="!isOnline || isSyncing"
       class="fixed bottom-[88px] left-4 z-[200] px-4 py-2 rounded-full backdrop-blur-md border text-xs font-medium inline-flex items-center gap-2 shadow-lg"
+      style="transform: translateZ(0);"
       :class="isSyncing
         ? 'bg-white/80 dark:bg-primary-800/80 border-primary-200/60 dark:border-primary-700/60 text-primary-600 dark:text-primary-400'
         : 'bg-white/80 dark:bg-primary-800/80 border-primary-200/60 dark:border-primary-700/60 text-primary-500 dark:text-primary-400'"

@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===== Mobile viewport fix ===== */
+html {
+  height: -webkit-fill-available;
+}
+body {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+
 /* ===== Sand Color Palette (CSS Variables for theme switching) ===== */
 :root {
   /* Sand/Beige palette (default) */

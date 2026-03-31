@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
+  <div class="mobile-bottom-nav lg:hidden">
     <!-- Fan overlay backdrop -->
     <Transition
       enter-active-class="transition duration-200 ease-out"
@@ -194,6 +194,18 @@ const rightItems = [
 </script>
 
 <style scoped>
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  /* Force GPU layer to prevent scroll jank */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
 .go-button:active .relative {
   box-shadow: 0 2px 8px rgba(157, 133, 105, 0.4);
 }
