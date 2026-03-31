@@ -68,7 +68,7 @@
               type="text"
               maxlength="6"
               placeholder="ABC123"
-              class="w-full px-4 py-3 rounded-xl border border-primary-200 dark:border-primary-700 bg-white dark:bg-primary-800 text-primary-900 dark:text-primary-100 text-center text-2xl font-mono font-bold tracking-[0.3em] uppercase focus:outline-none focus:border-sand-500"
+              class="input-primary text-center text-2xl font-mono font-bold tracking-[0.3em] uppercase"
               @input="joinCode = joinCode.toUpperCase()"
             />
           </div>
@@ -103,13 +103,13 @@
               v-model="localEmail"
               type="email"
               placeholder="Email du partenaire"
-              class="w-full px-4 py-2.5 rounded-xl border border-primary-200 dark:border-primary-700 bg-white dark:bg-primary-800 text-primary-900 dark:text-primary-100 text-sm focus:outline-none focus:border-sand-500"
+              class="input-primary text-sm"
             />
             <input
               v-model="localPassword"
               type="password"
               placeholder="Mot de passe"
-              class="w-full px-4 py-2.5 rounded-xl border border-primary-200 dark:border-primary-700 bg-white dark:bg-primary-800 text-primary-900 dark:text-primary-100 text-sm focus:outline-none focus:border-sand-500"
+              class="input-primary text-sm"
             />
             <button
               @click="handleJoinLocal"
@@ -132,10 +132,13 @@
       <!-- Session lobby (after creating/joining) -->
       <div v-if="session" class="space-y-6 slide-up">
         <!-- Session code display -->
-        <div class="card-glass text-center">
-          <p class="text-sm text-primary-500 dark:text-primary-400 uppercase tracking-wider font-semibold mb-2">Code de session</p>
-          <div class="text-5xl md:text-6xl font-bold font-mono tracking-[0.3em] text-primary-900 dark:text-primary-100 mb-4">
-            {{ session.code }}
+        <div class="card-glass text-center relative overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-br from-sand-500/10 via-transparent to-sand-600/10 pointer-events-none"></div>
+          <div class="relative">
+            <p class="text-sm text-primary-500 dark:text-primary-400 uppercase tracking-wider font-semibold mb-3">Code de session</p>
+            <div class="text-6xl md:text-7xl font-bold font-mono tracking-[0.3em] bg-gradient-to-r from-sand-500 to-sand-700 dark:from-sand-400 dark:to-sand-600 bg-clip-text text-transparent mb-5 py-2">
+              {{ session.code }}
+            </div>
           </div>
           <button
             @click="copyCode"
@@ -149,9 +152,14 @@
         </div>
 
         <!-- Connection status -->
-        <div class="flex items-center justify-center gap-2">
-          <div :class="['w-2.5 h-2.5 rounded-full', socketConnected ? 'bg-green-500' : 'bg-red-500']"></div>
-          <span class="text-sm text-primary-500 dark:text-primary-400">
+        <div class="flex items-center justify-center">
+          <span :class="[
+            'inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium',
+            socketConnected
+              ? 'bg-green-500/10 text-green-700 dark:text-green-400 border border-green-500/20'
+              : 'bg-red-500/10 text-red-700 dark:text-red-400 border border-red-500/20'
+          ]">
+            <div :class="['w-2 h-2 rounded-full', socketConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500']"></div>
             {{ socketConnected ? 'Connecte en temps reel' : 'Connexion...' }}
           </span>
         </div>
@@ -165,7 +173,7 @@
             <div
               v-for="participant in participants"
               :key="participant.userId"
-              class="flex items-center gap-3 p-3 rounded-xl bg-primary-50 dark:bg-primary-800/50 border border-primary-200/60 dark:border-primary-700/60"
+              class="card-glass !p-3 flex items-center gap-3"
             >
               <!-- Avatar -->
               <div class="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center flex-shrink-0 overflow-hidden">

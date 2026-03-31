@@ -34,7 +34,7 @@
         <!-- Cover area with avatar -->
         <div class="text-center mb-6 fade-in">
           <div class="relative inline-block mb-4">
-            <div class="w-24 h-24 rounded-full overflow-hidden ring-4 ring-sand-500/30 mx-auto">
+            <div class="w-24 h-24 rounded-2xl overflow-hidden ring-4 ring-sand-500/30 mx-auto">
               <div class="w-full h-full flex items-center justify-center" :class="profile.avatarUrl ? '' : 'bg-gradient-primary'">
                 <img v-if="profile.avatarUrl" :src="profile.avatarUrl" alt="Avatar" class="w-full h-full object-cover" />
                 <span v-else class="text-white text-3xl font-bold">{{ profileInitials }}</span>
@@ -97,27 +97,38 @@
         </div>
 
         <!-- Private profile message -->
-        <div v-if="!profile.isPublic && !profile.isFriend" class="text-center py-12 slide-up">
-          <Icon name="lucide:lock" class="w-16 h-16 mx-auto mb-4 text-primary-300 dark:text-primary-600" />
-          <h3 class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-2">Profil prive</h3>
-          <p class="text-sm text-primary-500 dark:text-primary-400">Ajoutez cet utilisateur en Gym Bro pour voir son profil complet</p>
+        <div v-if="!profile.isPublic && !profile.isFriend" class="text-center py-16 slide-up">
+          <div class="w-20 h-20 mx-auto mb-5 rounded-2xl bg-primary-100 dark:bg-primary-800/50 flex items-center justify-center">
+            <Icon name="lucide:lock" class="w-10 h-10 text-primary-400 dark:text-primary-500" />
+          </div>
+          <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-2">Profil prive</h3>
+          <p class="text-sm text-primary-500 dark:text-primary-400 max-w-xs mx-auto">Ajoutez cet utilisateur en Gym Bro pour voir son profil complet</p>
         </div>
 
         <!-- Public / Friends content -->
         <template v-if="profile.isPublic || profile.isFriend">
           <!-- Stats Row -->
-          <div class="grid grid-cols-3 gap-3 mb-6 slide-up">
-            <div class="card-glass !p-4 text-center">
-              <p class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">{{ profile.stats?.workoutCount ?? 0 }}</p>
-              <p class="text-[11px] text-primary-500 dark:text-primary-400 mt-0.5">Workouts</p>
+          <div class="flex justify-center gap-8 mb-6 slide-up">
+            <div class="text-center">
+              <div class="flex items-center justify-center gap-1.5">
+                <span class="text-lg font-bold text-primary-900 dark:text-primary-100">{{ profile.stats?.workoutCount ?? 0 }}</span>
+                <Icon name="lucide:dumbbell" class="w-4 h-4 text-primary-400 dark:text-primary-500" />
+              </div>
+              <p class="text-[11px] text-primary-500 dark:text-primary-400">Workouts</p>
             </div>
-            <div class="card-glass !p-4 text-center">
-              <p class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">{{ formatVolume(profile.stats?.totalVolume) }}</p>
-              <p class="text-[11px] text-primary-500 dark:text-primary-400 mt-0.5">Volume (kg)</p>
+            <div class="text-center">
+              <div class="flex items-center justify-center gap-1.5">
+                <span class="text-lg font-bold text-primary-900 dark:text-primary-100">{{ formatVolume(profile.stats?.totalVolume) }}</span>
+                <Icon name="lucide:weight" class="w-4 h-4 text-primary-400 dark:text-primary-500" />
+              </div>
+              <p class="text-[11px] text-primary-500 dark:text-primary-400">Volume (kg)</p>
             </div>
-            <div class="card-glass !p-4 text-center">
-              <p class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">{{ profile.stats?.streak ?? 0 }}</p>
-              <p class="text-[11px] text-primary-500 dark:text-primary-400 mt-0.5">Streak</p>
+            <div class="text-center">
+              <div class="flex items-center justify-center gap-1.5">
+                <span class="text-lg font-bold text-primary-900 dark:text-primary-100">{{ profile.stats?.streak ?? 0 }}</span>
+                <Icon name="lucide:flame" class="w-4 h-4" :class="(profile.stats?.streak ?? 0) > 0 ? 'text-orange-500' : 'text-primary-400 dark:text-primary-500'" />
+              </div>
+              <p class="text-[11px] text-primary-500 dark:text-primary-400">Streak</p>
             </div>
           </div>
 
@@ -127,7 +138,7 @@
           </div>
 
           <!-- Tab Bar -->
-          <div class="flex justify-center mb-6">
+          <div class="flex justify-center mb-6 slide-up">
             <div class="flex space-x-1 bg-white/50 dark:bg-primary-900/50 backdrop-blur-lg rounded-xl p-1">
               <button
                 @click="activeTab = 'photos'"

@@ -1,12 +1,13 @@
 <template>
   <div class="min-h-screen">
     <!-- Countdown 3-2-1-GO -->
-    <div v-if="showCountdown" class="fixed inset-0 bg-white dark:bg-primary-900 z-50 flex items-center justify-center">
-      <div class="text-center">
-        <div class="text-7xl md:text-9xl font-bold text-primary-900 dark:text-primary-100 animate-pulse">
+    <div v-if="showCountdown" class="fixed inset-0 bg-white dark:bg-primary-900 z-50 flex items-center justify-center overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-sand-500/5 via-transparent to-sand-600/10 pointer-events-none"></div>
+      <div class="text-center relative">
+        <div class="text-8xl md:text-[12rem] font-bold bg-gradient-to-b from-sand-500 to-sand-700 dark:from-sand-400 dark:to-sand-600 bg-clip-text text-transparent animate-pulse font-mono">
           {{ countdownNumber }}
         </div>
-        <p class="text-2xl text-primary-600 dark:text-primary-400 mt-4">Preparez-vous...</p>
+        <p class="text-2xl text-primary-600 dark:text-primary-400 mt-6 font-medium">Preparez-vous...</p>
       </div>
     </div>
 
@@ -15,14 +16,12 @@
       <div class="max-w-3xl mx-auto px-4 py-3">
         <div class="flex items-center justify-between">
           <button @click="confirmExit" class="text-primary-700 dark:text-primary-300 p-2 hover:text-primary-900 dark:hover:text-primary-100">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
+            <Icon name="lucide:x" class="w-6 h-6" />
           </button>
 
           <div class="text-center">
-            <div class="text-xl font-bold text-primary-900 dark:text-primary-100 font-mono">{{ formattedTime }}</div>
-            <p class="text-[10px] text-primary-600 dark:text-primary-400 uppercase tracking-wider">Session {{ sessionCode }}</p>
+            <div class="text-2xl font-bold text-primary-900 dark:text-primary-100 font-mono">{{ formattedTime }}</div>
+            <p class="text-xs text-primary-600 dark:text-primary-400">Session {{ sessionCode }}</p>
           </div>
 
           <button
@@ -44,12 +43,12 @@
             v-for="(participant, idx) in participants"
             :key="participant.userId"
             :class="[
-              'flex items-center gap-2 px-3 py-2 rounded-xl flex-shrink-0 border transition-all',
+              'flex items-center gap-2 px-3 py-2 rounded-2xl flex-shrink-0 backdrop-blur-sm transition-all',
               idx === currentTurnIndex
-                ? 'bg-sand-500/15 border-sand-500/40 dark:border-sand-600/30 ring-2 ring-sand-500/30'
+                ? 'bg-sand-500/15 border-2 border-sand-500/40 ring-2 ring-sand-500/20 shadow-sm'
                 : participant.restRemaining <= 0
-                  ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                  : 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'
+                  ? 'bg-green-500/10 border border-green-500/20'
+                  : 'bg-amber-500/10 border border-amber-500/20'
             ]"
           >
             <!-- Avatar -->
@@ -94,31 +93,30 @@
         <p class="text-primary-900 dark:text-primary-100 text-lg">Workout introuvable</p>
       </div>
 
-      <div v-else class="space-y-4">
+      <div v-else class="space-y-4 slide-up">
         <!-- Turn indicator -->
         <div :class="[
-          'text-center py-4 px-6 rounded-2xl border-2 transition-all',
-          isMyTurn
-            ? 'bg-gradient-to-r from-sand-500/15 to-sand-600/15 border-sand-500/40 dark:border-sand-600/30'
-            : 'bg-primary-50 dark:bg-primary-800/50 border-primary-200/60 dark:border-primary-700/60'
+          'card-glass !py-5 !px-6 text-center relative overflow-hidden transition-all',
+          isMyTurn ? 'ring-2 ring-sand-500/30' : ''
         ]">
-          <p v-if="isMyTurn" class="text-2xl font-bold text-primary-900 dark:text-primary-100">
-            C'est ton tour !
-          </p>
-          <p v-else class="text-xl font-bold text-primary-900 dark:text-primary-100">
-            C'est le tour de {{ currentTurnParticipant?.name || '...' }}
-          </p>
-          <p class="text-sm text-primary-500 dark:text-primary-400 mt-1">
-            Tour {{ currentTurnIndex + 1 }} / {{ activeParticipants.length }}
-          </p>
+          <div v-if="isMyTurn" class="absolute inset-0 bg-gradient-to-r from-sand-500/10 via-sand-500/5 to-sand-600/10 pointer-events-none"></div>
+          <div class="relative">
+            <p v-if="isMyTurn" class="text-2xl font-bold bg-gradient-to-r from-sand-500 to-sand-700 dark:from-sand-400 dark:to-sand-600 bg-clip-text text-transparent">
+              C'est ton tour !
+            </p>
+            <p v-else class="text-xl font-bold text-primary-900 dark:text-primary-100">
+              C'est le tour de {{ currentTurnParticipant?.name || '...' }}
+            </p>
+            <p class="text-sm text-primary-500 dark:text-primary-400 mt-1">
+              Tour {{ currentTurnIndex + 1 }} / {{ activeParticipants.length }}
+            </p>
+          </div>
         </div>
 
         <!-- When it's NOT my turn: waiting state -->
         <div v-if="!isMyTurn && !isLocalMode" class="card-glass text-center py-8 space-y-4">
           <div class="w-16 h-16 mx-auto bg-primary-100 dark:bg-primary-800 rounded-full flex items-center justify-center">
-            <svg class="w-8 h-8 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
+            <Icon name="lucide:clock" class="w-8 h-8 text-primary-400" />
           </div>
           <p class="text-lg text-primary-600 dark:text-primary-400">En attente...</p>
           <p class="text-sm text-primary-500 dark:text-primary-400">
@@ -133,10 +131,8 @@
             </div>
           </div>
           <div v-else class="mt-4">
-            <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-sm font-semibold">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-              </svg>
+            <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-green-500/10 text-green-700 dark:text-green-400 text-sm font-semibold border border-green-500/20">
+              <Icon name="lucide:check" class="w-4 h-4" />
               Repos termine
             </span>
           </div>
@@ -252,7 +248,7 @@
                 <div
                   v-for="(set, idx) in completedSets"
                   :key="idx"
-                  class="flex-shrink-0 bg-primary-100 dark:bg-primary-800 rounded-lg p-3 text-center border border-primary-200 dark:border-primary-700 min-w-[80px]"
+                  class="flex-shrink-0 card-glass !p-3 text-center min-w-[80px]"
                 >
                   <p class="text-xs text-primary-600 dark:text-primary-400 mb-1">S{{ idx + 1 }}</p>
                   <p class="text-primary-900 dark:text-primary-100 font-bold">{{ set.reps }}x{{ set.weight }}kg</p>
@@ -266,12 +262,10 @@
 
     <!-- Pause overlay -->
     <Transition name="fade">
-      <div v-if="isPaused" class="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center">
+      <div v-if="isPaused" class="fixed inset-0 z-[60] bg-black/60 backdrop-blur-md flex items-center justify-center">
         <div class="card-glass max-w-sm w-full mx-4 text-center py-10 px-6">
-          <div class="w-16 h-16 mx-auto mb-4 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center">
-            <svg class="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
+          <div class="w-16 h-16 mx-auto mb-4 bg-amber-500/10 rounded-full flex items-center justify-center border border-amber-500/20">
+            <Icon name="lucide:pause" class="w-8 h-8 text-amber-500" />
           </div>
           <h3 class="text-2xl font-bold text-primary-900 dark:text-primary-100 mb-2">Session en pause</h3>
           <p class="text-primary-600 dark:text-primary-400 mb-6">{{ pauseReason || 'L\'hote a mis la session en pause' }}</p>
@@ -290,10 +284,8 @@
     <Transition name="fade">
       <div v-if="showDisconnectWarning" class="fixed top-20 left-4 right-4 z-[70] max-w-md mx-auto">
         <div class="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-2xl p-4 flex items-center gap-3 shadow-lg">
-          <div class="w-8 h-8 bg-red-100 dark:bg-red-900/50 rounded-full flex items-center justify-center flex-shrink-0">
-            <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.072 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-            </svg>
+          <div class="w-8 h-8 bg-red-500/10 rounded-full flex items-center justify-center flex-shrink-0 border border-red-500/20">
+            <Icon name="lucide:alert-triangle" class="w-4 h-4 text-red-500" />
           </div>
           <div class="flex-1">
             <p class="text-sm font-semibold text-red-700 dark:text-red-400">{{ disconnectedParticipantName }} deconnecte</p>
@@ -307,11 +299,9 @@
     <Transition name="fade">
       <div v-if="showCompletionScreen" class="fixed inset-0 z-50 bg-white dark:bg-primary-900 overflow-y-auto">
         <div class="min-h-full flex items-center justify-center py-12 px-4">
-          <div class="max-w-md w-full text-center space-y-8">
-            <div class="w-24 h-24 mx-auto bg-gradient-primary rounded-full flex items-center justify-center">
-              <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-              </svg>
+          <div class="max-w-md w-full text-center space-y-8 fade-in">
+            <div class="w-24 h-24 mx-auto bg-gradient-primary rounded-full flex items-center justify-center shadow-lg">
+              <Icon name="lucide:check" class="w-12 h-12 text-white" />
             </div>
 
             <div>
@@ -320,9 +310,9 @@
             </div>
 
             <!-- Group stats -->
-            <div class="grid grid-cols-3 gap-4">
+            <div class="grid grid-cols-3 gap-4 slide-up">
               <div class="card-glass !p-2 md:!p-4">
-                <p class="text-2xl font-bold text-primary-900 dark:text-primary-100">{{ formattedTime }}</p>
+                <p class="text-2xl font-bold font-mono text-primary-900 dark:text-primary-100">{{ formattedTime }}</p>
                 <p class="text-xs text-primary-500 dark:text-primary-400 mt-1">Duree</p>
               </div>
               <div class="card-glass !p-2 md:!p-4">
@@ -336,7 +326,7 @@
             </div>
 
             <!-- Participants results -->
-            <div class="space-y-3">
+            <div class="space-y-3 slide-up">
               <div
                 v-for="participant in participants"
                 :key="participant.userId"
@@ -350,9 +340,9 @@
                   <p class="font-semibold text-primary-900 dark:text-primary-100 text-sm truncate">{{ participant.name }}</p>
                   <p class="text-xs text-primary-500 dark:text-primary-400">{{ participant.setsCompleted || 0 }} series completees</p>
                 </div>
-                <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
+                <div class="w-7 h-7 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0 border border-green-500/20">
+                  <Icon name="lucide:check" class="w-4 h-4 text-green-500" />
+                </div>
               </div>
             </div>
 
@@ -373,10 +363,8 @@
         <div class="fixed inset-0 bg-black/40 backdrop-blur-sm"></div>
         <div class="relative bg-white dark:bg-primary-900 rounded-3xl p-8 max-w-sm w-full shadow-2xl">
           <div class="text-center">
-            <div class="w-14 h-14 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-7 h-7 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-              </svg>
+            <div class="w-14 h-14 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20">
+              <Icon name="lucide:log-out" class="w-7 h-7 text-red-500" />
             </div>
             <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-2">Quitter la session ?</h3>
             <p class="text-primary-600 dark:text-primary-400 text-sm mb-6">Les autres participants continueront sans toi.</p>
@@ -399,10 +387,8 @@
         <div class="fixed inset-0 bg-black/40 backdrop-blur-sm"></div>
         <div class="relative bg-white dark:bg-primary-900 rounded-3xl p-8 max-w-sm w-full shadow-2xl">
           <div class="text-center">
-            <div class="w-14 h-14 bg-green-100 dark:bg-green-900/40 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-7 h-7 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-              </svg>
+            <div class="w-14 h-14 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/20">
+              <Icon name="lucide:check" class="w-7 h-7 text-green-500" />
             </div>
             <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-2">Terminer la session ?</h3>
             <p class="text-primary-600 dark:text-primary-400 text-sm mb-6">La session sera terminee pour tous les participants.</p>

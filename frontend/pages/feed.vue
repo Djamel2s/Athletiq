@@ -16,17 +16,17 @@
 
     <div class="pt-20 md:pt-28 px-4 md:px-6 pb-28 lg:pb-20 max-w-lg mx-auto">
       <!-- Header -->
-      <div class="flex items-center justify-between mb-6 fade-in">
+      <div class="flex items-center justify-between mb-8 fade-in">
         <div>
-          <h1 class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100">Feed</h1>
+          <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2">Feed</h1>
           <p class="text-sm text-primary-500 dark:text-primary-400">Activite de tes Gym Bros</p>
         </div>
         <!-- Search / Friends -->
         <div class="flex items-center gap-2">
-          <button @click="showSearch = true" class="w-10 h-10 rounded-xl bg-white/50 dark:bg-primary-800/50 backdrop-blur-sm flex items-center justify-center hover:bg-primary-100 dark:hover:bg-primary-700 transition-colors">
+          <button @click="showSearch = true" class="btn-glass w-10 h-10 !rounded-xl !p-0 flex items-center justify-center">
             <Icon name="lucide:search" class="w-5 h-5 text-primary-600 dark:text-primary-400" />
           </button>
-          <NuxtLink to="/friends" class="w-10 h-10 rounded-xl bg-white/50 dark:bg-primary-800/50 backdrop-blur-sm flex items-center justify-center hover:bg-primary-100 dark:hover:bg-primary-700 transition-colors relative">
+          <NuxtLink to="/friends" class="btn-glass w-10 h-10 !rounded-xl !p-0 flex items-center justify-center relative">
             <Icon name="lucide:users" class="w-5 h-5 text-primary-600 dark:text-primary-400" />
             <span v-if="pendingCount > 0" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">{{ pendingCount }}</span>
           </NuxtLink>
@@ -40,7 +40,7 @@
       </div>
 
       <!-- Feed Posts -->
-      <div v-else-if="posts.length > 0" class="space-y-4 slide-up">
+      <div v-else-if="posts.length > 0" class="space-y-4 mb-8 slide-up">
         <div v-for="post in posts" :key="post.id" class="card-glass !p-4">
           <!-- Post header -->
           <div class="flex items-center gap-3 mb-3">
@@ -131,10 +131,10 @@
           <div class="flex items-center gap-3 pt-2 border-t border-primary-100 dark:border-primary-800">
             <button
               @click="handleReact(post)"
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-colors"
+              class="btn-glass inline-flex items-center gap-1.5 !px-3 !py-1.5 !rounded-lg text-sm transition-all"
               :class="post.hasReacted
-                ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400'
-                : 'hover:bg-primary-100 dark:hover:bg-primary-800 text-primary-500 dark:text-primary-400'"
+                ? '!bg-orange-100 dark:!bg-orange-900/30 !text-orange-600 dark:!text-orange-400 !border-orange-200 dark:!border-orange-800'
+                : ''"
             >
               <span>🔥</span>
               <span class="text-xs font-medium">{{ post.reactionCount || 0 }}</span>

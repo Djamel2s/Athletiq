@@ -18,10 +18,10 @@
       <!-- Header -->
       <div class="mb-6 fade-in">
         <div class="flex items-center gap-3 mb-1">
-          <NuxtLink to="/feed" class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors">
+          <NuxtLink to="/feed" class="btn-glass w-8 h-8 !rounded-lg !p-0 flex items-center justify-center">
             <Icon name="lucide:arrow-left" class="w-5 h-5 text-primary-600 dark:text-primary-400" />
           </NuxtLink>
-          <h1 class="text-2xl font-bold text-primary-900 dark:text-primary-100">Gym Bros</h1>
+          <h1 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent">Gym Bros</h1>
         </div>
       </div>
 
@@ -39,12 +39,12 @@
             v-model="searchQuery"
             type="text"
             placeholder="Entrer un pseudo..."
-            class="flex-1 px-3 py-2 rounded-xl bg-white/60 dark:bg-primary-800/60 border border-primary-200 dark:border-primary-700 text-sm text-primary-900 dark:text-primary-100 placeholder-primary-400 dark:placeholder-primary-500 focus:outline-none focus:ring-2 focus:ring-sand-500/50"
+            class="input-primary flex-1 text-sm"
           />
           <button
             type="submit"
             :disabled="!searchQuery.trim() || searching"
-            class="px-4 py-2 rounded-xl bg-gradient-primary text-white text-sm font-semibold disabled:opacity-50 transition-opacity"
+            class="btn-glass !px-4 !py-2 !rounded-xl font-semibold disabled:opacity-50 transition-opacity"
           >
             <Icon v-if="searching" name="lucide:loader-2" class="w-4 h-4 animate-spin" />
             <Icon v-else name="lucide:search" class="w-4 h-4" />
@@ -116,7 +116,7 @@
       </div>
 
       <!-- Friends list -->
-      <div v-else-if="activeTab === 'friends'" class="space-y-3 slide-up">
+      <div v-else-if="activeTab === 'friends'" class="space-y-3 mb-6 slide-up">
         <div v-if="friends.length > 0">
           <div v-for="friend in friends" :key="friend.id" class="card-glass !p-3 flex items-center gap-3">
             <NuxtLink :to="`/profile/${friend.username}`" class="flex-shrink-0">
@@ -147,7 +147,7 @@
       </div>
 
       <!-- Pending requests -->
-      <div v-else-if="activeTab === 'requests'" class="space-y-3 slide-up">
+      <div v-else-if="activeTab === 'requests'" class="space-y-3 mb-6 slide-up">
         <div v-if="pendingRequests.length > 0">
           <div v-for="req in pendingRequests" :key="req.friendshipId" class="card-glass !p-3 flex items-center gap-3">
             <NuxtLink :to="`/profile/${req.username || req.id}`" class="flex-shrink-0">
