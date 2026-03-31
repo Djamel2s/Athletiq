@@ -50,17 +50,17 @@
             <span class="text-[10px] font-medium text-primary-400 dark:text-primary-500">Lancer</span>
           </button>
 
-          <!-- Right: Motivation -->
+          <!-- Right: Programmes -->
           <button
-            @click="goTo('/streak')"
+            @click="goTo('/programs')"
             class="absolute right-[20px] top-[50px] flex flex-col items-center gap-1 group z-10"
           >
             <div class="w-11 h-5 rounded-xl flex items-center justify-center group-active:scale-90 transition-transform">
-              <svg class="w-6 h-6 text-primary-400 dark:text-primary-500" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/>
+              <svg class="w-6 h-6 text-primary-400 dark:text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
               </svg>
             </div>
-            <span class="text-[10px] font-medium text-primary-400 dark:text-primary-500">Motivation</span>
+            <span class="text-[10px] font-medium text-primary-400 dark:text-primary-500">Programmes</span>
           </button>
         </div>
       </div>
