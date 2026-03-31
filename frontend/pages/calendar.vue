@@ -19,7 +19,7 @@
       <!-- Page Header -->
       <div class="fade-in text-center mb-8">
         <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2">Mon Activité</h1>
-        <p class="text-lg text-primary-600 dark:text-primary-400">Visualisez votre régularité</p>
+        <p class="text-lg text-primary-600 dark:text-primary-400">Ton historique d'entrainement</p>
       </div>
 
       <!-- Loading State -->
@@ -97,8 +97,11 @@
           <!-- Side Panel -->
           <div class="space-y-6">
             <!-- Week Comparison -->
-            <div class="card-glass">
-              <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-4">Cette semaine vs précédente</h3>
+            <div class="card-glass hover:shadow-lg transition-shadow">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-1 h-6 bg-gradient-primary rounded-full"></div>
+                <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100">Cette semaine vs précédente</h3>
+              </div>
               <div class="space-y-4">
                 <!-- Workouts comparison -->
                 <div class="flex items-center justify-between">
@@ -107,12 +110,8 @@
                     <p class="text-xl font-bold text-primary-900 dark:text-primary-100">{{ weekStats.current.workouts }}</p>
                   </div>
                   <div v-if="weekStats.changes.workouts !== null" :class="weekStats.changes.workouts >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'" class="flex items-center text-sm font-semibold">
-                    <svg v-if="weekStats.changes.workouts >= 0" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
-                    </svg>
-                    <svg v-else class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
-                    </svg>
+                    <Icon v-if="weekStats.changes.workouts >= 0" name="lucide:trending-up" class="w-4 h-4 mr-1" />
+                    <Icon v-else name="lucide:trending-down" class="w-4 h-4 mr-1" />
                     {{ Math.abs(weekStats.changes.workouts) }}%
                   </div>
                   <span v-else class="text-xs text-primary-400">—</span>
@@ -127,12 +126,8 @@
                     <p class="text-xl font-bold text-primary-900 dark:text-primary-100">{{ estimateCalories(weekStats.current.totalTime).toLocaleString('fr-FR') }} <span class="text-sm font-normal text-primary-500">kcal</span></p>
                   </div>
                   <div v-if="weekStats.changes.totalTime !== null" :class="weekStats.changes.totalTime >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'" class="flex items-center text-sm font-semibold">
-                    <svg v-if="weekStats.changes.totalTime >= 0" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
-                    </svg>
-                    <svg v-else class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
-                    </svg>
+                    <Icon v-if="weekStats.changes.totalTime >= 0" name="lucide:trending-up" class="w-4 h-4 mr-1" />
+                    <Icon v-else name="lucide:trending-down" class="w-4 h-4 mr-1" />
                     {{ Math.abs(weekStats.changes.totalTime) }}%
                   </div>
                   <span v-else class="text-xs text-primary-400">—</span>
@@ -147,12 +142,8 @@
                     <p class="text-xl font-bold text-primary-900 dark:text-primary-100">{{ formatDuration(weekStats.current.avgDuration) }}</p>
                   </div>
                   <div v-if="weekStats.changes.avgDuration !== null" :class="weekStats.changes.avgDuration >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'" class="flex items-center text-sm font-semibold">
-                    <svg v-if="weekStats.changes.avgDuration >= 0" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
-                    </svg>
-                    <svg v-else class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
-                    </svg>
+                    <Icon v-if="weekStats.changes.avgDuration >= 0" name="lucide:trending-up" class="w-4 h-4 mr-1" />
+                    <Icon v-else name="lucide:trending-down" class="w-4 h-4 mr-1" />
                     {{ Math.abs(weekStats.changes.avgDuration) }}%
                   </div>
                   <span v-else class="text-xs text-primary-400">—</span>
@@ -161,8 +152,11 @@
             </div>
 
             <!-- Favourite Day -->
-            <div class="card-glass">
-              <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-4">Jour favori</h3>
+            <div class="card-glass hover:shadow-lg transition-shadow">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-1 h-6 bg-gradient-primary rounded-full"></div>
+                <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100">Jour favori</h3>
+              </div>
               <div v-if="favouriteDay" class="flex items-center gap-4">
                 <div class="w-14 h-14 bg-gradient-primary rounded-xl flex items-center justify-center">
                   <span class="text-white font-bold text-lg">{{ favouriteDay.short }}</span>
@@ -176,8 +170,11 @@
             </div>
 
             <!-- Monthly Calories -->
-            <div class="card-glass">
-              <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-4">Calories mensuelles</h3>
+            <div class="card-glass hover:shadow-lg transition-shadow">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-1 h-6 bg-gradient-primary rounded-full"></div>
+                <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100">Calories mensuelles</h3>
+              </div>
               <p class="text-3xl font-bold text-primary-900 dark:text-primary-100">
                 {{ monthlyCalories.toLocaleString('fr-FR') }}
                 <span class="text-base font-normal text-primary-500 dark:text-primary-400">kcal</span>
