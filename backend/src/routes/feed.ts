@@ -6,11 +6,19 @@ import { Friendship } from '../entities/Friendship.js'
 import { logger } from '../utils/logger.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { parseId } from '../utils/validation.js'
+import { isHttpError } from '../utils/errors.js'
 
 const router = express.Router()
 
 const feedPostRepo = () => AppDataSource.getRepository(FeedPost)
 const friendshipRepo = () => AppDataSource.getRepository(Friendship)
+
+const handleRouteError = (res: express.Response, error: unknown) => {
+  if (isHttpError(error)) {
+    return res.status(error.statusCode).json({ error: error.message })
+  }
+  return res.status(500).json({ error: 'Internal server error' })
+}
 
 // Helper: get accepted friend IDs for a user
 async function getFriendIds(userId: number): Promise<number[]> {
@@ -137,7 +145,7 @@ router.post('/:postId/react', authenticate, async (req: AuthRequest, res) => {
     res.json({ reacted: !alreadyReacted, reactions: post.reactions })
   } catch (error) {
     logger.error({ err: error, route: 'feed' }, 'Error reacting to post')
-    res.status(500).json({ error: 'Internal server error' })
+    handleRouteError(res, error)
   }
 })
 
@@ -156,7 +164,7 @@ router.delete('/:postId', authenticate, async (req: AuthRequest, res) => {
     res.json({ message: 'Post deleted' })
   } catch (error) {
     logger.error({ err: error, route: 'feed' }, 'Error deleting post')
-    res.status(500).json({ error: 'Internal server error' })
+    handleRouteError(res, error)
   }
 })
 

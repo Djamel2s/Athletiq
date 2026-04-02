@@ -9,10 +9,18 @@ import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { checkPhotoLimit } from '../services/limitService.js'
 import { parseId } from '../utils/validation.js'
 import { validateImageMagicBytes } from '../utils/fileValidation.js'
+import { isHttpError } from '../utils/errors.js'
 
 const router = express.Router()
 const photoRepository = AppDataSource.getRepository(WorkoutPhoto)
 const workoutRepository = AppDataSource.getRepository(Workout)
+
+const handleRouteError = (res: express.Response, error: unknown, fallbackMessage: string) => {
+  if (isHttpError(error)) {
+    return res.status(error.statusCode).json({ error: error.message })
+  }
+  return res.status(500).json({ error: fallbackMessage })
+}
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 
@@ -108,7 +116,7 @@ router.post(
       res.status(201).json(saved)
     } catch (error) {
       logger.error({ err: error, route: 'photos' }, 'Upload error')
-      res.status(500).json({ error: 'Erreur lors du téléchargement de la photo' })
+      handleRouteError(res, error, 'Erreur lors du téléchargement de la photo')
     }
   }
 )
@@ -209,7 +217,7 @@ router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
     await photoRepository.remove(photo)
     res.json({ message: 'Photo supprimée' })
   } catch (error) {
-    res.status(500).json({ error: 'Erreur lors de la suppression de la photo' })
+    handleRouteError(res, error, 'Erreur lors de la suppression de la photo')
   }
 })
 

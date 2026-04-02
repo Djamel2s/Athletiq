@@ -32,6 +32,7 @@ import { Friendship } from '../entities/Friendship.js'
 import { FeedPost } from '../entities/FeedPost.js'
 import { PlannedWorkout } from '../entities/PlannedWorkout.js'
 import { WorkoutSession } from '../entities/WorkoutSession.js'
+import { ProcessedWebhookEvent } from '../entities/ProcessedWebhookEvent.js'
 import { logger } from '../utils/logger.js'
 
 const isProduction = process.env.NODE_ENV === 'production'
@@ -48,7 +49,7 @@ export const AppDataSource = new DataSource({
   ssl: isProduction ? { rejectUnauthorized: true } : false,
   synchronize: !isProduction,
   logging: !isProduction,
-  entities: [User, Workout, Exercise, Set, WorkoutPhoto, BodyStat, Measurement, ExerciseLibrary, UserGoal, Notification, Subscription, UserAchievement, WorkoutProgram, ProgramDay, FcmToken, Friendship, FeedPost, PlannedWorkout, WorkoutSession],
+  entities: [User, Workout, Exercise, Set, WorkoutPhoto, BodyStat, Measurement, ExerciseLibrary, UserGoal, Notification, Subscription, UserAchievement, WorkoutProgram, ProgramDay, FcmToken, Friendship, FeedPost, PlannedWorkout, WorkoutSession, ProcessedWebhookEvent],
   extra: {
     max: 20,
     min: 2,

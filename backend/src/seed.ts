@@ -25,6 +25,10 @@ const daysAgo = (n: number, hourOffset = 0): Date => {
 }
 
 async function seed() {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('Seeding is disabled in production')
+  }
+
   await AppDataSource.initialize()
   console.log('🔌 Connected to database')
 

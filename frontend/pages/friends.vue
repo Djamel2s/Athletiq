@@ -245,7 +245,9 @@ const handleAccept = async (req: any) => {
     try {
       const data = await getFriends() as any
       friends.value = data?.friends || data || []
-    } catch {}
+    } catch (error) {
+      console.warn('Failed to refresh friends list after accept:', error)
+    }
     toast.success('Demande acceptee', `${req.firstName || 'Utilisateur'} est maintenant ton Gym Bro !`)
   } catch {
     toast.error('Erreur', 'Impossible d\'accepter la demande')

@@ -559,7 +559,9 @@ const shareTimelapse = async () => {
   if (navigator.share) {
     try {
       await navigator.share({ title: 'Mon timelapse Athletiq', text })
-    } catch {}
+    } catch (error) {
+      console.warn('Native share cancelled or failed:', error)
+    }
   } else {
     toast.success('Partage non disponible sur cet appareil')
   }
@@ -605,7 +607,9 @@ const shareBeforeAfter = async () => {
   if (navigator.share) {
     try {
       await navigator.share({ title: 'Avant / Apres - Athletiq', text })
-    } catch {}
+    } catch (error) {
+      console.warn('Native share cancelled or failed:', error)
+    }
   } else {
     toast.success('Partage non disponible sur cet appareil')
   }
@@ -675,7 +679,9 @@ const shareQr = async () => {
   if (navigator.share) {
     try {
       await navigator.share({ title: 'Mon profil Athletiq', text, url: qrUrl.value })
-    } catch {}
+    } catch (error) {
+      console.warn('Native share cancelled or failed:', error)
+    }
   } else {
     try {
       await navigator.clipboard.writeText(qrUrl.value)
@@ -749,7 +755,9 @@ onMounted(async () => {
     if (myProfile?.username && process.client) {
       localStorage.setItem('athletiq_username', myProfile.username)
     }
-  } catch {}
+  } catch (error) {
+    console.warn('Failed to fetch own profile:', error)
+  }
 
   const username = myProfile?.username || (authStore.user as any)?.username || cachedUsername
 

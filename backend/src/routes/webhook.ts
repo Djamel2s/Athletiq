@@ -3,31 +3,12 @@ import Stripe from 'stripe'
 import { AppDataSource } from '../config/database.js'
 import { Subscription, SubscriptionStatus, SubscriptionPlan } from '../entities/Subscription.js'
 import { User } from '../entities/User.js'
+import { ProcessedWebhookEvent } from '../entities/ProcessedWebhookEvent.js'
 import { logger } from '../utils/logger.js'
 
 const router = express.Router()
 const subscriptionRepo = AppDataSource.getRepository(Subscription)
-
-// In-memory cache of processed Stripe event IDs to prevent replay attacks
-const processedEvents = new Map<string, number>()
-const EVENT_TTL = 24 * 60 * 60 * 1000 // 24h
-
-const isEventProcessed = (eventId: string): boolean => {
-  const ts = processedEvents.get(eventId)
-  if (ts && Date.now() - ts < EVENT_TTL) return true
-  // Cleanup old entries periodically
-  if (processedEvents.size > 10000) {
-    const now = Date.now()
-    for (const [id, timestamp] of processedEvents) {
-      if (now - timestamp > EVENT_TTL) processedEvents.delete(id)
-    }
-  }
-  return false
-}
-
-const markEventProcessed = (eventId: string) => {
-  processedEvents.set(eventId, Date.now())
-}
+const processedWebhookEventRepo = AppDataSource.getRepository(ProcessedWebhookEvent)
 
 const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY)
@@ -57,11 +38,13 @@ router.post('/stripe', express.raw({ type: 'application/json', limit: '1mb' }), 
     return res.status(400).json({ error: 'Signature invalide' })
   }
 
-  // Prevent replay attacks
-  if (isEventProcessed(event.id)) {
+  const alreadyProcessed = await processedWebhookEventRepo.findOne({
+    where: { eventId: event.id, provider: 'stripe' },
+    select: ['id']
+  })
+  if (alreadyProcessed) {
     return res.json({ received: true, skipped: 'duplicate' })
   }
-  markEventProcessed(event.id)
 
   try {
     switch (event.type) {
@@ -165,6 +148,20 @@ router.post('/stripe', express.raw({ type: 'application/json', limit: '1mb' }), 
         }
         break
       }
+    }
+
+    try {
+      const processedEvent = processedWebhookEventRepo.create({
+        eventId: event.id,
+        provider: 'stripe'
+      })
+      await processedWebhookEventRepo.save(processedEvent)
+    } catch (error) {
+      const code = (error as { code?: string })?.code
+      if (code !== '23505') {
+        throw error
+      }
+      return res.json({ received: true, skipped: 'duplicate' })
     }
 
     res.json({ received: true })

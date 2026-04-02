@@ -9,12 +9,20 @@ import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { createNotification } from '../services/notificationService.js'
 import { NotificationType } from '../entities/Notification.js'
 import { parseId } from '../utils/validation.js'
+import { isHttpError } from '../utils/errors.js'
 
 const router = express.Router()
 
 const plannedWorkoutRepo = () => AppDataSource.getRepository(PlannedWorkout)
 const friendshipRepo = () => AppDataSource.getRepository(Friendship)
 const userRepo = () => AppDataSource.getRepository(User)
+
+const handleRouteError = (res: express.Response, error: unknown) => {
+  if (isHttpError(error)) {
+    return res.status(error.statusCode).json({ error: error.message })
+  }
+  return res.status(500).json({ error: 'Internal server error' })
+}
 
 /**
  * Check if two users are friends (ACCEPTED friendship).
@@ -128,7 +136,7 @@ router.post('/:id/accept', authenticate, async (req: AuthRequest, res) => {
     res.json({ message: 'Invitation accepted', planned })
   } catch (error) {
     logger.error({ err: error, route: 'plannedWorkouts' }, 'Error accepting planned workout')
-    res.status(500).json({ error: 'Internal server error' })
+    handleRouteError(res, error)
   }
 })
 
@@ -152,7 +160,7 @@ router.post('/:id/decline', authenticate, async (req: AuthRequest, res) => {
     res.json({ message: 'Invitation declined' })
   } catch (error) {
     logger.error({ err: error, route: 'plannedWorkouts' }, 'Error declining planned workout')
-    res.status(500).json({ error: 'Internal server error' })
+    handleRouteError(res, error)
   }
 })
 
@@ -222,7 +230,7 @@ router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
     res.json({ message: 'Planned workout cancelled' })
   } catch (error) {
     logger.error({ err: error, route: 'plannedWorkouts' }, 'Error cancelling planned workout')
-    res.status(500).json({ error: 'Internal server error' })
+    handleRouteError(res, error)
   }
 })
 

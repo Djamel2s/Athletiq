@@ -8,6 +8,7 @@ import { Friendship } from '../entities/Friendship.js'
 import { FeedPost } from '../entities/FeedPost.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { IsNull, Not } from 'typeorm'
+import { usernameCheckLimiter } from '../middlewares/rateLimiter.js'
 
 const router = express.Router()
 
@@ -63,7 +64,7 @@ router.get('/me', authenticate, async (req: AuthRequest, res) => {
 })
 
 // GET /api/profile/check-username/:username — check if username is available
-router.get('/check-username/:username', async (req, res) => {
+router.get('/check-username/:username', usernameCheckLimiter, async (req, res) => {
   try {
     const { username } = req.params
     if (!USERNAME_REGEX.test(username)) {

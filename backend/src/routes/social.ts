@@ -8,11 +8,19 @@ import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { createNotification } from '../services/notificationService.js'
 import { NotificationType } from '../entities/Notification.js'
 import { parseId } from '../utils/validation.js'
+import { isHttpError } from '../utils/errors.js'
 
 const router = express.Router()
 
 const userRepo = () => AppDataSource.getRepository(User)
 const friendshipRepo = () => AppDataSource.getRepository(Friendship)
+
+const handleRouteError = (res: express.Response, error: unknown) => {
+  if (isHttpError(error)) {
+    return res.status(error.statusCode).json({ error: error.message })
+  }
+  return res.status(500).json({ error: 'Internal server error' })
+}
 
 // POST /api/social/request/:userId — send friend request
 router.post('/request/:userId', authenticate, async (req: AuthRequest, res) => {
@@ -79,7 +87,7 @@ router.post('/request/:userId', authenticate, async (req: AuthRequest, res) => {
     res.status(201).json({ message: 'Friend request sent', friendship })
   } catch (error) {
     logger.error({ err: error, route: 'social' }, 'Error sending friend request')
-    res.status(500).json({ error: 'Internal server error' })
+    handleRouteError(res, error)
   }
 })
 
@@ -113,7 +121,7 @@ router.post('/accept/:friendshipId', authenticate, async (req: AuthRequest, res)
     res.json({ message: 'Friend request accepted', friendship })
   } catch (error) {
     logger.error({ err: error, route: 'social' }, 'Error accepting friend request')
-    res.status(500).json({ error: 'Internal server error' })
+    handleRouteError(res, error)
   }
 })
 
@@ -136,7 +144,7 @@ router.post('/reject/:friendshipId', authenticate, async (req: AuthRequest, res)
     res.json({ message: 'Friend request rejected' })
   } catch (error) {
     logger.error({ err: error, route: 'social' }, 'Error rejecting friend request')
-    res.status(500).json({ error: 'Internal server error' })
+    handleRouteError(res, error)
   }
 })
 
@@ -174,7 +182,7 @@ router.post('/block/:userId', authenticate, async (req: AuthRequest, res) => {
     res.json({ message: 'User blocked' })
   } catch (error) {
     logger.error({ err: error, route: 'social' }, 'Error blocking user')
-    res.status(500).json({ error: 'Internal server error' })
+    handleRouteError(res, error)
   }
 })
 
@@ -200,7 +208,7 @@ router.delete('/remove/:userId', authenticate, async (req: AuthRequest, res) => 
     res.json({ message: 'Friend removed' })
   } catch (error) {
     logger.error({ err: error, route: 'social' }, 'Error removing friend')
-    res.status(500).json({ error: 'Internal server error' })
+    handleRouteError(res, error)
   }
 })
 

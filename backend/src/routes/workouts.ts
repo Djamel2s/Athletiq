@@ -14,6 +14,7 @@ import { PLAN_LIMITS } from '../config/planLimits.js'
 import { MoreThanOrEqual, Not, IsNull } from 'typeorm'
 import { parseId } from '../utils/validation.js'
 import rateLimit from 'express-rate-limit'
+import { isHttpError } from '../utils/errors.js'
 
 const router = express.Router()
 
@@ -23,6 +24,13 @@ const exportLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 5, message: { e
 const workoutRepo = AppDataSource.getRepository(Workout)
 const exerciseRepo = AppDataSource.getRepository(Exercise)
 const setRepo = AppDataSource.getRepository(Set)
+
+const handleRouteError = (res: express.Response, error: unknown, fallbackMessage: string) => {
+  if (isHttpError(error)) {
+    return res.status(error.statusCode).json({ error: error.message })
+  }
+  return res.status(500).json({ error: fallbackMessage })
+}
 
 
 // Validation schemas
@@ -192,7 +200,7 @@ router.get('/:id', authenticate, async (req: AuthRequest, res) => {
     res.json(workout)
   } catch (error) {
     logger.error({ err: error, route: 'workouts' }, 'Error fetching workout')
-    res.status(500).json({ error: 'Erreur lors de la récupération de la séance' })
+    handleRouteError(res, error, 'Erreur lors de la récupération de la séance')
   }
 })
 
@@ -300,7 +308,7 @@ router.put('/:id', authenticate, async (req: AuthRequest, res) => {
       return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
     logger.error({ err: error, route: 'workouts' }, 'Error updating workout')
-    res.status(500).json({ error: 'Erreur lors de la mise à jour de la séance' })
+    handleRouteError(res, error, 'Erreur lors de la mise à jour de la séance')
   }
 })
 
@@ -319,7 +327,7 @@ router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
     res.json({ message: 'Séance supprimée' })
   } catch (error) {
     logger.error({ err: error, route: 'workouts' }, 'Error deleting workout')
-    res.status(500).json({ error: 'Erreur lors de la suppression de la séance' })
+    handleRouteError(res, error, 'Erreur lors de la suppression de la séance')
   }
 })
 
@@ -348,7 +356,7 @@ router.post('/:id/start', authenticate, async (req: AuthRequest, res) => {
     res.json({ message: 'Séance démarrée', workout: updatedWorkout })
   } catch (error) {
     logger.error({ err: error, route: 'workouts' }, 'Error starting workout')
-    res.status(500).json({ error: 'Erreur lors du démarrage de la séance' })
+    handleRouteError(res, error, 'Erreur lors du démarrage de la séance')
   }
 })
 
@@ -438,7 +446,7 @@ router.post('/:id/complete', authenticate, async (req: AuthRequest, res) => {
     res.status(result.status).json(result.body)
   } catch (error) {
     logger.error({ err: error, route: 'workouts' }, 'Error completing workout')
-    res.status(500).json({ error: 'Erreur lors de la complétion de la séance' })
+    handleRouteError(res, error, 'Erreur lors de la complétion de la séance')
   }
 })
 
@@ -515,7 +523,7 @@ router.post('/:id/duplicate', authenticate, async (req: AuthRequest, res) => {
     res.status(result.status).json(result.body)
   } catch (error) {
     logger.error({ err: error, route: 'workouts' }, 'Error duplicating workout')
-    res.status(500).json({ error: 'Erreur lors de la duplication de la séance' })
+    handleRouteError(res, error, 'Erreur lors de la duplication de la séance')
   }
 })
 
@@ -563,7 +571,7 @@ router.post('/:workoutId/exercises', authenticate, async (req: AuthRequest, res)
       return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
     logger.error({ err: error, route: 'workouts' }, 'Error adding exercise')
-    res.status(500).json({ error: 'Erreur lors de l\'ajout de l\'exercice' })
+    handleRouteError(res, error, 'Erreur lors de l\'ajout de l\'exercice')
   }
 })
 
@@ -609,7 +617,7 @@ router.put('/:workoutId/exercises/:exerciseId', authenticate, async (req: AuthRe
       return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
     logger.error({ err: error, route: 'workouts' }, 'Error updating exercise')
-    res.status(500).json({ error: 'Erreur lors de la mise à jour de l\'exercice' })
+    handleRouteError(res, error, 'Erreur lors de la mise à jour de l\'exercice')
   }
 })
 
@@ -640,7 +648,7 @@ router.delete('/:workoutId/exercises/:exerciseId', authenticate, async (req: Aut
     res.json({ message: 'Exercice supprimé' })
   } catch (error) {
     logger.error({ err: error, route: 'workouts' }, 'Error deleting exercise')
-    res.status(500).json({ error: 'Erreur lors de la suppression de l\'exercice' })
+    handleRouteError(res, error, 'Erreur lors de la suppression de l\'exercice')
   }
 })
 
@@ -688,7 +696,7 @@ router.post('/:workoutId/exercises/:exerciseId/sets', authenticate, async (req: 
       return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
     logger.error({ err: error, route: 'workouts' }, 'Error adding set')
-    res.status(500).json({ error: 'Erreur lors de l\'ajout de la série' })
+    handleRouteError(res, error, 'Erreur lors de l\'ajout de la série')
   }
 })
 
@@ -731,7 +739,7 @@ router.put('/:workoutId/exercises/:exerciseId/sets/:setId', authenticate, async 
       return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
     logger.error({ err: error, route: 'workouts' }, 'Error updating set')
-    res.status(500).json({ error: 'Erreur lors de la mise à jour de la série' })
+    handleRouteError(res, error, 'Erreur lors de la mise à jour de la série')
   }
 })
 
@@ -765,7 +773,7 @@ router.delete('/:workoutId/exercises/:exerciseId/sets/:setId', authenticate, asy
     res.json({ message: 'Série supprimée' })
   } catch (error) {
     logger.error({ err: error, route: 'workouts' }, 'Error deleting set')
-    res.status(500).json({ error: 'Erreur lors de la suppression de la série' })
+    handleRouteError(res, error, 'Erreur lors de la suppression de la série')
   }
 })
 
@@ -806,7 +814,7 @@ router.get('/history/exercise/:exerciseLibraryId', authenticate, async (req: Aut
     })
   } catch (error) {
     logger.error({ err: error, route: 'workouts' }, 'Error fetching exercise history')
-    res.status(500).json({ error: 'Erreur lors de la récupération de l\'historique' })
+    handleRouteError(res, error, 'Erreur lors de la récupération de l\'historique')
   }
 })
 

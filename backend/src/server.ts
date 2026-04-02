@@ -39,6 +39,7 @@ import { seedPrograms } from './routes/programs.js'
 import { startScheduler } from './services/schedulerService.js'
 import { setupWebSocket } from './websocket.js'
 import { logger } from './utils/logger.js'
+import { errorHandler } from './middlewares/errorHandler.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -142,13 +143,7 @@ app.use((req, res) => {
 })
 
 // Error handler
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  logger.error({ err, method: req.method, path: req.path, userId: (req as any).user?.id }, 'Unhandled error')
-  res.status(500).json({
-    error: 'Internal server error',
-    ...(isProduction ? {} : { message: err.message })
-  })
-})
+app.use(errorHandler)
 
 const httpServer = http.createServer(app)
 setupWebSocket(httpServer)

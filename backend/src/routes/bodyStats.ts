@@ -4,9 +4,17 @@ import { AppDataSource } from '../config/database.js'
 import { BodyStat } from '../entities/BodyStat.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { parseId } from '../utils/validation.js'
+import { isHttpError } from '../utils/errors.js'
 
 const router = express.Router()
 const bodyStatRepository = AppDataSource.getRepository(BodyStat)
+
+const handleRouteError = (res: express.Response, error: unknown) => {
+  if (isHttpError(error)) {
+    return res.status(error.statusCode).json({ error: error.message })
+  }
+  return res.status(500).json({ error: 'Erreur interne du serveur' })
+}
 
 // Get all body stats for current user
 router.get('/', authenticate, async (req: AuthRequest, res) => {
@@ -23,7 +31,7 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ data: stats, total })
   } catch (error) {
-    res.status(500).json({ error: 'Erreur lors de la récupération des stats corporelles' })
+    handleRouteError(res, error)
   }
 })
 
@@ -56,7 +64,7 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
-    res.status(500).json({ error: 'Erreur lors de la création de la stat corporelle' })
+    handleRouteError(res, error)
   }
 })
 
@@ -91,7 +99,7 @@ router.put('/:id', authenticate, async (req: AuthRequest, res) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
-    res.status(500).json({ error: 'Erreur lors de la mise à jour de la stat corporelle' })
+    handleRouteError(res, error)
   }
 })
 
@@ -109,7 +117,7 @@ router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
     await bodyStatRepository.remove(stat)
     res.json({ message: 'Stat corporelle supprimée' })
   } catch (error) {
-    res.status(500).json({ error: 'Erreur lors de la suppression de la stat corporelle' })
+    handleRouteError(res, error)
   }
 })
 

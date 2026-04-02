@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken'
 
 const sessionRooms = new Map<string, Set<string>>() // sessionCode -> Set of socketIds
 const sessionParticipants = new Map<string, Set<number>>() // sessionCode -> Set of userIds
+const sessionParticipantSockets = new Map<string, Map<number, Set<string>>>() // sessionCode -> userId -> socketIds
 
 // Rate limiter per socket (#4)
 const socketRateLimits = new Map<string, { count: number; resetAt: number }>()
@@ -88,6 +89,10 @@ export function setupWebSocket(httpServer: HttpServer) {
       // Track participant membership (#2)
       if (!sessionParticipants.has(sessionCode)) sessionParticipants.set(sessionCode, new Set())
       sessionParticipants.get(sessionCode)!.add(socket.data.userId)
+      if (!sessionParticipantSockets.has(sessionCode)) sessionParticipantSockets.set(sessionCode, new Map())
+      const participantSockets = sessionParticipantSockets.get(sessionCode)!
+      if (!participantSockets.has(socket.data.userId)) participantSockets.set(socket.data.userId, new Set())
+      participantSockets.get(socket.data.userId)!.add(socket.id)
 
       // Store the sessionCode on socket for later checks
       if (!socket.data.sessionCodes) socket.data.sessionCodes = new Set<string>()
@@ -247,12 +252,20 @@ export function setupWebSocket(httpServer: HttpServer) {
           if (sockets.size === 0) {
             sessionRooms.delete(code)
             sessionParticipants.delete(code)
+            sessionParticipantSockets.delete(code)
           } else {
-            // Remove from participant tracking
-            sessionParticipants.get(code)?.delete(socket.data.userId)
-            io.to(`session:${code}`).emit('session:participant-disconnected', {
-              userId: socket.data.userId
-            })
+            const participantSockets = sessionParticipantSockets.get(code)
+            const userSockets = participantSockets?.get(socket.data.userId)
+            if (userSockets) {
+              userSockets.delete(socket.id)
+              if (userSockets.size === 0) {
+                participantSockets?.delete(socket.data.userId)
+                sessionParticipants.get(code)?.delete(socket.data.userId)
+                io.to(`session:${code}`).emit('session:participant-disconnected', {
+                  userId: socket.data.userId
+                })
+              }
+            }
           }
         }
       }

@@ -7,6 +7,7 @@ import { logger } from '../utils/logger.js'
 import { AppDataSource } from '../config/database.js'
 import { User } from '../entities/User.js'
 import { generateToken, generateRefreshToken, JWTPayload, authenticate, AuthRequest } from '../middlewares/auth.js'
+import { env } from '../config/env.js'
 
 const router = express.Router()
 const userRepository = AppDataSource.getRepository(User)
@@ -165,11 +166,11 @@ router.post('/refresh', async (req, res) => {
     }
 
     // Verify refresh token
-    const JWT_SECRET = process.env.JWT_SECRET
-    if (!JWT_SECRET) {
+    const refreshSecret = env.jwtRefreshSecret
+    if (!refreshSecret) {
       return res.status(500).json({ error: 'Configuration serveur manquante' })
     }
-    const decoded = jwt.verify(refreshToken, JWT_SECRET) as JWTPayload
+    const decoded = jwt.verify(refreshToken, refreshSecret) as JWTPayload
 
     // Find user
     const user = await userRepository.findOne({ where: { id: decoded.userId } })

@@ -7,10 +7,18 @@ import { logger } from '../utils/logger.js'
 import { requireAdmin } from '../middlewares/admin.js'
 import { parseId } from '../utils/validation.js'
 import { Like } from 'typeorm'
+import { isHttpError } from '../utils/errors.js'
 
 const router = express.Router()
 
 const exerciseLibraryRepo = AppDataSource.getRepository(ExerciseLibrary)
+
+const handleRouteError = (res: express.Response, error: unknown, fallbackMessage: string) => {
+  if (isHttpError(error)) {
+    return res.status(error.statusCode).json({ error: error.message })
+  }
+  return res.status(500).json({ error: fallbackMessage })
+}
 
 // Validation schema
 const createExerciseSchema = z.object({
@@ -108,7 +116,7 @@ router.get('/:id', authenticate, async (req, res) => {
     res.json(exercise)
   } catch (error) {
     logger.error({ err: error, route: 'exercises' }, 'Error fetching exercise')
-    res.status(500).json({ error: 'Erreur lors de la récupération de l\'exercice' })
+    handleRouteError(res, error, 'Erreur lors de la récupération de l\'exercice')
   }
 })
 
@@ -202,7 +210,7 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
       return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
     logger.error({ err: error, route: 'exercises' }, 'Error updating exercise')
-    res.status(500).json({ error: 'Erreur lors de la mise à jour de l\'exercice' })
+    handleRouteError(res, error, 'Erreur lors de la mise à jour de l\'exercice')
   }
 })
 
@@ -218,7 +226,7 @@ router.delete('/:id', authenticate, requireAdmin, async (req, res) => {
     res.json({ message: 'Exercice supprimé' })
   } catch (error) {
     logger.error({ err: error, route: 'exercises' }, 'Error deleting exercise')
-    res.status(500).json({ error: 'Erreur lors de la suppression de l\'exercice' })
+    handleRouteError(res, error, 'Erreur lors de la suppression de l\'exercice')
   }
 })
 

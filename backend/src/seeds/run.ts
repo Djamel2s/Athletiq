@@ -8,6 +8,10 @@ import { seedTestAccounts } from './testAccounts.js'
 
 async function runSeeds() {
   try {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('Seeding is disabled in production')
+    }
+
     console.log('Starting seed process...\n')
 
     // Initialize database connection

@@ -4,8 +4,16 @@ import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { Notification } from '../entities/Notification.js'
 import { parseId } from '../utils/validation.js'
 import { logger } from '../utils/logger.js'
+import { isHttpError } from '../utils/errors.js'
 
 const router = express.Router()
+
+const handleRouteError = (res: express.Response, error: unknown, fallbackMessage: string) => {
+  if (isHttpError(error)) {
+    return res.status(error.statusCode).json({ error: error.message })
+  }
+  return res.status(500).json({ error: fallbackMessage })
+}
 
 // GET /api/notifications - List all notifications
 router.get('/', authenticate, async (req: AuthRequest, res) => {
@@ -67,7 +75,7 @@ router.put('/:id/read', authenticate, async (req: AuthRequest, res) => {
     res.json(notification)
   } catch (error) {
     logger.error({ err: error, route: 'notifications' }, 'Mark read error')
-    res.status(500).json({ error: 'Erreur lors du marquage de la notification' })
+    handleRouteError(res, error, 'Erreur lors du marquage de la notification')
   }
 })
 
@@ -85,7 +93,7 @@ router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
     res.json({ message: 'Notification supprimée' })
   } catch (error) {
     logger.error({ err: error, route: 'notifications' }, 'Delete notification error')
-    res.status(500).json({ error: 'Erreur lors de la suppression de la notification' })
+    handleRouteError(res, error, 'Erreur lors de la suppression de la notification')
   }
 })
 

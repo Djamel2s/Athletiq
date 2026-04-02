@@ -7,8 +7,16 @@ import { logger } from '../utils/logger.js'
 import { BodyStat } from '../entities/BodyStat.js'
 import { checkGoalLimit } from '../services/limitService.js'
 import { parseId } from '../utils/validation.js'
+import { isHttpError } from '../utils/errors.js'
 
 const router = express.Router()
+
+const handleRouteError = (res: express.Response, error: unknown, fallbackMessage: string) => {
+  if (isHttpError(error)) {
+    return res.status(error.statusCode).json({ error: error.message })
+  }
+  return res.status(500).json({ error: fallbackMessage })
+}
 
 const createGoalSchema = z.object({
   type: z.nativeEnum(GoalType),
@@ -194,7 +202,7 @@ router.put('/:id', authenticate, async (req: AuthRequest, res) => {
       return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
     }
     logger.error({ err: error, route: 'goals' }, 'Goal update error')
-    res.status(500).json({ error: 'Erreur lors de la mise à jour de l\'objectif' })
+    handleRouteError(res, error, 'Erreur lors de la mise à jour de l\'objectif')
   }
 })
 
@@ -215,7 +223,7 @@ router.put('/:id/achieve', authenticate, async (req: AuthRequest, res) => {
     res.json(saved)
   } catch (error) {
     logger.error({ err: error, route: 'goals' }, 'Goal achieve error')
-    res.status(500).json({ error: 'Erreur lors de la validation de l\'objectif' })
+    handleRouteError(res, error, 'Erreur lors de la validation de l\'objectif')
   }
 })
 
@@ -233,7 +241,7 @@ router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
     res.json({ message: 'Objectif supprimé' })
   } catch (error) {
     logger.error({ err: error, route: 'goals' }, 'Goal delete error')
-    res.status(500).json({ error: 'Erreur lors de la suppression de l\'objectif' })
+    handleRouteError(res, error, 'Erreur lors de la suppression de l\'objectif')
   }
 })
 

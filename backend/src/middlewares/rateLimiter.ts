@@ -45,3 +45,12 @@ export const passwordResetLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false
 })
+
+// Rate limiter for username availability checks
+export const usernameCheckLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000,
+  max: 20,
+  message: { error: 'Trop de vérifications de pseudo, réessayez plus tard' },
+  standardHeaders: true,
+  legacyHeaders: false
+})

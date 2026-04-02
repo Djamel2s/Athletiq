@@ -455,7 +455,7 @@ let settingsTimeout: ReturnType<typeof setTimeout> | null = null
 const debouncedSave = (key: string, value: string) => {
   if (settingsTimeout) clearTimeout(settingsTimeout)
   settingsTimeout = setTimeout(() => {
-    try { localStorage.setItem(key, value) } catch {}
+    try { localStorage.setItem(key, value) } catch (error) { logger.error('Failed to persist setting:', error) }
   }, 500)
 }
 
@@ -580,7 +580,9 @@ onMounted(async () => {
       inactivityDays.value = parseInt(localStorage.getItem('pref_inactivity_days') || '3')
       pushEnabled.value = localStorage.getItem('pushEnabled') !== 'false' && isNativePlatform.value
       healthSyncEnabled.value = localStorage.getItem('healthSyncEnabled') === 'true'
-    } catch {}
+    } catch (error) {
+      logger.error('Failed to load local settings:', error)
+    }
   }
 
   // Also sync with backend
@@ -599,7 +601,10 @@ onMounted(async () => {
     const reqData = await getRequests() as any
     const pending = reqData?.received || reqData?.pending || []
     pendingRequestsCount.value = Array.isArray(pending) ? pending.length : 0
-  } catch { pendingRequestsCount.value = 0 }
+  } catch (error) {
+    logger.error('Failed to load pending requests count:', error)
+    pendingRequestsCount.value = 0
+  }
 })
 
 watch(weightUnit, (val) => {
@@ -659,7 +664,8 @@ watch(healthSyncEnabled, async (val) => {
           const toast = useToast()
           toast.error('Permissions refusees')
         }
-      } catch {
+      } catch (error) {
+        logger.error('Health sync initialization failed:', error)
         healthSyncEnabled.value = false
       }
     }

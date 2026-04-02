@@ -80,7 +80,9 @@ export const useOfflineStorage = () => {
     // Load pending count on init
     getAllFromStore().then(items => {
       pendingCount.value = items.length
-    }).catch(() => {})
+    }).catch((error) => {
+      console.warn('Failed to load offline queue size:', error)
+    })
   }
 
   const addToQueue = async (action: { type: string; endpoint: string; method: string; body: any }) => {
@@ -95,7 +97,9 @@ export const useOfflineStorage = () => {
         queue.push({ ...action, timestamp: Date.now() })
         localStorage.setItem('athletiq_offline_fallback', JSON.stringify(queue))
         pendingCount.value++
-      } catch {}
+      } catch (error) {
+        console.warn('Failed to persist offline fallback queue:', error)
+      }
     }
   }
 
@@ -133,7 +137,9 @@ export const useOfflineStorage = () => {
           }
         }
         localStorage.setItem('athletiq_offline_fallback', JSON.stringify(failed))
-      } catch {}
+      } catch (error) {
+        console.warn('Failed to sync local fallback queue:', error)
+      }
 
       // Update pending count
       const remaining = await getAllFromStore()
@@ -144,7 +150,9 @@ export const useOfflineStorage = () => {
         const toast = useToast()
         toast.success('Donnees synchronisees !')
       }
-    } catch {}
+    } catch (error) {
+      console.warn('Failed to synchronize offline queue:', error)
+    }
 
     isSyncing.value = false
   }
@@ -155,7 +163,9 @@ export const useOfflineStorage = () => {
       await clearStore()
       localStorage.setItem('athletiq_offline_fallback', '[]')
       pendingCount.value = 0
-    } catch {}
+    } catch (error) {
+      console.warn('Failed to clear offline queue:', error)
+    }
   }
 
   const getQueueSize = async (): Promise<number> => {

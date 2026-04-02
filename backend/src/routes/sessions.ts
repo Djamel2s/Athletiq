@@ -8,6 +8,7 @@ import { Friendship } from '../entities/Friendship.js'
 import { Workout } from '../entities/Workout.js'
 import { authenticate, AuthRequest } from '../middlewares/auth.js'
 import { parseId } from '../utils/validation.js'
+import { isHttpError } from '../utils/errors.js'
 
 const router = express.Router()
 
@@ -15,6 +16,13 @@ const sessionRepo = () => AppDataSource.getRepository(WorkoutSession)
 const userRepo = () => AppDataSource.getRepository(User)
 const friendshipRepo = () => AppDataSource.getRepository(Friendship)
 const workoutRepo = () => AppDataSource.getRepository(Workout)
+
+const handleRouteError = (res: express.Response, error: unknown) => {
+  if (isHttpError(error)) {
+    return res.status(error.statusCode).json({ error: error.message })
+  }
+  return res.status(500).json({ error: 'Internal server error' })
+}
 
 // Generate a 6-char uppercase alphanumeric code (easy to read/type)
 function generateSessionCode(): string {
@@ -238,8 +246,7 @@ router.post('/:id/start', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ session })
   } catch (error) {
-    // Session start failed
-    res.status(500).json({ error: 'Internal server error' })
+    handleRouteError(res, error)
   }
 })
 
@@ -267,8 +274,7 @@ router.post('/:id/pause', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ session })
   } catch (error) {
-    // Session pause failed
-    res.status(500).json({ error: 'Internal server error' })
+    handleRouteError(res, error)
   }
 })
 
@@ -296,8 +302,7 @@ router.post('/:id/resume', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ session })
   } catch (error) {
-    // Session resume failed
-    res.status(500).json({ error: 'Internal server error' })
+    handleRouteError(res, error)
   }
 })
 
@@ -337,8 +342,7 @@ router.post('/:id/leave', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ session })
   } catch (error) {
-    // Session leave failed
-    res.status(500).json({ error: 'Internal server error' })
+    handleRouteError(res, error)
   }
 })
 
@@ -362,8 +366,7 @@ router.post('/:id/end', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ session })
   } catch (error) {
-    // Session end failed
-    res.status(500).json({ error: 'Internal server error' })
+    handleRouteError(res, error)
   }
 })
 
@@ -428,8 +431,7 @@ router.post('/:id/set-workout', authenticate, async (req: AuthRequest, res) => {
 
     res.json({ session })
   } catch (error) {
-    // Set workout failed
-    res.status(500).json({ error: 'Internal server error' })
+    handleRouteError(res, error)
   }
 })
 
