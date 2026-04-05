@@ -1,7 +1,12 @@
-# Build stage
-FROM node:20-alpine AS builder
+# Builder stage (uses Debian slim so native modules can compile)
+FROM node:20-bullseye-slim AS builder
 
 WORKDIR /app
+
+# Install build dependencies required by node-canvas and other native modules
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  build-essential python3 pkg-config libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
 
 COPY package.json package-lock.json* ./
 RUN npm ci
@@ -10,17 +15,13 @@ COPY tsconfig.json ./
 COPY src ./src
 RUN npm run build
 
-# Production stage
-FROM FROM node:20-bullseye-slim AS builder
+# Runner stage
+FROM node:20-bullseye-slim AS runner
 WORKDIR /app
 
-# Install build deps for node-canvas etc.
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  build-essential python3 pkg-config libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
-  && rm -rf /var/lib/apt/lists/*
-
 COPY package.json package-lock.json* ./
-RUN npm ci
+# Install production deps only for a smaller runtime image
+RUN npm ci --omit=dev
 
 COPY --from=builder /app/dist ./dist
 
