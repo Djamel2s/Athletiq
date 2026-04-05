@@ -11,12 +11,16 @@ COPY src ./src
 RUN npm run build
 
 # Production stage
-FROM node:20-alpine
-
+FROM FROM node:20-bullseye-slim AS builder
 WORKDIR /app
 
+# Install build deps for node-canvas etc.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  build-essential python3 pkg-config libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
+  && rm -rf /var/lib/apt/lists/*
+
 COPY package.json package-lock.json* ./
-RUN npm ci --omit=dev
+RUN npm ci
 
 COPY --from=builder /app/dist ./dist
 
