@@ -140,3 +140,57 @@ model Measurement {
   @@index([userId, date])
   @@map("measurements")
 }
+
+// ========================================
+// ANALYTICS / ML MODELS
+// ========================================
+
+// Per-user fatigue / recovery score sampled over time. Useful for recovery recommendations.
+model Fatigue {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  date       DateTime @default(now())
+  score      Float    // 0..1 where 1 = fully recovered
+  source     String?  // e.g., 'heuristic-v1', 'ml-model-1'
+  notes      String?
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+  @@map("fatigue")
+}
+
+// Trends computed over a timeframe for a metric (e.g., 1RM, volume, weight)
+model ProgressionSlope {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  metric        String   // e.g., 'one_rep_max_bench', 'weekly_volume'
+  slope         Float    // slope per day (or defined unit)
+  startDate     DateTime
+  endDate       DateTime
+  sampleCount   Int
+  createdAt     DateTime @default(now())
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, metric, startDate, endDate])
+  @@map("progression_slopes")
+}
+
+// Predicted personal records (1RM or similar) for an exercise
+model ExpectedPR {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  exerciseName String
+  predicted    Float    // predicted 1RM or metric value
+  predictedAt  DateTime // date when user is expected to reach it
+  confidence   Float?   // 0..1
+  modelSource  String?  // which model produced this prediction
+  createdAt    DateTime @default(now())
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, exerciseName])
+  @@map("expected_prs")
+}

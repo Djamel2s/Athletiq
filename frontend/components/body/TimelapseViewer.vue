@@ -260,23 +260,76 @@ const exportVideo = async () => {
       if (e.data.size > 0) chunks.push(e.data)
     }
 
-    recorder.onstop = () => {
+    recorder.onstop = async () => {
       const ext = recorder.mimeType.includes('mp4') ? 'mp4' : 'webm'
       const blob = new Blob(chunks, { type: recorder.mimeType })
-      const url = URL.createObjectURL(blob)
 
-      // Try share first, fallback to download
-      if (navigator.share) {
-        const file = new File([blob], `athletiq-timelapse.${ext}`, { type: recorder.mimeType })
-        navigator.share({ title: 'Mon timelapse Athletiq', files: [file] }).catch(() => {
+      try {
+        exportProgress.value = 'Upload en cours...'
+
+        const form = new FormData()
+        form.append('file', blob, `athletiq-timelapse.${ext}`)
+
+        // try include auth header if auth store available
+        let headers: Record<string, string> = {}
+        try {
+          const mod = await import('~/stores/auth')
+          const authStore = mod.useAuthStore ? mod.useAuthStore() : null
+          if (authStore?.token) headers['Authorization'] = `Bearer ${authStore.token}`
+        } catch (e) {
+          // ignore
+        }
+
+        const apiBase = useRuntimeConfig().public.apiUrl || ''
+        const url = apiBase.replace(/\/api$/, '') + '/api/photos/timelapse/upload'
+
+        const resp = await fetch(url, { method: 'POST', body: form, credentials: 'include', headers })
+        if (!resp.ok) throw new Error('Upload serveur échoué')
+        const data = await resp.json()
+        const publicUrl = data.url
+
+        // Try story-share (Instagram/Snapchat) first via our helper, then fallback to Web Share, then open URL
+        try {
+            const { shareToStory } = await import('~/composables/useSocialStoryShare')
+            const storyRes = await shareToStory({ url: publicUrl, backgroundImageUrl: publicUrl, blob })
+          if (storyRes?.success) {
+            exporting.value = false
+            exportProgress.value = ''
+            return
+          }
+        } catch (e) {
+          // continue to other fallbacks
+        }
+
+        if (navigator.share) {
+          try {
+            await navigator.share({ title: 'Mon timelapse Athletiq', text: 'Regarde ma progression', url: publicUrl })
+            exporting.value = false
+            exportProgress.value = ''
+            return
+          } catch (e) {
+            // fallthrough to opening
+          }
+        }
+
+        window.open(publicUrl, '_blank')
+      } catch (e) {
+        // fallback to local share/download
+        try {
+          const { shareBlob } = await import('~/composables/useShare')
+          const res = await shareBlob(blob, `athletiq-timelapse.${ext}`, 'Mon timelapse Athletiq')
+          if (!res.success) {
+            const url = URL.createObjectURL(blob)
+            downloadBlob(url, `athletiq-timelapse.${ext}`)
+          }
+        } catch (_e) {
+          const url = URL.createObjectURL(blob)
           downloadBlob(url, `athletiq-timelapse.${ext}`)
-        })
-      } else {
-        downloadBlob(url, `athletiq-timelapse.${ext}`)
+        }
+      } finally {
+        exporting.value = false
+        exportProgress.value = ''
       }
-
-      exporting.value = false
-      exportProgress.value = ''
     }
 
     recorder.start()

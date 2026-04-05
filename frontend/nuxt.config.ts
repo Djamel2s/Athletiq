@@ -57,7 +57,9 @@ export default defineNuxtConfig({
 
   // PWA Configuration
   pwa: {
-    registerType: 'autoUpdate',
+    // Use 'prompt' so new service worker won't skipWaiting/clientsClaim automatically.
+    // This prevents unexpected reloads; we provide a client plugin to ask the user.
+    registerType: 'prompt',
     manifest: {
       name: 'Athletiq',
       short_name: 'Athletiq',

@@ -147,6 +147,7 @@ async function cleanupSessions() {
 let reminderInterval: ReturnType<typeof setInterval> | null = null
 let inactivityInterval: ReturnType<typeof setInterval> | null = null
 let sessionCleanupInterval: ReturnType<typeof setInterval> | null = null
+let analyticsInterval: ReturnType<typeof setInterval> | null = null
 
 export function startScheduler() {
   logger.info('Scheduler started')
@@ -164,12 +165,19 @@ export function startScheduler() {
   setTimeout(checkInactivity, 30 * 1000)
   // Run session cleanup once on startup (delayed by 60s)
   setTimeout(cleanupSessions, 60 * 1000)
+  // Analytics: compute daily (every 24h). Run once after 2 minutes on startup.
+  const { computeForAllUsers } = await import('./analyticsService.js')
+  analyticsInterval = setInterval(() => {
+    computeForAllUsers().catch(() => {})
+  }, 24 * 60 * 60 * 1000)
+  setTimeout(() => computeForAllUsers().catch(() => {}), 2 * 60 * 1000)
 }
 
 export function stopScheduler() {
   if (reminderInterval) clearInterval(reminderInterval)
   if (inactivityInterval) clearInterval(inactivityInterval)
   if (sessionCleanupInterval) clearInterval(sessionCleanupInterval)
+  if (analyticsInterval) clearInterval(analyticsInterval)
   reminderInterval = null
   inactivityInterval = null
   sessionCleanupInterval = null

@@ -35,6 +35,8 @@ import socialRoutes from './routes/social.js'
 import feedRoutes from './routes/feed.js'
 import plannedWorkoutRoutes from './routes/plannedWorkouts.js'
 import sessionRoutes from './routes/sessions.js'
+import timelapseRoutes from './routes/timelapse.js'
+import analyticsRoutes from './routes/analytics.js'
 import { seedPrograms } from './routes/programs.js'
 import { startScheduler } from './services/schedulerService.js'
 import { setupWebSocket } from './websocket.js'
@@ -48,10 +50,14 @@ const isProduction = process.env.NODE_ENV === 'production'
 // Trust proxy (Fly.io, Render, etc.) pour rate limiting et IP correcte
 app.set('trust proxy', 1)
 
-// Initialiser la base de données + seed data
-await initializeDatabase()
-await seedPrograms()
-startScheduler()
+// Initialiser la base de données + seed data (skip possible in local dev)
+if (process.env.SKIP_DB !== 'true') {
+  await initializeDatabase()
+  await seedPrograms()
+  startScheduler()
+} else {
+  logger.info('SKIP_DB is set — skipping database initialization and scheduler')
+}
 
 // Vérifier les credentials Cloudinary en production
 if (process.env.NODE_ENV === 'production') {
@@ -136,6 +142,8 @@ app.use('/api/social', apiLimiter, socialRoutes)
 app.use('/api/feed', apiLimiter, feedRoutes)
 app.use('/api/planned-workouts', apiLimiter, plannedWorkoutRoutes)
 app.use('/api/sessions', apiLimiter, sessionRoutes)
+app.use('/api/timelapse', apiLimiter, timelapseRoutes)
+app.use('/api/analytics', apiLimiter, analyticsRoutes)
 
 // 404 handler
 app.use((req, res) => {

@@ -36,6 +36,9 @@ const upload = multer({
   }
 })
 
+// Multer instance for video uploads (larger limit)
+const uploadVideo = multer({ storage: multer.memoryStorage(), limits: { fileSize: 200 * 1024 * 1024 } })
+
 // Upload photo to workout
 router.post(
   '/workout/:workoutId',
@@ -220,5 +223,33 @@ router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
     handleRouteError(res, error, 'Erreur lors de la suppression de la photo')
   }
 })
+
+    // Upload a timelapse video blob and forward to Cloudinary (returns public URL)
+    router.post('/timelapse/upload', authenticate, uploadVideo.single('file'), async (req: AuthRequest, res) => {
+      try {
+        if (!req.file) return res.status(400).json({ error: 'Aucun fichier fourni' })
+
+        // Upload to Cloudinary as video
+        const result: any = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { resource_type: 'video', folder: `athletiq/timelapses/${req.user!.id}`, quality: 'auto' },
+            (error: any, result: any) => {
+              if (error) reject(error)
+              else resolve(result)
+            }
+          )
+          uploadStream.end(req.file.buffer)
+        })
+
+        if (!result?.secure_url) {
+          return res.status(500).json({ error: 'Erreur Cloudinary lors de l\'upload du timelapse' })
+        }
+
+        res.json({ url: result.secure_url })
+      } catch (error) {
+        logger.error({ err: error }, 'Timelapse upload error')
+        handleRouteError(res, error, 'Erreur lors de l\'upload du timelapse')
+      }
+    })
 
 export default router
