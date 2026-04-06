@@ -89,10 +89,10 @@ router.post('/generate', authenticate, async (req: AuthRequest, res) => {
         fs.readFile(path.join(tmpDir, 'out.mp4')).then(buf => uploadStream.end(buf)).catch(reject)
       })
     } else {
-        // Fallback: create an animated GIF from downloaded images using sharp + gifencoder
+        // Fallback: create an animated GIF from downloaded images using Sharp + gifencoder
         try {
             // Load first image to determine size
-            const first = await sharp(path.join(tmpDir, '0001.jpg'))
+            const first = await Sharp(path.join(tmpDir, '0001.jpg'))
                 .metadata()
                 .then(metadata => ({
                 width: metadata.width || 0,
@@ -112,7 +112,7 @@ router.post('/generate', authenticate, async (req: AuthRequest, res) => {
 
             for (let i = 0; i < images.length; i++) {
                 const file = path.join(tmpDir, `${String(i + 1).padStart(4, '0')}.jpg`)
-                const img = await sharp(file)
+                const img = await Sharp(file)
                 .resize(width, height)
                 .toBuffer()
                 encoder.addFrame(img.data)
