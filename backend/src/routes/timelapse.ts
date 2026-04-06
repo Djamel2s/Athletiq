@@ -9,7 +9,7 @@ import { spawnSync } from 'child_process'
 import fetch from 'node-fetch'
 import cloudinary from '../config/cloudinary.js'
 import { logger } from '../utils/logger.js'
-import Jimp from 'jimp'
+import Sharp from 'sharp'
 import GIFEncoder from 'gifencoder'
 
 const router = express.Router()
@@ -89,43 +89,48 @@ router.post('/generate', authenticate, async (req: AuthRequest, res) => {
         fs.readFile(path.join(tmpDir, 'out.mp4')).then(buf => uploadStream.end(buf)).catch(reject)
       })
     } else {
-      // Fallback: create an animated GIF from downloaded images using Jimp + gifencoder
-      try {
-        // Load first image to determine size
-        const first = await Jimp.read(path.join(tmpDir, '0001.jpg'))
-        const width = Math.min(1080, first.bitmap.width)
-        const height = Math.min(1440, first.bitmap.height)
+        // Fallback: create an animated GIF from downloaded images using sharp + gifencoder
+        try {
+            // Load first image to determine size
+            const first = await sharp(path.join(tmpDir, '0001.jpg'))
+                .metadata()
+                .then(metadata => ({
+                width: metadata.width || 0,
+                height: metadata.height || 0
+                }))
+            const width = Math.min(1080, first.width)
+            const height = Math.min(1440, first.height)
 
-        const encoder = new GIFEncoder(width, height)
-        const gifPath = path.join(tmpDir, 'out.gif')
-        const writeStream = fsSync.createWriteStream(gifPath)
-        encoder.createReadStream().pipe(writeStream)
-        encoder.start()
-        encoder.setRepeat(0)
-        encoder.setDelay(Math.max(40, Math.floor(1000 / fps)))
-        encoder.setQuality(10)
+            const encoder = new GIFEncoder(width, height)
+            const gifPath = path.join(tmpDir, 'out.gif')
+            const writeStream = fsSync.createWriteStream(gifPath)
+            encoder.createReadStream().pipe(writeStream)
+            encoder.start()
+            encoder.setRepeat(0)
+            encoder.setDelay(Math.max(40, Math.floor(1000 / fps)))
+            encoder.setQuality(10)
 
-        for (let i = 0; i < images.length; i++) {
-          const file = path.join(tmpDir, `${String(i + 1).padStart(4, '0')}.jpg`)
-          const img = await Jimp.read(file)
-          img.cover(width, height)
-          // gifencoder expects RGBA buffer
-          encoder.addFrame(img.bitmap.data)
+            for (let i = 0; i < images.length; i++) {
+                const file = path.join(tmpDir, `${String(i + 1).padStart(4, '0')}.jpg`)
+                const img = await sharp(file)
+                .resize(width, height)
+                .toBuffer()
+                encoder.addFrame(img.data)
+            }
+            encoder.finish()
+
+            // wait for writeStream finish
+            await new Promise((resolve, reject) => {
+                writeStream.on('finish', resolve)
+                writeStream.on('error', reject)
+            })
+
+            // Upload GIF to Cloudinary
+            result = await cloudinary.uploader.upload(gifPath, { folder: `athletiq/timelapses/${req.user!.id}`, resource_type: 'image', quality: 'auto' })
+        } catch (e) {
+            logger.error({ err: e }, 'GIF fallback generation failed')
+            throw e
         }
-        encoder.finish()
-
-        // wait for writeStream finish
-        await new Promise((resolve, reject) => {
-          writeStream.on('finish', resolve)
-          writeStream.on('error', reject)
-        })
-
-        // Upload GIF to Cloudinary
-        result = await cloudinary.uploader.upload(gifPath, { folder: `athletiq/timelapses/${req.user!.id}`, resource_type: 'image', quality: 'auto' })
-      } catch (e) {
-        logger.error({ err: e }, 'GIF fallback generation failed')
-        throw e
-      }
     }
 
     // Cleanup tmp
