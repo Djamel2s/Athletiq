@@ -60,9 +60,17 @@ export default defineNuxtConfig({
     host: '0.0.0.0'
   },
 
+  // Nitro dev proxy: forward `/api` to local backend during development
+  nitro: {
+    devProxy: {
+      '/api': 'http://localhost:3001'
+    }
+  },
+
   runtimeConfig: {
     public: {
-      apiUrl: process.env.NUXT_PUBLIC_API_URL || 'http://localhost:3001/api'
+      // In dev we proxy `/api` to the backend; use the proxied path as default.
+      apiUrl: process.env.NUXT_PUBLIC_API_URL || '/api'
     }
   },
 
@@ -83,13 +91,22 @@ export default defineNuxtConfig({
 
   routeRules: {
     '/**': {
-      headers: {
-        'X-Content-Type-Options': 'nosniff',
-        'X-Frame-Options': 'DENY',
-        'X-XSS-Protection': '0',
-        'Referrer-Policy': 'strict-origin-when-cross-origin',
-        'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://*.athletiq.fr wss://*.athletiq.fr https://*.stripe.com; frame-src https://*.stripe.com; object-src 'none'; base-uri 'self'"
-      }
+      headers: (() => {
+        const baseHeaders: Record<string, string> = {
+          'X-Content-Type-Options': 'nosniff',
+          'X-Frame-Options': 'DENY',
+          'X-XSS-Protection': '0',
+          'Referrer-Policy': 'strict-origin-when-cross-origin'
+        }
+
+        // Keep a strict CSP; development traffic to the local API is proxied via Nitro
+        const csp = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://*.athletiq.fr wss://*.athletiq.fr https://*.stripe.com; frame-src https://*.stripe.com; object-src 'none'; base-uri 'self'"
+
+        return {
+          ...baseHeaders,
+          'Content-Security-Policy': csp
+        }
+      })()
     },
     '/dashboard/**': { ssr: false },
     '/workouts/**': { ssr: false },

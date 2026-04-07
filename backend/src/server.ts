@@ -13,6 +13,7 @@ import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
 import * as Sentry from '@sentry/node'
 import { collectDefaultMetrics, register } from 'prom-client'
+import cloudinary from 'cloudinary'
 import { initializeDatabase } from './config/database.js'
 import { globalLimiter, authLimiter, apiLimiter, webhookLimiter, passwordResetLimiter } from './middlewares/rateLimiter.js'
 import authRoutes from './routes/auth.js'
@@ -61,7 +62,36 @@ const isProduction = process.env.NODE_ENV === 'production'
 // Trust proxy (Fly.io, Render, etc.) pour rate limiting et IP correcte
 app.set('trust proxy', 1)
 
-// Initialiser la base de données + seed data (skip possible in local dev)
+// Validate critical environment variables early
+const validateEnv = () => {
+  const missing: string[] = []
+
+  const hasDb = !!(process.env.DATABASE_URL || process.env.DB_HOST)
+  if (!hasDb) missing.push('DATABASE_URL or DB_HOST')
+
+  // JWT secret required in production
+  if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) missing.push('JWT_SECRET')
+
+  if (missing.length > 0) {
+    logger.error({ missing }, 'Missing required environment variables')
+    if (process.env.NODE_ENV === 'production') {
+      logger.error('Exiting: required env vars missing in production')
+      process.exit(1)
+    }
+  }
+
+  // Non-fatal warnings
+  if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+    logger.warn('Cloudinary credentials missing — image uploads may fail')
+  }
+  if (!process.env.STRIPE_SECRET) {
+    logger.warn('Stripe secret not configured — payments disabled')
+  }
+}
+
+validateEnv()
+
+// Initialize the base de données + seed data (skip possible in local dev)
 if (process.env.SKIP_DB !== 'true') {
   await initializeDatabase()
   await seedPrograms()
@@ -139,6 +169,66 @@ app.use((req, res, next) => {
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'Athletiq API is running' })
+})
+
+// Readiness check: ensures DB initialized and important integrations available
+app.get('/ready', async (req, res) => {
+  const checks: Record<string, any> = { uptime: process.uptime() }
+
+  try {
+    // Database readiness
+    const dbReady = !!(await (async () => {
+      try {
+        // AppDataSource may not be imported here to avoid circular deps; use initializeDatabase state
+        const { AppDataSource } = await import('./config/database.js')
+        return AppDataSource.isInitialized === true
+      } catch (e) {
+        return false
+      }
+    })())
+    checks.database = dbReady ? { ok: true } : { ok: false }
+
+    // Cloudinary active check: try a lightweight API call with timeout
+    const cloudinaryConfigured = !!(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET)
+    if (cloudinaryConfigured) {
+      cloudinary.v2.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET
+      })
+
+      const checkCloudinary = async (timeoutMs = 2000) => {
+        return await Promise.race([
+          (async () => {
+            try {
+              // lightweight call: list resources with max_results=1
+              await cloudinary.v2.api.resources({ max_results: 1 })
+              return { ok: true }
+            } catch (e) {
+              return { ok: false, error: String(e) }
+            }
+          })(),
+          new Promise(resolve => setTimeout(() => resolve({ ok: false, error: 'timeout' }), timeoutMs))
+        ])
+      }
+
+      // perform check
+      // @ts-ignore
+      const cloudRes = await checkCloudinary(2000)
+      checks.cloudinary = cloudRes
+    } else {
+      checks.cloudinary = { ok: false, error: 'missing_credentials' }
+    }
+
+    const stripeConfigured = !!process.env.STRIPE_SECRET
+    checks.stripe = stripeConfigured ? { ok: true } : { ok: false }
+
+    const ready = checks.database.ok && checks.cloudinary.ok
+
+    res.status(ready ? 200 : 503).json({ ready, checks })
+  } catch (err) {
+    res.status(500).json({ ready: false, error: String(err) })
+  }
 })
 
 // Routes

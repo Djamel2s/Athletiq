@@ -2,6 +2,59 @@ name: CI
 
 on:
   push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Backend - Install & Test
+        working-directory: backend
+        run: |
+          npm ci
+          npm run test
+          npm run build
+
+      - name: Backend - Audit
+        working-directory: backend
+        run: |
+          npm audit --audit-level=high || true
+
+      - name: Frontend - Install & Build
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Frontend - Audit
+        working-directory: frontend
+        run: |
+          npm audit --audit-level=high || true
+
+      - name: Upload build artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuxt-output
+          path: frontend/.output || frontend/.nuxt
+name: CI
+
+on:
+  push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]

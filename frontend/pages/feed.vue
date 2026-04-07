@@ -46,19 +46,13 @@
           <div class="flex items-center gap-3 mb-3">
             <NuxtLink :to="`/profile/${post.user?.username || post.userId}`" class="flex-shrink-0">
               <div class="w-10 h-10 rounded-full overflow-hidden" :class="post.user?.avatarUrl ? '' : 'bg-gradient-primary flex items-center justify-center'">
-                <img v-if="post.user?.avatarUrl" :src="post.user.avatarUrl" alt="" class="w-full h-full object-cover" />
-                <span v-else class="text-white text-sm font-bold">{{ getInitials(post.user) }}</span>
+                <img v-if="post.user?.avatarUrl" :src="post.user.avatarUrl" alt="Avatar" class="w-full h-full object-cover" />
+                <svg v-else class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
               </div>
             </NuxtLink>
-            <div class="flex-1 min-w-0">
-              <NuxtLink :to="`/profile/${post.user?.username || post.userId}`" class="hover:underline">
-                <p class="text-sm font-semibold text-primary-900 dark:text-primary-100 truncate">{{ post.user?.firstName || 'Utilisateur' }} {{ post.user?.lastName || '' }}</p>
-              </NuxtLink>
-              <p class="text-xs text-primary-400 dark:text-primary-500">
-                <span v-if="post.user?.username" class="mr-1">@{{ post.user.username }}</span>
-                <span>{{ timeAgo(post.createdAt) }}</span>
-              </p>
-            </div>
+
             <!-- Delete own post -->
             <button
               v-if="post.userId === authStore.user?.id"

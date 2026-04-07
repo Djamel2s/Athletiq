@@ -9,6 +9,9 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "db:seed": "tsx src/seeds/run.ts",
+    "migrate:dev": "npx prisma migrate dev --name init",
+    "migrate:deploy": "npx prisma migrate deploy",
+    "start:full": "npm run migrate:deploy && npm run db:seed && npm run build && npm run start",
     "test": "vitest run",
     "test:watch": "vitest"
   },
