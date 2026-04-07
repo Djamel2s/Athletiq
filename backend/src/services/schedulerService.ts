@@ -149,7 +149,7 @@ let inactivityInterval: ReturnType<typeof setInterval> | null = null
 let sessionCleanupInterval: ReturnType<typeof setInterval> | null = null
 let analyticsInterval: ReturnType<typeof setInterval> | null = null
 
-export function startScheduler() {
+export async function startScheduler() {
   logger.info('Scheduler started')
 
   // Workout reminders: every 60 seconds

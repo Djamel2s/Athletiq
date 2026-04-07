@@ -230,6 +230,7 @@ router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
         if (!req.file) return res.status(400).json({ error: 'Aucun fichier fourni' })
 
         // Upload to Cloudinary as video
+        const fileBuffer = req.file!.buffer
         const result: any = await new Promise((resolve, reject) => {
           const uploadStream = cloudinary.uploader.upload_stream(
             { resource_type: 'video', folder: `athletiq/timelapses/${req.user!.id}`, quality: 'auto' },
@@ -238,7 +239,7 @@ router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
               else resolve(result)
             }
           )
-          uploadStream.end(req.file.buffer)
+          uploadStream.end(fileBuffer)
         })
 
         if (!result?.secure_url) {

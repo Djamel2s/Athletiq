@@ -111,18 +111,20 @@ router.post('/generate', authenticate, async (req: AuthRequest, res) => {
             encoder.setQuality(10)
 
             for (let i = 0; i < images.length; i++) {
-                const file = path.join(tmpDir, `${String(i + 1).padStart(4, '0')}.jpg`)
-                const img = await Sharp(file)
-                .resize(width, height)
-                .toBuffer()
-                encoder.addFrame(img.data)
+              const file = path.join(tmpDir, `${String(i + 1).padStart(4, '0')}.jpg`)
+              // Obtain raw RGBA pixel data for GIFEncoder
+              const { data: rawBuffer } = await Sharp(file)
+                .resize(width, height, { fit: 'cover' })
+                .raw()
+                .toBuffer({ resolveWithObject: true })
+              encoder.addFrame(rawBuffer)
             }
             encoder.finish()
 
             // wait for writeStream finish
             await new Promise((resolve, reject) => {
-                writeStream.on('finish', resolve)
-                writeStream.on('error', reject)
+              writeStream.on('finish', () => resolve(null))
+              writeStream.on('error', reject)
             })
 
             // Upload GIF to Cloudinary
