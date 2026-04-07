@@ -1,8 +1,8 @@
-// Client-side service worker update handler
-// - prompt user to reload only when online
-// - if offline, wait for 'online' event then prompt
+import { defineNuxtPlugin } from '#app'
 
-if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+export default defineNuxtPlugin(() => {
+  if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return
+
   const handleUpdate = (registration: ServiceWorkerRegistration) => {
     const promptUser = () => {
       try {
@@ -29,12 +29,10 @@ if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistration().then(registration => {
     if (!registration) return
 
-    // If there's already a waiting SW, prompt (subject to online check)
     if (registration.waiting) {
       handleUpdate(registration)
     }
 
-    // Watch for new SW install
     registration.addEventListener('updatefound', () => {
       const newSW = registration.installing
       if (!newSW) return
@@ -45,7 +43,6 @@ if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
       })
     })
 
-    // When controller changes (new SW took control), reload only if online
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (navigator.onLine) {
         try {
@@ -56,4 +53,4 @@ if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
       }
     })
   }).catch(() => {})
-}
+})

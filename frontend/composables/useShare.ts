@@ -15,12 +15,13 @@ export async function shareBlob(blob: Blob, filename: string, title = '') {
 
 	// Capacitor mobile fallback (dynamic import to avoid bundling on web)
 	try {
+		// dynamic import via Function to avoid bundler resolving Capacitor packages
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
-		const cap = await import('@capacitor/core')
+		const cap = await (new Function("return import('@capacitor/core')") as any)()
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
-		const { Filesystem, Share } = await import('@capacitor/filesystem')
+		const { Filesystem, Share } = await (new Function("return import('@capacitor/filesystem')") as any)()
 		const base64 = await blobToBase64(blob)
 		const path = `athletiq/${filename}`
 		// @ts-ignore

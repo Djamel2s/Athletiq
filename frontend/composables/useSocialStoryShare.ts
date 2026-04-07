@@ -24,34 +24,42 @@ export async function shareToStory(opts: {
       })
     }
 
-    // Try native Capacitor plugin if available (plugin will handle writing blob to FS)
+    // Try native Capacitor plugin if available (plugin exposes via Nuxt provide)
     try {
-      const { shareToStoryNative } = await import('~/plugins/story-plugin')
-      const res = await shareToStoryNative({ blob: opts.blob, url: opts.url, attribution: opts.attribution })
-      if (res?.available) return { success: true, method: 'native-plugin' }
+      // useNuxtApp is only available at runtime in client
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      const nuxtApp = useNuxtApp()
+      const shareToStoryNative = (nuxtApp as any).$shareToStoryNative
+      if (typeof shareToStoryNative === 'function') {
+        const res = await shareToStoryNative({ blob: opts.blob, url: opts.url, attribution: opts.attribution })
+        if (res?.available) return { success: true, method: 'native-plugin' }
+      }
     } catch (e) {
       // continue
     }
     // Try Capacitor Share first (native platforms)
     try {
       // dynamic import to avoid bundling in web
+      // dynamic import via Function to avoid bundler resolving Capacitor packages
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      const { Share } = await import('@capacitor/share')
+      const { Share } = await (new Function("return import('@capacitor/share')") as any)()
 
       // If we have a blob, write to filesystem first to improve story intents compatibility
       if (opts.blob) {
-        try {
+          try {
+          // dynamic import via Function to avoid bundler resolution during build
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          const { Filesystem, Directory } = await import('@capacitor/filesystem')
+          const { Filesystem, Directory } = await (new Function("return import('@capacitor/filesystem')") as any)()
           const base64 = await blobToBase64(opts.blob)
           const filename = `athletiq-story-${Date.now()}.jpg`
           await Filesystem.writeFile({ path: filename, data: base64, directory: Directory.Data })
           // Attempt to get a URI for the file
           // @ts-ignore
           const uriRes = await Filesystem.getUri({ directory: Directory.Data, path: filename })
-          const nativeUri = uriRes.uri || uriRes.uri
+          const nativeUri = uriRes.uri || (uriRes as any).uri
           // Use native share with file URI when possible
           await Share.share({ title: 'Mon timelapse', text: opts.attributionLink || '', url: nativeUri })
           return { success: true, method: 'capacitor-share' }
@@ -71,15 +79,16 @@ export async function shareToStory(opts: {
       // Prefer local blob path for Android intent if available
       if (opts.blob) {
         try {
+          // dynamic import via Function to avoid bundler resolution
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          const { Filesystem, Directory } = await import('@capacitor/filesystem')
+          const { Filesystem, Directory } = await (new Function("return import('@capacitor/filesystem')") as any)()
           const base64 = await blobToBase64(opts.blob)
           const filename = `athletiq-story-${Date.now()}.jpg`
           await Filesystem.writeFile({ path: filename, data: base64, directory: Directory.Data })
           // @ts-ignore
           const uriRes = await Filesystem.getUri({ directory: Directory.Data, path: filename })
-          const nativeUri = uriRes.uri || uriRes.uri
+          const nativeUri = uriRes.uri || (uriRes as any).uri
           const intent = `intent://instagram.com/stories/create?background_image=${encodeURIComponent(nativeUri)}#Intent;package=com.instagram.android;scheme=https;end`;
           window.location.href = intent
           return { success: true, method: 'android-intent' }

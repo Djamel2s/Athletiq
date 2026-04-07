@@ -8,7 +8,6 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@nuxt/icon',
     '@nuxtjs/color-mode',
-    '@vite-pwa/nuxt',
     '@nuxtjs/sitemap',
     '@nuxtjs/robots'
   ],
@@ -55,82 +54,7 @@ export default defineNuxtConfig({
     }
   },
 
-  // PWA Configuration
-  pwa: {
-    // Use 'prompt' so new service worker won't skipWaiting/clientsClaim automatically.
-    // This prevents unexpected reloads; we provide a client plugin to ask the user.
-    registerType: 'prompt',
-    manifest: {
-      name: 'Athletiq',
-      short_name: 'Athletiq',
-      description: 'Ton coach de musculation intelligent',
-      theme_color: '#d4c4b0',
-      background_color: '#f5f0eb',
-      display: 'standalone',
-      orientation: 'portrait',
-      start_url: '/dashboard',
-      icons: [
-        {
-          src: '/pwa-192x192.png',
-          sizes: '192x192',
-          type: 'image/png',
-          purpose: 'any'
-        },
-        {
-          src: '/pwa-512x512.png',
-          sizes: '512x512',
-          type: 'image/png',
-          purpose: 'any'
-        },
-        {
-          src: '/pwa-512x512.png',
-          sizes: '512x512',
-          type: 'image/png',
-          purpose: 'maskable'
-        }
-      ]
-    },
-    workbox: {
-      navigateFallback: undefined,
-      // Cache les ressources statiques (CSS, JS, images)
-      globPatterns: ['**/*.{js,css,png,svg,ico,woff2}'],
-      // Strategies runtime
-      runtimeCaching: [
-        {
-          // Pages HTML — network first, fallback sur cache
-          urlPattern: ({ request }: { request: Request }) => request.mode === 'navigate',
-          handler: 'NetworkFirst',
-          options: {
-            cacheName: 'pages-cache',
-            expiration: {
-              maxEntries: 50,
-              maxAgeSeconds: 60 * 60 * 24 // 24h
-            }
-          }
-        },
-        {
-          // Appels API (exclure auth et données sensibles)
-          urlPattern: ({ url }: { url: URL }) => {
-            if (!url.pathname.includes('/api/')) return false
-            const excluded = ['/api/auth/', '/api/users/me', '/api/subscription']
-            return !excluded.some(path => url.pathname.includes(path))
-          },
-          handler: 'NetworkFirst',
-          options: {
-            cacheName: 'api-cache',
-            expiration: {
-              maxEntries: 100,
-              maxAgeSeconds: 60 * 60 * 24 // 24h
-            }
-          }
-        }
-      ]
-    },
-    // Désactivé en dev pour ne pas gêner le hot-reload
-    devOptions: {
-      enabled: false
-    }
-  },
+  // PWA module removed to avoid known workbox vulnerabilities; re-add with compatible plugin/version when ready
 
   devServer: {
     host: '0.0.0.0'

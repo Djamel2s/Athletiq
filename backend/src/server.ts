@@ -3,11 +3,16 @@ import dotenv from 'dotenv'
 // IMPORTANT: Charger .env AVANT tous les autres imports
 dotenv.config()
 
+// Initialize OpenTelemetry (optional) - safe no-op if env not configured
+import './telemetry.js'
+
 import http from 'http'
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
+import * as Sentry from '@sentry/node'
+import { collectDefaultMetrics, register } from 'prom-client'
 import { initializeDatabase } from './config/database.js'
 import { globalLimiter, authLimiter, apiLimiter, webhookLimiter, passwordResetLimiter } from './middlewares/rateLimiter.js'
 import authRoutes from './routes/auth.js'
@@ -44,6 +49,12 @@ import { logger } from './utils/logger.js'
 import { errorHandler } from './middlewares/errorHandler.js'
 
 const app = express()
+// Initialize Sentry if DSN provided
+if (process.env.SENTRY_DSN) {
+  Sentry.init({ dsn: process.env.SENTRY_DSN })
+  // Request handler must be the first middleware
+  app.use(Sentry.Handlers.requestHandler())
+}
 const PORT = process.env.PORT || 3001
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -68,7 +79,23 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Sécurité — headers HTTP (XSS, clickjacking, MIME sniffing, etc.)
-app.use(helmet())
+// Security headers
+app.use(helmet({
+  contentSecurityPolicy: false // CSP handled in Nuxt config for frontend; customize here if needed
+}))
+
+// Start collecting default metrics for Prometheus
+collectDefaultMetrics()
+
+// Expose metrics endpoint
+app.get('/metrics', async (req, res) => {
+  try {
+    res.set('Content-Type', register.contentType)
+    res.end(await register.metrics())
+  } catch (err) {
+    res.status(500).end(err instanceof Error ? err.message : String(err))
+  }
+})
 
 // Cache-Control: no-store on API responses
 app.use('/api', (req, res, next) => {
@@ -151,6 +178,10 @@ app.use((req, res) => {
 })
 
 // Error handler
+// Sentry error handler (should be before custom error handler)
+if (process.env.SENTRY_DSN) {
+  app.use(Sentry.Handlers.errorHandler())
+}
 app.use(errorHandler)
 
 const httpServer = http.createServer(app)
