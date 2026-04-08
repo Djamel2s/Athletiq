@@ -2,68 +2,40 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, master ]
 
 jobs:
-  build-and-test:
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
-
+        node-version: [18.x]
     steps:
       - uses: actions/checkout@v4
-
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-
-      - name: Backend - Install & Test
+      - name: Lint backend
         working-directory: backend
         run: |
           npm ci
-          npm run test
-          npm run build
-
-      - name: Backend - Audit
-        working-directory: backend
-        run: |
-          npm audit --audit-level=high || true
-
-      - name: Frontend - Install & Build
+          npm run format:check
+          npm run lint
+      - name: Lint frontend
         working-directory: frontend
         run: |
           npm ci
-          npm run build
+          npm run format:check
+          npm run lint
 
-      - name: Frontend - Audit
-        working-directory: frontend
-        run: |
-          npm audit --audit-level=high || true
-
-      - name: Upload build artifacts
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: nuxt-output
-          path: frontend/.output || frontend/.nuxt
-name: CI
-
-on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
-
-jobs:
   backend-tests:
     name: Backend tests
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [18.x, 20.x]
@@ -74,6 +46,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'npm'
       - name: Install backend deps
         working-directory: backend
         run: |
@@ -90,12 +63,16 @@ jobs:
   frontend-tests:
     name: Frontend build + audit
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
       - name: Install frontend deps
         working-directory: frontend
         run: |
@@ -108,3 +85,11 @@ jobs:
         working-directory: frontend
         run: |
           npm audit --audit-level=high
+      - name: Upload frontend build artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: |
+            frontend/.output
+            frontend/.nuxt
