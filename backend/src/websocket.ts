@@ -1,114 +1,129 @@
-import { Server as SocketServer } from 'socket.io'
-import type { Server as HttpServer } from 'http'
-import jwt from 'jsonwebtoken'
+import { Server as SocketServer } from 'socket.io';
+import type { Server as HttpServer } from 'http';
+import jwt from 'jsonwebtoken';
 
-const sessionRooms = new Map<string, Set<string>>() // sessionCode -> Set of socketIds
-const sessionParticipants = new Map<string, Set<number>>() // sessionCode -> Set of userIds
-const sessionParticipantSockets = new Map<string, Map<number, Set<string>>>() // sessionCode -> userId -> socketIds
+const sessionRooms = new Map<string, Set<string>>(); // sessionCode -> Set of socketIds
+const sessionParticipants = new Map<string, Set<number>>(); // sessionCode -> Set of userIds
+const sessionParticipantSockets = new Map<string, Map<number, Set<string>>>(); // sessionCode -> userId -> socketIds
 
 // Rate limiter per socket (#4)
-const socketRateLimits = new Map<string, { count: number; resetAt: number }>()
+const socketRateLimits = new Map<string, { count: number; resetAt: number }>();
 
 function checkRateLimit(socketId: string, maxPerSecond: number = 10): boolean {
-  const now = Date.now()
-  const limit = socketRateLimits.get(socketId)
+  const now = Date.now();
+  const limit = socketRateLimits.get(socketId);
   if (!limit || now > limit.resetAt) {
-    socketRateLimits.set(socketId, { count: 1, resetAt: now + 1000 })
-    return true
+    socketRateLimits.set(socketId, { count: 1, resetAt: now + 1000 });
+    return true;
   }
-  limit.count++
-  if (limit.count > maxPerSecond) return false
-  return true
+  limit.count++;
+  if (limit.count > maxPerSecond) return false;
+  return true;
 }
 
 // Input validation helpers (#3)
 function isValidSessionCode(code: unknown): code is string {
-  return typeof code === 'string' && /^[A-Z0-9]{6}$/.test(code)
+  return typeof code === 'string' && /^[A-Z0-9]{6}$/.test(code);
 }
 
 function isValidNumber(val: unknown, min: number, max: number): val is number {
-  return typeof val === 'number' && Number.isFinite(val) && val >= min && val <= max
+  return typeof val === 'number' && Number.isFinite(val) && val >= min && val <= max;
 }
 
 function extractSessionCode(data: any): string | null {
   // Accept either sessionCode (correct) or sessionId (legacy) — but only valid codes
-  const code = data?.sessionCode ?? data?.sessionId
-  if (isValidSessionCode(code)) return code
+  const code = data?.sessionCode ?? data?.sessionId;
+  if (isValidSessionCode(code)) return code;
   // If it's a string that uppercases to a valid code, accept it
-  if (typeof code === 'string' && isValidSessionCode(code.toUpperCase())) return code.toUpperCase()
-  return null
+  if (typeof code === 'string' && isValidSessionCode(code.toUpperCase())) return code.toUpperCase();
+  return null;
 }
 
 export function setupWebSocket(httpServer: HttpServer) {
-  const isProduction = process.env.NODE_ENV === 'production'
+  const isProduction = process.env.NODE_ENV === 'production';
   const io = new SocketServer(httpServer, {
     cors: {
       origin: (origin, callback) => {
-        const allowed = process.env.CORS_ORIGIN
+        const allowed = process.env.CORS_ORIGIN;
         if (!origin || (allowed && origin === allowed)) {
-          callback(null, true)
-        } else if (!allowed && !isProduction && origin?.match(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/)) {
-          callback(null, true)
+          callback(null, true);
+        } else if (
+          !allowed &&
+          !isProduction &&
+          origin?.match(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/)
+        ) {
+          callback(null, true);
         } else {
-          callback(new Error('Not allowed by CORS'))
+          callback(new Error('Not allowed by CORS'));
         }
       },
-      credentials: true
-    }
-  })
+      credentials: true,
+    },
+  });
 
   // Auth middleware - verify JWT
   io.use((socket, next) => {
-    const token = socket.handshake.auth.token
-    if (!token) return next(new Error('Authentication required'))
+    const token = socket.handshake.auth.token;
+    if (!token) return next(new Error('Authentication required'));
     try {
-      const payload = jwt.verify(token, process.env.JWT_SECRET!) as any
-      socket.data.userId = payload.userId
-      next()
+      const payload = jwt.verify(token, process.env.JWT_SECRET!) as any;
+      socket.data.userId = payload.userId;
+      next();
     } catch {
-      next(new Error('Invalid token'))
+      next(new Error('Invalid token'));
     }
-  })
+  });
 
   io.on('connection', (socket) => {
     // Join a session room
     socket.on('session:join', (data: any) => {
-      if (!checkRateLimit(socket.id)) { socket.disconnect(true); return }
+      if (!checkRateLimit(socket.id)) {
+        socket.disconnect(true);
+        return;
+      }
 
       // Accept both { sessionCode: "ABC123" } and plain string "ABC123"
-      const sessionCode = typeof data === 'string'
-        ? (isValidSessionCode(data.toUpperCase()) ? data.toUpperCase() : null)
-        : extractSessionCode(data)
+      const sessionCode =
+        typeof data === 'string'
+          ? isValidSessionCode(data.toUpperCase())
+            ? data.toUpperCase()
+            : null
+          : extractSessionCode(data);
 
-      if (!sessionCode) return
+      if (!sessionCode) return;
 
-      socket.join(`session:${sessionCode}`)
-      if (!sessionRooms.has(sessionCode)) sessionRooms.set(sessionCode, new Set())
-      sessionRooms.get(sessionCode)!.add(socket.id)
+      socket.join(`session:${sessionCode}`);
+      if (!sessionRooms.has(sessionCode)) sessionRooms.set(sessionCode, new Set());
+      sessionRooms.get(sessionCode)!.add(socket.id);
 
       // Track participant membership (#2)
-      if (!sessionParticipants.has(sessionCode)) sessionParticipants.set(sessionCode, new Set())
-      sessionParticipants.get(sessionCode)!.add(socket.data.userId)
-      if (!sessionParticipantSockets.has(sessionCode)) sessionParticipantSockets.set(sessionCode, new Map())
-      const participantSockets = sessionParticipantSockets.get(sessionCode)!
-      if (!participantSockets.has(socket.data.userId)) participantSockets.set(socket.data.userId, new Set())
-      participantSockets.get(socket.data.userId)!.add(socket.id)
+      if (!sessionParticipants.has(sessionCode)) sessionParticipants.set(sessionCode, new Set());
+      sessionParticipants.get(sessionCode)!.add(socket.data.userId);
+      if (!sessionParticipantSockets.has(sessionCode))
+        sessionParticipantSockets.set(sessionCode, new Map());
+      const participantSockets = sessionParticipantSockets.get(sessionCode)!;
+      if (!participantSockets.has(socket.data.userId))
+        participantSockets.set(socket.data.userId, new Set());
+      participantSockets.get(socket.data.userId)!.add(socket.id);
 
       // Store the sessionCode on socket for later checks
-      if (!socket.data.sessionCodes) socket.data.sessionCodes = new Set<string>()
-      socket.data.sessionCodes.add(sessionCode)
-    })
+      if (!socket.data.sessionCodes) socket.data.sessionCodes = new Set<string>();
+      socket.data.sessionCodes.add(sessionCode);
+    });
 
     // Set validated - participant finished their set
     socket.on('session:set-validated', (data: any) => {
-      if (!checkRateLimit(socket.id)) { socket.disconnect(true); return }
+      if (!checkRateLimit(socket.id)) {
+        socket.disconnect(true);
+        return;
+      }
 
-      const sessionCode = extractSessionCode(data)
-      if (!sessionCode) return
-      if (!sessionParticipants.get(sessionCode)?.has(socket.data.userId)) return
+      const sessionCode = extractSessionCode(data);
+      if (!sessionCode) return;
+      if (!sessionParticipants.get(sessionCode)?.has(socket.data.userId)) return;
 
-      if (!isValidNumber(data.reps, 0, 10000)) return
-      if (!isValidNumber(data.weight, 0, 10000)) return
+      if (!isValidNumber(data.reps, 0, 10000)) return;
+      if (!isValidNumber(data.weight, 0, 10000)) return;
 
       // Force userId to prevent spoofing (#3)
       const safeData = {
@@ -118,159 +133,190 @@ export function setupWebSocket(httpServer: HttpServer) {
         setNumber: isValidNumber(data.setNumber, 0, 1000) ? data.setNumber : 1,
         reps: data.reps,
         weight: data.weight,
-        restDuration: isValidNumber(data.restDuration, 0, 600) ? data.restDuration : 90
-      }
+        restDuration: isValidNumber(data.restDuration, 0, 600) ? data.restDuration : 90,
+      };
 
-      io.to(`session:${sessionCode}`).emit('session:set-validated', safeData)
-    })
+      io.to(`session:${sessionCode}`).emit('session:set-validated', safeData);
+    });
 
     // Turn change - move to next participant
     socket.on('session:turn-change', (data: any) => {
-      if (!checkRateLimit(socket.id)) { socket.disconnect(true); return }
+      if (!checkRateLimit(socket.id)) {
+        socket.disconnect(true);
+        return;
+      }
 
-      const sessionCode = extractSessionCode(data)
-      if (!sessionCode) return
-      if (!sessionParticipants.get(sessionCode)?.has(socket.data.userId)) return
+      const sessionCode = extractSessionCode(data);
+      if (!sessionCode) return;
+      if (!sessionParticipants.get(sessionCode)?.has(socket.data.userId)) return;
 
-      const nextTurnIndex = data.nextTurnIndex ?? data.turnIndex
-      if (!isValidNumber(nextTurnIndex, 0, 100)) return
+      const nextTurnIndex = data.nextTurnIndex ?? data.turnIndex;
+      if (!isValidNumber(nextTurnIndex, 0, 100)) return;
 
       const safeData = {
         sessionCode,
         nextTurnIndex,
         turnIndex: nextTurnIndex,
         nextUserId: isValidNumber(data.nextUserId ?? data.turnUserId, 0, Number.MAX_SAFE_INTEGER)
-          ? (data.nextUserId ?? data.turnUserId) : undefined
-      }
+          ? (data.nextUserId ?? data.turnUserId)
+          : undefined,
+      };
 
-      io.to(`session:${sessionCode}`).emit('session:turn-change', safeData)
-    })
+      io.to(`session:${sessionCode}`).emit('session:turn-change', safeData);
+    });
 
     // Timer update - sync rest timers
     socket.on('session:timer-update', (data: any) => {
-      if (!checkRateLimit(socket.id)) { socket.disconnect(true); return }
+      if (!checkRateLimit(socket.id)) {
+        socket.disconnect(true);
+        return;
+      }
 
-      const sessionCode = extractSessionCode(data)
-      if (!sessionCode) return
-      if (!sessionParticipants.get(sessionCode)?.has(socket.data.userId)) return
+      const sessionCode = extractSessionCode(data);
+      if (!sessionCode) return;
+      if (!sessionParticipants.get(sessionCode)?.has(socket.data.userId)) return;
 
-      const restRemaining = data.restTimeRemaining ?? data.restRemaining
-      if (!isValidNumber(restRemaining, 0, 600)) return
+      const restRemaining = data.restTimeRemaining ?? data.restRemaining;
+      if (!isValidNumber(restRemaining, 0, 600)) return;
 
       const safeData = {
         sessionCode,
         userId: socket.data.userId,
         restTimeRemaining: restRemaining,
-        restRemaining
-      }
+        restRemaining,
+      };
 
-      socket.to(`session:${sessionCode}`).emit('session:timer-update', safeData)
-    })
+      socket.to(`session:${sessionCode}`).emit('session:timer-update', safeData);
+    });
 
     // Pause/resume
     socket.on('session:pause', (data: any) => {
-      if (!checkRateLimit(socket.id)) { socket.disconnect(true); return }
+      if (!checkRateLimit(socket.id)) {
+        socket.disconnect(true);
+        return;
+      }
 
-      const sessionCode = typeof data === 'string'
-        ? (isValidSessionCode(data.toUpperCase()) ? data.toUpperCase() : null)
-        : extractSessionCode(data)
-      if (!sessionCode) return
-      if (!sessionParticipants.get(sessionCode)?.has(socket.data.userId)) return
+      const sessionCode =
+        typeof data === 'string'
+          ? isValidSessionCode(data.toUpperCase())
+            ? data.toUpperCase()
+            : null
+          : extractSessionCode(data);
+      if (!sessionCode) return;
+      if (!sessionParticipants.get(sessionCode)?.has(socket.data.userId)) return;
 
-      io.to(`session:${sessionCode}`).emit('session:paused')
-    })
+      io.to(`session:${sessionCode}`).emit('session:paused');
+    });
 
     socket.on('session:resume', (data: any) => {
-      if (!checkRateLimit(socket.id)) { socket.disconnect(true); return }
+      if (!checkRateLimit(socket.id)) {
+        socket.disconnect(true);
+        return;
+      }
 
-      const sessionCode = typeof data === 'string'
-        ? (isValidSessionCode(data.toUpperCase()) ? data.toUpperCase() : null)
-        : extractSessionCode(data)
-      if (!sessionCode) return
-      if (!sessionParticipants.get(sessionCode)?.has(socket.data.userId)) return
+      const sessionCode =
+        typeof data === 'string'
+          ? isValidSessionCode(data.toUpperCase())
+            ? data.toUpperCase()
+            : null
+          : extractSessionCode(data);
+      if (!sessionCode) return;
+      if (!sessionParticipants.get(sessionCode)?.has(socket.data.userId)) return;
 
-      io.to(`session:${sessionCode}`).emit('session:resumed')
-    })
+      io.to(`session:${sessionCode}`).emit('session:resumed');
+    });
 
     // Participant finished their workout
     socket.on('session:participant-finished', (data: any) => {
-      if (!checkRateLimit(socket.id)) { socket.disconnect(true); return }
+      if (!checkRateLimit(socket.id)) {
+        socket.disconnect(true);
+        return;
+      }
 
-      const sessionCode = extractSessionCode(data)
-      if (!sessionCode) return
-      if (!sessionParticipants.get(sessionCode)?.has(socket.data.userId)) return
+      const sessionCode = extractSessionCode(data);
+      if (!sessionCode) return;
+      if (!sessionParticipants.get(sessionCode)?.has(socket.data.userId)) return;
 
       const safeData = {
         sessionCode,
-        userId: socket.data.userId
-      }
+        userId: socket.data.userId,
+      };
 
-      io.to(`session:${sessionCode}`).emit('session:participant-finished', safeData)
-    })
+      io.to(`session:${sessionCode}`).emit('session:participant-finished', safeData);
+    });
 
     // Session ended
     socket.on('session:end', (data: any) => {
-      if (!checkRateLimit(socket.id)) { socket.disconnect(true); return }
+      if (!checkRateLimit(socket.id)) {
+        socket.disconnect(true);
+        return;
+      }
 
-      const sessionCode = typeof data === 'string'
-        ? (isValidSessionCode(data.toUpperCase()) ? data.toUpperCase() : null)
-        : extractSessionCode(data)
-      if (!sessionCode) return
-      if (!sessionParticipants.get(sessionCode)?.has(socket.data.userId)) return
+      const sessionCode =
+        typeof data === 'string'
+          ? isValidSessionCode(data.toUpperCase())
+            ? data.toUpperCase()
+            : null
+          : extractSessionCode(data);
+      if (!sessionCode) return;
+      if (!sessionParticipants.get(sessionCode)?.has(socket.data.userId)) return;
 
-      io.to(`session:${sessionCode}`).emit('session:ended')
-    })
+      io.to(`session:${sessionCode}`).emit('session:ended');
+    });
 
     // Photo taken
     socket.on('session:photo-ready', (data: any) => {
-      if (!checkRateLimit(socket.id)) { socket.disconnect(true); return }
+      if (!checkRateLimit(socket.id)) {
+        socket.disconnect(true);
+        return;
+      }
 
-      const sessionCode = extractSessionCode(data)
-      if (!sessionCode) return
-      if (!sessionParticipants.get(sessionCode)?.has(socket.data.userId)) return
+      const sessionCode = extractSessionCode(data);
+      if (!sessionCode) return;
+      if (!sessionParticipants.get(sessionCode)?.has(socket.data.userId)) return;
 
       const safeData = {
         sessionCode,
-        userId: socket.data.userId
-      }
+        userId: socket.data.userId,
+      };
 
-      io.to(`session:${sessionCode}`).emit('session:photo-ready', safeData)
-    })
+      io.to(`session:${sessionCode}`).emit('session:photo-ready', safeData);
+    });
 
     // Disconnect
     socket.on('disconnect', () => {
       // Clean up rate limit entry
-      socketRateLimits.delete(socket.id)
+      socketRateLimits.delete(socket.id);
 
       // Remove from all session rooms and participant tracking
-      const codes = socket.data.sessionCodes || []
+      const codes = socket.data.sessionCodes || [];
       for (const code of codes) {
         // Remove socket from room
-        const sockets = sessionRooms.get(code)
+        const sockets = sessionRooms.get(code);
         if (sockets) {
-          sockets.delete(socket.id)
+          sockets.delete(socket.id);
           if (sockets.size === 0) {
-            sessionRooms.delete(code)
-            sessionParticipants.delete(code)
-            sessionParticipantSockets.delete(code)
+            sessionRooms.delete(code);
+            sessionParticipants.delete(code);
+            sessionParticipantSockets.delete(code);
           } else {
-            const participantSockets = sessionParticipantSockets.get(code)
-            const userSockets = participantSockets?.get(socket.data.userId)
+            const participantSockets = sessionParticipantSockets.get(code);
+            const userSockets = participantSockets?.get(socket.data.userId);
             if (userSockets) {
-              userSockets.delete(socket.id)
+              userSockets.delete(socket.id);
               if (userSockets.size === 0) {
-                participantSockets?.delete(socket.data.userId)
-                sessionParticipants.get(code)?.delete(socket.data.userId)
+                participantSockets?.delete(socket.data.userId);
+                sessionParticipants.get(code)?.delete(socket.data.userId);
                 io.to(`session:${code}`).emit('session:participant-disconnected', {
-                  userId: socket.data.userId
-                })
+                  userId: socket.data.userId,
+                });
               }
             }
           }
         }
       }
-    })
-  })
+    });
+  });
 
-  return io
+  return io;
 }

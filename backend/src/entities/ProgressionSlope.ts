@@ -1,36 +1,44 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Index } from 'typeorm'
-import type { User } from './User.js'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  Index,
+} from 'typeorm';
+import type { User } from './User.js';
 
 @Entity('progression_slopes')
 @Index(['userId', 'metric', 'startDate', 'endDate'])
 export class ProgressionSlope {
   @PrimaryGeneratedColumn()
-  id!: number
+  id!: number;
 
   @Column('int')
-  userId!: number
+  userId!: number;
 
   @Column('varchar')
-  metric!: string
+  metric!: string;
 
   @Column({ type: 'float' })
-  slope!: number
+  slope!: number;
 
   @Column({ type: 'timestamp' })
-  startDate!: Date
+  startDate!: Date;
 
   @Column({ type: 'timestamp' })
-  endDate!: Date
+  endDate!: Date;
 
   @Column('int')
-  sampleCount!: number
+  sampleCount!: number;
 
   @CreateDateColumn()
-  createdAt!: Date
+  createdAt!: Date;
 
   @ManyToOne('User', 'workouts', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
-  user!: User
+  user!: User;
 }
 
-export default ProgressionSlope
+export default ProgressionSlope;

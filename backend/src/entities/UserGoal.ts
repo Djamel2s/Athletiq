@@ -1,52 +1,74 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, Index } from 'typeorm'
-import type { User } from './User.js'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  CreateDateColumn,
+  Index,
+} from 'typeorm';
+import type { User } from './User.js';
 
 export enum GoalType {
   WEIGHT = 'WEIGHT',
   PR = 'PR',
-  BODY_FAT = 'BODY_FAT'
+  BODY_FAT = 'BODY_FAT',
 }
 
 @Entity('user_goals')
 @Index(['userId'])
 export class UserGoal {
   @PrimaryGeneratedColumn()
-  id!: number
+  id!: number;
 
   @Column('int')
-  userId!: number
+  userId!: number;
 
   @Column({ type: 'enum', enum: GoalType })
-  type!: GoalType
+  type!: GoalType;
 
   @Column('varchar')
-  title!: string
+  title!: string;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true, default: 0, transformer: { to: (v: number) => v, from: (v: string) => v ? parseFloat(v) : 0 } })
-  targetValue!: number
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    nullable: true,
+    default: 0,
+    transformer: { to: (v: number) => v, from: (v: string) => (v ? parseFloat(v) : 0) },
+  })
+  targetValue!: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true, default: 0, transformer: { to: (v: number) => v, from: (v: string) => v ? parseFloat(v) : 0 } })
-  startValue!: number
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    nullable: true,
+    default: 0,
+    transformer: { to: (v: number) => v, from: (v: string) => (v ? parseFloat(v) : 0) },
+  })
+  startValue!: number;
 
   @Column({ type: 'varchar', nullable: true })
-  exerciseName?: string
+  exerciseName?: string;
 
   @Column({ type: 'int', nullable: true })
-  exerciseLibraryId?: number
+  exerciseLibraryId?: number;
 
   @Column({ type: 'timestamp', nullable: true })
-  deadline?: Date
+  deadline?: Date;
 
   @Column({ type: 'boolean', default: false })
-  achieved!: boolean
+  achieved!: boolean;
 
   @Column({ type: 'timestamp', nullable: true })
-  achievedAt?: Date
+  achievedAt?: Date;
 
   @CreateDateColumn()
-  createdAt!: Date
+  createdAt!: Date;
 
   @ManyToOne('User', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
-  user!: User
+  user!: User;
 }

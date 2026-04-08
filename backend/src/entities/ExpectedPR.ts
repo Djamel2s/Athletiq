@@ -1,36 +1,44 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Index } from 'typeorm'
-import type { User } from './User.js'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  Index,
+} from 'typeorm';
+import type { User } from './User.js';
 
 @Entity('expected_prs')
 @Index(['userId', 'exerciseName'])
 export class ExpectedPR {
   @PrimaryGeneratedColumn()
-  id!: number
+  id!: number;
 
   @Column('int')
-  userId!: number
+  userId!: number;
 
   @Column('varchar')
-  exerciseName!: string
+  exerciseName!: string;
 
   @Column({ type: 'float' })
-  predicted!: number
+  predicted!: number;
 
   @Column({ type: 'timestamp' })
-  predictedAt!: Date
+  predictedAt!: Date;
 
   @Column({ type: 'float', nullable: true })
-  confidence?: number
+  confidence?: number;
 
   @Column({ type: 'varchar', nullable: true })
-  modelSource?: string
+  modelSource?: string;
 
   @CreateDateColumn()
-  createdAt!: Date
+  createdAt!: Date;
 
   @ManyToOne('User', 'workouts', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
-  user!: User
+  user!: User;
 }
 
-export default ExpectedPR
+export default ExpectedPR;

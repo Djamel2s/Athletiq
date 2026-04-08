@@ -1,28 +1,28 @@
-import express from 'express'
-import { MoreThanOrEqual, In } from 'typeorm'
-import { AppDataSource } from '../config/database.js'
-import { PlannedWorkout } from '../entities/PlannedWorkout.js'
-import { Friendship } from '../entities/Friendship.js'
-import { logger } from '../utils/logger.js'
-import { User } from '../entities/User.js'
-import { authenticate, AuthRequest } from '../middlewares/auth.js'
-import { createNotification } from '../services/notificationService.js'
-import { NotificationType } from '../entities/Notification.js'
-import { parseId } from '../utils/validation.js'
-import { isHttpError } from '../utils/errors.js'
+import express from 'express';
+import { MoreThanOrEqual, In } from 'typeorm';
+import { AppDataSource } from '../config/database.js';
+import { PlannedWorkout } from '../entities/PlannedWorkout.js';
+import { Friendship } from '../entities/Friendship.js';
+import { logger } from '../utils/logger.js';
+import { User } from '../entities/User.js';
+import { authenticate, AuthRequest } from '../middlewares/auth.js';
+import { createNotification } from '../services/notificationService.js';
+import { NotificationType } from '../entities/Notification.js';
+import { parseId } from '../utils/validation.js';
+import { isHttpError } from '../utils/errors.js';
 
-const router = express.Router()
+const router = express.Router();
 
-const plannedWorkoutRepo = () => AppDataSource.getRepository(PlannedWorkout)
-const friendshipRepo = () => AppDataSource.getRepository(Friendship)
-const userRepo = () => AppDataSource.getRepository(User)
+const plannedWorkoutRepo = () => AppDataSource.getRepository(PlannedWorkout);
+const friendshipRepo = () => AppDataSource.getRepository(Friendship);
+const userRepo = () => AppDataSource.getRepository(User);
 
 const handleRouteError = (res: express.Response, error: unknown) => {
   if (isHttpError(error)) {
-    return res.status(error.statusCode).json({ error: error.message })
+    return res.status(error.statusCode).json({ error: error.message });
   }
-  return res.status(500).json({ error: 'Internal server error' })
-}
+  return res.status(500).json({ error: 'Internal server error' });
+};
 
 /**
  * Check if two users are friends (ACCEPTED friendship).
@@ -31,49 +31,49 @@ async function areFriends(userA: number, userB: number): Promise<boolean> {
   const friendship = await friendshipRepo().findOne({
     where: [
       { requesterId: userA, addresseeId: userB, status: 'ACCEPTED' },
-      { requesterId: userB, addresseeId: userA, status: 'ACCEPTED' }
-    ]
-  })
-  return !!friendship
+      { requesterId: userB, addresseeId: userA, status: 'ACCEPTED' },
+    ],
+  });
+  return !!friendship;
 }
 
 /**
  * Get display name for a user.
  */
 function displayName(user: User): string {
-  return user.username || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Quelqu\'un'
+  return user.username || `${user.firstName || ''} ${user.lastName || ''}`.trim() || "Quelqu'un";
 }
 
 // POST / — create a planned workout invitation
 router.post('/', authenticate, async (req: AuthRequest, res) => {
   try {
-    const inviterId = req.user!.id
-    const { inviteeId, name, scheduledAt, workoutTemplateId, notes } = req.body
+    const inviterId = req.user!.id;
+    const { inviteeId, name, scheduledAt, workoutTemplateId, notes } = req.body;
 
     if (!inviteeId || !name || !scheduledAt) {
-      return res.status(400).json({ error: 'inviteeId, name and scheduledAt are required' })
+      return res.status(400).json({ error: 'inviteeId, name and scheduledAt are required' });
     }
 
-    const parsedInviteeId = typeof inviteeId === 'string' ? parseId(inviteeId) : inviteeId
+    const parsedInviteeId = typeof inviteeId === 'string' ? parseId(inviteeId) : inviteeId;
 
     if (inviterId === parsedInviteeId) {
-      return res.status(400).json({ error: 'Cannot invite yourself' })
+      return res.status(400).json({ error: 'Cannot invite yourself' });
     }
 
     // Verify invitee exists
-    const invitee = await userRepo().findOne({ where: { id: parsedInviteeId } })
+    const invitee = await userRepo().findOne({ where: { id: parsedInviteeId } });
     if (!invitee) {
-      return res.status(404).json({ error: 'User not found' })
+      return res.status(404).json({ error: 'User not found' });
     }
 
     // Verify they are friends
     if (!(await areFriends(inviterId, parsedInviteeId))) {
-      return res.status(403).json({ error: 'You can only invite friends' })
+      return res.status(403).json({ error: 'You can only invite friends' });
     }
 
-    const scheduledDate = new Date(scheduledAt)
+    const scheduledDate = new Date(scheduledAt);
     if (isNaN(scheduledDate.getTime())) {
-      return res.status(400).json({ error: 'Invalid scheduledAt date' })
+      return res.status(400).json({ error: 'Invalid scheduledAt date' });
     }
 
     const planned = plannedWorkoutRepo().create({
@@ -83,102 +83,117 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
       scheduledAt: scheduledDate,
       workoutTemplateId: workoutTemplateId ? Number(workoutTemplateId) : undefined,
       notes: notes ? String(notes).slice(0, 500) : undefined,
-      status: 'PENDING'
-    })
+      status: 'PENDING',
+    });
 
-    const saved = await plannedWorkoutRepo().save(planned)
+    const saved = await plannedWorkoutRepo().save(planned);
 
     // Send notification to invitee
-    const inviter = await userRepo().findOne({ where: { id: inviterId } })
-    const inviterName = inviter ? displayName(inviter) : 'Quelqu\'un'
-    const dateStr = scheduledDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
+    const inviter = await userRepo().findOne({ where: { id: inviterId } });
+    const inviterName = inviter ? displayName(inviter) : "Quelqu'un";
+    const dateStr = scheduledDate.toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'long',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
     createNotification(
       parsedInviteeId,
       NotificationType.WORKOUT_INVITATION,
       'Invitation workout',
       `${inviterName} te propose : ${name} le ${dateStr}`
-    ).catch(err => logger.error({ err, route: 'plannedWorkouts' }, 'Planned workout notification failed'))
+    ).catch((err) =>
+      logger.error({ err, route: 'plannedWorkouts' }, 'Planned workout notification failed')
+    );
 
-    res.status(201).json(saved)
+    res.status(201).json(saved);
   } catch (error) {
-    logger.error({ err: error, route: 'plannedWorkouts' }, 'Error creating planned workout')
-    res.status(500).json({ error: 'Internal server error' })
+    logger.error({ err: error, route: 'plannedWorkouts' }, 'Error creating planned workout');
+    res.status(500).json({ error: 'Internal server error' });
   }
-})
+});
 
 // POST /:id/accept — accept invitation
 router.post('/:id/accept', authenticate, async (req: AuthRequest, res) => {
   try {
-    const id = parseId(req.params.id)
-    const userId = req.user!.id
+    const id = parseId(req.params.id);
+    const userId = req.user!.id;
 
     const planned = await plannedWorkoutRepo().findOne({
-      where: { id, inviteeId: userId, status: 'PENDING' }
-    })
+      where: { id, inviteeId: userId, status: 'PENDING' },
+    });
 
     if (!planned) {
-      return res.status(404).json({ error: 'Planned workout not found or already responded' })
+      return res.status(404).json({ error: 'Planned workout not found or already responded' });
     }
 
-    planned.status = 'ACCEPTED'
-    await plannedWorkoutRepo().save(planned)
+    planned.status = 'ACCEPTED';
+    await plannedWorkoutRepo().save(planned);
 
     // Notify the inviter
-    const accepter = await userRepo().findOne({ where: { id: userId } })
-    const accepterName = accepter ? displayName(accepter) : 'Quelqu\'un'
+    const accepter = await userRepo().findOne({ where: { id: userId } });
+    const accepterName = accepter ? displayName(accepter) : "Quelqu'un";
     createNotification(
       planned.inviterId,
       NotificationType.WORKOUT_INVITATION_ACCEPTED,
       'Invitation acceptee',
       `${accepterName} a accepte ${planned.name}`
-    ).catch(err => logger.error({ err, route: 'plannedWorkouts' }, 'Accept notification failed'))
+    ).catch((err) => logger.error({ err, route: 'plannedWorkouts' }, 'Accept notification failed'));
 
-    res.json({ message: 'Invitation accepted', planned })
+    res.json({ message: 'Invitation accepted', planned });
   } catch (error) {
-    logger.error({ err: error, route: 'plannedWorkouts' }, 'Error accepting planned workout')
-    handleRouteError(res, error)
+    logger.error({ err: error, route: 'plannedWorkouts' }, 'Error accepting planned workout');
+    handleRouteError(res, error);
   }
-})
+});
 
 // POST /:id/decline — decline invitation
 router.post('/:id/decline', authenticate, async (req: AuthRequest, res) => {
   try {
-    const id = parseId(req.params.id)
-    const userId = req.user!.id
+    const id = parseId(req.params.id);
+    const userId = req.user!.id;
 
     const planned = await plannedWorkoutRepo().findOne({
-      where: { id, inviteeId: userId, status: 'PENDING' }
-    })
+      where: { id, inviteeId: userId, status: 'PENDING' },
+    });
 
     if (!planned) {
-      return res.status(404).json({ error: 'Planned workout not found or already responded' })
+      return res.status(404).json({ error: 'Planned workout not found or already responded' });
     }
 
-    planned.status = 'DECLINED'
-    await plannedWorkoutRepo().save(planned)
+    planned.status = 'DECLINED';
+    await plannedWorkoutRepo().save(planned);
 
-    res.json({ message: 'Invitation declined' })
+    res.json({ message: 'Invitation declined' });
   } catch (error) {
-    logger.error({ err: error, route: 'plannedWorkouts' }, 'Error declining planned workout')
-    handleRouteError(res, error)
+    logger.error({ err: error, route: 'plannedWorkouts' }, 'Error declining planned workout');
+    handleRouteError(res, error);
   }
-})
+});
 
 // GET / — list upcoming planned workouts
 router.get('/', authenticate, async (req: AuthRequest, res) => {
   try {
-    const userId = req.user!.id
+    const userId = req.user!.id;
 
     const planned = await plannedWorkoutRepo().find({
       where: [
-        { inviterId: userId, scheduledAt: MoreThanOrEqual(new Date()), status: In(['PENDING', 'ACCEPTED']) },
-        { inviteeId: userId, scheduledAt: MoreThanOrEqual(new Date()), status: In(['PENDING', 'ACCEPTED']) }
+        {
+          inviterId: userId,
+          scheduledAt: MoreThanOrEqual(new Date()),
+          status: In(['PENDING', 'ACCEPTED']),
+        },
+        {
+          inviteeId: userId,
+          scheduledAt: MoreThanOrEqual(new Date()),
+          status: In(['PENDING', 'ACCEPTED']),
+        },
       ],
       relations: ['inviter', 'invitee'],
-      order: { scheduledAt: 'ASC' }
-    })
+      order: { scheduledAt: 'ASC' },
+    });
 
-    const result = planned.map(p => ({
+    const result = planned.map((p) => ({
       id: p.id,
       name: p.name,
       scheduledAt: p.scheduledAt,
@@ -193,45 +208,45 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
         username: p.inviter.username,
         firstName: p.inviter.firstName,
         lastName: p.inviter.lastName,
-        avatarUrl: p.inviter.avatarUrl
+        avatarUrl: p.inviter.avatarUrl,
       },
       invitee: {
         id: p.invitee.id,
         username: p.invitee.username,
         firstName: p.invitee.firstName,
         lastName: p.invitee.lastName,
-        avatarUrl: p.invitee.avatarUrl
-      }
-    }))
+        avatarUrl: p.invitee.avatarUrl,
+      },
+    }));
 
-    res.json({ plannedWorkouts: result })
+    res.json({ plannedWorkouts: result });
   } catch (error) {
-    logger.error({ err: error, route: 'plannedWorkouts' }, 'Error fetching planned workouts')
-    res.status(500).json({ error: 'Internal server error' })
+    logger.error({ err: error, route: 'plannedWorkouts' }, 'Error fetching planned workouts');
+    res.status(500).json({ error: 'Internal server error' });
   }
-})
+});
 
 // DELETE /:id — cancel a planned workout (inviter only)
 router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
   try {
-    const id = parseId(req.params.id)
-    const userId = req.user!.id
+    const id = parseId(req.params.id);
+    const userId = req.user!.id;
 
     const planned = await plannedWorkoutRepo().findOne({
-      where: { id, inviterId: userId }
-    })
+      where: { id, inviterId: userId },
+    });
 
     if (!planned) {
-      return res.status(404).json({ error: 'Planned workout not found' })
+      return res.status(404).json({ error: 'Planned workout not found' });
     }
 
-    await plannedWorkoutRepo().remove(planned)
+    await plannedWorkoutRepo().remove(planned);
 
-    res.json({ message: 'Planned workout cancelled' })
+    res.json({ message: 'Planned workout cancelled' });
   } catch (error) {
-    logger.error({ err: error, route: 'plannedWorkouts' }, 'Error cancelling planned workout')
-    handleRouteError(res, error)
+    logger.error({ err: error, route: 'plannedWorkouts' }, 'Error cancelling planned workout');
+    handleRouteError(res, error);
   }
-})
+});
 
-export default router
+export default router;

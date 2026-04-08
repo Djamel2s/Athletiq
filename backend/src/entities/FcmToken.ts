@@ -1,28 +1,37 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, Index } from 'typeorm'
-import type { User } from './User.js'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  Index,
+} from 'typeorm';
+import type { User } from './User.js';
 
 @Entity('fcm_tokens')
 @Index(['userId'])
 export class FcmToken {
   @PrimaryGeneratedColumn()
-  id!: number
+  id!: number;
 
   @Column('int')
-  userId!: number
+  userId!: number;
 
   @Column({ type: 'varchar', unique: true })
-  token!: string
+  token!: string;
 
   @Column({ type: 'varchar', default: 'android' })
-  platform!: string
+  platform!: string;
 
   @CreateDateColumn()
-  createdAt!: Date
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt!: Date
+  updatedAt!: Date;
 
   @ManyToOne('User', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
-  user!: User
+  user!: User;
 }

@@ -1,74 +1,74 @@
-import express from 'express'
-import { AppDataSource } from '../config/database.js'
-import { authenticate, AuthRequest } from '../middlewares/auth.js'
-import { FcmToken } from '../entities/FcmToken.js'
-import { logger } from '../utils/logger.js'
+import express from 'express';
+import { AppDataSource } from '../config/database.js';
+import { authenticate, AuthRequest } from '../middlewares/auth.js';
+import { FcmToken } from '../entities/FcmToken.js';
+import { logger } from '../utils/logger.js';
 
-const router = express.Router()
+const router = express.Router();
 
 // POST /api/fcm-tokens - Register/upsert a token
 router.post('/', authenticate, async (req: AuthRequest, res) => {
   try {
-    const { token, platform } = req.body
-    const userId = req.user!.id
+    const { token, platform } = req.body;
+    const userId = req.user!.id;
 
     if (!token || typeof token !== 'string') {
-      return res.status(400).json({ error: 'Token is required' })
+      return res.status(400).json({ error: 'Token is required' });
     }
 
-    const repo = AppDataSource.getRepository(FcmToken)
+    const repo = AppDataSource.getRepository(FcmToken);
 
     // Check if token already exists
-    const existing = await repo.findOne({ where: { token } })
+    const existing = await repo.findOne({ where: { token } });
 
     if (existing) {
       if (existing.userId !== userId) {
         // Token belongs to another device/user, delete old and create new
-        await repo.delete(existing.id)
+        await repo.delete(existing.id);
         const fcmToken = repo.create({
           userId,
           token,
-          platform: platform || 'android'
-        })
-        await repo.save(fcmToken)
+          platform: platform || 'android',
+        });
+        await repo.save(fcmToken);
       } else {
         // Same user, just update platform
-        existing.platform = platform || existing.platform
-        await repo.save(existing)
+        existing.platform = platform || existing.platform;
+        await repo.save(existing);
       }
     } else {
       const fcmToken = repo.create({
         userId,
         token,
-        platform: platform || 'android'
-      })
-      await repo.save(fcmToken)
+        platform: platform || 'android',
+      });
+      await repo.save(fcmToken);
     }
 
-    res.json({ message: 'Token registered' })
+    res.json({ message: 'Token registered' });
   } catch (error) {
-    logger.error({ err: error, route: 'fcmTokens' }, 'Register error')
-    res.status(500).json({ error: 'Failed to register token' })
+    logger.error({ err: error, route: 'fcmTokens' }, 'Register error');
+    res.status(500).json({ error: 'Failed to register token' });
   }
-})
+});
 
 // DELETE /api/fcm-tokens - Remove a token (logout)
 router.delete('/', authenticate, async (req: AuthRequest, res) => {
   try {
-    const { token } = req.body
+    const { token } = req.body;
 
     if (!token || typeof token !== 'string') {
-      return res.status(400).json({ error: 'Token is required' })
+      return res.status(400).json({ error: 'Token is required' });
     }
 
-    const repo = AppDataSource.getRepository(FcmToken)
-    await repo.delete({ token, userId: req.user!.id })
+    const repo = AppDataSource.getRepository(FcmToken);
+    await repo.delete({ token, userId: req.user!.id });
 
-    res.json({ message: 'Token removed' })
+    res.json({ message: 'Token removed' });
   } catch (error) {
-    logger.error({ err: error, route: 'fcmTokens' }, 'Delete error')
-    res.status(500).json({ error: 'Failed to remove token' })
+    logger.error({ err: error, route: 'fcmTokens' }, 'Delete error');
+    res.status(500).json({ error: 'Failed to remove token' });
   }
-})
+});
 
-export default router
+export default router;

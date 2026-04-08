@@ -4,6 +4,7 @@ Overview
 These models are minimal, extend the existing schema, and are designed for analytics and simple ML features (Coach IA). They are intentionally denormalized and append-only for auditability.
 
 Models added
+
 - `Fatigue`
   - Purpose: store per-user recovery score (0..1) sampled over time. Can be computed from sleep, HRV, recent training load, and subjective input.
   - Use cases: day-of recommendations (reduce volume), push-notifications for rest, coach insights.
@@ -17,11 +18,13 @@ Models added
   - Use cases: show achievable goals in the coach UI, drive motivation and program recommendations.
 
 Implementation notes
+
 - These models are append-only (createdAt) to retain history; updates should create new rows.
 - Sizing: expect low write volume (one per user per day/week depending on frequency).
 - Storage/cost: fields are lightweight (floats + timestamps), unlikely to materially affect DB costs.
 
 Next steps
+
 1. Create a small service `analyticsService` that:
    - Computes fatigue heuristically (recent volume, session RPE, sleep input).
    - Computes progression slopes (linear regression over sample window).

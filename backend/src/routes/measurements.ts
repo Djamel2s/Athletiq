@@ -1,60 +1,70 @@
-import express from 'express'
-import { z } from 'zod'
-import { AppDataSource } from '../config/database.js'
-import { Measurement } from '../entities/Measurement.js'
-import { authenticate, AuthRequest } from '../middlewares/auth.js'
-import { parseId } from '../utils/validation.js'
-import { isHttpError } from '../utils/errors.js'
+import express from 'express';
+import { z } from 'zod';
+import { AppDataSource } from '../config/database.js';
+import { Measurement } from '../entities/Measurement.js';
+import { authenticate, AuthRequest } from '../middlewares/auth.js';
+import { parseId } from '../utils/validation.js';
+import { isHttpError } from '../utils/errors.js';
 
-const router = express.Router()
-const measurementRepository = AppDataSource.getRepository(Measurement)
+const router = express.Router();
+const measurementRepository = AppDataSource.getRepository(Measurement);
 
 const handleRouteError = (res: express.Response, error: unknown) => {
   if (isHttpError(error)) {
-    return res.status(error.statusCode).json({ error: error.message })
+    return res.status(error.statusCode).json({ error: error.message });
   }
-  return res.status(500).json({ error: 'Erreur interne du serveur' })
-}
+  return res.status(500).json({ error: 'Erreur interne du serveur' });
+};
 
 // Get all measurements for current user
 router.get('/', authenticate, async (req: AuthRequest, res) => {
   try {
-    const limit = Math.min(Math.max(parseInt(req.query.limit as string, 10) || 50, 1), 100)
-    const offset = Math.max(parseInt(req.query.offset as string, 10) || 0, 0)
+    const limit = Math.min(Math.max(parseInt(req.query.limit as string, 10) || 50, 1), 100);
+    const offset = Math.max(parseInt(req.query.offset as string, 10) || 0, 0);
 
     const [measurements, total] = await measurementRepository.findAndCount({
       where: { userId: req.user!.id },
       order: { date: 'DESC' },
       take: limit,
-      skip: offset
-    })
+      skip: offset,
+    });
 
-    res.json({ data: measurements, total })
+    res.json({ data: measurements, total });
   } catch (error) {
-    handleRouteError(res, error)
+    handleRouteError(res, error);
   }
-})
+});
 
 // Create a measurement entry
 router.post('/', authenticate, async (req: AuthRequest, res) => {
   try {
-    const schema = z.object({
-      chest: z.number().positive().nullish(),
-      waist: z.number().positive().nullish(),
-      hips: z.number().positive().nullish(),
-      biceps: z.number().positive().nullish(),
-      thighs: z.number().positive().nullish(),
-      calves: z.number().positive().nullish(),
-      date: z.string().datetime().nullish().refine(
-        val => !val || (new Date(val).getFullYear() >= 2000 && new Date(val) <= new Date(Date.now() + 3600000)),
-        { message: 'Date invalide' }
-      )
-    }).refine(
-      (data) => data.chest || data.waist || data.hips || data.biceps || data.thighs || data.calves,
-      { message: 'Au moins une mensuration est requise' }
-    )
+    const schema = z
+      .object({
+        chest: z.number().positive().nullish(),
+        waist: z.number().positive().nullish(),
+        hips: z.number().positive().nullish(),
+        biceps: z.number().positive().nullish(),
+        thighs: z.number().positive().nullish(),
+        calves: z.number().positive().nullish(),
+        date: z
+          .string()
+          .datetime()
+          .nullish()
+          .refine(
+            (val) =>
+              !val ||
+              (new Date(val).getFullYear() >= 2000 &&
+                new Date(val) <= new Date(Date.now() + 3600000)),
+            { message: 'Date invalide' }
+          ),
+      })
+      .refine(
+        (data) =>
+          data.chest || data.waist || data.hips || data.biceps || data.thighs || data.calves,
+        { message: 'Au moins une mensuration est requise' }
+      );
 
-    const data = schema.parse(req.body)
+    const data = schema.parse(req.body);
 
     const measurement = measurementRepository.create({
       userId: req.user!.id,
@@ -64,18 +74,18 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
       biceps: data.biceps ?? undefined,
       thighs: data.thighs ?? undefined,
       calves: data.calves ?? undefined,
-      date: data.date ? new Date(data.date) : new Date()
-    })
+      date: data.date ? new Date(data.date) : new Date(),
+    });
 
-    const saved = await measurementRepository.save(measurement)
-    res.status(201).json(saved)
+    const saved = await measurementRepository.save(measurement);
+    res.status(201).json(saved);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
+      return res.status(400).json({ error: 'Erreur de validation', details: error.errors });
     }
-    handleRouteError(res, error)
+    handleRouteError(res, error);
   }
-})
+});
 
 // Update a measurement entry
 router.put('/:id', authenticate, async (req: AuthRequest, res) => {
@@ -87,56 +97,63 @@ router.put('/:id', authenticate, async (req: AuthRequest, res) => {
       biceps: z.number().positive().nullish(),
       thighs: z.number().positive().nullish(),
       calves: z.number().positive().nullish(),
-      date: z.string().datetime().nullish().refine(
-        val => !val || (new Date(val).getFullYear() >= 2000 && new Date(val) <= new Date(Date.now() + 3600000)),
-        { message: 'Date invalide' }
-      )
-    })
+      date: z
+        .string()
+        .datetime()
+        .nullish()
+        .refine(
+          (val) =>
+            !val ||
+            (new Date(val).getFullYear() >= 2000 &&
+              new Date(val) <= new Date(Date.now() + 3600000)),
+          { message: 'Date invalide' }
+        ),
+    });
 
-    const data = schema.parse(req.body)
+    const data = schema.parse(req.body);
 
     const measurement = await measurementRepository.findOne({
-      where: { id: parseId(req.params.id), userId: req.user!.id }
-    })
+      where: { id: parseId(req.params.id), userId: req.user!.id },
+    });
 
     if (!measurement) {
-      return res.status(404).json({ error: 'Mensuration non trouvée' })
+      return res.status(404).json({ error: 'Mensuration non trouvée' });
     }
 
-    if (data.chest !== undefined) measurement.chest = data.chest ?? undefined
-    if (data.waist !== undefined) measurement.waist = data.waist ?? undefined
-    if (data.hips !== undefined) measurement.hips = data.hips ?? undefined
-    if (data.biceps !== undefined) measurement.biceps = data.biceps ?? undefined
-    if (data.thighs !== undefined) measurement.thighs = data.thighs ?? undefined
-    if (data.calves !== undefined) measurement.calves = data.calves ?? undefined
-    if (data.date) measurement.date = new Date(data.date)
+    if (data.chest !== undefined) measurement.chest = data.chest ?? undefined;
+    if (data.waist !== undefined) measurement.waist = data.waist ?? undefined;
+    if (data.hips !== undefined) measurement.hips = data.hips ?? undefined;
+    if (data.biceps !== undefined) measurement.biceps = data.biceps ?? undefined;
+    if (data.thighs !== undefined) measurement.thighs = data.thighs ?? undefined;
+    if (data.calves !== undefined) measurement.calves = data.calves ?? undefined;
+    if (data.date) measurement.date = new Date(data.date);
 
-    const updated = await measurementRepository.save(measurement)
-    res.json(updated)
+    const updated = await measurementRepository.save(measurement);
+    res.json(updated);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Erreur de validation', details: error.errors })
+      return res.status(400).json({ error: 'Erreur de validation', details: error.errors });
     }
-    handleRouteError(res, error)
+    handleRouteError(res, error);
   }
-})
+});
 
 // Delete a measurement entry
 router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
   try {
     const measurement = await measurementRepository.findOne({
-      where: { id: parseId(req.params.id), userId: req.user!.id }
-    })
+      where: { id: parseId(req.params.id), userId: req.user!.id },
+    });
 
     if (!measurement) {
-      return res.status(404).json({ error: 'Mensuration non trouvée' })
+      return res.status(404).json({ error: 'Mensuration non trouvée' });
     }
 
-    await measurementRepository.remove(measurement)
-    res.json({ message: 'Mensuration supprimée' })
+    await measurementRepository.remove(measurement);
+    res.json({ message: 'Mensuration supprimée' });
   } catch (error) {
-    handleRouteError(res, error)
+    handleRouteError(res, error);
   }
-})
+});
 
-export default router
+export default router;

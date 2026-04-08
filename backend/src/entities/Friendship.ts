@@ -1,5 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Index, Unique } from 'typeorm'
-import type { User } from './User.js'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  Index,
+  Unique,
+} from 'typeorm';
+import type { User } from './User.js';
 
 @Entity('friendships')
 @Unique(['requesterId', 'addresseeId'])
@@ -7,25 +16,25 @@ import type { User } from './User.js'
 @Index(['addresseeId'])
 export class Friendship {
   @PrimaryGeneratedColumn()
-  id!: number
+  id!: number;
 
   @Column('int')
-  requesterId!: number
+  requesterId!: number;
 
   @Column('int')
-  addresseeId!: number
+  addresseeId!: number;
 
   @Column({ type: 'varchar', default: 'PENDING' })
-  status!: 'PENDING' | 'ACCEPTED' | 'BLOCKED'
+  status!: 'PENDING' | 'ACCEPTED' | 'BLOCKED';
 
   @CreateDateColumn()
-  createdAt!: Date
+  createdAt!: Date;
 
   @ManyToOne('User', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'requesterId' })
-  requester!: User
+  requester!: User;
 
   @ManyToOne('User', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'addresseeId' })
-  addressee!: User
+  addressee!: User;
 }

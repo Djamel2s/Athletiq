@@ -1,17 +1,17 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Index } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Index } from 'typeorm';
 
 @Entity('processed_webhook_events')
 export class ProcessedWebhookEvent {
   @PrimaryGeneratedColumn()
-  id!: number
+  id!: number;
 
   @Index({ unique: true })
   @Column({ type: 'varchar', length: 255 })
-  eventId!: string
+  eventId!: string;
 
   @Column({ type: 'varchar', length: 64 })
-  provider!: string
+  provider!: string;
 
   @CreateDateColumn()
-  processedAt!: Date
+  processedAt!: Date;
 }

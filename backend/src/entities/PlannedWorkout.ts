@@ -1,6 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Index } from 'typeorm'
-import type { User } from './User.js'
-import type { Workout } from './Workout.js'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  Index,
+} from 'typeorm';
+import type { User } from './User.js';
+import type { Workout } from './Workout.js';
 
 @Entity('planned_workouts')
 @Index(['inviterId'])
@@ -8,41 +16,41 @@ import type { Workout } from './Workout.js'
 @Index(['scheduledAt'])
 export class PlannedWorkout {
   @PrimaryGeneratedColumn()
-  id!: number
+  id!: number;
 
   @Column('int')
-  inviterId!: number
+  inviterId!: number;
 
   @Column('int')
-  inviteeId!: number
+  inviteeId!: number;
 
   @Column({ type: 'int', nullable: true })
-  workoutTemplateId?: number
+  workoutTemplateId?: number;
 
   @Column('varchar')
-  name!: string
+  name!: string;
 
   @Column({ type: 'timestamp' })
-  scheduledAt!: Date
+  scheduledAt!: Date;
 
   @Column({ type: 'varchar', default: 'PENDING' })
-  status!: 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'COMPLETED'
+  status!: 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'COMPLETED';
 
   @Column({ type: 'text', nullable: true })
-  notes?: string
+  notes?: string;
 
   @CreateDateColumn()
-  createdAt!: Date
+  createdAt!: Date;
 
   @ManyToOne('User', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'inviterId' })
-  inviter!: User
+  inviter!: User;
 
   @ManyToOne('User', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'inviteeId' })
-  invitee!: User
+  invitee!: User;
 
   @ManyToOne('Workout', { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'workoutTemplateId' })
-  workoutTemplate?: Workout
+  workoutTemplate?: Workout;
 }

@@ -1,26 +1,34 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Index } from 'typeorm'
-import type { Workout } from './Workout.js'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  Index,
+} from 'typeorm';
+import type { Workout } from './Workout.js';
 
 @Entity('workout_photos')
 @Index(['workoutId', 'isPrimary'])
 @Index(['createdAt'])
 export class WorkoutPhoto {
   @PrimaryGeneratedColumn()
-  id!: number
+  id!: number;
 
   @Column('int')
-  workoutId!: number
+  workoutId!: number;
 
   @Column('varchar')
-  photoUrl!: string
+  photoUrl!: string;
 
   @Column({ type: 'boolean', default: false })
-  isPrimary!: boolean
+  isPrimary!: boolean;
 
   @CreateDateColumn()
-  createdAt!: Date
+  createdAt!: Date;
 
   @ManyToOne('Workout', 'photos', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'workoutId' })
-  workout!: Workout
+  workout!: Workout;
 }

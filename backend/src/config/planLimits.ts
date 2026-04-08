@@ -1,11 +1,11 @@
 // Limites par plan — FREE = après essai gratuit, PREMIUM = abonnement actif
 export const PLAN_LIMITS = {
   FREE: {
-    workoutsPerWeek: 2,        // 2 séances max par semaine
-    workoutTemplates: 2,       // 2 templates max
-    historyDays: 30,           // Historique limité à 30 jours
-    photos: 3,                 // 3 photos max au total
-    goals: 1,                  // 1 objectif max
+    workoutsPerWeek: 2, // 2 séances max par semaine
+    workoutTemplates: 2, // 2 templates max
+    historyDays: 30, // Historique limité à 30 jours
+    photos: 3, // 3 photos max au total
+    goals: 1, // 1 objectif max
   },
   PREMIUM: {
     workoutsPerWeek: Infinity,
@@ -13,7 +13,7 @@ export const PLAN_LIMITS = {
     historyDays: Infinity,
     photos: Infinity,
     goals: Infinity,
-  }
-} as const
+  },
+} as const;
 
-export type PlanType = keyof typeof PLAN_LIMITS
+export type PlanType = keyof typeof PLAN_LIMITS;

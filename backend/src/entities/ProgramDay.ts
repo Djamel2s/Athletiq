@@ -1,5 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm'
-import type { WorkoutProgram } from './WorkoutProgram.js'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import type { WorkoutProgram } from './WorkoutProgram.js';
 
 /**
  * Un jour dans un programme (ex: "Push Day" dans PPL).
@@ -8,23 +8,23 @@ import type { WorkoutProgram } from './WorkoutProgram.js'
 @Entity('program_days')
 export class ProgramDay {
   @PrimaryGeneratedColumn()
-  id!: number
+  id!: number;
 
   @Column({ type: 'int' })
-  programId!: number
+  programId!: number;
 
   @ManyToOne('WorkoutProgram', 'days', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'programId' })
-  program!: WorkoutProgram
+  program!: WorkoutProgram;
 
   @Column({ type: 'varchar' })
-  name!: string  // ex: "Push Day", "Legs", "Upper Body A"
+  name!: string; // ex: "Push Day", "Legs", "Upper Body A"
 
   @Column({ type: 'int' })
-  dayIndex!: number  // 0, 1, 2... ordre dans la semaine
+  dayIndex!: number; // 0, 1, 2... ordre dans la semaine
 
   @Column({ type: 'text', nullable: true })
-  description?: string
+  description?: string;
 
   /**
    * Exercices du jour, stockés en JSON pour flexibilité.
@@ -33,10 +33,10 @@ export class ProgramDay {
    */
   @Column({ type: 'jsonb', default: [] })
   exercises!: Array<{
-    exerciseName: string
-    sets: number
-    reps: string          // "8-10", "5", "AMRAP"
-    restSeconds: number
-    notes?: string
-  }>
+    exerciseName: string;
+    sets: number;
+    reps: string; // "8-10", "5", "AMRAP"
+    restSeconds: number;
+    notes?: string;
+  }>;
 }

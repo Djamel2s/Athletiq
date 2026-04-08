@@ -1,4 +1,4 @@
-import { AchievementCategory, type AchievementDefinition } from '../entities/Achievement.js'
+import { AchievementCategory, type AchievementDefinition } from '../entities/Achievement.js';
 
 /**
  * Catalogue complet des achievements.
@@ -14,7 +14,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:dumbbell',
     category: AchievementCategory.WORKOUT,
     condition: { type: 'workout_count', threshold: 1 },
-    xp: 10
+    xp: 10,
   },
   {
     id: 'workout_10',
@@ -23,7 +23,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:repeat',
     category: AchievementCategory.WORKOUT,
     condition: { type: 'workout_count', threshold: 10 },
-    xp: 50
+    xp: 50,
   },
   {
     id: 'workout_25',
@@ -32,7 +32,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:zap',
     category: AchievementCategory.WORKOUT,
     condition: { type: 'workout_count', threshold: 25 },
-    xp: 100
+    xp: 100,
   },
   {
     id: 'workout_50',
@@ -41,7 +41,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:flame',
     category: AchievementCategory.WORKOUT,
     condition: { type: 'workout_count', threshold: 50 },
-    xp: 200
+    xp: 200,
   },
   {
     id: 'workout_100',
@@ -50,7 +50,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:trophy',
     category: AchievementCategory.WORKOUT,
     condition: { type: 'workout_count', threshold: 100 },
-    xp: 500
+    xp: 500,
   },
   {
     id: 'workout_250',
@@ -59,7 +59,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:bot',
     category: AchievementCategory.WORKOUT,
     condition: { type: 'workout_count', threshold: 250 },
-    xp: 1000
+    xp: 1000,
   },
 
   // === VOLUME ===
@@ -70,7 +70,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:weight',
     category: AchievementCategory.VOLUME,
     condition: { type: 'total_volume', threshold: 1000 },
-    xp: 20
+    xp: 20,
   },
   {
     id: 'volume_10000',
@@ -79,7 +79,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:anvil',
     category: AchievementCategory.VOLUME,
     condition: { type: 'total_volume', threshold: 10000 },
-    xp: 100
+    xp: 100,
   },
   {
     id: 'volume_100000',
@@ -88,7 +88,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:rocket',
     category: AchievementCategory.VOLUME,
     condition: { type: 'total_volume', threshold: 100000 },
-    xp: 500
+    xp: 500,
   },
   {
     id: 'volume_1000000',
@@ -97,7 +97,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:globe',
     category: AchievementCategory.VOLUME,
     condition: { type: 'total_volume', threshold: 1000000 },
-    xp: 2000
+    xp: 2000,
   },
 
   // === STREAK ===
@@ -108,7 +108,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:calendar-check',
     category: AchievementCategory.STREAK,
     condition: { type: 'streak_weeks', threshold: 2 },
-    xp: 30
+    xp: 30,
   },
   {
     id: 'streak_4',
@@ -117,7 +117,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:calendar-range',
     category: AchievementCategory.STREAK,
     condition: { type: 'streak_weeks', threshold: 4 },
-    xp: 80
+    xp: 80,
   },
   {
     id: 'streak_12',
@@ -126,7 +126,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:shield',
     category: AchievementCategory.STREAK,
     condition: { type: 'streak_weeks', threshold: 12 },
-    xp: 300
+    xp: 300,
   },
   {
     id: 'streak_26',
@@ -135,7 +135,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:crown',
     category: AchievementCategory.STREAK,
     condition: { type: 'streak_weeks', threshold: 26 },
-    xp: 800
+    xp: 800,
   },
   {
     id: 'streak_52',
@@ -144,7 +144,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:gem',
     category: AchievementCategory.STREAK,
     condition: { type: 'streak_weeks', threshold: 52 },
-    xp: 2000
+    xp: 2000,
   },
 
   // === PR ===
@@ -155,7 +155,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:medal',
     category: AchievementCategory.PR,
     condition: { type: 'pr_count', threshold: 1 },
-    xp: 20
+    xp: 20,
   },
   {
     id: 'pr_5',
@@ -164,7 +164,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:award',
     category: AchievementCategory.PR,
     condition: { type: 'pr_count', threshold: 5 },
-    xp: 80
+    xp: 80,
   },
   {
     id: 'pr_25',
@@ -173,7 +173,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:target',
     category: AchievementCategory.PR,
     condition: { type: 'pr_count', threshold: 25 },
-    xp: 300
+    xp: 300,
   },
   {
     id: 'pr_100',
@@ -182,7 +182,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:star',
     category: AchievementCategory.PR,
     condition: { type: 'pr_count', threshold: 100 },
-    xp: 1000
+    xp: 1000,
   },
 
   // === BODY ===
@@ -193,7 +193,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:scale',
     category: AchievementCategory.BODY,
     condition: { type: 'body_entries', threshold: 1 },
-    xp: 10
+    xp: 10,
   },
   {
     id: 'body_30',
@@ -202,7 +202,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:bar-chart-3',
     category: AchievementCategory.BODY,
     condition: { type: 'body_entries', threshold: 30 },
-    xp: 100
+    xp: 100,
   },
   {
     id: 'photo_first',
@@ -211,7 +211,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:camera',
     category: AchievementCategory.BODY,
     condition: { type: 'photo_count', threshold: 1 },
-    xp: 15
+    xp: 15,
   },
 
   // === MILESTONE ===
@@ -222,7 +222,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:sprout',
     category: AchievementCategory.MILESTONE,
     condition: { type: 'days_member', threshold: 30 },
-    xp: 20
+    xp: 20,
   },
   {
     id: 'member_365',
@@ -231,6 +231,6 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     icon: 'lucide:badge',
     category: AchievementCategory.MILESTONE,
     condition: { type: 'days_member', threshold: 365 },
-    xp: 500
+    xp: 500,
   },
-]
+];

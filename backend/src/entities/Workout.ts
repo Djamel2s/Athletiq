@@ -1,59 +1,68 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, OneToMany, JoinColumn, Index } from 'typeorm'
-import type { User } from './User.js'
-import type { Exercise } from './Exercise.js'
-import type { WorkoutPhoto } from './WorkoutPhoto.js'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+  Index,
+} from 'typeorm';
+import type { User } from './User.js';
+import type { Exercise } from './Exercise.js';
+import type { WorkoutPhoto } from './WorkoutPhoto.js';
 
 @Entity('workouts')
 @Index(['userId', 'date'])
 export class Workout {
   @PrimaryGeneratedColumn()
-  id!: number
+  id!: number;
 
   @Column('int')
-  userId!: number
+  userId!: number;
 
   @Column('varchar')
-  name!: string
+  name!: string;
 
   @Column({ type: 'text', nullable: true })
-  description?: string
+  description?: string;
 
   @Column({ type: 'boolean', default: false })
-  isTemplate!: boolean
+  isTemplate!: boolean;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  date!: Date
+  date!: Date;
 
   @Column({ type: 'timestamp', nullable: true })
-  startedAt?: Date
+  startedAt?: Date;
 
   @Index()
   @Column({ type: 'timestamp', nullable: true })
-  completedAt?: Date
+  completedAt?: Date;
 
   @Column({ type: 'int', nullable: true })
-  duration?: number
+  duration?: number;
 
   @Column({ type: 'int', nullable: true })
-  totalVolume?: number
+  totalVolume?: number;
 
   @Column({ type: 'text', nullable: true })
-  notes?: string
+  notes?: string;
 
   @Index({ unique: true })
   @Column({ type: 'varchar', nullable: true })
-  shareToken?: string
+  shareToken?: string;
 
   @CreateDateColumn()
-  createdAt!: Date
+  createdAt!: Date;
 
   @ManyToOne('User', 'workouts', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
-  user!: User
+  user!: User;
 
   @OneToMany('Exercise', 'workout')
-  exercises!: Exercise[]
+  exercises!: Exercise[];
 
   @OneToMany('WorkoutPhoto', 'workout')
-  photos!: WorkoutPhoto[]
+  photos!: WorkoutPhoto[];
 }

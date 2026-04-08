@@ -1,4 +1,4 @@
-import rateLimit from 'express-rate-limit'
+import rateLimit from 'express-rate-limit';
 
 // Rate limiter global — 100 requêtes par minute par IP
 export const globalLimiter = rateLimit({
@@ -6,8 +6,8 @@ export const globalLimiter = rateLimit({
   max: 100,
   message: { error: 'Trop de requêtes, réessayez dans une minute' },
   standardHeaders: true,
-  legacyHeaders: false
-})
+  legacyHeaders: false,
+});
 
 // Rate limiter pour les endpoints API authentifiés — 60 req/min par IP
 export const apiLimiter = rateLimit({
@@ -15,8 +15,8 @@ export const apiLimiter = rateLimit({
   max: 60,
   message: { error: 'Trop de requêtes, réessayez dans une minute' },
   standardHeaders: true,
-  legacyHeaders: false
-})
+  legacyHeaders: false,
+});
 
 // Rate limiter pour webhook — 100 req/min par IP
 export const webhookLimiter = rateLimit({
@@ -24,8 +24,8 @@ export const webhookLimiter = rateLimit({
   max: 100,
   message: { error: 'Trop de requêtes webhook, réessayez dans une minute' },
   standardHeaders: true,
-  legacyHeaders: false
-})
+  legacyHeaders: false,
+});
 
 // Rate limiter strict pour auth — 30 tentatives par 15 min par IP
 // Empêche le brute-force sur login/register
@@ -34,8 +34,8 @@ export const authLimiter = rateLimit({
   max: 30,
   message: { error: 'Trop de tentatives de connexion, réessayez dans 15 minutes' },
   standardHeaders: true,
-  legacyHeaders: false
-})
+  legacyHeaders: false,
+});
 
 // Rate limiter strict pour password reset — 5 tentatives par heure par IP
 export const passwordResetLimiter = rateLimit({
@@ -43,8 +43,8 @@ export const passwordResetLimiter = rateLimit({
   max: 5,
   message: { error: 'Trop de demandes de réinitialisation, réessayez dans une heure' },
   standardHeaders: true,
-  legacyHeaders: false
-})
+  legacyHeaders: false,
+});
 
 // Rate limiter for username availability checks
 export const usernameCheckLimiter = rateLimit({
@@ -52,5 +52,5 @@ export const usernameCheckLimiter = rateLimit({
   max: 20,
   message: { error: 'Trop de vérifications de pseudo, réessayez plus tard' },
   standardHeaders: true,
-  legacyHeaders: false
-})
+  legacyHeaders: false,
+});

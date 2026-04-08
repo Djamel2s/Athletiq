@@ -1,32 +1,40 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Index } from 'typeorm'
-import type { User } from './User.js'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  Index,
+} from 'typeorm';
+import type { User } from './User.js';
 
 @Entity('feed_posts')
 @Index(['userId'])
 @Index(['createdAt'])
 export class FeedPost {
   @PrimaryGeneratedColumn()
-  id!: number
+  id!: number;
 
   @Column('int')
-  userId!: number
+  userId!: number;
 
   @Column('varchar')
-  type!: string  // WORKOUT_COMPLETED, PHOTO, TIMELAPSE, TEMPLATE_SHARED, PR_ACHIEVED
+  type!: string; // WORKOUT_COMPLETED, PHOTO, TIMELAPSE, TEMPLATE_SHARED, PR_ACHIEVED
 
   @Column({ type: 'json', nullable: true })
-  data?: any  // Flexible JSON for different post types
+  data?: any; // Flexible JSON for different post types
 
   @Column({ type: 'int', default: 0 })
-  reactions!: number
+  reactions!: number;
 
   @Column({ type: 'json', nullable: true, default: '[]' })
-  reactedBy!: number[]  // User IDs who reacted
+  reactedBy!: number[]; // User IDs who reacted
 
   @CreateDateColumn()
-  createdAt!: Date
+  createdAt!: Date;
 
   @ManyToOne('User', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
-  user!: User
+  user!: User;
 }

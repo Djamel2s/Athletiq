@@ -1,13 +1,16 @@
-import { Resend } from 'resend'
-import { logger } from '../utils/logger.js'
+import { Resend } from 'resend';
+import { logger } from '../utils/logger.js';
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
-const FROM_EMAIL = process.env.FROM_EMAIL || 'Athletiq <noreply@athletiq.fr>'
-const APP_URL = process.env.APP_URL || 'http://localhost:3000'
+const FROM_EMAIL = process.env.FROM_EMAIL || 'Athletiq <noreply@athletiq.fr>';
+const APP_URL = process.env.APP_URL || 'http://localhost:3000';
 
 const escapeHtml = (str: string): string =>
-  str.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!))
+  str.replace(
+    /[&<>"']/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!
+  );
 
 // ============================================================
 // Design System — memes couleurs que l'app et les images
@@ -25,7 +28,7 @@ const C = {
   accent: '#d4c4b0',
   gradientStart: '#d4c4b0',
   gradientEnd: '#b8a48f',
-}
+};
 
 // ============================================================
 // Layout principal — fond sombre premium, dark mode safe
@@ -122,16 +125,16 @@ const emailLayout = (content: string) => `
   </table>
 </body>
 </html>
-`
+`;
 
 // ============================================================
 // Composants r&eacute;utilisables
 // ============================================================
 const heading = (text: string) =>
-  `<h1 style="font-size: 26px; font-weight: 700; color: ${C.text}; margin: 0 0 10px; letter-spacing: -0.4px; line-height: 1.3;">${text}</h1>`
+  `<h1 style="font-size: 26px; font-weight: 700; color: ${C.text}; margin: 0 0 10px; letter-spacing: -0.4px; line-height: 1.3;">${text}</h1>`;
 
 const paragraph = (text: string) =>
-  `<p style="font-size: 15px; color: ${C.textMuted}; line-height: 1.75; margin: 0 0 24px;">${text}</p>`
+  `<p style="font-size: 15px; color: ${C.textMuted}; line-height: 1.75; margin: 0 0 24px;">${text}</p>`;
 
 const button = (text: string, url: string) =>
   `<table role="presentation" cellpadding="0" cellspacing="0" style="margin: 36px auto;">
@@ -140,72 +143,76 @@ const button = (text: string, url: string) =>
         <a href="${url}" style="color: ${C.bg}; text-decoration: none; font-size: 15px; font-weight: 600; display: inline-block; letter-spacing: 0.1px;">${text}</a>
       </td>
     </tr>
-  </table>`
+  </table>`;
 
 const divider = () =>
-  `<hr style="border: none; border-top: 1px solid ${C.cardBorder}; margin: 32px 0;">`
+  `<hr style="border: none; border-top: 1px solid ${C.cardBorder}; margin: 32px 0;">`;
 
 const statBox = (value: string, label: string) =>
   `<td class="body-bg" style="background-color: ${C.bg}; border-radius: 14px; padding: 22px 16px; text-align: center; width: 33%;">
     <div style="font-size: 28px; font-weight: 700; color: ${C.sand}; letter-spacing: -0.5px;">${value}</div>
     <div style="font-size: 11px; color: ${C.textDim}; margin-top: 8px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 500;">${label}</div>
-  </td>`
+  </td>`;
 
 const smallText = (text: string) =>
-  `<p style="font-size: 12px; color: ${C.textDim}; margin: 0; line-height: 1.6;">${text}</p>`
+  `<p style="font-size: 12px; color: ${C.textDim}; margin: 0; line-height: 1.6;">${text}</p>`;
 
 // ============================================================
 // EMAIL : Confirmation d'inscription
 // ============================================================
 export const sendVerificationEmail = async (email: string, token: string) => {
-  const verifyUrl = `${APP_URL}/verify-email?token=${token}`
+  const verifyUrl = `${APP_URL}/verify-email?token=${token}`;
   const html = emailLayout(`
     ${heading('Confirme ton email')}
-    ${paragraph('Bienvenue sur Athletiq. Il ne te reste qu\'une &eacute;tape pour activer ton compte et commencer &agrave; suivre tes entra&icirc;nements.')}
+    ${paragraph("Bienvenue sur Athletiq. Il ne te reste qu'une &eacute;tape pour activer ton compte et commencer &agrave; suivre tes entra&icirc;nements.")}
     ${button('Confirmer mon email', verifyUrl)}
     ${divider()}
     ${smallText('Si le bouton ne fonctionne pas, copie ce lien dans ton navigateur :')}
     <p style="font-size: 12px; color: ${C.sandDark}; word-break: break-all; margin: 8px 0 0;">${verifyUrl}</p>
-  `)
+  `);
 
-  return sendEmail(email, 'Confirme ton email — Athletiq', html)
-}
+  return sendEmail(email, 'Confirme ton email — Athletiq', html);
+};
 
 // ============================================================
 // EMAIL : R&eacute;initialisation du mot de passe
 // ============================================================
 export const sendPasswordResetEmail = async (email: string, token: string) => {
-  const resetUrl = `${APP_URL}/reset-password?token=${token}`
+  const resetUrl = `${APP_URL}/reset-password?token=${token}`;
   const html = emailLayout(`
     ${heading('R&eacute;initialise ton mot de passe')}
     ${paragraph('Tu as demand&eacute; &agrave; r&eacute;initialiser ton mot de passe. Clique sur le bouton ci-dessous pour en choisir un nouveau. Ce lien expire dans 1 heure.')}
     ${button('Choisir un nouveau mot de passe', resetUrl)}
     ${divider()}
-    ${smallText('Si tu n\'as pas fait cette demande, ignore simplement cet email. Ton mot de passe actuel reste inchang&eacute;.')}
-  `)
+    ${smallText("Si tu n'as pas fait cette demande, ignore simplement cet email. Ton mot de passe actuel reste inchang&eacute;.")}
+  `);
 
-  return sendEmail(email, 'Mot de passe — Athletiq', html)
-}
+  return sendEmail(email, 'Mot de passe — Athletiq', html);
+};
 
 // ============================================================
 // EMAIL : Rappel d'inactivit&eacute;
 // ============================================================
-export const sendInactivityReminder = async (email: string, firstName: string, daysSinceLastWorkout: number) => {
-  const name = escapeHtml(firstName || 'l\'athlète')
+export const sendInactivityReminder = async (
+  email: string,
+  firstName: string,
+  daysSinceLastWorkout: number
+) => {
+  const name = escapeHtml(firstName || "l'athlète");
   const html = emailLayout(`
     ${heading(`${daysSinceLastWorkout} jours sans entra&icirc;nement`)}
     ${paragraph(`${name}, ta progression t'attend. Chaque s&eacute;ance compte, m&ecirc;me les plus courtes. Reviens maintenir ta dynamique.`)}
     ${button('Reprendre maintenant', `${APP_URL}/workouts/start`)}
-  `)
+  `);
 
-  return sendEmail(email, `${daysSinceLastWorkout}j sans entra\u00eenement — Athletiq`, html)
-}
+  return sendEmail(email, `${daysSinceLastWorkout}j sans entra\u00eenement — Athletiq`, html);
+};
 
 // ============================================================
 // EMAIL : Bienvenue
 // ============================================================
 export const sendWelcomeEmail = async (email: string, firstName: string) => {
-  const name = escapeHtml(firstName || 'champion')
+  const name = escapeHtml(firstName || 'champion');
   const html = emailLayout(`
     ${heading(`Bienvenue, ${name}.`)}
     ${paragraph('Ton compte Athletiq est actif. Tout est pr&ecirc;t pour suivre tes entra&icirc;nements, analyser ta progression et atteindre tes objectifs.')}
@@ -232,10 +239,10 @@ export const sendWelcomeEmail = async (email: string, firstName: string) => {
     </table>
 
     ${button('Commencer', `${APP_URL}/dashboard`)}
-  `)
+  `);
 
-  return sendEmail(email, `Bienvenue sur Athletiq, ${escapeHtml(firstName || 'champion')}`, html)
-}
+  return sendEmail(email, `Bienvenue sur Athletiq, ${escapeHtml(firstName || 'champion')}`, html);
+};
 
 // ============================================================
 // EMAIL : R&eacute;cap hebdomadaire
@@ -245,9 +252,10 @@ export const sendWeeklyRecapEmail = async (
   firstName: string,
   data: { workouts: number; duration: number; volume: number; streak: number }
 ) => {
-  const name = escapeHtml(firstName || 'champion')
-  const durationMin = Math.round(data.duration / 60)
-  const volumeDisplay = data.volume >= 1000 ? `${(data.volume / 1000).toFixed(1)}t` : `${data.volume}kg`
+  const name = escapeHtml(firstName || 'champion');
+  const durationMin = Math.round(data.duration / 60);
+  const volumeDisplay =
+    data.volume >= 1000 ? `${(data.volume / 1000).toFixed(1)}t` : `${data.volume}kg`;
 
   const html = emailLayout(`
     ${heading('Ton bilan de la semaine')}
@@ -262,7 +270,9 @@ export const sendWeeklyRecapEmail = async (
       </tr>
     </table>
 
-    ${data.streak > 0 ? `
+    ${
+      data.streak > 0
+        ? `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 8px;">
       <tr>
         <td class="body-bg" style="background-color: ${C.bg}; border-radius: 14px; padding: 18px 24px; text-align: center;">
@@ -270,40 +280,45 @@ export const sendWeeklyRecapEmail = async (
         </td>
       </tr>
     </table>
-    ` : ''}
+    `
+        : ''
+    }
 
     ${button('Voir mes statistiques', `${APP_URL}/statistics`)}
-  `)
+  `);
 
-  const subjectWorkouts = data.workouts === 0 ? 'Aucune s\u00e9ance' : `${data.workouts} s\u00e9ance${data.workouts > 1 ? 's' : ''}`
-  return sendEmail(email, `${subjectWorkouts} cette semaine — Athletiq`, html)
-}
+  const subjectWorkouts =
+    data.workouts === 0
+      ? 'Aucune s\u00e9ance'
+      : `${data.workouts} s\u00e9ance${data.workouts > 1 ? 's' : ''}`;
+  return sendEmail(email, `${subjectWorkouts} cette semaine — Athletiq`, html);
+};
 
 // ============================================================
 // Fonction d'envoi g&eacute;n&eacute;rique via Resend
 // ============================================================
 const sendEmail = async (to: string, subject: string, html: string) => {
   if (!resend) {
-    logger.warn({ to, subject }, 'Resend non configure, email non envoye')
-    return { success: false, error: 'Resend API key not configured' }
+    logger.warn({ to, subject }, 'Resend non configure, email non envoye');
+    return { success: false, error: 'Resend API key not configured' };
   }
   try {
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to,
       subject,
-      html
-    })
+      html,
+    });
 
     if (error) {
-      logger.error({ err: error, to }, 'Erreur envoi email')
-      return { success: false, error }
+      logger.error({ err: error, to }, 'Erreur envoi email');
+      return { success: false, error };
     }
 
-    logger.info({ to, subject, messageId: data?.id }, 'Email envoye')
-    return { success: true, messageId: data?.id }
+    logger.info({ to, subject, messageId: data?.id }, 'Email envoye');
+    return { success: true, messageId: data?.id };
   } catch (error) {
-    logger.error({ err: error, to }, 'Erreur envoi email')
-    return { success: false, error }
+    logger.error({ err: error, to }, 'Erreur envoi email');
+    return { success: false, error };
   }
-}
+};

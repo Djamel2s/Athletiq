@@ -1,5 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, Index } from 'typeorm'
-import type { User } from './User.js'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  CreateDateColumn,
+  Index,
+} from 'typeorm';
+import type { User } from './User.js';
 
 export enum NotificationType {
   PR_ACHIEVED = 'PR_ACHIEVED',
@@ -11,34 +19,34 @@ export enum NotificationType {
   FRIEND_ACCEPTED = 'FRIEND_ACCEPTED',
   WORKOUT_INVITATION = 'WORKOUT_INVITATION',
   WORKOUT_INVITATION_ACCEPTED = 'WORKOUT_INVITATION_ACCEPTED',
-  SESSION_INVITE = 'SESSION_INVITE'
+  SESSION_INVITE = 'SESSION_INVITE',
 }
 
 @Entity('notifications')
 @Index(['userId', 'read'])
 export class Notification {
   @PrimaryGeneratedColumn()
-  id!: number
+  id!: number;
 
   @Column('int')
-  userId!: number
+  userId!: number;
 
   @Column({ type: 'enum', enum: NotificationType })
-  type!: NotificationType
+  type!: NotificationType;
 
   @Column('varchar')
-  title!: string
+  title!: string;
 
   @Column({ type: 'text', nullable: true })
-  message?: string
+  message?: string;
 
   @Column({ type: 'boolean', default: false })
-  read!: boolean
+  read!: boolean;
 
   @CreateDateColumn()
-  createdAt!: Date
+  createdAt!: Date;
 
   @ManyToOne('User', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
-  user!: User
+  user!: User;
 }

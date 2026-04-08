@@ -1,56 +1,75 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, Index } from 'typeorm'
-import type { Workout } from './Workout.js'
-import type { Set } from './Set.js'
-import type { ExerciseLibrary } from './ExerciseLibrary.js'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+  Index,
+} from 'typeorm';
+import type { Workout } from './Workout.js';
+import type { Set } from './Set.js';
+import type { ExerciseLibrary } from './ExerciseLibrary.js';
 
 @Entity('exercises')
 @Index(['workoutId'])
 @Index(['exerciseLibraryId'])
 export class Exercise {
   @PrimaryGeneratedColumn()
-  id!: number
+  id!: number;
 
   @Column('int')
-  workoutId!: number
+  workoutId!: number;
 
   @Column({ type: 'int', nullable: true })
-  exerciseLibraryId?: number
+  exerciseLibraryId?: number;
 
   @Column('varchar')
-  name!: string
+  name!: string;
 
   @Column({ type: 'int', default: 0 })
-  orderIndex!: number
+  orderIndex!: number;
 
   @Column({ type: 'text', nullable: true })
-  notes?: string
+  notes?: string;
 
   @Column({ type: 'int', nullable: true })
-  targetSets?: number
+  targetSets?: number;
 
   @Column({ type: 'int', nullable: true })
-  targetReps?: number
+  targetReps?: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true, transformer: { to: (v: number) => v, from: (v: string) => v ? parseFloat(v) : v } })
-  targetWeight?: number
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    nullable: true,
+    transformer: { to: (v: number) => v, from: (v: string) => (v ? parseFloat(v) : v) },
+  })
+  targetWeight?: number;
 
   @Column({ type: 'int', nullable: true })
-  restTime?: number
+  restTime?: number;
 
   @Column({ type: 'int', nullable: true })
-  supersetGroup?: number
+  supersetGroup?: number;
 
   @Column({ type: 'json', nullable: true })
-  plannedSets?: Array<{ setNumber: number; targetReps: number; targetWeight: number; restTime?: number }>
+  plannedSets?: Array<{
+    setNumber: number;
+    targetReps: number;
+    targetWeight: number;
+    restTime?: number;
+  }>;
 
   @ManyToOne('Workout', 'exercises', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'workoutId' })
-  workout!: Workout
+  workout!: Workout;
 
   @ManyToOne('ExerciseLibrary', { nullable: true })
   @JoinColumn({ name: 'exerciseLibraryId' })
-  exerciseLibrary?: ExerciseLibrary
+  exerciseLibrary?: ExerciseLibrary;
 
   @OneToMany('Set', 'exercise')
-  sets!: Set[]
+  sets!: Set[];
 }

@@ -1,33 +1,41 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Index } from 'typeorm'
-import type { User } from './User.js'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  Index,
+} from 'typeorm';
+import type { User } from './User.js';
 
 @Entity('fatigue')
 @Index(['userId', 'date'])
 export class Fatigue {
   @PrimaryGeneratedColumn()
-  id!: number
+  id!: number;
 
   @Column('int')
-  userId!: number
+  userId!: number;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  date!: Date
+  date!: Date;
 
   @Column({ type: 'float' })
-  score!: number
+  score!: number;
 
   @Column({ type: 'varchar', nullable: true })
-  source?: string
+  source?: string;
 
   @Column({ type: 'text', nullable: true })
-  notes?: string
+  notes?: string;
 
   @CreateDateColumn()
-  createdAt!: Date
+  createdAt!: Date;
 
   @ManyToOne('User', 'workouts', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
-  user!: User
+  user!: User;
 }
 
-export default Fatigue
+export default Fatigue;

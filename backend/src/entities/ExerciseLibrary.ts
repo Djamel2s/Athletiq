@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 export enum MuscleGroup {
   CHEST = 'CHEST',
@@ -13,7 +19,7 @@ export enum MuscleGroup {
   CALVES = 'CALVES',
   ABS = 'ABS',
   CARDIO = 'CARDIO',
-  FULL_BODY = 'FULL_BODY'
+  FULL_BODY = 'FULL_BODY',
 }
 
 export enum Equipment {
@@ -24,67 +30,67 @@ export enum Equipment {
   BODYWEIGHT = 'BODYWEIGHT',
   KETTLEBELL = 'KETTLEBELL',
   RESISTANCE_BAND = 'RESISTANCE_BAND',
-  OTHER = 'OTHER'
+  OTHER = 'OTHER',
 }
 
 export enum Difficulty {
   BEGINNER = 'BEGINNER',
   INTERMEDIATE = 'INTERMEDIATE',
-  ADVANCED = 'ADVANCED'
+  ADVANCED = 'ADVANCED',
 }
 
 @Entity('exercise_library')
 export class ExerciseLibrary {
   @PrimaryGeneratedColumn()
-  id!: number
+  id!: number;
 
   @Column({ type: 'varchar', unique: true })
-  name!: string
+  name!: string;
 
   @Column({ type: 'text', nullable: true })
-  description?: string
+  description?: string;
 
   @Column({ type: 'text', nullable: true })
-  instructions?: string
+  instructions?: string;
 
   @Column({
     type: 'enum',
     enum: MuscleGroup,
     array: true,
-    default: []
+    default: [],
   })
-  muscleGroups!: MuscleGroup[]
+  muscleGroups!: MuscleGroup[];
 
   @Column({
     type: 'enum',
     enum: MuscleGroup,
-    nullable: true
+    nullable: true,
   })
-  primaryMuscle?: MuscleGroup
+  primaryMuscle?: MuscleGroup;
 
   @Column({
     type: 'enum',
     enum: Equipment,
-    default: Equipment.BODYWEIGHT
+    default: Equipment.BODYWEIGHT,
   })
-  equipment!: Equipment
+  equipment!: Equipment;
 
   @Column({
     type: 'enum',
     enum: Difficulty,
-    default: Difficulty.INTERMEDIATE
+    default: Difficulty.INTERMEDIATE,
   })
-  difficulty!: Difficulty
+  difficulty!: Difficulty;
 
   @Column({ type: 'varchar', nullable: true })
-  videoUrl?: string
+  videoUrl?: string;
 
   @Column({ type: 'varchar', nullable: true })
-  imageUrl?: string
+  imageUrl?: string;
 
   @CreateDateColumn()
-  createdAt!: Date
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt!: Date
+  updatedAt!: Date;
 }

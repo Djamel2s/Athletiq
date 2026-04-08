@@ -1,43 +1,46 @@
-import express from 'express'
-import multer from 'multer'
-import cloudinary from '../config/cloudinary.js'
-import { AppDataSource } from '../config/database.js'
-import { WorkoutPhoto } from '../entities/WorkoutPhoto.js'
-import { logger } from '../utils/logger.js'
-import { Workout } from '../entities/Workout.js'
-import { authenticate, AuthRequest } from '../middlewares/auth.js'
-import { checkPhotoLimit } from '../services/limitService.js'
-import { parseId } from '../utils/validation.js'
-import { validateImageMagicBytes } from '../utils/fileValidation.js'
-import { isHttpError } from '../utils/errors.js'
+import express from 'express';
+import multer from 'multer';
+import cloudinary from '../config/cloudinary.js';
+import { AppDataSource } from '../config/database.js';
+import { WorkoutPhoto } from '../entities/WorkoutPhoto.js';
+import { logger } from '../utils/logger.js';
+import { Workout } from '../entities/Workout.js';
+import { authenticate, AuthRequest } from '../middlewares/auth.js';
+import { checkPhotoLimit } from '../services/limitService.js';
+import { parseId } from '../utils/validation.js';
+import { validateImageMagicBytes } from '../utils/fileValidation.js';
+import { isHttpError } from '../utils/errors.js';
 
-const router = express.Router()
-const photoRepository = AppDataSource.getRepository(WorkoutPhoto)
-const workoutRepository = AppDataSource.getRepository(Workout)
+const router = express.Router();
+const photoRepository = AppDataSource.getRepository(WorkoutPhoto);
+const workoutRepository = AppDataSource.getRepository(Workout);
 
 const handleRouteError = (res: express.Response, error: unknown, fallbackMessage: string) => {
   if (isHttpError(error)) {
-    return res.status(error.statusCode).json({ error: error.message })
+    return res.status(error.statusCode).json({ error: error.message });
   }
-  return res.status(500).json({ error: fallbackMessage })
-}
+  return res.status(500).json({ error: fallbackMessage });
+};
 
-const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB max
   fileFilter: (req, file, cb) => {
     if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
-      cb(null, true)
+      cb(null, true);
     } else {
-      cb(new Error('Type de fichier non autorisé. Utilisez JPG, PNG, WebP ou GIF.'))
+      cb(new Error('Type de fichier non autorisé. Utilisez JPG, PNG, WebP ou GIF.'));
     }
-  }
-})
+  },
+});
 
 // Multer instance for video uploads (larger limit)
-const uploadVideo = multer({ storage: multer.memoryStorage(), limits: { fileSize: 200 * 1024 * 1024 } })
+const uploadVideo = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 200 * 1024 * 1024 },
+});
 
 // Upload photo to workout
 router.post(
@@ -46,44 +49,45 @@ router.post(
   upload.single('photo'),
   async (req: AuthRequest, res) => {
     try {
-      const { workoutId } = req.params
-      const { isPrimary } = req.body
+      const { workoutId } = req.params;
+      const { isPrimary } = req.body;
 
       if (!req.file) {
-        return res.status(400).json({ error: 'Aucune photo fournie' })
+        return res.status(400).json({ error: 'Aucune photo fournie' });
       }
 
       if (!validateImageMagicBytes(req.file.buffer)) {
-        return res.status(400).json({ error: 'Type de fichier non autorisé. Le contenu ne correspond pas à une image valide.' })
+        return res
+          .status(400)
+          .json({
+            error: 'Type de fichier non autorisé. Le contenu ne correspond pas à une image valide.',
+          });
       }
 
       // Vérifier la limite de photos
-      const photoCheck = await checkPhotoLimit(req.user!.id)
+      const photoCheck = await checkPhotoLimit(req.user!.id);
       if (!photoCheck.allowed) {
         return res.status(403).json({
           error: 'Limite atteinte',
           code: 'LIMIT_PHOTOS',
           current: photoCheck.current,
-          limit: photoCheck.limit
-        })
+          limit: photoCheck.limit,
+        });
       }
 
       // Verify workout belongs to user
       const workout = await workoutRepository.findOne({
-        where: { id: parseId(workoutId), userId: req.user!.id }
-      })
+        where: { id: parseId(workoutId), userId: req.user!.id },
+      });
 
       if (!workout) {
-        return res.status(404).json({ error: 'Séance non trouvée' })
+        return res.status(404).json({ error: 'Séance non trouvée' });
       }
 
       // If primary photo, remove previous primary flag
       // Note: isPrimary is a string comparison because it comes from multer FormData (always a string)
       if (isPrimary === 'true') {
-        await photoRepository.update(
-          { workoutId: parseId(workoutId) },
-          { isPrimary: false }
-        )
+        await photoRepository.update({ workoutId: parseId(workoutId) }, { isPrimary: false });
       }
 
       // Upload to Cloudinary
@@ -93,91 +97,95 @@ router.post(
             folder: `athletiq/workouts/${workoutId}`,
             transformation: [
               { width: 1200, height: 1200, crop: 'limit' },
-              { quality: 'auto:good' }
-            ]
+              { quality: 'auto:good' },
+            ],
           },
           (error, result) => {
-            if (error) reject(error)
-            else resolve(result)
+            if (error) reject(error);
+            else resolve(result);
           }
-        )
-        uploadStream.end(req.file!.buffer)
-      })
+        );
+        uploadStream.end(req.file!.buffer);
+      });
 
       if (!result?.secure_url) {
-        return res.status(500).json({ error: 'Erreur Cloudinary : réponse invalide' })
+        return res.status(500).json({ error: 'Erreur Cloudinary : réponse invalide' });
       }
 
       // Save to database
       const photo = photoRepository.create({
         workoutId: parseId(workoutId),
         photoUrl: result.secure_url,
-        isPrimary: isPrimary === 'true'
-      })
+        isPrimary: isPrimary === 'true',
+      });
 
-      const saved = await photoRepository.save(photo)
-      res.status(201).json(saved)
+      const saved = await photoRepository.save(photo);
+      res.status(201).json(saved);
     } catch (error) {
-      logger.error({ err: error, route: 'photos' }, 'Upload error')
-      handleRouteError(res, error, 'Erreur lors du téléchargement de la photo')
+      logger.error({ err: error, route: 'photos' }, 'Upload error');
+      handleRouteError(res, error, 'Erreur lors du téléchargement de la photo');
     }
   }
-)
+);
 
 // Get timelapse photos (primary photos ordered chronologically)
 router.get('/timelapse', authenticate, async (req: AuthRequest, res) => {
   try {
-    const { startDate, endDate } = req.query
+    const { startDate, endDate } = req.query;
 
     const query = photoRepository
       .createQueryBuilder('photo')
       .innerJoinAndSelect('photo.workout', 'workout')
       .where('workout.userId = :userId', { userId: req.user!.id })
-      .andWhere('photo.isPrimary = :isPrimary', { isPrimary: true })
+      .andWhere('photo.isPrimary = :isPrimary', { isPrimary: true });
 
     if (startDate) {
-      const d = new Date(startDate as string)
-      if (isNaN(d.getTime())) return res.status(400).json({ error: 'Date invalide' })
-      query.andWhere('workout.date >= :startDate', { startDate: d })
+      const d = new Date(startDate as string);
+      if (isNaN(d.getTime())) return res.status(400).json({ error: 'Date invalide' });
+      query.andWhere('workout.date >= :startDate', { startDate: d });
     }
     if (endDate) {
-      const d = new Date(endDate as string)
-      if (isNaN(d.getTime())) return res.status(400).json({ error: 'Date invalide' })
-      query.andWhere('workout.date <= :endDate', { endDate: d })
+      const d = new Date(endDate as string);
+      if (isNaN(d.getTime())) return res.status(400).json({ error: 'Date invalide' });
+      query.andWhere('workout.date <= :endDate', { endDate: d });
     }
 
     // Validate max date range of 730 days (2 years)
     if (startDate && endDate) {
-      const start = new Date(startDate as string)
-      const end = new Date(endDate as string)
-      const diffDays = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
+      const start = new Date(startDate as string);
+      const end = new Date(endDate as string);
+      const diffDays = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
       if (diffDays > 730) {
-        return res.status(400).json({ error: 'La plage de dates ne peut pas dépasser 2 ans (730 jours)' })
+        return res
+          .status(400)
+          .json({ error: 'La plage de dates ne peut pas dépasser 2 ans (730 jours)' });
       }
       if (diffDays < 0) {
-        return res.status(400).json({ error: 'La date de début doit être antérieure à la date de fin' })
+        return res
+          .status(400)
+          .json({ error: 'La date de début doit être antérieure à la date de fin' });
       }
     }
 
-    const limit = Math.min(Math.max(parseInt(req.query.limit as string, 10) || 20, 1), 100)
-    const offset = Math.max(parseInt(req.query.offset as string, 10) || 0, 0)
+    const limit = Math.min(Math.max(parseInt(req.query.limit as string, 10) || 20, 1), 100);
+    const offset = Math.max(parseInt(req.query.offset as string, 10) || 0, 0);
 
     const [photos, total] = await query
       .orderBy('workout.date', 'ASC')
       .take(limit)
       .skip(offset)
-      .getManyAndCount()
+      .getManyAndCount();
 
-    res.json({ photos, total, limit, offset })
+    res.json({ photos, total, limit, offset });
   } catch (error) {
-    res.status(500).json({ error: 'Erreur lors de la récupération des photos timelapse' })
+    res.status(500).json({ error: 'Erreur lors de la récupération des photos timelapse' });
   }
-})
+});
 
 // Get recent photos
 router.get('/recent', authenticate, async (req: AuthRequest, res) => {
   try {
-    const limit = Math.min(Math.max(parseInt(req.query.limit as string, 10) || 10, 1), 100)
+    const limit = Math.min(Math.max(parseInt(req.query.limit as string, 10) || 10, 1), 100);
 
     const photos = await photoRepository
       .createQueryBuilder('photo')
@@ -185,13 +193,13 @@ router.get('/recent', authenticate, async (req: AuthRequest, res) => {
       .where('workout.userId = :userId', { userId: req.user!.id })
       .orderBy('photo.createdAt', 'DESC')
       .take(limit)
-      .getMany()
+      .getMany();
 
-    res.json(photos)
+    res.json(photos);
   } catch (error) {
-    res.status(500).json({ error: 'Erreur lors de la récupération des photos récentes' })
+    res.status(500).json({ error: 'Erreur lors de la récupération des photos récentes' });
   }
-})
+});
 
 // Delete photo
 router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
@@ -201,56 +209,68 @@ router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
       .innerJoin('photo.workout', 'workout')
       .where('photo.id = :id', { id: parseId(req.params.id) })
       .andWhere('workout.userId = :userId', { userId: req.user!.id })
-      .getOne()
+      .getOne();
 
     if (!photo) {
-      return res.status(404).json({ error: 'Photo non trouvée' })
+      return res.status(404).json({ error: 'Photo non trouvée' });
     }
 
     // Delete from Cloudinary before removing DB record
     if (photo.photoUrl) {
-      const parts = photo.photoUrl.split('/')
-      const athletiqIndex = parts.indexOf('athletiq')
+      const parts = photo.photoUrl.split('/');
+      const athletiqIndex = parts.indexOf('athletiq');
       if (athletiqIndex !== -1) {
-        const publicId = parts.slice(athletiqIndex).join('/').replace(/\.[^.]+$/, '')
-        await cloudinary.uploader.destroy(publicId).catch(() => {})
+        const publicId = parts
+          .slice(athletiqIndex)
+          .join('/')
+          .replace(/\.[^.]+$/, '');
+        await cloudinary.uploader.destroy(publicId).catch(() => {});
       }
     }
 
-    await photoRepository.remove(photo)
-    res.json({ message: 'Photo supprimée' })
+    await photoRepository.remove(photo);
+    res.json({ message: 'Photo supprimée' });
   } catch (error) {
-    handleRouteError(res, error, 'Erreur lors de la suppression de la photo')
+    handleRouteError(res, error, 'Erreur lors de la suppression de la photo');
   }
-})
+});
 
-    // Upload a timelapse video blob and forward to Cloudinary (returns public URL)
-    router.post('/timelapse/upload', authenticate, uploadVideo.single('file'), async (req: AuthRequest, res) => {
-      try {
-        if (!req.file) return res.status(400).json({ error: 'Aucun fichier fourni' })
+// Upload a timelapse video blob and forward to Cloudinary (returns public URL)
+router.post(
+  '/timelapse/upload',
+  authenticate,
+  uploadVideo.single('file'),
+  async (req: AuthRequest, res) => {
+    try {
+      if (!req.file) return res.status(400).json({ error: 'Aucun fichier fourni' });
 
-        // Upload to Cloudinary as video
-        const fileBuffer = req.file!.buffer
-        const result: any = await new Promise((resolve, reject) => {
-          const uploadStream = cloudinary.uploader.upload_stream(
-            { resource_type: 'video', folder: `athletiq/timelapses/${req.user!.id}`, quality: 'auto' },
-            (error: any, result: any) => {
-              if (error) reject(error)
-              else resolve(result)
-            }
-          )
-          uploadStream.end(fileBuffer)
-        })
+      // Upload to Cloudinary as video
+      const fileBuffer = req.file!.buffer;
+      const result: any = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            resource_type: 'video',
+            folder: `athletiq/timelapses/${req.user!.id}`,
+            quality: 'auto',
+          },
+          (error: any, result: any) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        uploadStream.end(fileBuffer);
+      });
 
-        if (!result?.secure_url) {
-          return res.status(500).json({ error: 'Erreur Cloudinary lors de l\'upload du timelapse' })
-        }
-
-        res.json({ url: result.secure_url })
-      } catch (error) {
-        logger.error({ err: error }, 'Timelapse upload error')
-        handleRouteError(res, error, 'Erreur lors de l\'upload du timelapse')
+      if (!result?.secure_url) {
+        return res.status(500).json({ error: "Erreur Cloudinary lors de l'upload du timelapse" });
       }
-    })
 
-export default router
+      res.json({ url: result.secure_url });
+    } catch (error) {
+      logger.error({ err: error }, 'Timelapse upload error');
+      handleRouteError(res, error, "Erreur lors de l'upload du timelapse");
+    }
+  }
+);
+
+export default router;

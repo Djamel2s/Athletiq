@@ -1,99 +1,106 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm'
-import type { Workout } from './Workout.js'
-import type { BodyStat } from './BodyStat.js'
-import type { Measurement } from './Measurement.js'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+} from 'typeorm';
+import type { Workout } from './Workout.js';
+import type { BodyStat } from './BodyStat.js';
+import type { Measurement } from './Measurement.js';
 
 export enum Goal {
   BULK = 'BULK',
   STRENGTH = 'STRENGTH',
   RECOMP = 'RECOMP',
-  CUT = 'CUT'
+  CUT = 'CUT',
 }
 
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
-  id!: number
+  id!: number;
 
   @Column({ type: 'varchar', unique: true })
-  email!: string
+  email!: string;
 
   @Column('varchar')
-  password!: string
+  password!: string;
 
   @Column({ type: 'varchar', nullable: true })
-  firstName?: string
+  firstName?: string;
 
   @Column({ type: 'varchar', nullable: true })
-  lastName?: string
+  lastName?: string;
 
   @Column({ type: 'varchar', nullable: true, unique: true })
-  username?: string
+  username?: string;
 
   @Column({ type: 'text', nullable: true })
-  bio?: string
+  bio?: string;
 
   @Column({ type: 'boolean', default: true })
-  isPublic!: boolean
+  isPublic!: boolean;
 
   @Column({ type: 'varchar', nullable: true })
-  avatarUrl?: string
+  avatarUrl?: string;
 
   @Column({ type: 'enum', enum: Goal, nullable: true })
-  goal?: Goal
+  goal?: Goal;
 
   @Column({ type: 'varchar', nullable: true })
-  gender?: string
+  gender?: string;
 
   @Column({ type: 'int', default: 2 })
-  streakGoalPerWeek!: number
+  streakGoalPerWeek!: number;
 
   @Column({ type: 'int', default: 0 })
-  bestStreak!: number
+  bestStreak!: number;
 
   @Column({ type: 'boolean', default: false })
-  isAdmin!: boolean
+  isAdmin!: boolean;
 
   @Column({ type: 'boolean', default: true })
-  reminderEnabled!: boolean
+  reminderEnabled!: boolean;
 
   @Column({ type: 'varchar', default: '18:00' })
-  reminderTime!: string
+  reminderTime!: string;
 
   @Column({ type: 'int', default: 3 })
-  inactivityThresholdDays!: number
+  inactivityThresholdDays!: number;
 
   // Email verification
   @Column({ type: 'boolean', default: false })
-  emailVerified!: boolean
+  emailVerified!: boolean;
 
   @Column({ type: 'varchar', nullable: true })
-  emailVerificationToken?: string
+  emailVerificationToken?: string;
 
   @Column({ type: 'timestamp', nullable: true })
-  emailVerificationExpires?: Date
+  emailVerificationExpires?: Date;
 
   @Column({ type: 'varchar', nullable: true })
-  refreshTokenHash?: string
+  refreshTokenHash?: string;
 
   @Column({ type: 'varchar', nullable: true })
-  passwordResetToken?: string
+  passwordResetToken?: string;
 
   @Column({ type: 'timestamp', nullable: true })
-  passwordResetExpires?: Date
+  passwordResetExpires?: Date;
 
   @CreateDateColumn()
-  createdAt!: Date
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt!: Date
+  updatedAt!: Date;
 
   @OneToMany('Workout', 'user')
-  workouts!: Workout[]
+  workouts!: Workout[];
 
   @OneToMany('BodyStat', 'user')
-  bodyStats!: BodyStat[]
+  bodyStats!: BodyStat[];
 
   @OneToMany('Measurement', 'user')
-  measurements!: Measurement[]
+  measurements!: Measurement[];
 }
