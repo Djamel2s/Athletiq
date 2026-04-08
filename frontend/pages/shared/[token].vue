@@ -1,19 +1,7 @@
 <template>
   <div class="min-h-screen">
-    <!-- Navigation -->
-    <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
-      <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-5">
-        <div class="flex items-center justify-between">
-          <NuxtLink to="/">
-            <AppLogo />
-          </NuxtLink>
-          <NuxtLink v-if="!authStore.isAuthenticated" to="/login" class="btn-primary text-sm px-4 py-2">
-            Se connecter
-          </NuxtLink>
-          <NavActions v-else />
-        </div>
-      </div>
-    </nav>
+    <!-- Shared TopNav -->
+    <TopNav />
 
     <div class="pt-24 md:pt-32 px-4 md:px-6 pb-28 lg:pb-20 max-w-2xl mx-auto">
       <!-- Loading -->
@@ -117,6 +105,7 @@
 </template>
 
 <script setup lang="ts">
+import TopNav from '~/components/TopNav.vue'
 import { useAuthStore } from '~/stores/auth'
 
 definePageMeta({ layout: false })

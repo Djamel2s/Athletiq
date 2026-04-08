@@ -1,18 +1,7 @@
 <template>
   <div class="min-h-screen geometric-bg">
-    <!-- Navigation -->
-    <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
-      <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-5">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-3">
-            <NuxtLink to="/dashboard">
-              <AppLogo />
-            </NuxtLink>
-          </div>
-          <NavActions />
-        </div>
-      </div>
-    </nav>
+    <!-- Use shared TopNav (includes HeaderSearch) -->
+    <TopNav />
 
     <div class="pt-20 md:pt-28 px-4 md:px-6 pb-28 lg:pb-20 max-w-lg mx-auto">
       <!-- Loading -->
@@ -580,6 +569,7 @@
 import { useAuthStore } from '~/stores/auth'
 import { useSocialApi } from '~/composables/useSocialApi'
 import { useBodyApi } from '~/composables/useBodyApi'
+import TopNav from '~/components/TopNav.vue'
 
 definePageMeta({
   layout: false,

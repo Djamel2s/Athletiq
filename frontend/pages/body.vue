@@ -1,7 +1,6 @@
 <template>
   <div class="min-h-screen">
-    <!-- Navigation -->
-    <TopNav />
+    <!-- Navigation (moved to app.vue) -->
 
     <!-- Main Content -->
     <div class="pt-24 md:pt-32 px-4 md:px-6 pb-28 lg:pb-20 max-w-7xl mx-auto">

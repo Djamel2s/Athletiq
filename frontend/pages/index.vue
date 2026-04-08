@@ -1,47 +1,7 @@
 <template>
   <div class="min-h-screen">
-    <!-- Navigation -->
-    <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
-      <div class="max-w-7xl mx-auto px-6 py-5">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-3">
-            <AppLogo class="h-14 w-auto md:hidden transition-transform duration-300 hover:scale-105" />
-            <img src="/athletiq-full-icon.svg" alt="Athletiq" class="hidden md:block h-12 w-auto transition-transform duration-300 hover:scale-105" />
-          </div>
-
-          <!-- Mobile buttons -->
-          <div class="flex md:hidden items-center space-x-3">
-            <template v-if="authStore.isAuthenticated">
-              <NuxtLink to="/dashboard" class="btn-primary text-sm px-4 py-2">Dashboard</NuxtLink>
-            </template>
-            <template v-else>
-              <NuxtLink to="/login" class="btn-glass text-sm px-4 py-2">Connexion</NuxtLink>
-              <NuxtLink to="/register" class="btn-primary text-sm px-4 py-2">Commencer</NuxtLink>
-            </template>
-          </div>
-
-          <!-- Desktop nav -->
-          <div class="hidden md:flex items-center space-x-8">
-            <a href="#features" class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-all duration-300 font-medium text-lg relative group">
-              Fonctionnalités
-              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-primary transition-all duration-300 group-hover:w-full"></span>
-            </a>
-            <a href="#pricing" class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-all duration-300 font-medium text-lg relative group">
-              Tarifs
-              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-primary transition-all duration-300 group-hover:w-full"></span>
-            </a>
-            <template v-if="authStore.isAuthenticated">
-              <NuxtLink to="/dashboard" class="btn-glass text-base px-7 py-3">Dashboard</NuxtLink>
-              <button @click="logout" class="btn-primary text-base px-7 py-3">Déconnexion</button>
-            </template>
-            <template v-else>
-              <NuxtLink to="/login" class="btn-glass text-base px-7 py-3">Connexion</NuxtLink>
-              <NuxtLink to="/register" class="btn-primary text-base px-7 py-3">Commencer</NuxtLink>
-            </template>
-          </div>
-        </div>
-      </div>
-    </nav>
+    <!-- Shared TopNav -->
+    <TopNav />
 
     <!-- Hero -->
     <section class="pt-28 md:pt-40 pb-16 md:pb-28 px-6 geometric-bg">
@@ -411,6 +371,7 @@
 </template>
 
 <script setup lang="ts">
+import TopNav from '~/components/TopNav.vue'
 import { useAuthStore } from '~/stores/auth'
 
 useSeoMeta({
