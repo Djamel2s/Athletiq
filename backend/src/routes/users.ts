@@ -134,11 +134,9 @@ router.post('/me/avatar', authenticate, upload.single('avatar'), async (req: Aut
     }
 
     if (!validateImageMagicBytes(req.file.buffer)) {
-      return res
-        .status(400)
-        .json({
-          error: 'Type de fichier non autorisé. Le contenu ne correspond pas à une image valide.',
-        });
+      return res.status(400).json({
+        error: 'Type de fichier non autorisé. Le contenu ne correspond pas à une image valide.',
+      });
     }
 
     // Delete old avatar from Cloudinary if exists

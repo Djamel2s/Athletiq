@@ -98,11 +98,9 @@ router.put('/', authenticate, async (req: AuthRequest, res) => {
 
     if (username !== undefined) {
       if (username !== null && !USERNAME_REGEX.test(username)) {
-        return res
-          .status(400)
-          .json({
-            error: 'Username must be 3-20 characters, lowercase alphanumeric and underscores only',
-          });
+        return res.status(400).json({
+          error: 'Username must be 3-20 characters, lowercase alphanumeric and underscores only',
+        });
       }
       if (username !== null) {
         const existing = await userRepo().findOne({ where: { username } });

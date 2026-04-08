@@ -13,15 +13,13 @@ vi.mock('../middlewares/auth.js', () => ({
 // Mock analytics service (default export)
 vi.mock('../services/analyticsService.js', () => ({
   default: {
-    getLatestFatigueForUser: vi
-      .fn()
-      .mockResolvedValue({
-        id: 1,
-        userId: 1,
-        score: 0.75,
-        date: new Date(),
-        createdAt: new Date(),
-      }),
+    getLatestFatigueForUser: vi.fn().mockResolvedValue({
+      id: 1,
+      userId: 1,
+      score: 0.75,
+      date: new Date(),
+      createdAt: new Date(),
+    }),
     computeForAllUsers: vi.fn().mockResolvedValue([]),
   },
 }));

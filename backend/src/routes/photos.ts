@@ -57,11 +57,9 @@ router.post(
       }
 
       if (!validateImageMagicBytes(req.file.buffer)) {
-        return res
-          .status(400)
-          .json({
-            error: 'Type de fichier non autorisé. Le contenu ne correspond pas à une image valide.',
-          });
+        return res.status(400).json({
+          error: 'Type de fichier non autorisé. Le contenu ne correspond pas à une image valide.',
+        });
       }
 
       // Vérifier la limite de photos
