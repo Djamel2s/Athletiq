@@ -3,27 +3,27 @@
 </template>
 
 <script setup lang="ts">
-import { Line } from 'vue-chartjs'
-import type { ChartData } from '~/types/statistics'
+import { Line } from 'vue-chartjs';
+import type { ChartData } from '~/types/statistics';
 
 interface Props {
-  data: ChartData
+  data: ChartData;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
-const chartData = computed(() => props.data)
+const chartData = computed(() => props.data);
 
-const colorMode = useColorMode()
-const isDark = computed(() => colorMode.value === 'dark')
-const { accentColors } = useTheme()
+const colorMode = useColorMode();
+const isDark = computed(() => colorMode.value === 'dark');
+const { accentColors } = useTheme();
 
 const chartOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
     legend: {
-      display: false
+      display: false,
     },
     tooltip: {
       backgroundColor: isDark.value ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.9)',
@@ -34,9 +34,9 @@ const chartOptions = computed(() => ({
       padding: 12,
       displayColors: false,
       callbacks: {
-        label: (context: any) => `${context.parsed.y.toLocaleString('fr-FR')} kcal`
-      }
-    }
+        label: (context: any) => `${context.parsed.y.toLocaleString('fr-FR')} kcal`,
+      },
+    },
   },
   scales: {
     y: {
@@ -45,26 +45,26 @@ const chartOptions = computed(() => ({
         color: isDark.value ? '#a8a29e' : '#57534e',
         font: {
           family: 'system-ui',
-          size: 12
+          size: 12,
         },
-        callback: (value: any) => `${value} kcal`
+        callback: (value: any) => `${value} kcal`,
       },
       grid: {
-        color: isDark.value ? 'rgba(68, 64, 60, 0.3)' : `rgba(${accentColors.value.rgb500}, 0.2)`
-      }
+        color: isDark.value ? 'rgba(68, 64, 60, 0.3)' : `rgba(${accentColors.value.rgb500}, 0.2)`,
+      },
     },
     x: {
       ticks: {
         color: isDark.value ? '#a8a29e' : '#57534e',
         font: {
           family: 'system-ui',
-          size: 12
-        }
+          size: 12,
+        },
       },
       grid: {
-        color: isDark.value ? 'rgba(68, 64, 60, 0.15)' : `rgba(${accentColors.value.rgb500}, 0.1)`
-      }
-    }
-  }
-}))
+        color: isDark.value ? 'rgba(68, 64, 60, 0.15)' : `rgba(${accentColors.value.rgb500}, 0.1)`,
+      },
+    },
+  },
+}));
 </script>

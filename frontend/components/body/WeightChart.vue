@@ -3,48 +3,54 @@
 </template>
 
 <script setup lang="ts">
-import { Line } from 'vue-chartjs'
-import type { BodyStat } from '~/types/body'
+import { Line } from 'vue-chartjs';
+import type { BodyStat } from '~/types/body';
 
 interface Props {
-  stats: BodyStat[]
+  stats: BodyStat[];
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
-const colorMode = useColorMode()
-const isDark = computed(() => colorMode.value === 'dark')
-const { accentColors } = useTheme()
+const colorMode = useColorMode();
+const isDark = computed(() => colorMode.value === 'dark');
+const { accentColors } = useTheme();
 
 const chartData = computed(() => {
-  const sorted = [...props.stats].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+  const sorted = [...props.stats].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
 
   return {
-    labels: sorted.map(s => new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(new Date(s.date))),
+    labels: sorted.map((s) =>
+      new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(new Date(s.date))
+    ),
     datasets: [
       {
         label: 'Poids (kg)',
-        data: sorted.map(s => s.weight),
+        data: sorted.map((s) => s.weight),
         borderColor: accentColors.value[500],
-        backgroundColor: isDark.value ? `rgba(${accentColors.value.rgb500}, 0.1)` : `rgba(${accentColors.value.rgb500}, 0.2)`,
+        backgroundColor: isDark.value
+          ? `rgba(${accentColors.value.rgb500}, 0.1)`
+          : `rgba(${accentColors.value.rgb500}, 0.2)`,
         fill: true,
         tension: 0.4,
         pointBackgroundColor: accentColors.value[500],
         pointBorderColor: isDark.value ? '#1c1c1c' : '#ffffff',
         pointBorderWidth: 2,
         pointRadius: 4,
-        pointHoverRadius: 6
-      }
-    ]
-  }
-})
+        pointHoverRadius: 6,
+      },
+    ],
+  };
+});
 
 const chartOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
     legend: {
-      display: false
+      display: false,
     },
     tooltip: {
       backgroundColor: isDark.value ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.9)',
@@ -56,36 +62,38 @@ const chartOptions = computed(() => ({
       displayColors: false,
       callbacks: {
         label: (context: any) => {
-          const index = context.dataIndex
-          const sorted = [...props.stats].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-          const stat = sorted[index]
-          const lines = [`Poids: ${context.parsed.y} kg`]
-          if (stat?.bodyFat) lines.push(`Body fat: ${stat.bodyFat}%`)
-          return lines
-        }
-      }
-    }
+          const index = context.dataIndex;
+          const sorted = [...props.stats].sort(
+            (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+          );
+          const stat = sorted[index];
+          const lines = [`Poids: ${context.parsed.y} kg`];
+          if (stat?.bodyFat) lines.push(`Body fat: ${stat.bodyFat}%`);
+          return lines;
+        },
+      },
+    },
   },
   scales: {
     y: {
       ticks: {
         color: isDark.value ? '#a8a29e' : '#57534e',
         font: { family: 'system-ui', size: 12 },
-        callback: (value: any) => `${value} kg`
+        callback: (value: any) => `${value} kg`,
       },
       grid: {
-        color: isDark.value ? 'rgba(68, 64, 60, 0.3)' : `rgba(${accentColors.value.rgb500}, 0.2)`
-      }
+        color: isDark.value ? 'rgba(68, 64, 60, 0.3)' : `rgba(${accentColors.value.rgb500}, 0.2)`,
+      },
     },
     x: {
       ticks: {
         color: isDark.value ? '#a8a29e' : '#57534e',
-        font: { family: 'system-ui', size: 12 }
+        font: { family: 'system-ui', size: 12 },
       },
       grid: {
-        color: isDark.value ? 'rgba(68, 64, 60, 0.15)' : `rgba(${accentColors.value.rgb500}, 0.1)`
-      }
-    }
-  }
-}))
+        color: isDark.value ? 'rgba(68, 64, 60, 0.15)' : `rgba(${accentColors.value.rgb500}, 0.1)`,
+      },
+    },
+  },
+}));
 </script>

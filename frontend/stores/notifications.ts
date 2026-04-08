@@ -1,78 +1,80 @@
-import { defineStore } from 'pinia'
-import type { AppNotification } from '~/composables/useNotificationApi'
+import { defineStore } from 'pinia';
+import type { AppNotification } from '~/composables/useNotificationApi';
 
 interface NotificationState {
-  notifications: AppNotification[]
-  unreadCount: number
-  isLoading: boolean
+  notifications: AppNotification[];
+  unreadCount: number;
+  isLoading: boolean;
 }
 
 export const useNotificationStore = defineStore('notifications', {
   state: (): NotificationState => ({
     notifications: [],
     unreadCount: 0,
-    isLoading: false
+    isLoading: false,
   }),
 
   actions: {
     async fetchNotifications() {
-      this.isLoading = true
+      this.isLoading = true;
       try {
-        const api = useNotificationApi()
-        this.notifications = await api.getNotifications()
-        this.unreadCount = this.notifications.filter(n => !n.read).length
+        const api = useNotificationApi();
+        this.notifications = await api.getNotifications();
+        this.unreadCount = this.notifications.filter((n) => !n.read).length;
       } catch (error) {
-        logger.error('Fetch notifications error:', error)
+        logger.error('Fetch notifications error:', error);
       } finally {
-        this.isLoading = false
+        this.isLoading = false;
       }
     },
 
     async fetchUnreadCount() {
       try {
-        const api = useNotificationApi()
-        const { count } = await api.getUnreadCount()
-        this.unreadCount = count
+        const api = useNotificationApi();
+        const { count } = await api.getUnreadCount();
+        this.unreadCount = count;
       } catch (error) {
-        logger.error('Fetch unread count error:', error)
+        logger.error('Fetch unread count error:', error);
       }
     },
 
     async markRead(id: number) {
       try {
-        const api = useNotificationApi()
-        await api.markAsRead(id)
-        const notif = this.notifications.find(n => n.id === id)
+        const api = useNotificationApi();
+        await api.markAsRead(id);
+        const notif = this.notifications.find((n) => n.id === id);
         if (notif && !notif.read) {
-          notif.read = true
-          this.unreadCount = Math.max(0, this.unreadCount - 1)
+          notif.read = true;
+          this.unreadCount = Math.max(0, this.unreadCount - 1);
         }
       } catch (error) {
-        logger.error('Mark read error:', error)
+        logger.error('Mark read error:', error);
       }
     },
 
     async markAllRead() {
       try {
-        const api = useNotificationApi()
-        await api.markAllAsRead()
-        this.notifications.forEach(n => { n.read = true })
-        this.unreadCount = 0
+        const api = useNotificationApi();
+        await api.markAllAsRead();
+        this.notifications.forEach((n) => {
+          n.read = true;
+        });
+        this.unreadCount = 0;
       } catch (error) {
-        logger.error('Mark all read error:', error)
+        logger.error('Mark all read error:', error);
       }
     },
 
     async deleteNotification(id: number) {
       try {
-        const api = useNotificationApi()
-        await api.deleteNotification(id)
-        this.notifications = this.notifications.filter(n => n.id !== id)
-        this.unreadCount = this.notifications.filter(n => !n.read).length
+        const api = useNotificationApi();
+        await api.deleteNotification(id);
+        this.notifications = this.notifications.filter((n) => n.id !== id);
+        this.unreadCount = this.notifications.filter((n) => !n.read).length;
       } catch (error) {
-        logger.error('Delete notification error:', error)
-        throw error
+        logger.error('Delete notification error:', error);
+        throw error;
       }
-    }
-  }
-})
+    },
+  },
+});

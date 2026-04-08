@@ -3,19 +3,19 @@
 </template>
 
 <script setup lang="ts">
-import { Line } from 'vue-chartjs'
-import type { ChartData } from '~/types/statistics'
+import { Line } from 'vue-chartjs';
+import type { ChartData } from '~/types/statistics';
 
 interface Props {
-  data: ChartData
+  data: ChartData;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
-const chartData = computed(() => props.data)
+const chartData = computed(() => props.data);
 
-const colorMode = useColorMode()
-const isDark = computed(() => colorMode.value === 'dark')
+const colorMode = useColorMode();
+const isDark = computed(() => colorMode.value === 'dark');
 
 const chartOptions = computed(() => ({
   responsive: true,
@@ -24,8 +24,8 @@ const chartOptions = computed(() => ({
     legend: {
       display: true,
       labels: {
-        color: isDark.value ? '#a8a29e' : '#57534e'
-      }
+        color: isDark.value ? '#a8a29e' : '#57534e',
+      },
     },
     tooltip: {
       backgroundColor: isDark.value ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.9)',
@@ -36,9 +36,9 @@ const chartOptions = computed(() => ({
       padding: 12,
       displayColors: true,
       callbacks: {
-        label: (context: any) => `${context.parsed.y} kg`
-      }
-    }
+        label: (context: any) => `${context.parsed.y} kg`,
+      },
+    },
   },
   scales: {
     y: {
@@ -46,21 +46,21 @@ const chartOptions = computed(() => ({
       ticks: {
         color: isDark.value ? '#a8a29e' : '#57534e',
         font: { family: 'system-ui', size: 12 },
-        callback: (value: any) => `${value} kg`
+        callback: (value: any) => `${value} kg`,
       },
       grid: {
-        color: isDark.value ? 'rgba(68, 64, 60, 0.3)' : 'rgba(212, 196, 176, 0.2)'
-      }
+        color: isDark.value ? 'rgba(68, 64, 60, 0.3)' : 'rgba(212, 196, 176, 0.2)',
+      },
     },
     x: {
       ticks: {
         color: isDark.value ? '#a8a29e' : '#57534e',
-        font: { family: 'system-ui', size: 12 }
+        font: { family: 'system-ui', size: 12 },
       },
       grid: {
-        color: isDark.value ? 'rgba(68, 64, 60, 0.15)' : 'rgba(212, 196, 176, 0.1)'
-      }
-    }
-  }
-}))
+        color: isDark.value ? 'rgba(68, 64, 60, 0.15)' : 'rgba(212, 196, 176, 0.1)',
+      },
+    },
+  },
+}));
 </script>

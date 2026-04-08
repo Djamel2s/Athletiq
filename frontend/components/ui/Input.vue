@@ -36,36 +36,36 @@
 
 <script setup lang="ts">
 interface Props {
-  modelValue?: string | number
-  type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url'
-  label?: string
-  placeholder?: string
-  icon?: string
-  error?: string
-  hint?: string
-  disabled?: boolean
-  required?: boolean
+  modelValue?: string | number;
+  type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
+  label?: string;
+  placeholder?: string;
+  icon?: string;
+  error?: string;
+  hint?: string;
+  disabled?: boolean;
+  required?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   type: 'text',
   disabled: false,
-  required: false
-})
+  required: false,
+});
 
 defineEmits<{
-  'update:modelValue': [value: string | number]
-  blur: [event: FocusEvent]
-  focus: [event: FocusEvent]
-}>()
+  'update:modelValue': [value: string | number];
+  blur: [event: FocusEvent];
+  focus: [event: FocusEvent];
+}>();
 
-const inputId = computed(() => `input-${Math.random().toString(36).substr(2, 9)}`)
+const inputId = computed(() => `input-${Math.random().toString(36).substr(2, 9)}`);
 
 const inputClasses = computed(() => {
-  const base = 'input'
-  const withIcon = props.icon ? 'pl-12' : ''
-  const errorState = props.error ? 'ring-2 ring-primary-500 dark:ring-primary-400' : ''
+  const base = 'input';
+  const withIcon = props.icon ? 'pl-12' : '';
+  const errorState = props.error ? 'ring-2 ring-primary-500 dark:ring-primary-400' : '';
 
-  return [base, withIcon, errorState].join(' ')
-})
+  return [base, withIcon, errorState].join(' ');
+});
 </script>

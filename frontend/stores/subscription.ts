@@ -1,18 +1,18 @@
-import { defineStore } from 'pinia'
-import { useAuthStore } from './auth'
-import { apiFetch } from '~/utils/apiFetch'
+import { defineStore } from 'pinia';
+import { useAuthStore } from './auth';
+import { apiFetch } from '~/utils/apiFetch';
 
-const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 interface SubscriptionState {
-  plan: string | null
-  status: string | null
-  trialDaysLeft: number
-  trialEndDate: string | null
-  currentPeriodEnd: string | null
-  canceledAt: string | null
-  isLoading: boolean
-  _lastFetchedAt: number | null
+  plan: string | null;
+  status: string | null;
+  trialDaysLeft: number;
+  trialEndDate: string | null;
+  currentPeriodEnd: string | null;
+  canceledAt: string | null;
+  isLoading: boolean;
+  _lastFetchedAt: number | null;
 }
 
 export const useSubscriptionStore = defineStore('subscription', {
@@ -24,127 +24,132 @@ export const useSubscriptionStore = defineStore('subscription', {
     currentPeriodEnd: null,
     canceledAt: null,
     isLoading: false,
-    _lastFetchedAt: null
+    _lastFetchedAt: null,
   }),
 
   getters: {
     isActive: (state): boolean => {
-      return state.status === 'ACTIVE' || state.status === 'TRIAL'
+      return state.status === 'ACTIVE' || state.status === 'TRIAL';
     },
     isTrial: (state): boolean => {
-      return state.status === 'TRIAL'
+      return state.status === 'TRIAL';
     },
     isFree: (state): boolean => {
-      return state.plan === 'FREE' || state.status === 'EXPIRED'
+      return state.plan === 'FREE' || state.status === 'EXPIRED';
     },
     isExpired: (state): boolean => {
-      return state.status === 'EXPIRED' || state.status === 'CANCELED'
+      return state.status === 'EXPIRED' || state.status === 'CANCELED';
     },
     isPastDue: (state): boolean => {
-      return state.status === 'PAST_DUE'
-    }
+      return state.status === 'PAST_DUE';
+    },
   },
 
   actions: {
     async fetchSubscription(forceRefresh = false) {
-      const authStore = useAuthStore()
-      if (!authStore.token) return
+      const authStore = useAuthStore();
+      if (!authStore.token) return;
 
       // Return cached data if fresh enough
-      if (!forceRefresh && this._lastFetchedAt && this.plan !== null && (Date.now() - this._lastFetchedAt < CACHE_TTL)) {
-        return
+      if (
+        !forceRefresh &&
+        this._lastFetchedAt &&
+        this.plan !== null &&
+        Date.now() - this._lastFetchedAt < CACHE_TTL
+      ) {
+        return;
       }
 
-      this.isLoading = true
+      this.isLoading = true;
       try {
-        const data = await apiFetch<{ subscription: any }>('/subscription')
-        const sub = data.subscription
-        this.plan = sub.plan
-        this.status = sub.status
-        this.trialDaysLeft = sub.trialDaysLeft
-        this.trialEndDate = sub.trialEndDate
-        this.currentPeriodEnd = sub.currentPeriodEnd
-        this.canceledAt = sub.canceledAt
-        this._lastFetchedAt = Date.now()
+        const data = await apiFetch<{ subscription: any }>('/subscription');
+        const sub = data.subscription;
+        this.plan = sub.plan;
+        this.status = sub.status;
+        this.trialDaysLeft = sub.trialDaysLeft;
+        this.trialEndDate = sub.trialEndDate;
+        this.currentPeriodEnd = sub.currentPeriodEnd;
+        this.canceledAt = sub.canceledAt;
+        this._lastFetchedAt = Date.now();
       } catch (error) {
-        logger.error('Error fetching subscription:', error)
+        logger.error('Error fetching subscription:', error);
       } finally {
-        this.isLoading = false
+        this.isLoading = false;
       }
     },
 
     async createCheckout(plan: 'monthly' | 'yearly') {
-      const authStore = useAuthStore()
-      if (!authStore.token) return
+      const authStore = useAuthStore();
+      if (!authStore.token) return;
 
       try {
         const data = await apiFetch<{ url?: string; error?: string }>('/subscription/checkout', {
           method: 'POST',
-          body: { plan }
-        })
+          body: { plan },
+        });
 
         if (data.url) {
           // Validate redirect URL to prevent open redirect
           try {
-            const url = new URL(data.url)
-            const allowedHosts = ['checkout.stripe.com', 'billing.stripe.com']
-            if (!allowedHosts.includes(url.hostname)) throw new Error('Invalid redirect')
-            if (url.protocol !== 'https:') throw new Error('Invalid protocol')
-            window.location.href = data.url
+            const url = new URL(data.url);
+            const allowedHosts = ['checkout.stripe.com', 'billing.stripe.com'];
+            if (!allowedHosts.includes(url.hostname)) throw new Error('Invalid redirect');
+            if (url.protocol !== 'https:') throw new Error('Invalid protocol');
+            window.location.href = data.url;
           } catch {
-            logger.error('Invalid redirect URL')
-            return { error: 'URL de redirection invalide' }
+            logger.error('Invalid redirect URL');
+            return { error: 'URL de redirection invalide' };
           }
         } else {
-          return { error: data.error || 'Erreur' }
+          return { error: data.error || 'Erreur' };
         }
       } catch (error) {
-        return { error: 'Erreur de connexion' }
+        return { error: 'Erreur de connexion' };
       }
     },
 
     async openPortal() {
-      const authStore = useAuthStore()
-      if (!authStore.token) return { error: 'Non authentifié' }
+      const authStore = useAuthStore();
+      if (!authStore.token) return { error: 'Non authentifié' };
 
       try {
         const data = await apiFetch<{ url?: string; error?: string }>('/subscription/portal', {
-          method: 'POST'
-        })
+          method: 'POST',
+        });
 
         if (!data.url) {
-          return { error: data.error || "Impossible d'ouvrir le portail" }
+          return { error: data.error || "Impossible d'ouvrir le portail" };
         }
         // Validate redirect URL to prevent open redirect
         try {
-          const url = new URL(data.url)
-          const allowedHosts = ['checkout.stripe.com', 'billing.stripe.com']
-          if (!allowedHosts.includes(url.hostname)) throw new Error('Invalid redirect')
-          if (url.protocol !== 'https:') throw new Error('Invalid protocol')
-          window.location.href = data.url
+          const url = new URL(data.url);
+          const allowedHosts = ['checkout.stripe.com', 'billing.stripe.com'];
+          if (!allowedHosts.includes(url.hostname)) throw new Error('Invalid redirect');
+          if (url.protocol !== 'https:') throw new Error('Invalid protocol');
+          window.location.href = data.url;
         } catch {
-          logger.error('Invalid portal redirect URL')
-          return { error: 'URL de redirection invalide' }
+          logger.error('Invalid portal redirect URL');
+          return { error: 'URL de redirection invalide' };
         }
       } catch (error) {
-        logger.error('Error opening portal:', error)
-        return { error: 'Erreur de connexion' }
+        logger.error('Error opening portal:', error);
+        return { error: 'Erreur de connexion' };
       }
     },
 
     async cancelSubscription() {
-      const authStore = useAuthStore()
-      if (!authStore.token) return
+      const authStore = useAuthStore();
+      if (!authStore.token) return;
 
       try {
         await apiFetch('/subscription/cancel', {
-          method: 'POST'
-        })
-        await this.fetchSubscription(true)
-        return { success: true }
+          method: 'POST',
+        });
+        await this.fetchSubscription(true);
+        return { success: true };
       } catch (error: any) {
-        return { error: error.data?.error || 'Erreur de connexion' }
+        return { error: error.data?.error || 'Erreur de connexion' };
       }
-    }
-  }
-})
+    },
+  },
+});

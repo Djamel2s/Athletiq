@@ -4,24 +4,24 @@
  * - This is a safe, non-invasive stub: it never throws and always returns an object describing the outcome.
  */
 export async function shareToStory(opts: {
-  url?: string // public url (Cloudinary)
-  backgroundImageUrl?: string
-  blob?: Blob
-  stickerUrl?: string
-  attributionLink?: string
+  url?: string; // public url (Cloudinary)
+  backgroundImageUrl?: string;
+  blob?: Blob;
+  stickerUrl?: string;
+  attributionLink?: string;
 }) {
   try {
     function blobToBase64(blob: Blob): Promise<string> {
       return new Promise((resolve, reject) => {
-        const reader = new FileReader()
+        const reader = new FileReader();
         reader.onloadend = () => {
-          const dataUrl = reader.result as string
-          const base64 = dataUrl.split(',')[1]
-          resolve(base64)
-        }
-        reader.onerror = reject
-        reader.readAsDataURL(blob)
-      })
+          const dataUrl = reader.result as string;
+          const base64 = dataUrl.split(',')[1];
+          resolve(base64);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
     }
 
     // Try native Capacitor plugin if available (plugin exposes via Nuxt provide)
@@ -29,11 +29,15 @@ export async function shareToStory(opts: {
       // useNuxtApp is only available at runtime in client
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      const nuxtApp = useNuxtApp()
-      const shareToStoryNative = (nuxtApp as any).$shareToStoryNative
+      const nuxtApp = useNuxtApp();
+      const shareToStoryNative = (nuxtApp as any).$shareToStoryNative;
       if (typeof shareToStoryNative === 'function') {
-        const res = await shareToStoryNative({ blob: opts.blob, url: opts.url, attribution: opts.attribution })
-        if (res?.available) return { success: true, method: 'native-plugin' }
+        const res = await shareToStoryNative({
+          blob: opts.blob,
+          url: opts.url,
+          attribution: opts.attribution,
+        });
+        if (res?.available) return { success: true, method: 'native-plugin' };
       }
     } catch (e) {
       // continue
@@ -44,32 +48,42 @@ export async function shareToStory(opts: {
       // dynamic import via Function to avoid bundler resolving Capacitor packages
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      const { Share } = await (new Function("return import('@capacitor/share')") as any)()
+      const { Share } = await (new Function("return import('@capacitor/share')") as any)();
 
       // If we have a blob, write to filesystem first to improve story intents compatibility
       if (opts.blob) {
-          try {
+        try {
           // dynamic import via Function to avoid bundler resolution during build
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          const { Filesystem, Directory } = await (new Function("return import('@capacitor/filesystem')") as any)()
-          const base64 = await blobToBase64(opts.blob)
-          const filename = `athletiq-story-${Date.now()}.jpg`
-          await Filesystem.writeFile({ path: filename, data: base64, directory: Directory.Data })
+          const { Filesystem, Directory } = await (
+            new Function("return import('@capacitor/filesystem')") as any
+          )();
+          const base64 = await blobToBase64(opts.blob);
+          const filename = `athletiq-story-${Date.now()}.jpg`;
+          await Filesystem.writeFile({ path: filename, data: base64, directory: Directory.Data });
           // Attempt to get a URI for the file
           // @ts-ignore
-          const uriRes = await Filesystem.getUri({ directory: Directory.Data, path: filename })
-          const nativeUri = uriRes.uri || (uriRes as any).uri
+          const uriRes = await Filesystem.getUri({ directory: Directory.Data, path: filename });
+          const nativeUri = uriRes.uri || (uriRes as any).uri;
           // Use native share with file URI when possible
-          await Share.share({ title: 'Mon timelapse', text: opts.attributionLink || '', url: nativeUri })
-          return { success: true, method: 'capacitor-share' }
+          await Share.share({
+            title: 'Mon timelapse',
+            text: opts.attributionLink || '',
+            url: nativeUri,
+          });
+          return { success: true, method: 'capacitor-share' };
         } catch (e) {
           // Fall back to Share with public URL below
         }
       }
 
-      await Share.share({ title: 'Mon timelapse', text: opts.attributionLink || '', url: opts.url })
-      return { success: true, method: 'capacitor-share' }
+      await Share.share({
+        title: 'Mon timelapse',
+        text: opts.attributionLink || '',
+        url: opts.url,
+      });
+      return { success: true, method: 'capacitor-share' };
     } catch (e) {
       // continue
     }
@@ -82,16 +96,18 @@ export async function shareToStory(opts: {
           // dynamic import via Function to avoid bundler resolution
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          const { Filesystem, Directory } = await (new Function("return import('@capacitor/filesystem')") as any)()
-          const base64 = await blobToBase64(opts.blob)
-          const filename = `athletiq-story-${Date.now()}.jpg`
-          await Filesystem.writeFile({ path: filename, data: base64, directory: Directory.Data })
+          const { Filesystem, Directory } = await (
+            new Function("return import('@capacitor/filesystem')") as any
+          )();
+          const base64 = await blobToBase64(opts.blob);
+          const filename = `athletiq-story-${Date.now()}.jpg`;
+          await Filesystem.writeFile({ path: filename, data: base64, directory: Directory.Data });
           // @ts-ignore
-          const uriRes = await Filesystem.getUri({ directory: Directory.Data, path: filename })
-          const nativeUri = uriRes.uri || (uriRes as any).uri
+          const uriRes = await Filesystem.getUri({ directory: Directory.Data, path: filename });
+          const nativeUri = uriRes.uri || (uriRes as any).uri;
           const intent = `intent://instagram.com/stories/create?background_image=${encodeURIComponent(nativeUri)}#Intent;package=com.instagram.android;scheme=https;end`;
-          window.location.href = intent
-          return { success: true, method: 'android-intent' }
+          window.location.href = intent;
+          return { success: true, method: 'android-intent' };
         } catch (e) {
           // fallback to remote URL below
         }
@@ -99,23 +115,23 @@ export async function shareToStory(opts: {
 
       if (opts.backgroundImageUrl) {
         const intent = `intent://instagram.com/stories/create?background_image=${encodeURIComponent(opts.backgroundImageUrl)}#Intent;package=com.instagram.android;scheme=https;end`;
-        window.location.href = intent
-        return { success: true, method: 'android-intent' }
+        window.location.href = intent;
+        return { success: true, method: 'android-intent' };
       }
     }
 
     // As a last resort, open the public URL so the user can share manually to any app
     if (opts.url) {
-      window.open(opts.url, '_blank')
-      return { success: true, method: 'open-url' }
+      window.open(opts.url, '_blank');
+      return { success: true, method: 'open-url' };
     }
 
-    return { success: false }
+    return { success: false };
   } catch (err) {
-    return { success: false, error: String(err) }
+    return { success: false, error: String(err) };
   }
 }
 
 export default function useSocialStoryShare() {
-  return { shareToStory }
+  return { shareToStory };
 }

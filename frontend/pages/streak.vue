@@ -56,8 +56,7 @@
               <span class="font-semibold">{{ streakData.currentWeekWorkouts }} / {{ streakData.streakGoalPerWeek }}</span>
             </div>
             <div class="h-3 bg-primary-200 dark:bg-primary-800 rounded-full overflow-hidden">
-              <div
-                class="h-full rounded-full transition-all duration-700"
+              <div class="h-full rounded-full transition-all duration-700">
               </div>
             </div>
             <p v-if="weekProgress >= 100" class="text-sm text-sand-700 dark:text-sand-500 mt-2 font-semibold">

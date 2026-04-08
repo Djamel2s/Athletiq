@@ -1,24 +1,35 @@
 <template>
   <div class="min-h-screen">
     <!-- Navigation -->
-      <!-- TopNav is rendered globally in app.vue -->
+    <!-- TopNav is rendered globally in app.vue -->
 
     <!-- Loading -->
     <div v-if="!pageReady" class="pb-28 lg:pb-20 flex items-center justify-center min-h-[60vh]">
-      <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary-200 dark:border-primary-700 border-t-sand-500"></div>
+      <div
+        class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary-200 dark:border-primary-700 border-t-sand-500"
+      ></div>
     </div>
 
     <!-- Main Content -->
     <div v-else class="px-4 md:px-6 pb-28 lg:pb-20 max-w-7xl mx-auto">
       <!-- Page Header -->
       <div class="fade-in text-center mb-8">
-        <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2">Statistiques</h1>
-        <p class="text-lg text-primary-600 dark:text-primary-400">Ta progression en un coup d'oeil</p>
+        <h1
+          class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2"
+        >
+          Statistiques
+        </h1>
+        <p class="text-lg text-primary-600 dark:text-primary-400">
+          Ta progression en un coup d'oeil
+        </p>
       </div>
 
       <!-- Quick link to body tracking (mobile only) -->
       <div class="flex justify-center mb-6 fade-in lg:hidden">
-        <NuxtLink to="/body" class="btn-glass px-4 py-2 text-sm font-medium inline-flex items-center gap-2">
+        <NuxtLink
+          to="/body"
+          class="btn-glass px-4 py-2 text-sm font-medium inline-flex items-center gap-2"
+        >
           <Icon name="lucide:ruler" class="w-4 h-4" />
           Suivi corporel
         </NuxtLink>
@@ -26,7 +37,9 @@
 
       <!-- Time Range Selector -->
       <div class="flex justify-center mb-8 fade-in">
-        <div class="flex space-x-2 bg-white dark:bg-primary-900 bg-opacity-50 dark:bg-opacity-50 backdrop-blur-lg rounded-xl p-1">
+        <div
+          class="flex space-x-2 bg-white dark:bg-primary-900 bg-opacity-50 dark:bg-opacity-50 backdrop-blur-lg rounded-xl p-1"
+        >
           <button
             v-for="range in timeRanges"
             :key="range.value || 'all'"
@@ -35,7 +48,7 @@
               'px-4 py-2 rounded-lg text-sm font-semibold transition-all',
               selectedTimeRange === range.value
                 ? 'bg-gradient-primary text-white shadow-sm'
-                : 'text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100'
+                : 'text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100',
             ]"
           >
             {{ range.label }}
@@ -45,15 +58,29 @@
 
       <!-- Loading State -->
       <div v-if="workoutStore.isLoading" class="text-center py-20">
-        <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary-300 dark:border-primary-600 border-t-primary-600 dark:border-t-primary-400"></div>
-        <p class="mt-4 text-primary-600 dark:text-primary-400 text-lg">Chargement des statistiques...</p>
+        <div
+          class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary-300 dark:border-primary-600 border-t-primary-600 dark:border-t-primary-400"
+        ></div>
+        <p class="mt-4 text-primary-600 dark:text-primary-400 text-lg">
+          Chargement des statistiques...
+        </p>
       </div>
 
       <!-- Empty State - No Workouts -->
       <div v-else-if="!hasData && !selectedTimeRange" class="fade-in">
         <div class="card-glass text-center py-20 max-w-2xl mx-auto">
-          <svg class="w-24 h-24 mx-auto mb-6 text-primary-300 dark:text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          <svg
+            class="w-24 h-24 mx-auto mb-6 text-primary-300 dark:text-primary-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+            />
           </svg>
           <h2 class="text-3xl font-bold text-primary-900 dark:text-primary-100 mb-4">
             Aucune statistique disponible
@@ -89,13 +116,25 @@
             :user-name="authStore.fullName"
           />
         </div>
-        <div class="flex overflow-x-auto gap-3 md:grid md:grid-cols-5 md:overflow-visible snap-x snap-mandatory pb-2 -mx-4 px-4 md:mx-0 md:px-0 slide-up">
+        <div
+          class="flex overflow-x-auto gap-3 md:grid md:grid-cols-5 md:overflow-visible snap-x snap-mandatory pb-2 -mx-4 px-4 md:mx-0 md:px-0 slide-up"
+        >
           <div class="snap-start flex-shrink-0 w-[140px] md:w-auto">
-            <StatsStatCard
-              title="Entraînements"
-              :value="overviewStats.totalWorkouts"
-            >
-              <template #icon><svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></template>
+            <StatsStatCard title="Entraînements" :value="overviewStats.totalWorkouts">
+              <template #icon
+                ><svg
+                  class="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  /></svg
+              ></template>
             </StatsStatCard>
           </div>
           <div class="snap-start flex-shrink-0 w-[140px] md:w-auto">
@@ -104,16 +143,38 @@
               :value="estimateCalories(overviewStats.totalTime)"
               format="calories"
             >
-              <template #icon><svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg></template>
+              <template #icon
+                ><svg
+                  class="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"
+                  /></svg
+              ></template>
             </StatsStatCard>
           </div>
           <div class="snap-start flex-shrink-0 w-[140px] md:w-auto">
-            <StatsStatCard
-              title="Temps total"
-              :value="overviewStats.totalTime"
-              format="time"
-            >
-              <template #icon><svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></template>
+            <StatsStatCard title="Temps total" :value="overviewStats.totalTime" format="time">
+              <template #icon
+                ><svg
+                  class="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  /></svg
+              ></template>
             </StatsStatCard>
           </div>
           <div class="snap-start flex-shrink-0 w-[140px] md:w-auto">
@@ -122,7 +183,20 @@
               :value="overviewStats.averageDuration"
               format="duration"
             >
-              <template #icon><svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></template>
+              <template #icon
+                ><svg
+                  class="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  /></svg
+              ></template>
             </StatsStatCard>
           </div>
           <div class="snap-start flex-shrink-0 w-[140px] md:w-auto">
@@ -131,7 +205,26 @@
               :value="overviewStats.currentStreak"
               :subtitle="overviewStats.currentStreak > 1 ? 'jours consécutifs' : 'jour'"
             >
-              <template #icon><svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"/></svg></template>
+              <template #icon
+                ><svg
+                  class="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"
+                  /></svg
+              ></template>
             </StatsStatCard>
           </div>
         </div>
@@ -140,7 +233,9 @@
         <div class="space-y-6 slide-up">
           <div class="flex items-center gap-3">
             <div class="w-1 h-6 bg-gradient-primary rounded-full"></div>
-            <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">Cette semaine</h3>
+            <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">
+              Cette semaine
+            </h3>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
             <StatsWeekComparisonCard
@@ -167,11 +262,15 @@
         <div class="space-y-6 slide-up">
           <div class="flex items-center gap-3">
             <div class="w-1 h-6 bg-gradient-primary rounded-full"></div>
-            <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">Progression</h3>
+            <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">
+              Progression
+            </h3>
           </div>
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
             <div class="card-glass hover:shadow-lg transition-shadow">
-              <h4 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">Calories au fil du temps</h4>
+              <h4 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">
+                Calories au fil du temps
+              </h4>
               <div class="h-[250px] md:h-[300px]">
                 <StatsVolumeChart v-if="volumeData.datasets?.length" :data="volumeData" />
                 <div v-else class="flex items-center justify-center h-full text-primary-400">
@@ -180,7 +279,9 @@
               </div>
             </div>
             <div class="card-glass hover:shadow-lg transition-shadow">
-              <h4 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">Fréquence par jour</h4>
+              <h4 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">
+                Fréquence par jour
+              </h4>
               <div class="h-[250px] md:h-[300px]">
                 <StatsFrequencyChart v-if="frequencyData.datasets?.length" :data="frequencyData" />
                 <div v-else class="flex items-center justify-center h-full text-primary-400">
@@ -196,7 +297,9 @@
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
               <div class="w-1 h-6 bg-gradient-primary rounded-full"></div>
-              <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">Progression par exercice</h3>
+              <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">
+                Progression par exercice
+              </h3>
             </div>
             <StatsShareButton
               card-type="progression"
@@ -211,7 +314,9 @@
                 class="input-primary !w-auto min-w-full md:min-w-[250px]"
               >
                 <option value="__ALL__">Tous les exercices</option>
-                <option v-for="name in allExerciseNames" :key="name" :value="name">{{ name }}</option>
+                <option v-for="name in allExerciseNames" :key="name" :value="name">
+                  {{ name }}
+                </option>
               </select>
             </div>
             <div v-if="activeProgressionData" class="h-[300px] md:h-[400px]">
@@ -227,22 +332,34 @@
         <div class="space-y-6 slide-up">
           <div class="flex items-center gap-3">
             <div class="w-1 h-6 bg-gradient-primary rounded-full"></div>
-            <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">Analyse des exercices</h3>
+            <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">
+              Analyse des exercices
+            </h3>
           </div>
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
             <div class="card-glass hover:shadow-lg transition-shadow">
-              <h4 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">Séances par groupe musculaire</h4>
+              <h4 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">
+                Séances par groupe musculaire
+              </h4>
               <div class="h-[250px] md:h-[300px]">
-                <StatsMuscleGroupChart v-if="muscleGroupData.datasets?.length" :data="muscleGroupData" />
+                <StatsMuscleGroupChart
+                  v-if="muscleGroupData.datasets?.length"
+                  :data="muscleGroupData"
+                />
                 <div v-else class="flex items-center justify-center h-full text-primary-400">
                   Pas de données
                 </div>
               </div>
             </div>
             <div class="card-glass hover:shadow-lg transition-shadow">
-              <h4 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">Distribution des exercices</h4>
+              <h4 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">
+                Distribution des exercices
+              </h4>
               <div class="h-[250px] md:h-[300px]">
-                <StatsExerciseDistributionChart v-if="exerciseDistributionData.datasets?.length" :data="exerciseDistributionData" />
+                <StatsExerciseDistributionChart
+                  v-if="exerciseDistributionData.datasets?.length"
+                  :data="exerciseDistributionData"
+                />
                 <div v-else class="flex items-center justify-center h-full text-primary-400">
                   Pas de données
                 </div>
@@ -256,7 +373,9 @@
           <div class="flex items-center justify-between mb-6">
             <div class="flex items-center gap-3">
               <div class="w-1 h-6 bg-gradient-primary rounded-full"></div>
-              <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">Top 5 Exercices</h3>
+              <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">
+                Top 5 Exercices
+              </h3>
             </div>
             <StatsShareButton
               card-type="top5"
@@ -271,16 +390,24 @@
               class="flex items-center justify-between p-4 bg-primary-50 dark:bg-primary-800 rounded-xl"
             >
               <div class="flex items-center space-x-4">
-                <span class="flex items-center justify-center w-8 h-8 bg-gradient-primary text-white font-bold rounded-lg text-sm">
+                <span
+                  class="flex items-center justify-center w-8 h-8 bg-gradient-primary text-white font-bold rounded-lg text-sm"
+                >
                   {{ index + 1 }}
                 </span>
                 <div>
-                  <p class="font-semibold text-primary-900 dark:text-primary-100">{{ exercise.name }}</p>
-                  <p class="text-sm text-primary-600 dark:text-primary-400">{{ exercise.count }} fois réalisé</p>
+                  <p class="font-semibold text-primary-900 dark:text-primary-100">
+                    {{ exercise.name }}
+                  </p>
+                  <p class="text-sm text-primary-600 dark:text-primary-400">
+                    {{ exercise.count }} fois réalisé
+                  </p>
                 </div>
               </div>
               <div class="text-right">
-                <p class="font-bold text-primary-900 dark:text-primary-100">{{ exercise.count }} séances</p>
+                <p class="font-bold text-primary-900 dark:text-primary-100">
+                  {{ exercise.count }} séances
+                </p>
               </div>
             </div>
           </div>
@@ -291,7 +418,9 @@
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
               <div class="w-1 h-6 bg-gradient-primary rounded-full"></div>
-              <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">Records Personnels</h3>
+              <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">
+                Records Personnels
+              </h3>
             </div>
             <StatsShareButton
               card-type="records"
@@ -305,17 +434,27 @@
               :key="record?.exerciseName || record?.exerciseId"
               class="card-glass !p-6 flex items-start space-x-4"
             >
-              <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center flex-shrink-0">
+              <div
+                class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center flex-shrink-0"
+              >
                 <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  <path
+                    d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                  />
                 </svg>
               </div>
               <div class="flex-1 min-w-0">
-                <p class="font-bold text-primary-900 dark:text-primary-100 truncate">{{ record?.exerciseName || 'Exercice inconnu' }}</p>
-                <p class="text-2xl font-bold bg-gradient-to-r from-sand-500 to-sand-700 bg-clip-text text-transparent">
+                <p class="font-bold text-primary-900 dark:text-primary-100 truncate">
+                  {{ record?.exerciseName || 'Exercice inconnu' }}
+                </p>
+                <p
+                  class="text-2xl font-bold bg-gradient-to-r from-sand-500 to-sand-700 bg-clip-text text-transparent"
+                >
                   {{ record?.maxWeight || 0 }} kg
                 </p>
-                <div class="flex items-center space-x-3 text-sm text-primary-600 dark:text-primary-400 mt-1">
+                <div
+                  class="flex items-center space-x-3 text-sm text-primary-600 dark:text-primary-400 mt-1"
+                >
                   <span>{{ record?.reps || 0 }} reps</span>
                   <span>·</span>
                   <span>{{ record?.date ? formatDate(record.date) : 'Date inconnue' }}</span>
@@ -340,7 +479,9 @@
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
               <div class="w-1 h-6 bg-gradient-primary rounded-full"></div>
-              <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">Mes Objectifs</h3>
+              <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">
+                Mes Objectifs
+              </h3>
             </div>
             <div class="flex items-center gap-2">
               <StatsShareButton
@@ -350,8 +491,14 @@
                 :user-name="authStore.fullName"
               />
               <div class="flex items-center gap-2">
-                <span v-if="!isPremium" class="text-xs text-primary-500 dark:text-primary-400">{{ goalUsageText }}</span>
-                <button @click="handleNewGoal" :disabled="!canCreateGoal" class="btn-primary !py-2 !px-4 text-sm disabled:opacity-50">
+                <span v-if="!isPremium" class="text-xs text-primary-500 dark:text-primary-400">{{
+                  goalUsageText
+                }}</span>
+                <button
+                  @click="handleNewGoal"
+                  :disabled="!canCreateGoal"
+                  class="btn-primary !py-2 !px-4 text-sm disabled:opacity-50"
+                >
                   + Nouvel objectif
                 </button>
               </div>
@@ -359,7 +506,10 @@
           </div>
 
           <!-- Active Goals -->
-          <div v-if="goalStore.activeGoals.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div
+            v-if="goalStore.activeGoals.length > 0"
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          >
             <GoalsGoalCard
               v-for="goal in goalStore.activeGoals"
               :key="goal.id"
@@ -369,14 +519,20 @@
           </div>
           <div v-else class="card-glass text-center py-10">
             <p class="text-primary-500 dark:text-primary-400 mb-4">Aucun objectif en cours</p>
-            <button @click="handleNewGoal" :disabled="!canCreateGoal" class="btn-outline text-sm disabled:opacity-50">
+            <button
+              @click="handleNewGoal"
+              :disabled="!canCreateGoal"
+              class="btn-outline text-sm disabled:opacity-50"
+            >
               Créer mon premier objectif
             </button>
           </div>
 
           <!-- Achieved Goals -->
           <div v-if="goalStore.achievedGoals.length > 0">
-            <h4 class="text-lg font-semibold text-primary-700 dark:text-primary-300 mb-3">Objectifs atteints</h4>
+            <h4 class="text-lg font-semibold text-primary-700 dark:text-primary-300 mb-3">
+              Objectifs atteints
+            </h4>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <GoalsGoalCard
                 v-for="goal in goalStore.achievedGoals"
@@ -401,18 +557,27 @@
       <div class="mt-8 md:mt-12 slide-up">
         <div class="card-glass">
           <div class="flex items-center gap-4">
-            <div class="w-14 h-14 bg-gradient-primary rounded-2xl flex items-center justify-center flex-shrink-0">
+            <div
+              class="w-14 h-14 bg-gradient-primary rounded-2xl flex items-center justify-center flex-shrink-0"
+            >
               <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                />
               </svg>
             </div>
             <div class="flex-1">
-              <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100">Athletiq Wrapped</h3>
-              <p class="text-sm text-primary-600 dark:text-primary-400">Découvre ton bilan complet avec des stats partageables</p>
+              <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100">
+                Athletiq Wrapped
+              </h3>
+              <p class="text-sm text-primary-600 dark:text-primary-400">
+                Découvre ton bilan complet avec des stats partageables
+              </p>
             </div>
-            <button @click="navigateTo('/wrapped')" class="btn-primary text-sm">
-              Voir
-            </button>
+            <button @click="navigateTo('/wrapped')" class="btn-primary text-sm">Voir</button>
           </div>
         </div>
       </div>
@@ -434,36 +599,36 @@
 
 <script setup lang="ts">
 /* TopNav imported and rendered globally in app.vue; per-page import removed */
-import { useWorkoutStore } from '~/stores/workout'
-import { useAuthStore } from '~/stores/auth'
-import { useGoalStore } from '~/stores/goals'
+import { useWorkoutStore } from '~/stores/workout';
+import { useAuthStore } from '~/stores/auth';
+import { useGoalStore } from '~/stores/goals';
 
-useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
-import { useBodyStore } from '~/stores/body'
-import { useSubscriptionStore } from '~/stores/subscription'
-import { useSubscriptionLimits } from '~/composables/useSubscriptionLimits'
-import type { TimeRange } from '~/types/statistics'
-import type { CreateGoalPayload } from '~/types/goals'
+useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] });
+import { useBodyStore } from '~/stores/body';
+import { useSubscriptionStore } from '~/stores/subscription';
+import { useSubscriptionLimits } from '~/composables/useSubscriptionLimits';
+import type { TimeRange } from '~/types/statistics';
+import type { CreateGoalPayload } from '~/types/goals';
 
-const workoutStore = useWorkoutStore()
-const authStore = useAuthStore()
-const goalStore = useGoalStore()
-const pageReady = ref(false)
-const bodyStore = useBodyStore()
-const subscriptionStore = useSubscriptionStore()
-const { isPremium, canCreateGoal, goalUsageText, fetchUsage } = useSubscriptionLimits()
-const toast = useToast()
+const workoutStore = useWorkoutStore();
+const authStore = useAuthStore();
+const goalStore = useGoalStore();
+const pageReady = ref(false);
+const bodyStore = useBodyStore();
+const subscriptionStore = useSubscriptionStore();
+const { isPremium, canCreateGoal, goalUsageText, fetchUsage } = useSubscriptionLimits();
+const toast = useToast();
 
-const selectedTimeRange = ref<TimeRange>(null)
-const selectedExercise = ref<string | null>('__ALL__')
-const showGoalModal = ref(false)
+const selectedTimeRange = ref<TimeRange>(null);
+const selectedExercise = ref<string | null>('__ALL__');
+const showGoalModal = ref(false);
 
 const timeRanges = [
   { label: '7j', value: 7 as TimeRange },
   { label: '30j', value: 30 as TimeRange },
   { label: '90j', value: 90 as TimeRange },
-  { label: 'Tout', value: null }
-]
+  { label: 'Tout', value: null },
+];
 
 onMounted(async () => {
   await Promise.all([
@@ -471,10 +636,10 @@ onMounted(async () => {
     goalStore.fetchGoals(),
     bodyStore.fetchBodyStats(),
     subscriptionStore.fetchSubscription(),
-    fetchUsage()
-  ])
-  pageReady.value = true
-})
+    fetchUsage(),
+  ]);
+  pageReady.value = true;
+});
 
 // Calculate statistics — destructure all computeds so Vue auto-unwraps them in template
 const {
@@ -488,88 +653,103 @@ const {
   weekComparison,
   allExerciseNames,
   exerciseProgressionData,
-  hasData
+  hasData,
 } = useStatistics(
   computed(() => workoutStore.workoutHistory),
   selectedTimeRange,
   selectedExercise
-)
+);
 
 // Calories estimation: ~6 kcal/min for moderate weight training
-const estimateCalories = (seconds: number) => Math.round((seconds / 60) * 6)
+const estimateCalories = (seconds: number) => Math.round((seconds / 60) * 6);
 
 // "All exercises" multi-line chart data
 const allExercisesProgressionData = computed(() => {
-  if (allExerciseNames.value.length === 0) return null
+  if (allExerciseNames.value.length === 0) return null;
 
-  const workouts = computed(() => workoutStore.workoutHistory).value
-  const colors = ['#d4c4b0', '#b8a48f', '#9b8772', '#e8a87c', '#85cdca', '#d4a5a5', '#a3c4bc', '#c9b1ff', '#ffb347', '#87ceeb']
+  const workouts = computed(() => workoutStore.workoutHistory).value;
+  const colors = [
+    '#d4c4b0',
+    '#b8a48f',
+    '#9b8772',
+    '#e8a87c',
+    '#85cdca',
+    '#d4a5a5',
+    '#a3c4bc',
+    '#c9b1ff',
+    '#ffb347',
+    '#87ceeb',
+  ];
 
   // Collect max weight per date per exercise
-  const exerciseMap: Record<string, { date: string; maxWeight: number }[]> = {}
-  const allDatesSet = new Set<string>()
+  const exerciseMap: Record<string, { date: string; maxWeight: number }[]> = {};
+  const allDatesSet = new Set<string>();
 
   for (const w of workouts) {
-    if (!w.completedAt) continue
-    const dateKey = new Date(w.completedAt).toISOString().split('T')[0]
-    allDatesSet.add(dateKey)
+    if (!w.completedAt) continue;
+    const dateKey = new Date(w.completedAt).toISOString().split('T')[0];
+    allDatesSet.add(dateKey);
 
-    w.exercises?.forEach(e => {
-      const name = e.exerciseLibrary?.name || e.name
-      let maxWeight = 0
-      e.sets?.forEach(s => { if ((s.weight || 0) > maxWeight) maxWeight = s.weight || 0 })
+    w.exercises?.forEach((e) => {
+      const name = e.exerciseLibrary?.name || e.name;
+      let maxWeight = 0;
+      e.sets?.forEach((s) => {
+        if ((s.weight || 0) > maxWeight) maxWeight = s.weight || 0;
+      });
       if (maxWeight > 0) {
-        if (!exerciseMap[name]) exerciseMap[name] = []
-        exerciseMap[name].push({ date: dateKey, maxWeight })
+        if (!exerciseMap[name]) exerciseMap[name] = [];
+        exerciseMap[name].push({ date: dateKey, maxWeight });
       }
-    })
+    });
   }
 
-  const sortedDates = Array.from(allDatesSet).sort()
-  const labels = sortedDates.map(d => {
-    const date = new Date(d)
-    return new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(date)
-  })
+  const sortedDates = Array.from(allDatesSet).sort();
+  const labels = sortedDates.map((d) => {
+    const date = new Date(d);
+    return new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(date);
+  });
 
   // Only include exercises that have data, take top 10 by frequency
   const exerciseNames = Object.entries(exerciseMap)
     .sort((a, b) => b[1].length - a[1].length)
     .slice(0, 10)
-    .map(([name]) => name)
+    .map(([name]) => name);
 
   const datasets = exerciseNames.map((name, i) => {
-    const sessions = exerciseMap[name]
-    const sessionsByDate: Record<string, number> = {}
-    sessions.forEach(s => { sessionsByDate[s.date] = Math.max(sessionsByDate[s.date] || 0, s.maxWeight) })
+    const sessions = exerciseMap[name];
+    const sessionsByDate: Record<string, number> = {};
+    sessions.forEach((s) => {
+      sessionsByDate[s.date] = Math.max(sessionsByDate[s.date] || 0, s.maxWeight);
+    });
 
     return {
       label: name,
-      data: sortedDates.map(d => sessionsByDate[d] ?? null),
+      data: sortedDates.map((d) => sessionsByDate[d] ?? null),
       borderColor: colors[i % colors.length],
       backgroundColor: 'transparent',
       borderWidth: 2,
       tension: 0.4,
       spanGaps: true,
       pointRadius: 2,
-      pointHoverRadius: 6
-    }
-  })
+      pointHoverRadius: 6,
+    };
+  });
 
-  return { labels, datasets }
-})
+  return { labels, datasets };
+});
 
 // Active chart data: single exercise or all
 const activeProgressionData = computed(() => {
-  if (selectedExercise.value === '__ALL__') return allExercisesProgressionData.value
-  return exerciseProgressionData.value
-})
+  if (selectedExercise.value === '__ALL__') return allExercisesProgressionData.value;
+  return exerciseProgressionData.value;
+});
 
 // ── Share data computeds ──
 const formatTime = (seconds: number) => {
-  const h = Math.floor(seconds / 3600)
-  const m = Math.floor((seconds % 3600) / 60)
-  return h > 0 ? `${h}h${m}` : `${m}min`
-}
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  return h > 0 ? `${h}h${m}` : `${m}min`;
+};
 
 const shareOverviewData = computed(() => ({
   totalWorkouts: overviewStats.value.totalWorkouts,
@@ -577,96 +757,104 @@ const shareOverviewData = computed(() => ({
   totalTime: formatTime(overviewStats.value.totalTime),
   avgDuration: formatTime(overviewStats.value.averageDuration),
   streak: overviewStats.value.currentStreak,
-  totalVolume: Math.round((workoutStore.workoutHistory || []).reduce((s, w) => s + (w.totalVolume || 0), 0)).toLocaleString('fr-FR'),
+  totalVolume: Math.round(
+    (workoutStore.workoutHistory || []).reduce((s, w) => s + (w.totalVolume || 0), 0)
+  ).toLocaleString('fr-FR'),
   period: timeRangeLabel.value,
-}))
+}));
 
 const shareProgressionData = computed(() => {
-  const workouts = workoutStore.workoutHistory || []
-  const exName = selectedExercise.value === '__ALL__' ? null : selectedExercise.value
-  const points: { date: string; weight: number }[] = []
+  const workouts = workoutStore.workoutHistory || [];
+  const exName = selectedExercise.value === '__ALL__' ? null : selectedExercise.value;
+  const points: { date: string; weight: number }[] = [];
 
   for (const w of workouts) {
-    if (!w.completedAt) continue
-    const dateKey = new Date(w.completedAt).toISOString().split('T')[0]
-    w.exercises?.forEach(e => {
-      const name = e.exerciseLibrary?.name || e.name
-      if (exName && name !== exName) return
-      let maxW = 0
-      e.sets?.forEach(s => { if ((s.weight || 0) > maxW) maxW = s.weight || 0 })
-      if (maxW > 0) points.push({ date: dateKey, weight: maxW })
-    })
+    if (!w.completedAt) continue;
+    const dateKey = new Date(w.completedAt).toISOString().split('T')[0];
+    w.exercises?.forEach((e) => {
+      const name = e.exerciseLibrary?.name || e.name;
+      if (exName && name !== exName) return;
+      let maxW = 0;
+      e.sets?.forEach((s) => {
+        if ((s.weight || 0) > maxW) maxW = s.weight || 0;
+      });
+      if (maxW > 0) points.push({ date: dateKey, weight: maxW });
+    });
   }
 
   // Aggregate by date (keep max per date)
-  const byDate: Record<string, number> = {}
-  points.forEach(p => { byDate[p.date] = Math.max(byDate[p.date] || 0, p.weight) })
-  const sorted = Object.entries(byDate).sort(([a], [b]) => a.localeCompare(b)).map(([date, weight]) => ({ date, weight }))
+  const byDate: Record<string, number> = {};
+  points.forEach((p) => {
+    byDate[p.date] = Math.max(byDate[p.date] || 0, p.weight);
+  });
+  const sorted = Object.entries(byDate)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, weight]) => ({ date, weight }));
 
   return {
     exerciseName: exName || 'Tous les exercices',
     points: sorted,
-  }
-})
+  };
+});
 
 const shareGoalsData = computed(() => ({
-  goals: goalStore.goals.map(g => ({
+  goals: goalStore.goals.map((g) => ({
     title: g.title,
     achieved: g.achieved,
     targetValue: g.targetValue,
     progress: g.progress ?? 0,
     unit: g.type === 'WEIGHT' ? 'kg' : g.type === 'BODY_FAT' ? '%' : 'kg',
-  }))
-}))
+  })),
+}));
 
 const timeRangeLabel = computed(() => {
-  if (!selectedTimeRange.value) return 'Toutes les statistiques'
-  return `Statistiques des ${selectedTimeRange.value} derniers jours`
-})
+  if (!selectedTimeRange.value) return 'Toutes les statistiques';
+  return `Statistiques des ${selectedTimeRange.value} derniers jours`;
+});
 
 const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
+  const date = new Date(dateString);
   return new Intl.DateTimeFormat('fr-FR', {
     day: 'numeric',
     month: 'long',
-    year: 'numeric'
-  }).format(date)
-}
+    year: 'numeric',
+  }).format(date);
+};
 
 // Body data for goal creation
-const currentWeight = computed(() => bodyStore.latestWeight?.weight ?? null)
-const currentBodyFat = computed(() => bodyStore.latestWeight?.bodyFat ?? null)
+const currentWeight = computed(() => bodyStore.latestWeight?.weight ?? null);
+const currentBodyFat = computed(() => bodyStore.latestWeight?.bodyFat ?? null);
 
 // Goal handlers
 const handleCreateGoal = async (payload: CreateGoalPayload) => {
   try {
-    await goalStore.addGoal(payload)
-    showGoalModal.value = false
-    toast.success('Objectif créé')
+    await goalStore.addGoal(payload);
+    showGoalModal.value = false;
+    toast.success('Objectif créé');
   } catch {
-    toast.error('Erreur lors de la création')
+    toast.error('Erreur lors de la création');
   }
-}
+};
 
 const handleNewGoal = () => {
   if (!canCreateGoal.value) {
-    toast.error('Limite atteinte', 'Passez Pro pour créer plus d\'objectifs')
-    return
+    toast.error('Limite atteinte', "Passez Pro pour créer plus d'objectifs");
+    return;
   }
-  showGoalModal.value = true
-}
+  showGoalModal.value = true;
+};
 
 const handleDeleteGoal = async (id: number) => {
   try {
-    await goalStore.removeGoal(id)
-    toast.success('Objectif supprimé')
+    await goalStore.removeGoal(id);
+    toast.success('Objectif supprimé');
   } catch {
-    toast.error('Erreur lors de la suppression')
+    toast.error('Erreur lors de la suppression');
   }
-}
+};
 
 // Icons (inline SVG)
 definePageMeta({
-  middleware: 'auth'
-})
+  middleware: 'auth',
+});
 </script>

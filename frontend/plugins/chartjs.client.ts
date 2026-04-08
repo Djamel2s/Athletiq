@@ -9,8 +9,8 @@ import {
   Title,
   Tooltip,
   Legend,
-  Filler
-} from 'chart.js'
+  Filler,
+} from 'chart.js';
 
 ChartJS.register(
   CategoryScale,
@@ -23,6 +23,6 @@ ChartJS.register(
   Tooltip,
   Legend,
   Filler
-)
+);
 
-export default defineNuxtPlugin(() => {})
+export default defineNuxtPlugin(() => {});

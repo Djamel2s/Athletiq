@@ -1,8 +1,8 @@
-import type { $Fetch } from 'ofetch'
+import type { $Fetch } from 'ofetch';
 
 declare global {
   // eslint-disable-next-line no-var
-  var $fetch: $Fetch
+  var $fetch: $Fetch;
 }
 
-export {}
+export {};

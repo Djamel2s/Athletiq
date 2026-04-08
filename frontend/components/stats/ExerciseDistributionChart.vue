@@ -3,20 +3,20 @@
 </template>
 
 <script setup lang="ts">
-import { Doughnut } from 'vue-chartjs'
-import type { ChartData as AppChartData } from '~/types/statistics'
+import { Doughnut } from 'vue-chartjs';
+import type { ChartData as AppChartData } from '~/types/statistics';
 
 interface Props {
-  data: AppChartData
+  data: AppChartData;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
-const chartData = computed(() => props.data as any)
+const chartData = computed(() => props.data as any);
 
-const colorMode = useColorMode()
-const isDark = computed(() => colorMode.value === 'dark')
-const { accentColors } = useTheme()
+const colorMode = useColorMode();
+const isDark = computed(() => colorMode.value === 'dark');
+const { accentColors } = useTheme();
 
 const chartOptions = computed(() => ({
   responsive: true,
@@ -28,11 +28,11 @@ const chartOptions = computed(() => ({
         color: isDark.value ? '#a8a29e' : '#57534e',
         font: {
           family: 'system-ui',
-          size: 12
+          size: 12,
         },
         padding: 15,
-        usePointStyle: true
-      }
+        usePointStyle: true,
+      },
     },
     tooltip: {
       backgroundColor: isDark.value ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.9)',
@@ -44,14 +44,14 @@ const chartOptions = computed(() => ({
       displayColors: true,
       callbacks: {
         label: (context: any) => {
-          const label = context.label || ''
-          const value = context.parsed || 0
-          const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0)
-          const percentage = ((value / total) * 100).toFixed(1)
-          return `${label}: ${value} (${percentage}%)`
-        }
-      }
-    }
-  }
-}))
+          const label = context.label || '';
+          const value = context.parsed || 0;
+          const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
+          const percentage = ((value / total) * 100).toFixed(1);
+          return `${label}: ${value} (${percentage}%)`;
+        },
+      },
+    },
+  },
+}));
 </script>

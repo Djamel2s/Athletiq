@@ -1,14 +1,23 @@
 <template>
   <Teleport to="body">
     <Transition name="modal">
-      <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center p-4" @click.self="close">
+      <div
+        v-if="show"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4"
+        @click.self="close"
+      >
         <!-- Backdrop -->
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="close"></div>
 
         <!-- Modal -->
-        <div class="relative glass-dark rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <div
+          class="relative glass-dark rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto custom-scrollbar"
+        >
           <!-- Header -->
-          <div v-if="title || $slots.header" class="flex items-center justify-between p-6 border-b border-white/10">
+          <div
+            v-if="title || $slots.header"
+            class="flex items-center justify-between p-6 border-b border-white/10"
+          >
             <slot name="header">
               <h3 class="text-2xl font-semibold">{{ title }}</h3>
             </slot>
@@ -39,38 +48,38 @@
 
 <script setup lang="ts">
 interface Props {
-  show: boolean
-  title?: string
-  closable?: boolean
+  show: boolean;
+  title?: string;
+  closable?: boolean;
 }
 
 withDefaults(defineProps<Props>(), {
-  closable: true
-})
+  closable: true,
+});
 
 const emit = defineEmits<{
-  close: []
-}>()
+  close: [];
+}>();
 
 const close = () => {
-  emit('close')
-}
+  emit('close');
+};
 
 // Fermer avec Escape
-let handleEscape: ((e: KeyboardEvent) => void) | null = null
+let handleEscape: ((e: KeyboardEvent) => void) | null = null;
 
 onMounted(() => {
   handleEscape = (e: KeyboardEvent) => {
-    if (e.key === 'Escape') close()
-  }
-  document.addEventListener('keydown', handleEscape)
-})
+    if (e.key === 'Escape') close();
+  };
+  document.addEventListener('keydown', handleEscape);
+});
 
 onUnmounted(() => {
   if (handleEscape) {
-    document.removeEventListener('keydown', handleEscape)
+    document.removeEventListener('keydown', handleEscape);
   }
-})
+});
 </script>
 
 <style scoped>

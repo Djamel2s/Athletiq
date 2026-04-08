@@ -1,5 +1,5 @@
-import { computed, type Ref } from 'vue'
-import type { Exercise } from '~/types/workout'
+import { computed, type Ref } from 'vue';
+import type { Exercise } from '~/types/workout';
 
 /**
  * Priority map for muscle groups.
@@ -18,7 +18,7 @@ const MUSCLE_PRIORITY: Record<string, number> = {
   ABS: 6,
   CALVES: 6,
   CARDIO: 7,
-}
+};
 
 /**
  * Priority map for equipment types.
@@ -32,15 +32,15 @@ const EQUIPMENT_PRIORITY: Record<string, number> = {
   BODYWEIGHT: 4,
   RESISTANCE_BAND: 5,
   OTHER: 6,
-}
+};
 
 /**
  * Determines whether an exercise is a compound movement
  * (targets 2 or more muscle groups according to exerciseLibrary.muscleGroups).
  */
 function isCompound(exercise: Exercise): boolean {
-  const muscleGroups = exercise.exerciseLibrary?.muscleGroups
-  return Array.isArray(muscleGroups) && muscleGroups.length >= 2
+  const muscleGroups = exercise.exerciseLibrary?.muscleGroups;
+  return Array.isArray(muscleGroups) && muscleGroups.length >= 2;
 }
 
 /**
@@ -48,35 +48,35 @@ function isCompound(exercise: Exercise): boolean {
  * Uses exerciseLibrary.muscleGroups first, falls back to primaryMuscle.
  */
 function getMusclePriority(exercise: Exercise): number {
-  const lib = exercise.exerciseLibrary
-  if (!lib) return 99
+  const lib = exercise.exerciseLibrary;
+  if (!lib) return 99;
 
-  const groups = lib.muscleGroups
+  const groups = lib.muscleGroups;
   if (Array.isArray(groups) && groups.length > 0) {
-    return Math.min(...groups.map((g) => MUSCLE_PRIORITY[g] ?? 99))
+    return Math.min(...groups.map((g) => MUSCLE_PRIORITY[g] ?? 99));
   }
 
   if (lib.primaryMuscle) {
-    return MUSCLE_PRIORITY[lib.primaryMuscle] ?? 99
+    return MUSCLE_PRIORITY[lib.primaryMuscle] ?? 99;
   }
 
-  return 99
+  return 99;
 }
 
 /**
  * Returns the equipment priority for an exercise (lower = higher priority).
  */
 function getEquipmentPriority(exercise: Exercise): number {
-  const equipment = exercise.exerciseLibrary?.equipment
-  if (!equipment) return 99
-  return EQUIPMENT_PRIORITY[equipment] ?? 99
+  const equipment = exercise.exerciseLibrary?.equipment;
+  if (!equipment) return 99;
+  return EQUIPMENT_PRIORITY[equipment] ?? 99;
 }
 
 /**
  * Returns the target weight for comparison (higher = should come first).
  */
 function getTargetWeight(exercise: Exercise): number {
-  return exercise.targetWeight ?? 0
+  return exercise.targetWeight ?? 0;
 }
 
 /**
@@ -94,23 +94,23 @@ function getTargetWeight(exercise: Exercise): number {
 export function optimizeExerciseOrder(exercises: Exercise[]): Exercise[] {
   return [...exercises].sort((a, b) => {
     // 1. Compounds first
-    const aCompound = isCompound(a) ? 0 : 1
-    const bCompound = isCompound(b) ? 0 : 1
-    if (aCompound !== bCompound) return aCompound - bCompound
+    const aCompound = isCompound(a) ? 0 : 1;
+    const bCompound = isCompound(b) ? 0 : 1;
+    if (aCompound !== bCompound) return aCompound - bCompound;
 
     // 2. Muscle group priority (lower = first)
-    const aMusclePri = getMusclePriority(a)
-    const bMusclePri = getMusclePriority(b)
-    if (aMusclePri !== bMusclePri) return aMusclePri - bMusclePri
+    const aMusclePri = getMusclePriority(a);
+    const bMusclePri = getMusclePriority(b);
+    if (aMusclePri !== bMusclePri) return aMusclePri - bMusclePri;
 
     // 3. Equipment priority (lower = first)
-    const aEquipPri = getEquipmentPriority(a)
-    const bEquipPri = getEquipmentPriority(b)
-    if (aEquipPri !== bEquipPri) return aEquipPri - bEquipPri
+    const aEquipPri = getEquipmentPriority(a);
+    const bEquipPri = getEquipmentPriority(b);
+    if (aEquipPri !== bEquipPri) return aEquipPri - bEquipPri;
 
     // 4. Heavier target weight first
-    return getTargetWeight(b) - getTargetWeight(a)
-  })
+    return getTargetWeight(b) - getTargetWeight(a);
+  });
 }
 
 /**
@@ -122,10 +122,10 @@ export function optimizeExerciseOrder(exercises: Exercise[]): Exercise[] {
  *   - `optimizeExerciseOrder`: the raw sort function for imperative use
  */
 export function useExerciseOrder(exercises: Ref<Exercise[]>) {
-  const optimizedExercises = computed(() => optimizeExerciseOrder(exercises.value))
+  const optimizedExercises = computed(() => optimizeExerciseOrder(exercises.value));
 
   return {
     optimizedExercises,
     optimizeExerciseOrder,
-  }
+  };
 }

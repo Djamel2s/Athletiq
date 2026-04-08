@@ -3,20 +3,20 @@
 </template>
 
 <script setup lang="ts">
-import { Bar } from 'vue-chartjs'
-import type { ChartData } from '~/types/statistics'
+import { Bar } from 'vue-chartjs';
+import type { ChartData } from '~/types/statistics';
 
 interface Props {
-  data: ChartData
+  data: ChartData;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
-const chartData = computed(() => props.data)
+const chartData = computed(() => props.data);
 
-const colorMode = useColorMode()
-const isDark = computed(() => colorMode.value === 'dark')
-const { accentColors } = useTheme()
+const colorMode = useColorMode();
+const isDark = computed(() => colorMode.value === 'dark');
+const { accentColors } = useTheme();
 
 const chartOptions = computed(() => ({
   responsive: true,
@@ -24,7 +24,7 @@ const chartOptions = computed(() => ({
   indexAxis: 'y' as const,
   plugins: {
     legend: {
-      display: false
+      display: false,
     },
     tooltip: {
       backgroundColor: isDark.value ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.9)',
@@ -35,9 +35,9 @@ const chartOptions = computed(() => ({
       padding: 12,
       displayColors: false,
       callbacks: {
-        label: (context: any) => `${context.parsed.x.toLocaleString('fr-FR')} kg`
-      }
-    }
+        label: (context: any) => `${context.parsed.x.toLocaleString('fr-FR')} kg`,
+      },
+    },
   },
   scales: {
     x: {
@@ -46,26 +46,26 @@ const chartOptions = computed(() => ({
         color: isDark.value ? '#a8a29e' : '#57534e',
         font: {
           family: 'system-ui',
-          size: 12
+          size: 12,
         },
-        callback: (value: any) => `${value} kg`
+        callback: (value: any) => `${value} kg`,
       },
       grid: {
-        color: isDark.value ? 'rgba(68, 64, 60, 0.3)' : `rgba(${accentColors.value.rgb500}, 0.2)`
-      }
+        color: isDark.value ? 'rgba(68, 64, 60, 0.3)' : `rgba(${accentColors.value.rgb500}, 0.2)`,
+      },
     },
     y: {
       ticks: {
         color: isDark.value ? '#a8a29e' : '#57534e',
         font: {
           family: 'system-ui',
-          size: 12
-        }
+          size: 12,
+        },
       },
       grid: {
-        display: false
-      }
-    }
-  }
-}))
+        display: false,
+      },
+    },
+  },
+}));
 </script>

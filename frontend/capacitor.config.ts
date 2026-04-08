@@ -1,4 +1,4 @@
-import type { CapacitorConfig } from '@capacitor/cli'
+import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'app.athletiq.mobile',
@@ -8,7 +8,7 @@ const config: CapacitorConfig = {
     // En développement, pointe vers le serveur Nuxt local
     // Commenter cette ligne pour le build production
     // url: 'http://192.168.1.X:3000',
-    androidScheme: 'https'
+    androidScheme: 'https',
   },
   plugins: {
     SplashScreen: {
@@ -17,13 +17,13 @@ const config: CapacitorConfig = {
       showSpinner: false,
       androidSpinnerStyle: 'small',
       splashFullScreen: false,
-      splashImmersive: false
+      splashImmersive: false,
     },
     StatusBar: {
       style: 'LIGHT',
-      backgroundColor: '#f5f0eb'
-    }
-  }
-}
+      backgroundColor: '#f5f0eb',
+    },
+  },
+};
 
-export default config
+export default config;

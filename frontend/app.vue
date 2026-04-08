@@ -13,17 +13,17 @@
 </template>
 
 <script setup lang="ts">
-import TopNav from '~/components/TopNav.vue'
-import Breadcrumbs from '~/components/Breadcrumbs.vue'
+import TopNav from '~/components/TopNav.vue';
+import Breadcrumbs from '~/components/Breadcrumbs.vue';
 useHead({
   htmlAttrs: {
-    lang: 'fr'
-  }
-})
+    lang: 'fr',
+  },
+});
 
 // Apply gender-based theme (rose for female users)
-const { applyTheme } = useTheme()
-onMounted(() => applyTheme())
+const { applyTheme } = useTheme();
+onMounted(() => applyTheme());
 </script>
 
 <style>

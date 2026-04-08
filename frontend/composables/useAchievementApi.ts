@@ -1,40 +1,40 @@
-import { apiFetch } from '~/utils/apiFetch'
+import { apiFetch } from '~/utils/apiFetch';
 
 export interface Achievement {
-  id: string
-  name: string
-  description: string
-  icon: string
-  category: string
-  xp: number
-  unlocked: boolean
-  unlockedAt: string | null
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  category: string;
+  xp: number;
+  unlocked: boolean;
+  unlockedAt: string | null;
   progress: {
-    current: number
-    target: number
-    percent: number
-  }
+    current: number;
+    target: number;
+    percent: number;
+  };
 }
 
 export interface AchievementResponse {
-  achievements: Achievement[]
+  achievements: Achievement[];
   stats: {
-    total: number
-    unlocked: number
-    totalXP: number
-  }
+    total: number;
+    unlocked: number;
+    totalXP: number;
+  };
 }
 
 export const useAchievementApi = () => {
   const getAchievements = async () => {
-    return await apiFetch<AchievementResponse>('/achievements')
-  }
+    return await apiFetch<AchievementResponse>('/achievements');
+  };
 
   const checkAchievements = async () => {
     return await apiFetch<{ newlyUnlocked: string[] }>('/achievements/check', {
-      method: 'POST'
-    })
-  }
+      method: 'POST',
+    });
+  };
 
-  return { getAchievements, checkAchievements }
-}
+  return { getAchievements, checkAchievements };
+};

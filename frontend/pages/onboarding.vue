@@ -1,7 +1,9 @@
 <template>
   <div class="min-h-screen flex flex-col">
     <!-- Progress bar -->
-    <div class="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-primary-900/80 backdrop-blur-md">
+    <div
+      class="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-primary-900/80 backdrop-blur-md"
+    >
       <div class="max-w-lg mx-auto px-6 pt-6 pb-4">
         <div class="flex items-center justify-between mb-2">
           <span class="text-xs font-medium text-primary-600 dark:text-primary-400">
@@ -33,7 +35,9 @@
           leave-to-class="opacity-0 -translate-x-8"
         >
           <div v-if="currentStep === 1" key="step1">
-            <h1 class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-center">
+            <h1
+              class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-center"
+            >
               Quel est ton objectif ?
             </h1>
             <p class="text-primary-600 dark:text-primary-400 text-center mb-8">
@@ -49,19 +53,38 @@
                   'card-glass flex items-center gap-4 p-5 text-left transition-all duration-200 border-2',
                   selectedGoal === goal.value
                     ? 'border-sand-500 dark:border-sand-400 shadow-lg scale-[1.02]'
-                    : 'border-transparent hover:border-primary-300 dark:hover:border-primary-600'
+                    : 'border-transparent hover:border-primary-300 dark:hover:border-primary-600',
                 ]"
               >
-                <div class="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center flex-shrink-0 text-2xl">
+                <div
+                  class="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center flex-shrink-0 text-2xl"
+                >
                   {{ goal.icon }}
                 </div>
                 <div class="flex-1 min-w-0">
-                  <h3 class="font-semibold text-primary-900 dark:text-primary-100">{{ goal.label }}</h3>
-                  <p class="text-sm text-primary-600 dark:text-primary-400">{{ goal.description }}</p>
+                  <h3 class="font-semibold text-primary-900 dark:text-primary-100">
+                    {{ goal.label }}
+                  </h3>
+                  <p class="text-sm text-primary-600 dark:text-primary-400">
+                    {{ goal.description }}
+                  </p>
                 </div>
-                <div v-if="selectedGoal === goal.value" class="w-6 h-6 rounded-full bg-gradient-primary flex items-center justify-center flex-shrink-0">
-                  <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                <div
+                  v-if="selectedGoal === goal.value"
+                  class="w-6 h-6 rounded-full bg-gradient-primary flex items-center justify-center flex-shrink-0"
+                >
+                  <svg
+                    class="w-4 h-4 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2.5"
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                 </div>
               </button>
@@ -79,7 +102,9 @@
           leave-to-class="opacity-0 -translate-x-8"
         >
           <div v-if="currentStep === 2" key="step2">
-            <h1 class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-center">
+            <h1
+              class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-center"
+            >
               Ton profil
             </h1>
             <p class="text-primary-600 dark:text-primary-400 text-center mb-8">
@@ -89,9 +114,14 @@
             <div class="space-y-5">
               <!-- Username -->
               <div>
-                <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1.5">Pseudo</label>
+                <label
+                  class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1.5"
+                  >Pseudo</label
+                >
                 <div class="relative">
-                  <span class="absolute left-3 top-1/2 -translate-y-1/2 text-primary-400 text-sm">@</span>
+                  <span class="absolute left-3 top-1/2 -translate-y-1/2 text-primary-400 text-sm"
+                    >@</span
+                  >
                   <input
                     v-model="selectedUsername"
                     type="text"
@@ -99,25 +129,47 @@
                     placeholder="ton_pseudo"
                   />
                 </div>
-                <p v-if="usernameChecking" class="text-xs text-primary-400 mt-1.5">Verification...</p>
-                <p v-else-if="usernameAvailable === true && selectedUsername.length >= 3" class="text-xs text-green-500 mt-1.5">Disponible</p>
-                <p v-else-if="usernameAvailable === false" class="text-xs text-red-500 mt-1.5">Deja pris</p>
-                <p v-else-if="selectedUsername.length > 0 && selectedUsername.length < 3" class="text-xs text-primary-400 mt-1.5">3 caracteres minimum</p>
+                <p v-if="usernameChecking" class="text-xs text-primary-400 mt-1.5">
+                  Verification...
+                </p>
+                <p
+                  v-else-if="usernameAvailable === true && selectedUsername.length >= 3"
+                  class="text-xs text-green-500 mt-1.5"
+                >
+                  Disponible
+                </p>
+                <p v-else-if="usernameAvailable === false" class="text-xs text-red-500 mt-1.5">
+                  Deja pris
+                </p>
+                <p
+                  v-else-if="selectedUsername.length > 0 && selectedUsername.length < 3"
+                  class="text-xs text-primary-400 mt-1.5"
+                >
+                  3 caracteres minimum
+                </p>
               </div>
 
               <!-- Public/Private -->
               <div class="card-glass flex items-center justify-between p-4">
                 <div>
-                  <p class="text-sm font-medium text-primary-900 dark:text-primary-100">Profil public</p>
-                  <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">Les autres peuvent voir tes stats et photos</p>
+                  <p class="text-sm font-medium text-primary-900 dark:text-primary-100">
+                    Profil public
+                  </p>
+                  <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
+                    Les autres peuvent voir tes stats et photos
+                  </p>
                 </div>
                 <label class="relative inline-flex items-center cursor-pointer">
                   <input type="checkbox" v-model="selectedIsPublic" class="sr-only peer" />
-                  <div class="w-11 h-6 bg-primary-200 dark:bg-primary-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-sand-500 peer-checked:to-sand-600"></div>
+                  <div
+                    class="w-11 h-6 bg-primary-200 dark:bg-primary-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-sand-500 peer-checked:to-sand-600"
+                  ></div>
                 </label>
               </div>
 
-              <p class="text-xs text-primary-400 dark:text-primary-500 text-center">Tu pourras modifier tout ca plus tard dans ton profil</p>
+              <p class="text-xs text-primary-400 dark:text-primary-500 text-center">
+                Tu pourras modifier tout ca plus tard dans ton profil
+              </p>
             </div>
           </div>
         </Transition>
@@ -132,7 +184,9 @@
           leave-to-class="opacity-0 -translate-x-8"
         >
           <div v-if="currentStep === 3" key="step3_level">
-            <h1 class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-center">
+            <h1
+              class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-center"
+            >
               Quel est ton niveau ?
             </h1>
             <p class="text-primary-600 dark:text-primary-400 text-center mb-8">
@@ -148,19 +202,38 @@
                   'card-glass flex items-center gap-4 p-5 text-left transition-all duration-200 border-2',
                   selectedLevel === level.value
                     ? 'border-sand-500 dark:border-sand-400 shadow-lg scale-[1.02]'
-                    : 'border-transparent hover:border-primary-300 dark:hover:border-primary-600'
+                    : 'border-transparent hover:border-primary-300 dark:hover:border-primary-600',
                 ]"
               >
-                <div class="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center flex-shrink-0 text-2xl">
+                <div
+                  class="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center flex-shrink-0 text-2xl"
+                >
                   {{ level.icon }}
                 </div>
                 <div class="flex-1 min-w-0">
-                  <h3 class="font-semibold text-primary-900 dark:text-primary-100">{{ level.label }}</h3>
-                  <p class="text-sm text-primary-600 dark:text-primary-400">{{ level.description }}</p>
+                  <h3 class="font-semibold text-primary-900 dark:text-primary-100">
+                    {{ level.label }}
+                  </h3>
+                  <p class="text-sm text-primary-600 dark:text-primary-400">
+                    {{ level.description }}
+                  </p>
                 </div>
-                <div v-if="selectedLevel === level.value" class="w-6 h-6 rounded-full bg-gradient-primary flex items-center justify-center flex-shrink-0">
-                  <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                <div
+                  v-if="selectedLevel === level.value"
+                  class="w-6 h-6 rounded-full bg-gradient-primary flex items-center justify-center flex-shrink-0"
+                >
+                  <svg
+                    class="w-4 h-4 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2.5"
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                 </div>
               </button>
@@ -178,7 +251,9 @@
           leave-to-class="opacity-0 -translate-x-8"
         >
           <div v-if="currentStep === 4" key="step4_days">
-            <h1 class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-center">
+            <h1
+              class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-center"
+            >
               Combien de jours par semaine ?
             </h1>
             <p class="text-primary-600 dark:text-primary-400 text-center mb-8">
@@ -194,7 +269,7 @@
                   'w-14 h-14 rounded-2xl font-bold text-lg transition-all duration-200 border-2',
                   selectedDays === d
                     ? 'bg-gradient-primary text-white border-transparent shadow-lg scale-110'
-                    : 'card-glass border-transparent text-primary-900 dark:text-primary-100 hover:border-primary-300 dark:hover:border-primary-600'
+                    : 'card-glass border-transparent text-primary-900 dark:text-primary-100 hover:border-primary-300 dark:hover:border-primary-600',
                 ]"
               >
                 {{ d }}
@@ -209,7 +284,9 @@
             >
               <div v-if="selectedDays" class="card-glass p-5 text-center">
                 <p class="text-sm text-primary-600 dark:text-primary-400 mb-1">On te suggere :</p>
-                <p class="text-lg font-bold text-gradient-primary mb-3">{{ suggestedProgram.name }}</p>
+                <p class="text-lg font-bold text-gradient-primary mb-3">
+                  {{ suggestedProgram.name }}
+                </p>
                 <p class="text-sm text-primary-600 dark:text-primary-400">
                   {{ suggestedProgram.description }}
                 </p>
@@ -229,17 +306,29 @@
         >
           <div v-if="currentStep === 5" key="step5_recap">
             <div class="text-center mb-8">
-              <div class="w-20 h-20 bg-gradient-primary rounded-3xl flex items-center justify-center mx-auto mb-4 text-4xl">
-                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              <div
+                class="w-20 h-20 bg-gradient-primary rounded-3xl flex items-center justify-center mx-auto mb-4 text-4xl"
+              >
+                <svg
+                  class="w-10 h-10 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
                 </svg>
               </div>
-              <h1 class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2">
+              <h1
+                class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2"
+              >
                 C'est parti !
               </h1>
-              <p class="text-primary-600 dark:text-primary-400">
-                Voici un recap de tes choix
-              </p>
+              <p class="text-primary-600 dark:text-primary-400">Voici un recap de tes choix</p>
             </div>
 
             <!-- Summary -->
@@ -247,14 +336,14 @@
               <div class="flex items-center justify-between">
                 <span class="text-sm text-primary-600 dark:text-primary-400">Objectif</span>
                 <span class="font-semibold text-primary-900 dark:text-primary-100">
-                  {{ goals.find(g => g.value === selectedGoal)?.label }}
+                  {{ goals.find((g) => g.value === selectedGoal)?.label }}
                 </span>
               </div>
               <div class="border-t border-primary-100 dark:border-primary-700/60"></div>
               <div class="flex items-center justify-between">
                 <span class="text-sm text-primary-600 dark:text-primary-400">Niveau</span>
                 <span class="font-semibold text-primary-900 dark:text-primary-100">
-                  {{ levels.find(l => l.value === selectedLevel)?.label }}
+                  {{ levels.find((l) => l.value === selectedLevel)?.label }}
                 </span>
               </div>
               <div class="border-t border-primary-100 dark:border-primary-700/60"></div>
@@ -266,7 +355,9 @@
               </div>
               <div class="border-t border-primary-100 dark:border-primary-700/60"></div>
               <div class="flex items-center justify-between">
-                <span class="text-sm text-primary-600 dark:text-primary-400">Programme suggere</span>
+                <span class="text-sm text-primary-600 dark:text-primary-400"
+                  >Programme suggere</span
+                >
                 <span class="font-semibold text-gradient-primary">
                   {{ suggestedProgram.name }}
                 </span>
@@ -282,8 +373,19 @@
               >
                 <span v-if="adopting" class="inline-flex items-center gap-2">
                   <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    ></circle>
+                    <path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   Adoption en cours...
                 </span>
@@ -304,7 +406,9 @@
     </div>
 
     <!-- Bottom navigation -->
-    <div class="fixed bottom-0 left-0 right-0 z-50 bg-white/80 dark:bg-primary-900/80 backdrop-blur-md border-t border-primary-100 dark:border-primary-800">
+    <div
+      class="fixed bottom-0 left-0 right-0 z-50 bg-white/80 dark:bg-primary-900/80 backdrop-blur-md border-t border-primary-100 dark:border-primary-800"
+    >
       <div class="max-w-lg mx-auto px-6 py-4 flex items-center justify-between">
         <button
           v-if="currentStep > 1"
@@ -312,7 +416,12 @@
           class="btn-glass px-5 py-2.5 inline-flex items-center gap-2 text-sm font-medium"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
           Retour
         </button>
@@ -326,7 +435,12 @@
         >
           Suivant
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            />
           </svg>
         </button>
       </div>
@@ -335,102 +449,135 @@
 </template>
 
 <script setup lang="ts">
-import { apiFetch } from '~/utils/apiFetch'
-import { useProgramApi } from '~/composables/useProgramApi'
-import { useSocialApi } from '~/composables/useSocialApi'
+import { apiFetch } from '~/utils/apiFetch';
+import { useProgramApi } from '~/composables/useProgramApi';
+import { useSocialApi } from '~/composables/useSocialApi';
 
-useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
+useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] });
 
-const { getPrograms, adoptProgram } = useProgramApi()
-const { updateProfile: updateSocialProfile, checkUsername } = useSocialApi()
-const toast = useToast()
+const { getPrograms, adoptProgram } = useProgramApi();
+const { updateProfile: updateSocialProfile, checkUsername } = useSocialApi();
+const toast = useToast();
 
-const totalSteps = 5
-const currentStep = ref(1)
+const totalSteps = 5;
+const currentStep = ref(1);
 
-const stepTitles = ['Objectif', 'Profil', 'Niveau', 'Frequence', 'Recap']
+const stepTitles = ['Objectif', 'Profil', 'Niveau', 'Frequence', 'Recap'];
 
 // Step 1
-const selectedGoal = ref<string | null>(null)
+const selectedGoal = ref<string | null>(null);
 
 // Step 2: Profile
-const selectedUsername = ref('')
-const selectedIsPublic = ref(true)
-const usernameChecking = ref(false)
-const usernameAvailable = ref<boolean | null>(null)
-let usernameCheckTimeout: ReturnType<typeof setTimeout> | null = null
+const selectedUsername = ref('');
+const selectedIsPublic = ref(true);
+const usernameChecking = ref(false);
+const usernameAvailable = ref<boolean | null>(null);
+let usernameCheckTimeout: ReturnType<typeof setTimeout> | null = null;
 
 watch(selectedUsername, (val) => {
-  usernameAvailable.value = null
-  const cleaned = val.toLowerCase().replace(/[^a-z0-9_]/g, '')
-  if (cleaned !== val) selectedUsername.value = cleaned
-  if (cleaned.length < 3) return
-  if (usernameCheckTimeout) clearTimeout(usernameCheckTimeout)
+  usernameAvailable.value = null;
+  const cleaned = val.toLowerCase().replace(/[^a-z0-9_]/g, '');
+  if (cleaned !== val) selectedUsername.value = cleaned;
+  if (cleaned.length < 3) return;
+  if (usernameCheckTimeout) clearTimeout(usernameCheckTimeout);
   usernameCheckTimeout = setTimeout(async () => {
-    usernameChecking.value = true
+    usernameChecking.value = true;
     try {
-      const res = await checkUsername(cleaned) as any
-      usernameAvailable.value = res?.available === true
+      const res = (await checkUsername(cleaned)) as any;
+      usernameAvailable.value = res?.available === true;
     } catch {
-      usernameAvailable.value = null
+      usernameAvailable.value = null;
     } finally {
-      usernameChecking.value = false
+      usernameChecking.value = false;
     }
-  }, 500)
-})
+  }, 500);
+});
 const goals = [
-  { value: 'BULK', label: 'Prise de masse', icon: '💪', description: 'Gagner du muscle et du poids' },
-  { value: 'STRENGTH', label: 'Force', icon: '🏋️', description: 'Devenir plus fort sur les mouvements cles' },
-  { value: 'RECOMP', label: 'Recomposition', icon: '🔄', description: 'Perdre du gras et gagner du muscle' },
+  {
+    value: 'BULK',
+    label: 'Prise de masse',
+    icon: '💪',
+    description: 'Gagner du muscle et du poids',
+  },
+  {
+    value: 'STRENGTH',
+    label: 'Force',
+    icon: '🏋️',
+    description: 'Devenir plus fort sur les mouvements cles',
+  },
+  {
+    value: 'RECOMP',
+    label: 'Recomposition',
+    icon: '🔄',
+    description: 'Perdre du gras et gagner du muscle',
+  },
   { value: 'CUT', label: 'Seche', icon: '🔥', description: 'Perdre du gras en gardant le muscle' },
-]
+];
 
 // Step 2
-const selectedLevel = ref<string | null>(null)
+const selectedLevel = ref<string | null>(null);
 const levels = [
   { value: 'BEGINNER', label: 'Debutant', icon: '🌱', description: 'Moins de 6 mois de pratique' },
-  { value: 'INTERMEDIATE', label: 'Intermediaire', icon: '⚡', description: '6 mois a 2 ans de pratique' },
+  {
+    value: 'INTERMEDIATE',
+    label: 'Intermediaire',
+    icon: '⚡',
+    description: '6 mois a 2 ans de pratique',
+  },
   { value: 'ADVANCED', label: 'Avance', icon: '🏆', description: 'Plus de 2 ans de pratique' },
-]
+];
 
 // Step 3
-const selectedDays = ref<number | null>(null)
-const daysOptions = [2, 3, 4, 5, 6]
+const selectedDays = ref<number | null>(null);
+const daysOptions = [2, 3, 4, 5, 6];
 
 const suggestedProgram = computed(() => {
-  const days = selectedDays.value
+  const days = selectedDays.value;
   if (!days || days <= 3) {
-    return { name: 'Full Body 3j', slug: 'full-body-3j', description: 'Chaque muscle travaille 3x par semaine pour une progression optimale' }
+    return {
+      name: 'Full Body 3j',
+      slug: 'full-body-3j',
+      description: 'Chaque muscle travaille 3x par semaine pour une progression optimale',
+    };
   }
   if (days === 4) {
-    return { name: 'Upper/Lower 4j', slug: 'upper-lower-4j', description: 'Alternance haut / bas du corps pour un bon equilibre volume-recuperation' }
+    return {
+      name: 'Upper/Lower 4j',
+      slug: 'upper-lower-4j',
+      description: 'Alternance haut / bas du corps pour un bon equilibre volume-recuperation',
+    };
   }
-  return { name: 'PPL 6j', slug: 'ppl-6j', description: 'Push / Pull / Legs pour un maximum de volume par groupe musculaire' }
-})
+  return {
+    name: 'PPL 6j',
+    slug: 'ppl-6j',
+    description: 'Push / Pull / Legs pour un maximum de volume par groupe musculaire',
+  };
+});
 
 // Step 4
-const adopting = ref(false)
+const adopting = ref(false);
 
 const canProceed = computed(() => {
-  if (currentStep.value === 1) return !!selectedGoal.value
-  if (currentStep.value === 2) return selectedUsername.value.length >= 3 && usernameAvailable.value !== false
-  if (currentStep.value === 3) return !!selectedLevel.value
-  if (currentStep.value === 4) return !!selectedDays.value
-  return true
-})
+  if (currentStep.value === 1) return !!selectedGoal.value;
+  if (currentStep.value === 2)
+    return selectedUsername.value.length >= 3 && usernameAvailable.value !== false;
+  if (currentStep.value === 3) return !!selectedLevel.value;
+  if (currentStep.value === 4) return !!selectedDays.value;
+  return true;
+});
 
 const nextStep = () => {
-  if (!canProceed.value) return
+  if (!canProceed.value) return;
   if (currentStep.value < totalSteps) {
-    currentStep.value++
+    currentStep.value++;
   }
-}
+};
 
 const prevStep = () => {
   if (currentStep.value > 1) {
-    currentStep.value--
+    currentStep.value--;
   }
-}
+};
 
 const saveGoalToProfile = async () => {
   try {
@@ -441,55 +588,55 @@ const saveGoalToProfile = async () => {
         level: selectedLevel.value,
         daysPerWeek: selectedDays.value,
       },
-    })
+    });
     // Save social profile (username, public/private)
     if (selectedUsername.value.length >= 3) {
       await updateSocialProfile({
         username: selectedUsername.value,
         isPublic: selectedIsPublic.value,
-      })
+      });
     }
   } catch (err: any) {
-    logger.error('Failed to save profile:', err)
+    logger.error('Failed to save profile:', err);
   }
-}
+};
 
 const handleAdoptProgram = async () => {
-  if (adopting.value) return
-  adopting.value = true
+  if (adopting.value) return;
+  adopting.value = true;
 
   try {
-    await saveGoalToProfile()
+    await saveGoalToProfile();
 
     // Try to find and adopt the matching program
-    const programs = await getPrograms()
-    const match = programs.find(p => p.slug === suggestedProgram.value.slug)
+    const programs = await getPrograms();
+    const match = programs.find((p) => p.slug === suggestedProgram.value.slug);
 
     if (match) {
-      const result = await adoptProgram(match.slug)
+      const result = await adoptProgram(match.slug);
       toast.success(
         'Programme adopte !',
         `${result.workoutIds.length} templates crees pour "${match.name}"`
-      )
+      );
     } else {
       // If no exact slug match, just save profile and redirect
-      toast.success('Profil enregistre !', 'Tu peux maintenant explorer les programmes')
+      toast.success('Profil enregistre !', 'Tu peux maintenant explorer les programmes');
     }
 
-    navigateTo('/dashboard')
+    navigateTo('/dashboard');
   } catch (err: any) {
-    toast.error('Erreur', err?.data?.error || 'Impossible d\'adopter le programme')
+    toast.error('Erreur', err?.data?.error || "Impossible d'adopter le programme");
   } finally {
-    adopting.value = false
+    adopting.value = false;
   }
-}
+};
 
 const handleSkip = async () => {
-  await saveGoalToProfile()
-  navigateTo('/dashboard')
-}
+  await saveGoalToProfile();
+  navigateTo('/dashboard');
+};
 
 definePageMeta({
   middleware: 'auth',
-})
+});
 </script>

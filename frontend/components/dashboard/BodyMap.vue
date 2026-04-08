@@ -2,7 +2,9 @@
   <div class="card-glass">
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
-      <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">Carte musculaire</h3>
+      <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">
+        Carte musculaire
+      </h3>
       <div class="flex items-center gap-1.5">
         <button
           @click="view = 'front'"
@@ -10,7 +12,7 @@
             'px-3 py-1 rounded-lg text-xs font-medium transition-colors',
             view === 'front'
               ? 'bg-gradient-to-br from-sand-500 to-sand-600 text-white'
-              : 'text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-800'
+              : 'text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-800',
           ]"
         >
           Face
@@ -21,7 +23,7 @@
             'px-3 py-1 rounded-lg text-xs font-medium transition-colors',
             view === 'back'
               ? 'bg-gradient-to-br from-sand-500 to-sand-600 text-white'
-              : 'text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-800'
+              : 'text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-800',
           ]"
         >
           Dos
@@ -32,11 +34,7 @@
     <!-- Body Map SVG -->
     <div class="flex justify-center mb-6">
       <div class="relative w-[200px] h-[380px] md:w-[260px] md:h-[480px]">
-        <svg
-          viewBox="0 0 200 380"
-          class="w-full h-full"
-          xmlns="http://www.w3.org/2000/svg"
-        >
+        <svg viewBox="0 0 200 380" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
           <!-- Body silhouette outline -->
           <path
             d="M100 8 C88 8 80 16 80 28 C80 40 88 48 100 48 C112 48 120 40 120 28 C120 16 112 8 100 8Z"
@@ -141,10 +139,42 @@
               @click="selectMuscle('ABS')"
             />
             <!-- Abs lines -->
-            <line x1="100" y1="108" x2="100" y2="180" stroke="currentColor" stroke-width="0.5" class="text-primary-400/50 dark:text-primary-500/50 pointer-events-none" />
-            <line x1="84" y1="124" x2="116" y2="124" stroke="currentColor" stroke-width="0.5" class="text-primary-400/50 dark:text-primary-500/50 pointer-events-none" />
-            <line x1="84" y1="142" x2="116" y2="142" stroke="currentColor" stroke-width="0.5" class="text-primary-400/50 dark:text-primary-500/50 pointer-events-none" />
-            <line x1="84" y1="160" x2="116" y2="160" stroke="currentColor" stroke-width="0.5" class="text-primary-400/50 dark:text-primary-500/50 pointer-events-none" />
+            <line
+              x1="100"
+              y1="108"
+              x2="100"
+              y2="180"
+              stroke="currentColor"
+              stroke-width="0.5"
+              class="text-primary-400/50 dark:text-primary-500/50 pointer-events-none"
+            />
+            <line
+              x1="84"
+              y1="124"
+              x2="116"
+              y2="124"
+              stroke="currentColor"
+              stroke-width="0.5"
+              class="text-primary-400/50 dark:text-primary-500/50 pointer-events-none"
+            />
+            <line
+              x1="84"
+              y1="142"
+              x2="116"
+              y2="142"
+              stroke="currentColor"
+              stroke-width="0.5"
+              class="text-primary-400/50 dark:text-primary-500/50 pointer-events-none"
+            />
+            <line
+              x1="84"
+              y1="160"
+              x2="116"
+              y2="160"
+              stroke="currentColor"
+              stroke-width="0.5"
+              class="text-primary-400/50 dark:text-primary-500/50 pointer-events-none"
+            />
 
             <!-- Obliques (left) -->
             <path
@@ -251,7 +281,15 @@
               @click="selectMuscle('BACK')"
             />
             <!-- Back spine line -->
-            <line x1="100" y1="68" x2="100" y2="180" stroke="currentColor" stroke-width="0.5" class="text-primary-400/50 dark:text-primary-500/50 pointer-events-none" />
+            <line
+              x1="100"
+              y1="68"
+              x2="100"
+              y2="180"
+              stroke="currentColor"
+              stroke-width="0.5"
+              class="text-primary-400/50 dark:text-primary-500/50 pointer-events-none"
+            />
 
             <!-- Triceps (left) -->
             <path
@@ -353,20 +391,35 @@
           <div
             v-if="tooltip.visible"
             class="absolute z-10 px-3 py-2 rounded-xl bg-white/95 dark:bg-primary-800/95 backdrop-blur-sm border border-primary-200 dark:border-primary-700 shadow-lg pointer-events-none"
-            :style="{ left: tooltip.x + 'px', top: tooltip.y + 'px', transform: 'translate(-50%, -100%) translateY(-8px)' }"
+            :style="{
+              left: tooltip.x + 'px',
+              top: tooltip.y + 'px',
+              transform: 'translate(-50%, -100%) translateY(-8px)',
+            }"
           >
-            <p class="text-sm font-semibold text-primary-900 dark:text-primary-100">{{ getMuscleLabel(tooltip.muscle) }}</p>
+            <p class="text-sm font-semibold text-primary-900 dark:text-primary-100">
+              {{ getMuscleLabel(tooltip.muscle) }}
+            </p>
             <div class="flex items-center gap-2 mt-1">
               <div
                 class="w-2.5 h-2.5 rounded-full flex-shrink-0"
                 :style="{ backgroundColor: getMuscleColor(tooltip.muscle) }"
               ></div>
               <span class="text-xs text-primary-600 dark:text-primary-400">
-                {{ getMuscleData(tooltip.muscle)?.score != null ? Math.round(getMuscleData(tooltip.muscle)!.score) + '% recupere' : 'Non entraine' }}
+                {{
+                  getMuscleData(tooltip.muscle)?.score != null
+                    ? Math.round(getMuscleData(tooltip.muscle)!.score) + '% recupere'
+                    : 'Non entraine'
+                }}
               </span>
             </div>
-            <p v-if="getMuscleData(tooltip.muscle)?.daysSince != null" class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
-              Il y a {{ getMuscleData(tooltip.muscle)!.daysSince }} jour{{ getMuscleData(tooltip.muscle)!.daysSince > 1 ? 's' : '' }}
+            <p
+              v-if="getMuscleData(tooltip.muscle)?.daysSince != null"
+              class="text-xs text-primary-500 dark:text-primary-400 mt-0.5"
+            >
+              Il y a {{ getMuscleData(tooltip.muscle)!.daysSince }} jour{{
+                getMuscleData(tooltip.muscle)!.daysSince > 1 ? 's' : ''
+              }}
             </p>
           </div>
         </Transition>
@@ -375,7 +428,10 @@
 
     <!-- Selected muscle detail (mobile-friendly) -->
     <Transition name="slide">
-      <div v-if="selectedMuscle" class="mb-5 p-3 rounded-xl bg-primary-50 dark:bg-primary-800/60 border border-primary-200 dark:border-primary-700">
+      <div
+        v-if="selectedMuscle"
+        class="mb-5 p-3 rounded-xl bg-primary-50 dark:bg-primary-800/60 border border-primary-200 dark:border-primary-700"
+      >
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
             <div
@@ -383,7 +439,9 @@
               :style="{ backgroundColor: getMuscleColor(selectedMuscle) }"
             ></div>
             <div>
-              <p class="text-sm font-semibold text-primary-900 dark:text-primary-100">{{ getMuscleLabel(selectedMuscle) }}</p>
+              <p class="text-sm font-semibold text-primary-900 dark:text-primary-100">
+                {{ getMuscleLabel(selectedMuscle) }}
+              </p>
               <p class="text-xs text-primary-600 dark:text-primary-400">
                 <template v-if="getMuscleData(selectedMuscle)?.score != null">
                   {{ Math.round(getMuscleData(selectedMuscle)!.score) }}% recupere
@@ -399,8 +457,18 @@
             @click="selectedMuscle = null"
             class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-primary-200 dark:hover:bg-primary-700 transition-colors"
           >
-            <svg class="w-3.5 h-3.5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <svg
+              class="w-3.5 h-3.5 text-primary-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -419,34 +487,34 @@
 
 <script setup lang="ts">
 interface MuscleRecovery {
-  muscle: string
-  score: number
-  daysSince: number
+  muscle: string;
+  score: number;
+  daysSince: number;
 }
 
 interface Props {
-  muscleRecovery: MuscleRecovery[]
+  muscleRecovery: MuscleRecovery[];
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
-const view = ref<'front' | 'back'>('front')
-const selectedMuscle = ref<string | null>(null)
+const view = ref<'front' | 'back'>('front');
+const selectedMuscle = ref<string | null>(null);
 
 const tooltip = reactive({
   visible: false,
   x: 0,
   y: 0,
-  muscle: ''
-})
+  muscle: '',
+});
 
 const legend = [
   { label: 'Repos necessaire', color: '#ef4444' },
   { label: 'Recuperation', color: '#f59e0b' },
   { label: 'Presque pret', color: '#d4c4b0' },
   { label: 'Pret', color: '#22c55e' },
-  { label: 'Non entraine', color: '#9ca3af' }
-]
+  { label: 'Non entraine', color: '#9ca3af' },
+];
 
 const muscleLabels: Record<string, string> = {
   CHEST: 'Pectoraux',
@@ -458,45 +526,45 @@ const muscleLabels: Record<string, string> = {
   QUADS: 'Quadriceps',
   HAMSTRINGS: 'Ischio-jambiers',
   GLUTES: 'Fessiers',
-  CALVES: 'Mollets'
-}
+  CALVES: 'Mollets',
+};
 
 const getMuscleLabel = (muscle: string): string => {
-  return muscleLabels[muscle] || muscle
-}
+  return muscleLabels[muscle] || muscle;
+};
 
 const getMuscleData = (muscle: string): MuscleRecovery | undefined => {
-  return props.muscleRecovery.find(m => m.muscle === muscle)
-}
+  return props.muscleRecovery.find((m) => m.muscle === muscle);
+};
 
 const getMuscleColor = (muscle: string): string => {
-  const data = getMuscleData(muscle)
-  if (!data) return '#9ca3af' // gray - not trained
-  const score = data.score
-  if (score <= 30) return '#ef4444'
-  if (score <= 60) return '#f59e0b'
-  if (score <= 85) return '#d4c4b0'
-  return '#22c55e'
-}
+  const data = getMuscleData(muscle);
+  if (!data) return '#9ca3af'; // gray - not trained
+  const score = data.score;
+  if (score <= 30) return '#ef4444';
+  if (score <= 60) return '#f59e0b';
+  if (score <= 85) return '#d4c4b0';
+  return '#22c55e';
+};
 
 const showTooltip = (event: MouseEvent, muscle: string) => {
-  const svgContainer = (event.target as SVGElement).closest('.relative')
-  if (!svgContainer) return
-  const rect = svgContainer.getBoundingClientRect()
-  const targetRect = (event.target as SVGElement).getBoundingClientRect()
-  tooltip.x = targetRect.left + targetRect.width / 2 - rect.left
-  tooltip.y = targetRect.top - rect.top
-  tooltip.muscle = muscle
-  tooltip.visible = true
-}
+  const svgContainer = (event.target as SVGElement).closest('.relative');
+  if (!svgContainer) return;
+  const rect = svgContainer.getBoundingClientRect();
+  const targetRect = (event.target as SVGElement).getBoundingClientRect();
+  tooltip.x = targetRect.left + targetRect.width / 2 - rect.left;
+  tooltip.y = targetRect.top - rect.top;
+  tooltip.muscle = muscle;
+  tooltip.visible = true;
+};
 
 const hideTooltip = () => {
-  tooltip.visible = false
-}
+  tooltip.visible = false;
+};
 
 const selectMuscle = (muscle: string) => {
-  selectedMuscle.value = selectedMuscle.value === muscle ? null : muscle
-}
+  selectedMuscle.value = selectedMuscle.value === muscle ? null : muscle;
+};
 </script>
 
 <style scoped>
@@ -504,7 +572,9 @@ const selectMuscle = (muscle: string) => {
   stroke: rgba(0, 0, 0, 0.1);
   stroke-width: 1;
   cursor: pointer;
-  transition: opacity 0.2s ease, filter 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    filter 0.2s ease;
 }
 
 .muscle-path:hover {

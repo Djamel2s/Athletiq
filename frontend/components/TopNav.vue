@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import AppLogo from '~/components/AppLogo.vue'
-import NavActions from '~/components/NavActions.vue'
-import HeaderSearch from '~/components/HeaderSearch.vue'
+import AppLogo from '~/components/AppLogo.vue';
+import NavActions from '~/components/NavActions.vue';
+import HeaderSearch from '~/components/HeaderSearch.vue';
 </script>

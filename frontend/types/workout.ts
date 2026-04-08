@@ -10,7 +10,7 @@ export enum MuscleGroup {
   BICEPS = 'BICEPS',
   TRICEPS = 'TRICEPS',
   ABS = 'ABS',
-  CARDIO = 'CARDIO'
+  CARDIO = 'CARDIO',
 }
 
 export enum Equipment {
@@ -20,89 +20,89 @@ export enum Equipment {
   MACHINE = 'MACHINE',
   BODYWEIGHT = 'BODYWEIGHT',
   RESISTANCE_BAND = 'RESISTANCE_BAND',
-  OTHER = 'OTHER'
+  OTHER = 'OTHER',
 }
 
 export enum Difficulty {
   BEGINNER = 'BEGINNER',
   INTERMEDIATE = 'INTERMEDIATE',
-  ADVANCED = 'ADVANCED'
+  ADVANCED = 'ADVANCED',
 }
 
 export interface ExerciseLibrary {
-  id: number
-  name: string
-  description?: string
-  instructions?: string
-  muscleGroups: MuscleGroup[]
-  primaryMuscle?: MuscleGroup
-  equipment: Equipment
-  difficulty: Difficulty
-  videoUrl?: string
-  imageUrl?: string
-  createdAt: string
-  updatedAt: string
+  id: number;
+  name: string;
+  description?: string;
+  instructions?: string;
+  muscleGroups: MuscleGroup[];
+  primaryMuscle?: MuscleGroup;
+  equipment: Equipment;
+  difficulty: Difficulty;
+  videoUrl?: string;
+  imageUrl?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Set {
-  id: number
-  exerciseId: number
-  setNumber: number
-  reps?: number
-  weight?: number
-  duration?: number
-  distance?: number
-  rpe?: number
-  notes?: string
-  completed: boolean
-  createdAt: string
-  updatedAt: string
+  id: number;
+  exerciseId: number;
+  setNumber: number;
+  reps?: number;
+  weight?: number;
+  duration?: number;
+  distance?: number;
+  rpe?: number;
+  notes?: string;
+  completed: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface PlannedSet {
-  setNumber: number
-  targetReps: number
-  targetWeight: number
-  restTime?: number
+  setNumber: number;
+  targetReps: number;
+  targetWeight: number;
+  restTime?: number;
 }
 
 export interface Exercise {
-  id: number
-  workoutId: number
-  exerciseLibraryId?: number
-  name: string
-  notes?: string
-  targetSets?: number
-  targetReps?: number
-  targetWeight?: number
-  restTime?: number
-  supersetGroup?: number
-  plannedSets?: PlannedSet[]
-  orderIndex: number
-  createdAt: string
-  updatedAt: string
-  exerciseLibrary?: ExerciseLibrary
-  sets?: Set[]
+  id: number;
+  workoutId: number;
+  exerciseLibraryId?: number;
+  name: string;
+  notes?: string;
+  targetSets?: number;
+  targetReps?: number;
+  targetWeight?: number;
+  restTime?: number;
+  supersetGroup?: number;
+  plannedSets?: PlannedSet[];
+  orderIndex: number;
+  createdAt: string;
+  updatedAt: string;
+  exerciseLibrary?: ExerciseLibrary;
+  sets?: Set[];
 }
 
 export interface Workout {
-  id: number
-  userId: number
-  name: string
-  description?: string
-  isTemplate: boolean
-  startedAt?: string
-  completedAt?: string
-  duration?: number
-  totalVolume?: number
-  createdAt: string
-  updatedAt: string
-  exercises?: Exercise[]
+  id: number;
+  userId: number;
+  name: string;
+  description?: string;
+  isTemplate: boolean;
+  startedAt?: string;
+  completedAt?: string;
+  duration?: number;
+  totalVolume?: number;
+  createdAt: string;
+  updatedAt: string;
+  exercises?: Exercise[];
 }
 
 export interface WorkoutFilters {
-  search?: string
-  muscleGroup?: string
-  equipment?: string
-  difficulty?: string
+  search?: string;
+  muscleGroup?: string;
+  equipment?: string;
+  difficulty?: string;
 }

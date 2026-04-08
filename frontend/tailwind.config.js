@@ -2,11 +2,11 @@
 export default {
   darkMode: 'class',
   content: [
-    "./components/**/*.{js,vue,ts}",
-    "./layouts/**/*.vue",
-    "./pages/**/*.vue",
-    "./plugins/**/*.{js,ts}",
-    "./app.vue",
+    './components/**/*.{js,vue,ts}',
+    './layouts/**/*.vue',
+    './pages/**/*.vue',
+    './plugins/**/*.{js,ts}',
+    './app.vue',
   ],
   theme: {
     extend: {
@@ -47,22 +47,24 @@ export default {
           700: '#d1a84b',
           800: '#b08838',
           900: '#8f6e2c',
-        }
+        },
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-primary': 'linear-gradient(135deg, rgb(var(--sand-500)) 0%, rgb(var(--sand-600)) 100%)',
-        'gradient-subtle': 'linear-gradient(180deg, rgba(250, 248, 246, 1) 0%, rgba(255, 255, 255, 1) 100%)',
+        'gradient-primary':
+          'linear-gradient(135deg, rgb(var(--sand-500)) 0%, rgb(var(--sand-600)) 100%)',
+        'gradient-subtle':
+          'linear-gradient(180deg, rgba(250, 248, 246, 1) 0%, rgba(255, 255, 255, 1) 100%)',
       },
       backdropBlur: {
         xs: '2px',
       },
       boxShadow: {
-        'soft': '0 2px 15px 0 rgba(0, 0, 0, 0.05)',
+        soft: '0 2px 15px 0 rgba(0, 0, 0, 0.05)',
         'soft-lg': '0 10px 40px 0 rgba(0, 0, 0, 0.08)',
-        'glow': '0 0 20px rgba(var(--sand-500), 0.3)',
-      }
+        glow: '0 0 20px rgba(var(--sand-500), 0.3)',
+      },
     },
   },
   plugins: [],
-}
+};

@@ -1,5 +1,8 @@
 <template>
-  <div class="card-glass !p-6 !rounded-2xl relative overflow-hidden" :class="{ 'animate-flash': isFlashing }">
+  <div
+    class="card-glass !p-6 !rounded-2xl relative overflow-hidden"
+    :class="{ 'animate-flash': isFlashing }"
+  >
     <!-- Last set suggestion banner -->
     <div
       v-if="lastSetData"
@@ -49,10 +52,16 @@
           <span class="text-4xl font-bold tabular-nums text-primary-900 dark:text-primary-100">
             {{ formattedTime }}
           </span>
-          <span v-if="!isRunning && remaining === currentDuration" class="text-xs text-primary-400 dark:text-primary-500 mt-1">
+          <span
+            v-if="!isRunning && remaining === currentDuration"
+            class="text-xs text-primary-400 dark:text-primary-500 mt-1"
+          >
             Appuyer pour démarrer
           </span>
-          <span v-else-if="remaining === 0" class="text-xs text-sand-600 dark:text-sand-400 mt-1 font-medium">
+          <span
+            v-else-if="remaining === 0"
+            class="text-xs text-sand-600 dark:text-sand-400 mt-1 font-medium"
+          >
             Terminé !
           </span>
         </div>
@@ -78,7 +87,7 @@
           class="btn-primary !px-6 !py-2.5 !rounded-xl text-sm font-semibold"
           @click="toggleTimer"
         >
-          {{ isRunning ? 'Pause' : (remaining === currentDuration ? 'Démarrer' : 'Reprendre') }}
+          {{ isRunning ? 'Pause' : remaining === currentDuration ? 'Démarrer' : 'Reprendre' }}
         </button>
 
         <button
@@ -89,10 +98,7 @@
           Réinitialiser
         </button>
 
-        <button
-          class="btn-glass !px-4 !py-2.5 !rounded-xl text-sm"
-          @click="emit('dismiss')"
-        >
+        <button class="btn-glass !px-4 !py-2.5 !rounded-xl text-sm" @click="emit('dismiss')">
           Fermer
         </button>
       </div>
@@ -102,180 +108,183 @@
 
 <script setup lang="ts">
 interface Props {
-  duration?: number
-  autoStart?: boolean
-  lastSetData?: { weight: number; reps: number } | null
+  duration?: number;
+  autoStart?: boolean;
+  lastSetData?: { weight: number; reps: number } | null;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   duration: 90,
   autoStart: false,
   lastSetData: null,
-})
+});
 
 const emit = defineEmits<{
-  complete: []
-  dismiss: []
-}>()
+  complete: [];
+  dismiss: [];
+}>();
 
-const RADIUS = 88
-const circumference = 2 * Math.PI * RADIUS
+const RADIUS = 88;
+const circumference = 2 * Math.PI * RADIUS;
 
-const currentDuration = ref(props.duration)
-const remaining = ref(props.duration)
-const isRunning = ref(false)
-const isFlashing = ref(false)
-let intervalId: ReturnType<typeof setInterval> | null = null
-let dismissTimeoutId: ReturnType<typeof setTimeout> | null = null
+const currentDuration = ref(props.duration);
+const remaining = ref(props.duration);
+const isRunning = ref(false);
+const isFlashing = ref(false);
+let intervalId: ReturnType<typeof setInterval> | null = null;
+let dismissTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
 const timeAdjustments = [
   { label: '-30s', value: -30 },
   { label: '-15s', value: -15 },
   { label: '+15s', value: 15 },
   { label: '+30s', value: 30 },
-]
+];
 
 const dashOffset = computed(() => {
-  if (currentDuration.value === 0) return circumference
-  const progress = remaining.value / currentDuration.value
-  return circumference * (1 - progress)
-})
+  if (currentDuration.value === 0) return circumference;
+  const progress = remaining.value / currentDuration.value;
+  return circumference * (1 - progress);
+});
 
 const formattedTime = computed(() => {
-  const mins = Math.floor(remaining.value / 60)
-  const secs = remaining.value % 60
-  return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
-})
+  const mins = Math.floor(remaining.value / 60);
+  const secs = remaining.value % 60;
+  return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+});
 
 function startTimer() {
-  if (intervalId) return
-  isRunning.value = true
+  if (intervalId) return;
+  isRunning.value = true;
   intervalId = setInterval(() => {
     if (remaining.value > 0) {
-      remaining.value--
+      remaining.value--;
     }
     if (remaining.value === 0) {
-      stopInterval()
-      onComplete()
+      stopInterval();
+      onComplete();
     }
-  }, 1000)
+  }, 1000);
 }
 
 function stopInterval() {
   if (intervalId) {
-    clearInterval(intervalId)
-    intervalId = null
+    clearInterval(intervalId);
+    intervalId = null;
   }
-  isRunning.value = false
+  isRunning.value = false;
 }
 
 function toggleTimer() {
   if (isRunning.value) {
-    stopInterval()
+    stopInterval();
   } else {
-    startTimer()
+    startTimer();
   }
 }
 
 function resetTimer() {
-  stopInterval()
+  stopInterval();
   if (dismissTimeoutId) {
-    clearTimeout(dismissTimeoutId)
-    dismissTimeoutId = null
+    clearTimeout(dismissTimeoutId);
+    dismissTimeoutId = null;
   }
-  remaining.value = currentDuration.value
-  isFlashing.value = false
+  remaining.value = currentDuration.value;
+  isFlashing.value = false;
 }
 
 function adjustTime(seconds: number) {
-  const newDuration = Math.max(15, currentDuration.value + seconds)
-  currentDuration.value = newDuration
+  const newDuration = Math.max(15, currentDuration.value + seconds);
+  currentDuration.value = newDuration;
   if (remaining.value > 0) {
-    remaining.value = Math.max(1, Math.min(remaining.value + seconds, newDuration))
+    remaining.value = Math.max(1, Math.min(remaining.value + seconds, newDuration));
   }
 }
 
 function playBeep() {
   try {
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
-    const oscillator = ctx.createOscillator()
-    const gain = ctx.createGain()
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = ctx.createOscillator();
+    const gain = ctx.createGain();
 
-    oscillator.connect(gain)
-    gain.connect(ctx.destination)
+    oscillator.connect(gain);
+    gain.connect(ctx.destination);
 
-    oscillator.type = 'sine'
-    oscillator.frequency.setValueAtTime(880, ctx.currentTime)
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(880, ctx.currentTime);
 
-    gain.gain.setValueAtTime(0.3, ctx.currentTime)
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5)
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
 
-    oscillator.start(ctx.currentTime)
-    oscillator.stop(ctx.currentTime + 0.5)
+    oscillator.start(ctx.currentTime);
+    oscillator.stop(ctx.currentTime + 0.5);
 
     // Play a second shorter beep
-    const osc2 = ctx.createOscillator()
-    const gain2 = ctx.createGain()
-    osc2.connect(gain2)
-    gain2.connect(ctx.destination)
-    osc2.type = 'sine'
-    osc2.frequency.setValueAtTime(1100, ctx.currentTime + 0.6)
-    gain2.gain.setValueAtTime(0.25, ctx.currentTime + 0.6)
-    gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.9)
-    osc2.start(ctx.currentTime + 0.6)
-    osc2.stop(ctx.currentTime + 0.9)
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(1100, ctx.currentTime + 0.6);
+    gain2.gain.setValueAtTime(0.25, ctx.currentTime + 0.6);
+    gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.9);
+    osc2.start(ctx.currentTime + 0.6);
+    osc2.stop(ctx.currentTime + 0.9);
 
-    setTimeout(() => ctx.close(), 1500)
+    setTimeout(() => ctx.close(), 1500);
   } catch {
     // Web Audio API not available, silently fail
   }
 }
 
 function onComplete() {
-  emit('complete')
+  emit('complete');
 
   // Vibrate if available
   if (navigator.vibrate) {
-    navigator.vibrate([200, 100, 200])
+    navigator.vibrate([200, 100, 200]);
   }
 
   // Play beep
-  playBeep()
+  playBeep();
 
   // Flash animation
-  isFlashing.value = true
+  isFlashing.value = true;
   setTimeout(() => {
-    isFlashing.value = false
-  }, 1500)
+    isFlashing.value = false;
+  }, 1500);
 
   // Auto-dismiss after 3 seconds
   dismissTimeoutId = setTimeout(() => {
-    emit('dismiss')
-  }, 3000)
+    emit('dismiss');
+  }, 3000);
 }
 
 // Auto-start if prop is set
 onMounted(() => {
   if (props.autoStart) {
-    startTimer()
+    startTimer();
   }
-})
+});
 
 // Cleanup on unmount
 onUnmounted(() => {
-  stopInterval()
+  stopInterval();
   if (dismissTimeoutId) {
-    clearTimeout(dismissTimeoutId)
+    clearTimeout(dismissTimeoutId);
   }
-})
+});
 
 // Watch for duration prop changes
-watch(() => props.duration, (newVal) => {
-  if (!isRunning.value && remaining.value === currentDuration.value) {
-    currentDuration.value = newVal
-    remaining.value = newVal
+watch(
+  () => props.duration,
+  (newVal) => {
+    if (!isRunning.value && remaining.value === currentDuration.value) {
+      currentDuration.value = newVal;
+      remaining.value = newVal;
+    }
   }
-})
+);
 </script>
 
 <style scoped>
@@ -285,7 +294,8 @@ watch(() => props.duration, (newVal) => {
 }
 
 @keyframes flash {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   25% {
