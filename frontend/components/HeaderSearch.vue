@@ -22,12 +22,15 @@
           @click="select(s)"
         >
           <div class="flex items-center gap-3">
-            <img
-              v-if="s.avatarUrl"
-              :src="s.avatarUrl"
-              alt="avatar"
-              class="w-8 h-8 rounded-md object-cover border border-primary-100 dark:border-primary-800"
-            />
+            <div class="w-8 h-8 rounded-md overflow-hidden flex-shrink-0 flex items-center justify-center bg-primary-100 dark:bg-primary-800 border border-primary-100 dark:border-primary-800">
+              <img
+                v-if="s.avatarUrl"
+                :src="s.avatarUrl"
+                alt="avatar"
+                class="w-full h-full object-cover"
+              />
+              <Icon v-else name="lucide:user" class="w-5 h-5 text-primary-700 dark:text-primary-200" />
+            </div>
             <div class="flex items-center">
               <span class="text-sm font-medium">{{ s.username || s.firstName || (s.firstName && s.lastName ? `${s.firstName} ${s.lastName}` : `User ${s.id}`) }}</span>
             </div>

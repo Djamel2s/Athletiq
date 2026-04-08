@@ -107,21 +107,59 @@
 
         <!-- Action Buttons -->
         <div class="flex justify-center gap-2 mb-8 slide-up">
-          <NuxtLink v-if="isOwnProfile" to="/edit-profile" class="btn-glass px-5 py-2.5 text-sm font-medium inline-flex items-center gap-2">
-            <Icon name="lucide:edit-3" class="w-4 h-4" />
-            Modifier
-          </NuxtLink>
-          <button
-            v-if="isOwnProfile && profileData?.username"
-            @click="showQrModal = true"
-            class="btn-glass px-4 py-2.5 text-sm font-medium inline-flex items-center gap-2"
-            title="Mon QR Code"
-          >
-            <Icon name="lucide:qr-code" class="w-4 h-4" />
-          </button>
-          <NuxtLink v-if="isOwnProfile" to="/settings" class="btn-glass px-4 py-2.5 text-sm font-medium inline-flex items-center gap-2" title="Parametres">
-            <Icon name="lucide:settings" class="w-4 h-4" />
-          </NuxtLink>
+          <template v-if="isOwnProfile">
+            <NuxtLink to="/edit-profile" class="btn-glass px-5 py-2.5 text-sm font-medium inline-flex items-center gap-2">
+              <Icon name="lucide:edit-3" class="w-4 h-4" />
+              Modifier
+            </NuxtLink>
+            <button
+              v-if="profileData?.username"
+              @click="showQrModal = true"
+              class="btn-glass px-4 py-2.5 text-sm font-medium inline-flex items-center gap-2"
+              title="Mon QR Code"
+            >
+              <Icon name="lucide:qr-code" class="w-4 h-4" />
+            </button>
+            <NuxtLink to="/settings" class="btn-glass px-4 py-2.5 text-sm font-medium inline-flex items-center gap-2" title="Parametres">
+              <Icon name="lucide:settings" class="w-4 h-4" />
+            </NuxtLink>
+          </template>
+          <template v-else>
+            <div class="flex items-center gap-2">
+              <button
+                v-if="profileData?.requestPending"
+                class="btn-ghost px-4 py-2.5 text-sm font-medium inline-flex items-center gap-2 cursor-not-allowed"
+                disabled
+              >
+                <Icon name="lucide:clock" class="w-4 h-4" />
+                Demande envoyée
+              </button>
+              <button
+                v-else-if="profileData?.isFriend"
+                @click="removeFriendAction"
+                class="btn-danger px-4 py-2.5 text-sm font-medium inline-flex items-center gap-2"
+              >
+                <Icon name="lucide:user-minus" class="w-4 h-4" />
+                Supprimer
+              </button>
+              <button
+                v-else
+                @click="sendFriendRequestAction"
+                class="btn-primary px-4 py-2.5 text-sm font-medium inline-flex items-center gap-2"
+              >
+                <Icon name="lucide:user-plus" class="w-4 h-4" />
+                Ajouter
+              </button>
+              <NuxtLink :to="`/workouts?user=${profileData?.username || profileData?.id}`" class="btn-glass px-4 py-2.5 text-sm font-medium inline-flex items-center gap-2">
+                <Icon name="lucide:dumbbell" class="w-4 h-4" />
+                Workouts
+              </NuxtLink>
+              <NuxtLink :to="`/friends?user=${profileData?.username || profileData?.id}`" class="btn-glass px-4 py-2.5 text-sm font-medium inline-flex items-center gap-2" :class="{ 'opacity-50 cursor-not-allowed': !profileData?.isPublic && !profileData?.isFriend }">
+                <Icon name="lucide:users" class="w-4 h-4" />
+                Gym Bros
+              </NuxtLink>
+            </div>
+          </template>
         </div>
 
         <!-- Tab Bar (Posts par defaut) -->
@@ -450,7 +488,7 @@ definePageMeta({
 useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
 
 const authStore = useAuthStore()
-const { getMyProfile, getProfile, updateProfile, checkUsername, getFeed, getFriends } = useSocialApi()
+const { getMyProfile, getProfile, updateProfile, checkUsername, getFeed, getFriends, sendFriendRequest, removeFriend } = useSocialApi()
 const bodyApi = useBodyApi()
 const { getRecentPhotos } = bodyApi
 const toast = useToast()
@@ -750,6 +788,29 @@ const handleAvatarUpload = async (event: Event) => {
   } finally {
     avatarUploading.value = false
     input.value = ''
+  }
+}
+
+// Social actions for visited profiles
+const sendFriendRequestAction = async () => {
+  if (!profileData.value?.id) return
+  try {
+    await sendFriendRequest(profileData.value.id)
+    profileData.value.requestPending = true
+    toast.success('Demande envoyée')
+  } catch (err: any) {
+    toast.error(err?.data?.error || 'Erreur lors de l\'envoi de la demande')
+  }
+}
+
+const removeFriendAction = async () => {
+  if (!profileData.value?.id) return
+  try {
+    await removeFriend(profileData.value.id)
+    profileData.value.isFriend = false
+    toast.success('Ami supprimé')
+  } catch (err: any) {
+    toast.error(err?.data?.error || 'Erreur lors de la suppression')
   }
 }
 
