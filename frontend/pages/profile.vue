@@ -80,29 +80,29 @@
           <p v-if="profileData?.bio" class="text-sm text-primary-500 dark:text-primary-400 mt-1">{{ profileData.bio }}</p>
         </div>
 
-        <!-- Stats Row -->
+        <!-- Stats Row (buttons open modals) -->
         <div class="flex justify-center gap-8 mb-6 slide-up">
-          <NuxtLink to="/workouts" class="text-center hover:opacity-70 transition-opacity cursor-pointer">
+          <button @click="openWorkoutsModal" class="text-center hover:opacity-70 transition-opacity cursor-pointer">
             <div class="flex items-center justify-center gap-1.5">
               <span class="text-lg font-bold text-primary-900 dark:text-primary-100">{{ profileData?.stats?.workoutCount ?? 0 }}</span>
               <Icon name="lucide:dumbbell" class="w-4 h-4 text-primary-400 dark:text-primary-500" />
             </div>
             <p class="text-[11px] text-primary-500 dark:text-primary-400">Workouts</p>
-          </NuxtLink>
-          <NuxtLink to="/friends" class="text-center hover:opacity-70 transition-opacity cursor-pointer">
+          </button>
+          <button @click="openGymBrosModal" class="text-center hover:opacity-70 transition-opacity cursor-pointer">
             <div class="flex items-center justify-center gap-1.5">
               <span class="text-lg font-bold text-primary-900 dark:text-primary-100">{{ gymBrosCount }}</span>
               <Icon name="lucide:users" class="w-4 h-4 text-primary-400 dark:text-primary-500" />
             </div>
             <p class="text-[11px] text-primary-500 dark:text-primary-400">Gym Bros</p>
-          </NuxtLink>
-          <NuxtLink to="/streak" class="text-center hover:opacity-70 transition-opacity cursor-pointer">
+          </button>
+          <button @click="openStreakModal" class="text-center hover:opacity-70 transition-opacity cursor-pointer">
             <div class="flex items-center justify-center gap-1.5">
               <span class="text-lg font-bold text-primary-900 dark:text-primary-100">{{ profileData?.stats?.streak ?? 0 }}</span>
               <Icon name="lucide:flame" class="w-4 h-4" :class="(profileData?.stats?.streak ?? 0) > 0 ? 'text-orange-500' : 'text-primary-400 dark:text-primary-500'" />
             </div>
             <p class="text-[11px] text-primary-500 dark:text-primary-400">Streak</p>
-          </NuxtLink>
+          </button>
         </div>
 
         <!-- Action Buttons -->
@@ -150,20 +150,18 @@
                 <Icon name="lucide:user-plus" class="w-4 h-4" />
                 Ajouter
               </button>
-              <NuxtLink :to="`/workouts?user=${profileData?.username || profileData?.id}`" class="btn-glass px-4 py-2.5 text-sm font-medium inline-flex items-center gap-2">
-                <Icon name="lucide:dumbbell" class="w-4 h-4" />
-                Workouts
-              </NuxtLink>
-              <NuxtLink :to="`/friends?user=${profileData?.username || profileData?.id}`" class="btn-glass px-4 py-2.5 text-sm font-medium inline-flex items-center gap-2" :class="{ 'opacity-50 cursor-not-allowed': !profileData?.isPublic && !profileData?.isFriend }">
-                <Icon name="lucide:users" class="w-4 h-4" />
-                Gym Bros
-              </NuxtLink>
+              <!-- Removed extra Workouts / Gym Bros buttons: counters above now link to the right pages -->
             </div>
           </template>
         </div>
 
+        <div v-if="profileData?.restricted" class="text-center py-8">
+          <Icon name="lucide:lock" class="w-12 h-12 mx-auto mb-3 text-primary-400" />
+          <p class="text-primary-500 dark:text-primary-400">Ce profil est privé. Les photos, posts et informations sont restreints.</p>
+        </div>
+
         <!-- Tab Bar (Posts par defaut) -->
-        <div class="flex justify-center mb-6">
+        <div v-if="!profileData?.restricted" class="flex justify-center mb-6">
           <div class="flex space-x-1 bg-white/50 dark:bg-primary-900/50 backdrop-blur-lg rounded-xl p-1">
             <button
               @click="activeTab = 'posts'"
@@ -193,7 +191,7 @@
         </div>
 
         <!-- Posts List (par defaut) -->
-        <div v-if="activeTab === 'posts'" class="space-y-4 slide-up">
+        <div v-if="!profileData?.restricted && activeTab === 'posts'" class="space-y-4 slide-up">
           <div v-if="posts.length > 0">
             <div v-for="post in posts" :key="post.id" class="card-glass !p-4">
               <div class="flex items-center gap-3 mb-3">
@@ -221,7 +219,7 @@
         </div>
 
         <!-- Photos Tab -->
-        <div v-if="activeTab === 'photos'" class="slide-up space-y-4">
+        <div v-if="!profileData?.restricted && activeTab === 'photos'" class="slide-up space-y-4">
           <!-- Timelapse + Avant/Apres buttons -->
           <div v-if="primaryPhotos.length >= 2" class="flex gap-2">
             <button @click="showTimelapseModal = true" class="btn-glass px-3 py-2 text-xs font-medium inline-flex items-center gap-1.5 flex-1 justify-center">
@@ -318,6 +316,109 @@
           <button @click="selectedPhoto = null" class="absolute top-6 right-6 w-12 h-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl flex items-center justify-center text-white transition-colors">
             <Icon name="lucide:x" class="w-6 h-6" />
           </button>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <!-- Workouts Modal -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="showWorkoutsModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4" @click="showWorkoutsModal = false">
+          <div class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+          <div class="relative bg-white dark:bg-primary-900 rounded-2xl p-4 md:p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-xl" @click.stop>
+            <button @click="showWorkoutsModal = false" class="absolute top-3 right-3 w-8 h-8 rounded-lg flex items-center justify-center text-primary-400 hover:text-primary-600 hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors">
+              <Icon name="lucide:x" class="w-5 h-5" />
+            </button>
+            <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-4">Historique des workouts</h3>
+            <div v-if="workoutsLoading" class="text-center py-8">
+              <div class="inline-block animate-spin rounded-full h-8 w-8 border-2 border-primary-200 border-t-sand-500"></div>
+            </div>
+            <div v-else>
+              <div v-if="workoutStore.workoutHistory.length">
+                <ul class="space-y-3">
+                  <li v-for="w in workoutStore.workoutHistory" :key="w.id" class="p-3 rounded-xl border border-primary-200 dark:border-primary-800">
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <div class="font-semibold">{{ w.name }}</div>
+                        <div class="text-xs text-primary-500">{{ formatDate(w.completedAt || w.createdAt) }} — {{ Math.round((w.duration||0)/60) }} min</div>
+                      </div>
+                      <div class="text-sm text-primary-600 dark:text-primary-400">{{ w.totalVolume ? (w.totalVolume + ' kg') : '' }}</div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <div v-else class="text-center py-8">
+                <p class="text-primary-500 dark:text-primary-400">Aucun workout disponible</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <!-- GymBros Modal -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="showGymBrosModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4" @click="showGymBrosModal = false">
+          <div class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+          <div class="relative bg-white dark:bg-primary-900 rounded-2xl p-4 md:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto shadow-xl" @click.stop>
+            <button @click="showGymBrosModal = false" class="absolute top-3 right-3 w-8 h-8 rounded-lg flex items-center justify-center text-primary-400 hover:text-primary-600 hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors">
+              <Icon name="lucide:x" class="w-5 h-5" />
+            </button>
+            <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-4">Gym Bros</h3>
+            <div v-if="gymBrosLoading" class="text-center py-8">
+              <div class="inline-block animate-spin rounded-full h-8 w-8 border-2 border-primary-200 border-t-sand-500"></div>
+            </div>
+            <div v-else>
+              <ul class="space-y-3">
+                <li v-for="g in gymBrosList" :key="g.id" class="flex items-center gap-3 p-2 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-800/50">
+                  <div class="w-10 h-10 rounded-md overflow-hidden bg-primary-100 dark:bg-primary-800 flex items-center justify-center">
+                    <img v-if="g.avatarUrl" :src="g.avatarUrl" class="w-full h-full object-cover" />
+                    <Icon v-else name="lucide:user" class="w-5 h-5 text-primary-700 dark:text-primary-200" />
+                  </div>
+                  <div class="flex-1">
+                    <div class="font-medium">{{ g.username || g.firstName || g.email }}</div>
+                    <div class="text-xs text-primary-500">{{ g.bio || '' }}</div>
+                  </div>
+                  <button @click.prevent="navigateTo(`/profile/${g.username || g.id}`)" class="text-sm text-primary-600 dark:text-primary-300 hover:underline">Voir</button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <!-- Streak Modal -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="showStreakModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4" @click="showStreakModal = false">
+          <div class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+          <div class="relative bg-white dark:bg-primary-900 rounded-2xl p-4 md:p-6 max-w-sm w-full max-h-[90vh] overflow-y-auto shadow-xl" @click.stop>
+            <button @click="showStreakModal = false" class="absolute top-3 right-3 w-8 h-8 rounded-lg flex items-center justify-center text-primary-400 hover:text-primary-600 hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors">
+              <Icon name="lucide:x" class="w-5 h-5" />
+            </button>
+            <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-4">Résumé Streak</h3>
+            <div v-if="streakLoading" class="text-center py-8">
+              <div class="inline-block animate-spin rounded-full h-8 w-8 border-2 border-primary-200 border-t-sand-500"></div>
+            </div>
+            <div v-else>
+              <div v-if="streakData">
+                <p class="text-base font-semibold">Current streak: <span class="font-bold">{{ streakData.currentStreak }}</span></p>
+                <p class="text-sm text-primary-500 mt-2">Objectif hebdomadaire: <span class="font-semibold">{{ streakData.streakGoalPerWeek ?? 'Non public' }}</span></p>
+                <p v-if="streakData.currentWeekWorkouts !== null" class="text-sm text-primary-500 mt-1">Workouts cette semaine: <span class="font-semibold">{{ streakData.currentWeekWorkouts }}</span></p>
+                <div v-if="streakData.weeklyHistory && streakData.weeklyHistory.length" class="mt-4">
+                  <p class="text-sm font-medium mb-2">Dernieres semaines</p>
+                  <ul class="space-y-1 text-sm text-primary-600 dark:text-primary-300">
+                    <li v-for="w in streakData.weeklyHistory.slice(-8)" :key="w.week">{{ w.week }} — {{ w.count }} {{ w.metGoal ? '✓' : '✗' }}</li>
+                  </ul>
+                </div>
+              </div>
+              <div v-else class="text-center py-8">
+                <p class="text-primary-500 dark:text-primary-400">Aucune donnée de streak disponible</p>
+              </div>
+            </div>
+          </div>
         </div>
       </Transition>
     </Teleport>
@@ -493,6 +594,104 @@ const bodyApi = useBodyApi()
 const { getRecentPhotos } = bodyApi
 const toast = useToast()
 const workoutStore = useWorkoutStore()
+const statsApi = useStatsApi()
+
+// Modals for stats
+const showWorkoutsModal = ref(false)
+const showGymBrosModal = ref(false)
+const showStreakModal = ref(false)
+
+const workoutsLoading = ref(false)
+const gymBrosLoading = ref(false)
+const streakLoading = ref(false)
+
+const gymBrosList = ref<any[]>([])
+const streakData = ref<any | null>(null)
+
+const openWorkoutsModal = async () => {
+  // Respect profile privacy: only show if owner, public, or friend
+  const allowed = isOwnProfile.value || !profileData.value?.restricted || profileData.value?.isFriend
+  if (!allowed) {
+    toast.error('Profil prive — contenu indisponible')
+    return
+  }
+
+  showWorkoutsModal.value = true
+  // If viewing own profile, use local store. For visited profiles, rely on embedded data if available.
+  if (isOwnProfile.value) {
+    if (!workoutStore.workoutHistory.length) {
+      workoutsLoading.value = true
+      try {
+        await workoutStore.fetchWorkouts()
+      } catch (e) {
+        toast.error('Impossible de charger l\'historique')
+      } finally {
+        workoutsLoading.value = false
+      }
+    }
+  } else {
+    // Attempt to use profile-provided workouts list if backend included it
+    if (!profileData.value?.workouts?.length) {
+      toast.error('Historique non disponible pour ce profil')
+    }
+  }
+}
+
+const openGymBrosModal = async () => {
+  const allowed = isOwnProfile.value || !profileData.value?.restricted || profileData.value?.isFriend
+  if (!allowed) {
+    toast.error('Profil prive — contenu indisponible')
+    return
+  }
+
+  showGymBrosModal.value = true
+  gymBrosLoading.value = true
+  try {
+    if (isOwnProfile.value) {
+      const data = await getFriends() as any
+      gymBrosList.value = data?.friends || data || []
+    } else if (profileData.value?.friends?.length) {
+      gymBrosList.value = profileData.value.friends
+    } else {
+      toast.error('Liste des amis non disponible pour ce profil')
+      gymBrosList.value = []
+    }
+  } catch (e) {
+    toast.error('Impossible de charger la liste des gym bros')
+    gymBrosList.value = []
+  } finally {
+    gymBrosLoading.value = false
+  }
+}
+
+const openStreakModal = async () => {
+  const allowed = isOwnProfile.value || !profileData.value?.restricted || profileData.value?.isFriend
+  if (!allowed) {
+    toast.error('Profil prive — contenu indisponible')
+    return
+  }
+
+  showStreakModal.value = true
+  streakLoading.value = true
+  try {
+    if (isOwnProfile.value) {
+      const s = await statsApi.getStreak()
+      streakData.value = s
+    } else {
+      // Limited info for visited profile (from profile stats)
+      streakData.value = {
+        currentStreak: profileData.value?.stats?.streak || 0,
+        streakGoalPerWeek: profileData.value?.stats?.goalPerWeek || null,
+        currentWeekWorkouts: profileData.value?.stats?.currentWeekWorkouts || null
+      }
+    }
+  } catch (e) {
+    toast.error('Impossible de charger le résumé de streak')
+    streakData.value = null
+  } finally {
+    streakLoading.value = false
+  }
+}
 
 const pageLoading = ref(true)
 const activeTab = ref<'photos' | 'posts'>('posts')
