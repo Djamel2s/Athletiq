@@ -8,7 +8,7 @@
           </NuxtLink>
         </div>
 
-        <div class="flex items-center flex-1 justify-center">
+        <div class="flex items-center flex-1 px-4">
           <ClientOnly>
             <HeaderSearch />
           </ClientOnly>

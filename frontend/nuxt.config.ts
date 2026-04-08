@@ -67,6 +67,15 @@ export default defineNuxtConfig({
     }
   },
 
+  // Vite dev server proxy: forward browser requests during development
+  vite: {
+    server: {
+      proxy: {
+        '/api': 'http://localhost:3001'
+      }
+    }
+  },
+
   runtimeConfig: {
     public: {
       // In dev we proxy `/api` to the backend; use the proxied path as default.
