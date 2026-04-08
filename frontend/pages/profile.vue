@@ -251,7 +251,9 @@
                 <Icon name="lucide:activity" class="w-4 h-4 inline-block mr-1 -mt-0.5" />
                 Posts
               </button>
+              <!-- Show Photos tab only on own profile -->
               <button
+                v-if="isOwnProfile"
                 @click="activeTab = 'photos'"
                 :class="[
                   'px-5 py-2 rounded-lg text-sm font-semibold transition-all',
@@ -1317,13 +1319,29 @@ const shareQr = async () => {
   }
 };
 
+// Determine requested username from route reactively
+const requestedUsername = computed(() => {
+  const p = route.path || '';
+  const parts = p.split('/').filter(Boolean);
+  return parts.length >= 2 ? parts[1] : '';
+});
+
 // Which user is currently being displayed (visited profile or own user)
 const displayedUser = computed(() => {
-  return profileData.value ? profileData.value : (authStore.user as any) || null;
+  if (profileData.value) return profileData.value;
+  // If route targets own profile (no username or username === my username), show auth user as fallback
+  const myUsername = (authStore.user as any)?.username || '';
+  if (!requestedUsername.value || requestedUsername.value === myUsername) return (authStore.user as any) || null;
+  // Otherwise, don't show a fallback to avoid displaying wrong user's data while loading
+  return null;
 });
 
 const isOwnProfile = computed(() => {
-  if (!profileData.value) return true;
+  if (!profileData.value) {
+    // While loading, consider it own profile only if the route targets own username or no username
+    const myUsername = (authStore.user as any)?.username || '';
+    return !requestedUsername.value || requestedUsername.value === myUsername;
+  }
   return (
     (authStore.user as any)?.id === profileData.value?.id ||
     (authStore.user as any)?.username === profileData.value?.username
@@ -1482,19 +1500,28 @@ const loadProfileFor = async (requestedUsername?: string) => {
     gymBrosCount.value = 0;
   }
 
-  try {
-    photos.value = await getRecentPhotos(30);
-  } catch {
-    photos.value = [];
-  }
+  // Photos & Posts: differentiate own profile vs visited profile
+  if (isOwnProfile.value) {
+    try {
+      photos.value = await getRecentPhotos(30);
+    } catch {
+      photos.value = [];
+    }
 
-  try {
-    const feedData = (await getFeed(0)) as any;
-    posts.value = (feedData?.posts || feedData || []).filter(
-      (p: any) => p.userId === profileData.value?.id
-    );
-  } catch {
-    posts.value = [];
+    try {
+      const feedData = (await getFeed(0)) as any;
+      posts.value = (feedData?.posts || feedData || []).filter(
+        (p: any) => p.userId === (authStore.user as any)?.id
+      );
+    } catch {
+      posts.value = [];
+    }
+  } else {
+    // For visited profiles, prefer server-provided posts/photos included in profileData
+    posts.value = profileData.value?.posts || [];
+    // Photos should never be shown for other users (gallery is private to the owner)
+    photos.value = [];
+    // gymBrosCount already set above when possible; leave as-is if backend didn't provide friends
   }
 
   // Load workouts for photo upload selector if needed
