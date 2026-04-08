@@ -39,6 +39,7 @@ const clearRefreshTokenCookie = (res: express.Response) => {
 // Validation schemas
 const registerSchema = z.object({
   email: z.string().email().max(255),
+  username: z.string().min(3).max(20).regex(/^[a-z0-9_]+$/, 'Username must be lowercase alphanumeric or underscore'),
   password: z.string().min(8).max(128)
     .regex(/[a-z]/, 'Le mot de passe doit contenir au moins une minuscule')
     .regex(/[A-Z]/, 'Le mot de passe doit contenir au moins une majuscule')
@@ -56,12 +57,16 @@ const loginSchema = z.object({
 // Register
 router.post('/register', async (req, res) => {
   try {
-    const { email, password, firstName, lastName, gender } = registerSchema.parse(req.body)
+    const { email, username, password, firstName, lastName, gender } = registerSchema.parse(req.body)
 
-    // Check if user exists
-    const existingUser = await userRepository.findOne({ where: { email } })
-    if (existingUser) {
+    // Check if email or username exists
+    const existingByEmail = await userRepository.findOne({ where: { email } })
+    if (existingByEmail) {
       return res.status(400).json({ error: 'Email déjà enregistré' })
+    }
+    const existingByUsername = await userRepository.findOne({ where: { username } })
+    if (existingByUsername) {
+      return res.status(409).json({ error: 'Username déjà pris' })
     }
 
     // Hash password
@@ -70,6 +75,7 @@ router.post('/register', async (req, res) => {
     // Create user
     const newUser = userRepository.create({
       email,
+      username,
       password: hashedPassword,
       firstName: firstName ?? undefined,
       lastName: lastName ?? undefined,
@@ -82,6 +88,7 @@ router.post('/register', async (req, res) => {
     const user = {
       id: newUser.id,
       email: newUser.email,
+      username: newUser.username,
       firstName: newUser.firstName,
       lastName: newUser.lastName,
       goal: newUser.goal,

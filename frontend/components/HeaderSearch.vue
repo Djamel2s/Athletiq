@@ -29,7 +29,7 @@
               class="w-8 h-8 rounded-md object-cover border border-primary-100 dark:border-primary-800"
             />
             <div class="flex items-center">
-              <span class="text-sm font-medium">{{ s.username }}</span>
+              <span class="text-sm font-medium">{{ s.username || s.firstName || (s.firstName && s.lastName ? `${s.firstName} ${s.lastName}` : `User ${s.id}`) }}</span>
             </div>
           </div>
         </li>
@@ -66,9 +66,10 @@ async function fetchSuggestions() {
   }
 }
 
-function select(s: { id: number; username: string }) {
-  // navigate to profile by username
-  navigateTo(`/profile/${s.username}`)
+function select(s: { id: number; username?: string; firstName?: string; lastName?: string }) {
+  // navigate to profile by username if available, otherwise by id
+  const target = s.username || s.id
+  navigateTo(`/profile/${target}`)
   q.value = ''
   suggestions.value = []
 }

@@ -51,15 +51,15 @@
         <!-- Cover area with avatar -->
         <div class="text-center mb-6 fade-in">
           <!-- Avatar (carre avec coins arrondis) -->
-          <div class="relative inline-block mb-4">
+            <div class="relative inline-block mb-4">
             <div class="w-24 h-24 rounded-2xl overflow-hidden ring-4 ring-sand-500/30 mx-auto">
-              <div class="w-full h-full flex items-center justify-center" :class="authStore.user?.avatarUrl ? '' : 'bg-gradient-primary'">
-                <img v-if="authStore.user?.avatarUrl" :src="authStore.user.avatarUrl" alt="Avatar" class="w-full h-full object-cover" />
+              <div class="w-full h-full flex items-center justify-center" :class="displayedUser?.avatarUrl ? '' : 'bg-gradient-primary'">
+                <img v-if="displayedUser?.avatarUrl" :src="displayedUser.avatarUrl" alt="Avatar" class="w-full h-full object-cover" />
                 <span v-else class="text-white text-3xl font-bold">{{ initials }}</span>
               </div>
             </div>
-            <!-- Upload overlay -->
-            <label class="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/40 rounded-2xl cursor-pointer transition-colors group">
+            <!-- Upload overlay (only for own profile) -->
+            <label v-if="isOwnProfile" class="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/40 rounded-2xl cursor-pointer transition-colors group">
               <Icon name="lucide:camera" class="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
               <input type="file" accept="image/*" class="hidden" @change="handleAvatarUpload" :disabled="avatarUploading" />
             </label>
@@ -71,7 +71,7 @@
           <!-- Username + privacy badge -->
           <div class="flex items-center justify-center gap-2">
             <h1 v-if="profileData?.username" class="text-2xl font-bold text-primary-900 dark:text-primary-100">@{{ profileData.username }}</h1>
-            <h1 v-else class="text-2xl font-bold text-primary-900 dark:text-primary-100">{{ authStore.fullName }}</h1>
+            <h1 v-else class="text-2xl font-bold text-primary-900 dark:text-primary-100">{{ displayedUser?.firstName || displayedUser?.email }}</h1>
             <span v-if="profileData?.isPublic === false" class="inline-flex items-center gap-1 text-xs text-primary-400 dark:text-primary-500">
               <Icon name="lucide:lock" class="w-3.5 h-3.5" />
               Privé
@@ -107,19 +107,19 @@
 
         <!-- Action Buttons -->
         <div class="flex justify-center gap-2 mb-8 slide-up">
-          <NuxtLink to="/edit-profile" class="btn-glass px-5 py-2.5 text-sm font-medium inline-flex items-center gap-2">
+          <NuxtLink v-if="isOwnProfile" to="/edit-profile" class="btn-glass px-5 py-2.5 text-sm font-medium inline-flex items-center gap-2">
             <Icon name="lucide:edit-3" class="w-4 h-4" />
             Modifier
           </NuxtLink>
           <button
-            v-if="profileData?.username"
+            v-if="isOwnProfile && profileData?.username"
             @click="showQrModal = true"
             class="btn-glass px-4 py-2.5 text-sm font-medium inline-flex items-center gap-2"
             title="Mon QR Code"
           >
             <Icon name="lucide:qr-code" class="w-4 h-4" />
           </button>
-          <NuxtLink to="/settings" class="btn-glass px-4 py-2.5 text-sm font-medium inline-flex items-center gap-2" title="Parametres">
+          <NuxtLink v-if="isOwnProfile" to="/settings" class="btn-glass px-4 py-2.5 text-sm font-medium inline-flex items-center gap-2" title="Parametres">
             <Icon name="lucide:settings" class="w-4 h-4" />
           </NuxtLink>
         </div>
@@ -692,9 +692,19 @@ const shareQr = async () => {
   }
 }
 
+// Which user is currently being displayed (visited profile or own user)
+const displayedUser = computed(() => {
+  return profileData.value ? profileData.value : (authStore.user as any) || null
+})
+
+const isOwnProfile = computed(() => {
+  if (!profileData.value) return true
+  return (authStore.user as any)?.id === profileData.value?.id || (authStore.user as any)?.username === profileData.value?.username
+})
+
 const initials = computed(() => {
-  const f = authStore.user?.firstName?.charAt(0) || ''
-  const l = authStore.user?.lastName?.charAt(0) || ''
+  const f = (displayedUser.value?.firstName || '').charAt(0) || ''
+  const l = (displayedUser.value?.lastName || '').charAt(0) || ''
   return (f + l).toUpperCase() || '?'
 })
 
@@ -743,42 +753,102 @@ const handleAvatarUpload = async (event: Event) => {
   }
 }
 
-onMounted(async () => {
+// Helper: derive requested username from current route path (supports /profile and /profile/:username)
+const route = useRoute()
+const getRequestedUsernameFromRoute = () => {
+  try {
+    const p = route.path || ''
+    if (!p) return ''
+    const parts = p.split('/').filter(Boolean)
+    // parts = ['profile'] or ['profile','username']
+    return parts.length >= 2 ? parts[1] : ''
+  } catch {
+    return ''
+  }
+}
+
+const loadProfileFor = async (requestedUsername?: string) => {
+  pageLoading.value = true
   // Try cached username first (for offline)
   const cachedUsername = process.client ? localStorage.getItem('athletiq_username') : null
 
-  // Fetch own profile data (includes username)
+  // Fetch own profile (to know current user's username)
   let myProfile: any = null
   try {
     myProfile = await getMyProfile() as any
-    // Cache username for offline use
-    if (myProfile?.username && process.client) {
-      localStorage.setItem('athletiq_username', myProfile.username)
-    }
+    if (myProfile?.username && process.client) localStorage.setItem('athletiq_username', myProfile.username)
   } catch (error) {
     console.warn('Failed to fetch own profile:', error)
   }
 
-  const username = myProfile?.username || (authStore.user as any)?.username || cachedUsername
+  const ownUsername = myProfile?.username || (authStore.user as any)?.username || cachedUsername || ''
 
-  if (username) {
-    showUsernameSetup.value = false
-    try {
-      profileData.value = await getProfile(username)
-    } catch {
-      // Offline fallback — show basic profile from cache
-      profileData.value = {
-        ...myProfile,
-        username,
-        stats: { workoutCount: 0, streak: 0 }
-      }
-    }
-  } else {
-    // Only show username setup if we're actually online (not just failing due to network)
+  // If no requestedUsername provided, show own profile or username setup
+  const usernameToLoad = requestedUsername || ownUsername
+
+  if (!usernameToLoad) {
     const { isOnline } = useOfflineStorage()
     showUsernameSetup.value = isOnline.value
     profileData.value = { stats: { workoutCount: 0, streak: 0 } }
+    pageLoading.value = false
+    return
   }
+
+  // If requested username matches own username, hide setup
+  showUsernameSetup.value = usernameToLoad === ownUsername ? false : showUsernameSetup.value
+
+  try {
+    profileData.value = await getProfile(usernameToLoad)
+  } catch (err) {
+    // If fetching failed and it's own username, fallback to cached/myProfile
+    if (usernameToLoad === ownUsername && myProfile) {
+      profileData.value = { ...myProfile, username: ownUsername, stats: { workoutCount: 0, streak: 0 } }
+    } else {
+      // Not found or offline
+      profileData.value = { stats: { workoutCount: 0, streak: 0 } }
+    }
+    } finally {
+    pageLoading.value = false
+  }
+  // After loading profileData, refresh related lists (friends count, photos, posts)
+  try {
+    const data = await getFriends() as any
+    const friendsList = data?.friends || data || []
+    gymBrosCount.value = friendsList.length
+  } catch {
+    gymBrosCount.value = 0
+  }
+
+  try {
+    photos.value = await getRecentPhotos(30)
+  } catch {
+    photos.value = []
+  }
+
+  try {
+    const feedData = await getFeed(0) as any
+    posts.value = (feedData?.posts || feedData || []).filter((p: any) => p.userId === profileData.value?.id)
+  } catch {
+    posts.value = []
+  }
+
+  // Load workouts for photo upload selector if needed
+  if (!workoutStore.workouts.length) {
+    workoutStore.fetchWorkouts().catch(() => {})
+  }
+}
+
+// Load on mount for current route
+onMounted(async () => {
+  const requested = getRequestedUsernameFromRoute()
+  await loadProfileFor(requested)
+})
+
+// React to route changes (client navigation)
+watch(() => route.path, async (newPath, oldPath) => {
+  const requested = getRequestedUsernameFromRoute()
+  await loadProfileFor(requested)
+})
 
   // Load gym bros count
   try {

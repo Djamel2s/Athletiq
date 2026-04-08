@@ -41,6 +41,25 @@
           </div>
 
           <!-- Prénom et Nom -->
+          <!-- Pseudo (obligatoire) -->
+          <div>
+            <label for="username" class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-2">
+              Pseudo
+            </label>
+            <input
+              id="username"
+              v-model="username"
+              type="text"
+              required
+              autocomplete="username"
+              pattern="[a-z0-9_]{3,20}"
+              class="input"
+              placeholder="mon_pseudo"
+              @blur="checkUsername"
+            />
+            <p v-if="usernameError" class="mt-2 text-xs text-red-600">{{ usernameError }}</p>
+          </div>
+
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label for="firstName" class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-2">
@@ -219,6 +238,8 @@ const authStore = useAuthStore()
 const firstName = ref('')
 const lastName = ref('')
 const gender = ref<'male' | 'female' | ''>('')
+const username = ref('')
+const usernameError = ref('')
 const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
@@ -226,6 +247,30 @@ const loading = ref(false)
 const error = ref('')
 const avatarFile = ref<File | null>(null)
 const avatarPreview = ref('')
+
+const checkUsername = async () => {
+  usernameError.value = ''
+  const val = (username.value || '').trim()
+  if (!val) {
+    usernameError.value = 'Le pseudo est requis'
+    return
+  }
+  const regex = /^[a-z0-9_]{3,20}$/
+  if (!regex.test(val)) {
+    usernameError.value = 'Le pseudo doit contenir 3-20 caractères en minuscules, chiffres ou underscore'
+    return
+  }
+
+  try {
+    const config = useRuntimeConfig()
+    const res = await $fetch(`${config.public.apiUrl}/profile/check-username/${encodeURIComponent(val)}`)
+    if (!res.available) {
+      usernameError.value = 'Pseudo déjà utilisé'
+    }
+  } catch (err) {
+    // ignore network errors here — backend might be unreachable
+  }
+}
 
 const validateImageMagicBytes = async (file: File): Promise<boolean> => {
   const buffer = await file.slice(0, 4).arrayBuffer()
@@ -294,12 +339,21 @@ const handleRegister = async () => {
   loading.value = true
 
   try {
+    // Ensure username validated
+    await checkUsername()
+    if (usernameError.value) {
+      error.value = usernameError.value
+      loading.value = false
+      return
+    }
+
     const result = await authStore.register(
       email.value,
       password.value,
       firstName.value || undefined,
       lastName.value || undefined,
-      gender.value || undefined
+      gender.value || undefined,
+      username.value || undefined
     )
 
     if (result.success) {

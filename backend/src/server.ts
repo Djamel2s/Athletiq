@@ -137,16 +137,27 @@ app.use('/api', (req, res, next) => {
 app.use(globalLimiter)
 
 // Middlewares
+// CORS: support single origin or comma-separated list in CORS_ORIGIN
 app.use(cors({
   origin: (origin, callback) => {
-    const allowed = process.env.CORS_ORIGIN
-    if (!origin || (allowed && origin === allowed)) {
-      callback(null, true)
-    } else if (!allowed && !isProduction && origin.match(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/)) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
+    const raw = process.env.CORS_ORIGIN || ''
+    const allowedOrigins = raw ? raw.split(',').map(s => s.trim()).filter(Boolean) : null
+
+    // Allow non-browser requests (no origin)
+    if (!origin) return callback(null, true)
+
+    if (allowedOrigins) {
+      if (allowedOrigins.includes('*') || allowedOrigins.includes(origin)) return callback(null, true)
+      return callback(new Error('Not allowed by CORS'))
     }
+
+    // Fallback during development: allow localhost origins when not in production
+    if (!isProduction && origin.match(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/)) {
+      return callback(null, true)
+    }
+
+    // If no CORS_ORIGIN configured in production, reject
+    return callback(new Error('Not allowed by CORS'))
   },
   credentials: true
 }))

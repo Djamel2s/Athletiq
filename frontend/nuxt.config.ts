@@ -12,6 +12,12 @@ export default defineNuxtConfig({
     '@nuxtjs/robots'
   ],
 
+  // Icon module config: use a local endpoint that does NOT collide with backend `/api`
+  icon: {
+    provider: 'server',
+    localApiEndpoint: '/_nuxt_icon'
+  },
+
   colorMode: {
     classSuffix: '',
     preference: 'system',

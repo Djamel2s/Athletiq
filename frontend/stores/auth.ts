@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 interface User {
   id: number
   email: string
+  username?: string | null
   firstName?: string | null
   lastName?: string | null
   avatarUrl?: string | null
@@ -35,13 +36,13 @@ export const useAuthStore = defineStore('auth', {
   },
 
   actions: {
-    async register(email: string, password: string, firstName?: string, lastName?: string, gender?: string) {
+    async register(email: string, password: string, firstName?: string, lastName?: string, gender?: string, username?: string) {
       try {
         const config = useRuntimeConfig()
         const response = await $fetch(`${config.public.apiUrl}/auth/register`, {
           method: 'POST',
           credentials: 'include',
-          body: { email, password, firstName, lastName, gender }
+          body: { email, password, firstName, lastName, gender, username }
         })
 
         this.setAuth(response)
