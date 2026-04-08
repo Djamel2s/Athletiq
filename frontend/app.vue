@@ -2,11 +2,11 @@
   <div class="min-h-screen bg-dark-900">
     <OfflineBanner />
     <TopNav />
-    <ClientOnly>
-      <HeaderSearch />
-    </ClientOnly>
     <AuthLoader>
-      <NuxtPage />
+      <div class="pt-header">
+        <Breadcrumbs />
+        <NuxtPage />
+      </div>
     </AuthLoader>
     <UiToastContainer />
   </div>
@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import TopNav from '~/components/TopNav.vue'
-import HeaderSearch from '~/components/HeaderSearch.vue'
+import Breadcrumbs from '~/components/Breadcrumbs.vue'
 useHead({
   htmlAttrs: {
     lang: 'fr'
@@ -25,3 +25,27 @@ useHead({
 const { applyTheme } = useTheme()
 onMounted(() => applyTheme())
 </script>
+
+<style>
+:root {
+  --header-height: 5rem;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --header-height: 6rem;
+  }
+}
+
+:root {
+  --header-gap: 1rem; /* small visual gap under header */
+}
+
+.pt-header {
+  padding-top: calc(var(--header-height) + var(--header-gap));
+}
+
+.top-offset {
+  top: var(--header-height) !important;
+}
+</style>

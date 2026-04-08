@@ -1,9 +1,8 @@
 <template>
   <div class="min-h-screen geometric-bg">
-    <!-- Use shared TopNav (includes HeaderSearch) -->
-    <TopNav />
+    <!-- TopNav is rendered globally in app.vue -->
 
-    <div class="pt-20 md:pt-28 px-4 md:px-6 pb-28 lg:pb-20 max-w-lg mx-auto">
+    <div class="px-4 md:px-6 pb-28 lg:pb-20 max-w-lg mx-auto">
       <!-- Loading -->
       <div v-if="pageLoading" class="text-center py-20">
         <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary-200 dark:border-primary-700 border-t-sand-500"></div>
@@ -569,7 +568,7 @@
 import { useAuthStore } from '~/stores/auth'
 import { useSocialApi } from '~/composables/useSocialApi'
 import { useBodyApi } from '~/composables/useBodyApi'
-import TopNav from '~/components/TopNav.vue'
+/* TopNav imported and rendered globally in app.vue; per-page import removed */
 
 definePageMeta({
   layout: false,

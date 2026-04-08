@@ -1,9 +1,9 @@
 <template>
   <div class="min-h-screen geometric-bg">
     <!-- Navigation -->
-    <TopNav />
+    <!-- TopNav is rendered globally in app.vue -->
 
-    <div class="pt-24 md:pt-32 px-4 md:px-6 pb-20 w-full max-w-lg mx-auto">
+    <div class="px-4 md:px-6 pb-20 w-full max-w-lg mx-auto">
       <!-- Header -->
       <div class="text-center mb-10 fade-in">
         <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2">Paramètres</h1>
@@ -381,7 +381,7 @@
 </template>
 
 <script setup lang="ts">
-import TopNav from '~/components/TopNav.vue'
+/* TopNav imported and rendered globally in app.vue; per-page import removed */
 import { useAuthStore } from '~/stores/auth'
 import { useSocialApi } from '~/composables/useSocialApi'
 import { Capacitor } from '@capacitor/core'

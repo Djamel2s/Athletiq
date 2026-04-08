@@ -1,9 +1,8 @@
 <template>
   <div class="min-h-screen">
-    <!-- Shared TopNav -->
-    <TopNav />
+    <!-- TopNav is rendered globally in app.vue -->
 
-    <div class="pt-24 md:pt-32 px-4 md:px-6 pb-28 lg:pb-20 max-w-2xl mx-auto">
+    <div class="px-4 md:px-6 pb-28 lg:pb-20 max-w-2xl mx-auto">
       <!-- Loading -->
       <div v-if="loading" class="space-y-4 animate-pulse">
         <div class="h-8 w-2/3 bg-primary-200 dark:bg-primary-700 rounded-lg"></div>
@@ -105,7 +104,7 @@
 </template>
 
 <script setup lang="ts">
-import TopNav from '~/components/TopNav.vue'
+/* TopNav imported and rendered globally in app.vue; per-page import removed */
 import { useAuthStore } from '~/stores/auth'
 
 definePageMeta({ layout: false })

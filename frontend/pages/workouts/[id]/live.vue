@@ -37,7 +37,7 @@
     </div>
 
     <!-- Contenu principal -->
-    <div class="pt-24 pb-20 px-4 max-w-3xl mx-auto">
+    <div class="pb-20 px-4 max-w-3xl mx-auto">
       <div v-if="isLoading" class="text-center py-20">
         <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary-200 dark:border-primary-700 border-t-primary-600 dark:border-t-primary-400"></div>
         <p class="mt-4 text-primary-600 dark:text-primary-400 text-lg">Chargement...</p>

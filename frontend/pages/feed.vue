@@ -1,9 +1,8 @@
 <template>
   <div class="min-h-screen geometric-bg">
-    <!-- Shared TopNav -->
-    <TopNav />
+    <!-- TopNav is rendered globally in app.vue -->
 
-    <div class="pt-20 md:pt-28 px-4 md:px-6 pb-28 lg:pb-20 max-w-lg mx-auto">
+    <div class="px-4 md:px-6 pb-28 lg:pb-20 max-w-lg mx-auto">
       <!-- Header -->
       <div class="flex items-center justify-between mb-8 fade-in">
         <div>
@@ -222,7 +221,7 @@
 </template>
 
 <script setup lang="ts">
-import TopNav from '~/components/TopNav.vue'
+/* TopNav imported and rendered globally in app.vue; per-page import removed */
 import { useAuthStore } from '~/stores/auth'
 import { useSocialApi } from '~/composables/useSocialApi'
 

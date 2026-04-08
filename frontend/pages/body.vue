@@ -3,7 +3,7 @@
     <!-- Navigation (moved to app.vue) -->
 
     <!-- Main Content -->
-    <div class="pt-24 md:pt-32 px-4 md:px-6 pb-28 lg:pb-20 max-w-7xl mx-auto">
+    <div class="px-4 md:px-6 pb-28 lg:pb-20 max-w-7xl mx-auto">
       <!-- Page Header -->
       <div class="fade-in text-center mb-8">
         <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2">

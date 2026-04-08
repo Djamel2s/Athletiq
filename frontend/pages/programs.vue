@@ -1,10 +1,9 @@
 <template>
   <div class="min-h-screen">
-    <!-- Navigation -->
-    <TopNav />
+    <!-- TopNav is rendered globally in app.vue -->
 
     <!-- Main Content -->
-    <div class="pt-24 md:pt-32 px-4 md:px-6 pb-28 lg:pb-20 max-w-7xl mx-auto">
+    <div class="px-4 md:px-6 pb-28 lg:pb-20 max-w-7xl mx-auto">
       <!-- Back button -->
       <button
         @click="navigateTo('/dashboard')"
@@ -260,7 +259,7 @@
 </template>
 
 <script setup lang="ts">
-import TopNav from '~/components/TopNav.vue'
+/* TopNav imported and rendered globally in app.vue; per-page import removed */
 import { useProgramApi, type WorkoutProgram, type ProgramDay } from '~/composables/useProgramApi'
 
 useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })

@@ -21,7 +21,7 @@
     </div>
 
     <!-- Content -->
-    <div class="flex-1 flex items-center justify-center px-4 pt-28 pb-32">
+    <div class="flex-1 flex items-center justify-center px-4 pb-32">
       <div class="w-full max-w-lg">
         <!-- Step 1: Objectif -->
         <Transition

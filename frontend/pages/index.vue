@@ -1,10 +1,9 @@
 <template>
   <div class="min-h-screen">
-    <!-- Shared TopNav -->
-    <TopNav />
+    <!-- TopNav is rendered globally in app.vue -->
 
     <!-- Hero -->
-    <section class="pt-28 md:pt-40 pb-16 md:pb-28 px-6 geometric-bg">
+    <section class="pb-16 md:pb-28 px-6 geometric-bg">
       <div class="max-w-7xl mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div class="fade-in text-center lg:text-left">
@@ -371,7 +370,7 @@
 </template>
 
 <script setup lang="ts">
-import TopNav from '~/components/TopNav.vue'
+/* TopNav imported and rendered globally in app.vue; per-page import removed */
 import { useAuthStore } from '~/stores/auth'
 
 useSeoMeta({

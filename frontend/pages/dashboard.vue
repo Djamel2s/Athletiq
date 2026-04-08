@@ -3,19 +3,19 @@
     <!-- Navigation (moved to app.vue) -->
 
     <!-- Loading -->
-    <div v-if="!pageReady" class="pt-24 md:pt-32 pb-28 lg:pb-20 flex items-center justify-center min-h-[60vh]">
+    <div v-if="!pageReady" class="pb-28 lg:pb-20 flex items-center justify-center min-h-[60vh]">
       <div class="text-center">
         <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary-200 dark:border-primary-700 border-t-sand-500"></div>
       </div>
     </div>
 
     <!-- Contenu principal -->
-    <div v-else class="pt-24 md:pt-32 pb-28 lg:pb-20 max-w-7xl mx-auto">
+    <div v-else class="pb-28 lg:pb-20 max-w-7xl mx-auto">
       <div class="flex px-4 md:px-4">
         <!-- Vertical Sidebar Navigation -->
          <!-- faudrait la fixer pour que si on scroll elle reste toujours sur la page -->
-        <div class="hidden lg:block lg:mr-8 flex-shrink-0 self-start sticky top-32">
-          <div class="group bg-white/70 dark:bg-primary-800/70 backdrop-blur-md rounded-xl border border-primary-200 dark:border-primary-700 hover:shadow-lg hover:border-primary-400 dark:hover:border-primary-500 p-4 flex flex-col w-[72px] hover:w-[200px] overflow-hidden" style="height: calc(100vh - 10rem); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease;">
+        <div class="hidden lg:block lg:mr-8 flex-shrink-0 self-start sticky top-2">
+          <div class="group bg-white/70 dark:bg-primary-800/70 backdrop-blur-md rounded-xl border border-primary-200 dark:border-primary-700 hover:shadow-lg hover:border-primary-400 dark:hover:border-primary-500 p-4 flex flex-col w-[72px] hover:w-[200px] overflow-hidden" style="height: calc(100vh - var(--header-height) - 4rem); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease;">
             <!-- Navigation Buttons -->
             <div class="flex flex-col space-y-6">
               <!-- Statistics Button -->
