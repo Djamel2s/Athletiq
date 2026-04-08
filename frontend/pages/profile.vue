@@ -850,37 +850,7 @@ watch(() => route.path, async (newPath, oldPath) => {
   await loadProfileFor(requested)
 })
 
-  // Load gym bros count
-  try {
-    const data = await getFriends() as any
-    const friendsList = data?.friends || data || []
-    gymBrosCount.value = friendsList.length
-  } catch {
-    gymBrosCount.value = 0
-  }
-
-  // Load photos
-  try {
-    photos.value = await getRecentPhotos(30)
-  } catch {
-    photos.value = []
-  }
-
-  // Load posts
-  try {
-    const feedData = await getFeed(0) as any
-    posts.value = (feedData?.posts || feedData || []).filter((p: any) => p.userId === authStore.user?.id)
-  } catch {
-    posts.value = []
-  }
-
-  // Load workouts for photo upload selector
-  if (!workoutStore.workouts.length) {
-    workoutStore.fetchWorkouts().catch(() => {})
-  }
-
-  pageLoading.value = false
-})
+  // (profile loading and reactive updates handled in loadProfileFor and lifecycle hooks)
 </script>
 
 <style scoped>
