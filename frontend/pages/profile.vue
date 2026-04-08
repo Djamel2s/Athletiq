@@ -1421,6 +1421,10 @@ const getRequestedUsernameFromRoute = () => {
 };
 
 const loadProfileFor = async (requestedUsername?: string) => {
+  // Clear previous profile data immediately to avoid showing stale visited profiles
+  profileData.value = null;
+  photos.value = [];
+  posts.value = [];
   pageLoading.value = true;
   // Try cached username first (for offline)
   const cachedUsername = process.client ? localStorage.getItem('athletiq_username') : null;

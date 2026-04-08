@@ -4,7 +4,7 @@
     <UiNotificationBell />
 
     <!-- Avatar → Profile -->
-    <NuxtLink to="/profile" class="flex items-center">
+    <NuxtLink :to="profileLink" class="flex items-center">
       <div
         class="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center"
         :class="avatarUrl ? '' : 'bg-gradient-primary'"
@@ -31,7 +31,12 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth';
+import { computed } from 'vue';
 
 const authStore = useAuthStore();
 const avatarUrl = computed(() => authStore.user?.avatarUrl);
+const profileLink = computed(() => {
+  const username = (authStore.user as any)?.username;
+  return username ? `/profile/${username}` : '/profile';
+});
 </script>
