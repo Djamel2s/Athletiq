@@ -119,7 +119,8 @@ function select(s: { id: number; username?: string; firstName?: string; lastName
 /* hide input visually when collapsed but keep it available when expanded */
 .search-collapsible input{
   opacity:0;
-  pointer-events:none;
+  /* keep clickable so focus works and :focus-within triggers expansion */
+  pointer-events:auto;
   transition: opacity 120ms ease-in-out;
   background: transparent !important;
   border: none !important;
@@ -130,7 +131,6 @@ function select(s: { id: number; username?: string; firstName?: string; lastName
 .search-collapsible:hover input,
 .search-collapsible:focus-within input{
   opacity:1;
-  pointer-events:auto;
 }
 
 /* keep icon at the right end so collapsed view shows the loupe; center vertically */
