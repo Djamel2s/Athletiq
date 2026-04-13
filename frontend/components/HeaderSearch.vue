@@ -1,5 +1,5 @@
 <template>
-  <div class="hidden md:flex items-center w-full">
+  <div class="flex items-center w-full">
     <div class="relative w-full search-collapsible" @mouseenter="hover = true" @mouseleave="hover = false">
       <input
         v-model="q"
