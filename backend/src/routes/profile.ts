@@ -179,7 +179,7 @@ router.get('/:username', optionalAuth, async (req: AuthRequest, res) => {
     const totalVolume = Number(volumeResult?.totalVolume) || 0;
 
     // Simple streak calculation: count consecutive days with completed workouts
-    const recentWorkouts = await workoutRepo().find({
+    const recentWorkoutsForStreak = await workoutRepo().find({
       where: { userId: user.id, completedAt: Not(IsNull()) },
       order: { completedAt: 'DESC' },
       select: ['completedAt'],
@@ -187,9 +187,9 @@ router.get('/:username', optionalAuth, async (req: AuthRequest, res) => {
     });
 
     let streak = 0;
-    if (recentWorkouts.length > 0) {
+    if (recentWorkoutsForStreak.length > 0) {
       const workoutDates = new Set(
-        recentWorkouts.map((w) => {
+        recentWorkoutsForStreak.map((w) => {
           const d = new Date(w.completedAt!);
           d.setHours(0, 0, 0, 0);
           return d.getTime();
