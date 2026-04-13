@@ -281,35 +281,6 @@
                   Feed
                 </span>
               </button>
-
-              <!-- Gym Bros Button -->
-              <button
-                @click="navigateTo('/friends')"
-                class="flex items-center space-x-3 transition-all"
-              >
-                <div
-                  class="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center flex-shrink-0"
-                >
-                  <svg
-                    class="w-5 h-5 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                </div>
-                <span
-                  class="text-primary-900 dark:text-primary-100 font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300"
-                >
-                  Gym Bros
-                </span>
-              </button>
             </div>
 
             <!-- Spacer -->
