@@ -1,9 +1,11 @@
 <template>
   <div class="hidden md:flex items-center w-full">
-    <div class="relative w-full search-collapsible">
+    <div class="relative w-full search-collapsible" @mouseenter="hover = true" @mouseleave="hover = false">
       <input
         v-model="q"
         @input="onInput"
+        @focus="hasFocus = true"
+        @blur="hasFocus = false"
         type="search"
         placeholder="Rechercher"
         class="w-full pl-4 pr-10 py-2 rounded-xl border border-primary-200 dark:border-primary-700 hover:shadow-lg hover:border-primary-400 dark:bg-primary-800/70 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-transparent transition"
@@ -22,14 +24,15 @@
         />
       </svg>
       <ul
-        v-if="suggestions.length"
+        v-if="suggestions.length && expanded"
         class="absolute left-0 right-0 mt-1 bg-white dark:bg-primary-900/95 border border-primary-200 dark:border-primary-700 rounded-xl shadow-lg max-h-56 overflow-auto z-50 text-primary-900 dark:text-primary-100"
       >
         <li
           v-for="s in suggestions"
           :key="s.id"
           class="px-3 py-2 hover:bg-primary-100 dark:hover:bg-primary-900/95 cursor-pointer transition-colors"
-          @click="select(s)"
+          @mousedown.prevent="select(s)"
+          @click.prevent
         >
           <div class="flex items-center gap-3">
             <div
@@ -62,12 +65,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { apiFetch } from '~/utils/apiFetch';
 const q = ref('');
 const suggestions = ref<
   Array<{ id: number; username: string; firstName?: string; lastName?: string; avatarUrl?: string }>
 >([]);
+
+const hover = ref(false);
+const hasFocus = ref(false);
+const expanded = computed(() => hover.value || hasFocus.value);
 
 let timer: any = null;
 function onInput() {
