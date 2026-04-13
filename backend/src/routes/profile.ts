@@ -218,6 +218,35 @@ router.get('/:username', optionalAuth, async (req: AuthRequest, res) => {
       .take(6)
       .getMany();
 
+    const recentWorkouts = await workoutRepo().find({
+      where: { userId: user.id, completedAt: Not(IsNull()) },
+      order: { completedAt: 'DESC' },
+      take: 20,
+      select: ['id', 'name', 'completedAt', 'duration', 'totalVolume'],
+    });
+
+    const friendships = await friendshipRepo().find({
+      where: [
+        { requesterId: user.id, status: 'ACCEPTED' },
+        { addresseeId: user.id, status: 'ACCEPTED' },
+      ],
+      relations: ['requester', 'addressee'],
+      take: 20,
+    });
+
+    const friends = friendships.map((f) => {
+      const friend = f.requesterId === user.id ? f.addressee : f.requester;
+      return {
+        friendshipId: f.id,
+        id: friend.id,
+        username: friend.username,
+        firstName: friend.firstName,
+        lastName: friend.lastName,
+        avatarUrl: friend.avatarUrl,
+        bio: friend.bio,
+      };
+    });
+
     // Check friendship status for viewer
     let requestPending = false;
     if (viewerId && !isOwnProfile) {
@@ -259,6 +288,14 @@ router.get('/:username', optionalAuth, async (req: AuthRequest, res) => {
         photoUrl: p.photoUrl,
         createdAt: p.createdAt,
       })),
+      workouts: recentWorkouts.map((workout) => ({
+        id: workout.id,
+        name: workout.name,
+        completedAt: workout.completedAt,
+        duration: workout.duration,
+        totalVolume: workout.totalVolume,
+      })),
+      friends,
       posts: feedPosts,
     });
   } catch (error) {

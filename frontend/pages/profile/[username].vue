@@ -57,12 +57,28 @@
           </div>
 
           <!-- Name & Username -->
-          <h1 class="text-2xl font-bold text-primary-900 dark:text-primary-100">
-            {{ profile.firstName }} {{ profile.lastName }}
-          </h1>
-          <p class="text-sm text-primary-500 dark:text-primary-400 mt-0.5">
-            @{{ profile.username }}
-          </p>
+          <div class="flex flex-col items-center gap-2">
+            <h1 class="text-2xl font-bold text-primary-900 dark:text-primary-100">
+              {{ profile.firstName }} {{ profile.lastName }}
+            </h1>
+            <div class="flex items-center gap-2 flex-wrap justify-center">
+              <p class="text-sm text-primary-500 dark:text-primary-400">@{{ profile.username }}</p>
+              <span
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-semibold tracking-wide uppercase"
+                :class="
+                  profile.isPublic === false
+                    ? 'border-rose-500/20 bg-rose-500/10 text-rose-600 dark:text-rose-300'
+                    : 'border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+                "
+              >
+                <Icon
+                  :name="profile.isPublic === false ? 'lucide:lock' : 'lucide:globe'"
+                  class="w-3.5 h-3.5"
+                />
+                {{ profile.isPublic === false ? 'Privé' : 'Public' }}
+              </span>
+            </div>
+          </div>
         </div>
 
         <!-- Action Buttons -->
@@ -118,7 +134,7 @@
         <!-- Private profile message -->
         <div v-if="!profile.isPublic && !profile.isFriend" class="text-center py-16 slide-up">
           <div
-            class="w-20 h-20 mx-auto mb-5 rounded-2xl bg-primary-100 dark:bg-primary-800/50 flex items-center justify-center"
+            class="w-20 h-20 mx-auto mb-5 rounded-3xl bg-primary-100 dark:bg-primary-800/50 flex items-center justify-center"
           >
             <Icon name="lucide:lock" class="w-10 h-10 text-primary-400 dark:text-primary-500" />
           </div>
@@ -126,7 +142,8 @@
             Profil prive
           </h3>
           <p class="text-sm text-primary-500 dark:text-primary-400 max-w-xs mx-auto">
-            Ajoutez cet utilisateur en Gym Bro pour voir son profil complet
+            Ajoutez cet utilisateur en Gym Bro pour voir son profil complet, ses photos et ses
+            posts.
           </p>
         </div>
 
