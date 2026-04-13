@@ -1,29 +1,46 @@
 <template>
-  <div class="hidden md:flex items-center w-full">
-    <div class="relative w-full">
-      <input
-        v-model="q"
-        @input="onInput"
-        type="search"
-        placeholder="Rechercher"
-        class="w-full pl-4 pr-10 py-2 rounded-xl border border-primary-200 dark:border-primary-700 hover:shadow-lg hover:border-primary-400 dark:bg-primary-800/70 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-transparent transition"
-      />
-      <svg
-        class="absolute right-3 top-2.5 w-5 h-5 text-primary-500"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
+  <div class="flex items-center">
+    <div
+      class="relative flex items-center"
+      @mouseenter="hover = true"
+      @mouseleave="hover = false"
+    >
+      <!-- collapsed icon -->
+      <button
+        type="button"
+        @click="toggleOpen"
+        class="w-10 h-10 rounded-md flex items-center justify-center bg-primary-100 dark:bg-primary-800 text-primary-600 hover:shadow-sm transition"
+        aria-label="Ouvrir la recherche"
       >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+        <svg
+          class="w-5 h-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </button>
+
+      <!-- expanding input (desktop) -->
+      <div
+        class="ml-2 transition-all duration-200 ease-in-out overflow-hidden"
+        :style="{ width: (open || hover) ? '360px' : '0px' }"
+      >
+        <input
+          v-show="open || hover"
+          v-model="q"
+          @input="onInput"
+          type="search"
+          placeholder="Rechercher"
+          class="w-full pl-4 pr-10 py-2 rounded-xl border border-primary-200 dark:border-primary-700 dark:bg-primary-800/70 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-transparent"
         />
-      </svg>
+      </div>
+
+      <!-- suggestions -->
       <ul
-        v-if="suggestions.length"
-        class="absolute left-0 right-0 mt-1 bg-white dark:bg-primary-900/95 border border-primary-200 dark:border-primary-700 rounded-xl shadow-lg max-h-56 overflow-auto z-50 text-primary-900 dark:text-primary-100"
+        v-if="suggestions.length && (open || hover)"
+        class="absolute left-12 top-12 bg-white dark:bg-primary-900/95 border border-primary-200 dark:border-primary-700 rounded-xl shadow-lg max-h-56 overflow-auto z-50 text-primary-900 dark:text-primary-100 w-96"
       >
         <li
           v-for="s in suggestions"
@@ -32,27 +49,43 @@
           @click="select(s)"
         >
           <div class="flex items-center gap-3">
-            <div
-              class="w-8 h-8 rounded-md overflow-hidden flex-shrink-0 flex items-center justify-center bg-primary-100 dark:bg-primary-800 border border-primary-100 dark:border-primary-800"
-            >
-              <img
-                v-if="s.avatarUrl"
-                :src="s.avatarUrl"
-                alt="avatar"
-                class="w-full h-full object-cover"
-              />
-              <Icon
-                v-else
-                name="lucide:user"
-                class="w-5 h-5 text-primary-700 dark:text-primary-200"
-              />
+            <div class="w-8 h-8 rounded-md overflow-hidden flex-shrink-0 flex items-center justify-center bg-primary-100 dark:bg-primary-800">
+              <img v-if="s.avatarUrl" :src="s.avatarUrl" alt="avatar" class="w-full h-full object-cover" />
+              <Icon v-else name="lucide:user" class="w-5 h-5 text-primary-700 dark:text-primary-200" />
             </div>
             <div class="flex items-center">
-              <span class="text-sm font-medium">{{
-                s.username ||
-                s.firstName ||
-                (s.firstName && s.lastName ? `${s.firstName} ${s.lastName}` : `User ${s.id}`)
-              }}</span>
+              <span class="text-sm font-medium">{{ s.username || s.firstName || (s.firstName && s.lastName ? `${s.firstName} ${s.lastName}` : `User ${s.id}`) }}</span>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<!-- Mobile full-screen overlay when open -->
+<template v-if="open" >
+  <div class="md:hidden fixed inset-0 z-50 flex items-start p-4 bg-black/40">
+    <div class="w-full max-w-lg mx-auto">
+      <input
+        v-model="q"
+        @input="onInput"
+        type="search"
+        placeholder="Rechercher"
+        class="w-full pl-4 pr-10 py-2 rounded-xl border border-primary-200 dark:border-primary-700 dark:bg-primary-800/70 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-transparent"
+      />
+      <ul
+        v-if="suggestions.length"
+        class="mt-2 bg-white dark:bg-primary-900/95 border border-primary-200 dark:border-primary-700 rounded-xl shadow-lg max-h-56 overflow-auto z-50 text-primary-900 dark:text-primary-100"
+      >
+        <li v-for="s in suggestions" :key="s.id" class="px-3 py-2 hover:bg-primary-100 dark:hover:bg-primary-900/95 cursor-pointer" @click="select(s)">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-md overflow-hidden flex-shrink-0 flex items-center justify-center bg-primary-100 dark:bg-primary-800">
+              <img v-if="s.avatarUrl" :src="s.avatarUrl" alt="avatar" class="w-full h-full object-cover" />
+              <Icon v-else name="lucide:user" class="w-5 h-5 text-primary-700 dark:text-primary-200" />
+            </div>
+            <div class="flex items-center">
+              <span class="text-sm font-medium">{{ s.username || s.firstName || (s.firstName && s.lastName ? `${s.firstName} ${s.lastName}` : `User ${s.id}`) }}</span>
             </div>
           </div>
         </li>
@@ -64,15 +97,20 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { apiFetch } from '~/utils/apiFetch';
+
 const q = ref('');
-const suggestions = ref<
-  Array<{ id: number; username: string; firstName?: string; lastName?: string; avatarUrl?: string }>
->([]);
+const suggestions = ref<Array<{ id: number; username: string; firstName?: string; lastName?: string; avatarUrl?: string }>>([]);
+const open = ref(false);
+const hover = ref(false);
 
 let timer: any = null;
 function onInput() {
   clearTimeout(timer);
   timer = setTimeout(fetchSuggestions, 250);
+}
+
+function toggleOpen() {
+  open.value = !open.value;
 }
 
 async function fetchSuggestions() {
@@ -81,24 +119,20 @@ async function fetchSuggestions() {
     return;
   }
   try {
-    // Call backend social search via apiFetch (adds auth header and base URL)
-    const res = await apiFetch(`/social/search?q=${encodeURIComponent(q.value)}`).catch(() => ({
-      users: [],
-    }));
+    const res = await apiFetch(`/social/search?q=${encodeURIComponent(q.value)}`).catch(() => ({ users: [] }));
     const list = Array.isArray(res) ? res : (res as any)?.users || [];
     suggestions.value = list;
   } catch (e) {
-    // If not authenticated or any error, return empty suggestions
     suggestions.value = [];
   }
 }
 
 function select(s: { id: number; username?: string; firstName?: string; lastName?: string }) {
-  // navigate to profile by username if available, otherwise by id
   const target = s.username || s.id;
   navigateTo(`/profile/${target}`);
   q.value = '';
   suggestions.value = [];
+  open.value = false;
 }
 </script>
 
