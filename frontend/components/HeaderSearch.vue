@@ -60,36 +60,34 @@
         </li>
       </ul>
     </div>
-  </div>
-</template>
 
-<!-- Mobile full-screen overlay when open -->
-<template v-if="open" >
-  <div class="md:hidden fixed inset-0 z-50 flex items-start p-4 bg-black/40">
-    <div class="w-full max-w-lg mx-auto">
-      <input
-        v-model="q"
-        @input="onInput"
-        type="search"
-        placeholder="Rechercher"
-        class="w-full pl-4 pr-10 py-2 rounded-xl border border-primary-200 dark:border-primary-700 dark:bg-primary-800/70 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-transparent"
-      />
-      <ul
-        v-if="suggestions.length"
-        class="mt-2 bg-white dark:bg-primary-900/95 border border-primary-200 dark:border-primary-700 rounded-xl shadow-lg max-h-56 overflow-auto z-50 text-primary-900 dark:text-primary-100"
-      >
-        <li v-for="s in suggestions" :key="s.id" class="px-3 py-2 hover:bg-primary-100 dark:hover:bg-primary-900/95 cursor-pointer" @click="select(s)">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-md overflow-hidden flex-shrink-0 flex items-center justify-center bg-primary-100 dark:bg-primary-800">
-              <img v-if="s.avatarUrl" :src="s.avatarUrl" alt="avatar" class="w-full h-full object-cover" />
-              <Icon v-else name="lucide:user" class="w-5 h-5 text-primary-700 dark:text-primary-200" />
+    <!-- Mobile full-screen overlay when open -->
+    <div v-if="open" class="md:hidden fixed inset-0 z-50 flex items-start p-4 bg-black/40">
+      <div class="w-full max-w-lg mx-auto">
+        <input
+          v-model="q"
+          @input="onInput"
+          type="search"
+          placeholder="Rechercher"
+          class="w-full pl-4 pr-10 py-2 rounded-xl border border-primary-200 dark:border-primary-700 dark:bg-primary-800/70 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-transparent"
+        />
+        <ul
+          v-if="suggestions.length"
+          class="mt-2 bg-white dark:bg-primary-900/95 border border-primary-200 dark:border-primary-700 rounded-xl shadow-lg max-h-56 overflow-auto z-50 text-primary-900 dark:text-primary-100"
+        >
+          <li v-for="s in suggestions" :key="s.id" class="px-3 py-2 hover:bg-primary-100 dark:hover:bg-primary-900/95 cursor-pointer" @click="select(s)">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-md overflow-hidden flex-shrink-0 flex items-center justify-center bg-primary-100 dark:bg-primary-800">
+                <img v-if="s.avatarUrl" :src="s.avatarUrl" alt="avatar" class="w-full h-full object-cover" />
+                <Icon v-else name="lucide:user" class="w-5 h-5 text-primary-700 dark:text-primary-200" />
+              </div>
+              <div class="flex items-center">
+                <span class="text-sm font-medium">{{ s.username || s.firstName || (s.firstName && s.lastName ? `${s.firstName} ${s.lastName}` : `User ${s.id}`) }}</span>
+              </div>
             </div>
-            <div class="flex items-center">
-              <span class="text-sm font-medium">{{ s.username || s.firstName || (s.firstName && s.lastName ? `${s.firstName} ${s.lastName}` : `User ${s.id}`) }}</span>
-            </div>
-          </div>
-        </li>
-      </ul>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
