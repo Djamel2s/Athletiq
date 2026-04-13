@@ -108,7 +108,8 @@ function select(s: { id: number; username?: string; firstName?: string; lastName
 .search-collapsible{
   width:44px;
   transition: width 180ms ease-in-out;
-  overflow: hidden;
+  /* allow dropdown suggestions to escape the small collapsed box */
+  overflow: visible;
   position: relative;
 }
 .search-collapsible:hover,
