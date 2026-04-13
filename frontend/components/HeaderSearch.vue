@@ -154,4 +154,25 @@ function select(s: { id: number; username?: string; firstName?: string; lastName
   outline: none !important;
   box-shadow: none !important;
 }
+
+/* Hide native browser "clear" / cancel buttons for search inputs */
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+  display: none !important;
+}
+input[type="search"]::-ms-clear,
+input[type="search"]::-ms-reveal {
+  display: none !important;
+}
+input[type="search"]::-moz-search-clear {
+  display: none !important;
+}
+/* fallback: remove default appearance so browsers don't draw their own control */
+input[type="search"]{
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
 </style>
