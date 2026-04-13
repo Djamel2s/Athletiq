@@ -167,6 +167,7 @@
               </button>
 
               <!-- Wrapped Button -->
+              <!--
               <button
                 @click="navigateTo('/wrapped')"
                 class="flex items-center space-x-3 transition-all"
@@ -194,7 +195,7 @@
                   Wrapped
                 </span>
               </button>
-
+              -->
               <!-- Programmes Button -->
               <button
                 @click="navigateTo('/programs')"
