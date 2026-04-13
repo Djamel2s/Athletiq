@@ -490,11 +490,11 @@
         >
           <div class="absolute inset-0 bg-black/75 backdrop-blur-md"></div>
           <div
-            class="relative w-full max-w-lg overflow-hidden rounded-[28px] border border-white/10 bg-white/95 shadow-[0_30px_80px_rgba(15,23,42,0.28)] backdrop-blur-xl dark:bg-primary-950/95"
+            class="relative w-full max-w-lg overflow-hidden rounded-[28px] border border-white/10 bg-white/95 text-primary-900 shadow-[0_30px_80px_rgba(15,23,42,0.28)] backdrop-blur-xl dark:border-primary-800/70 dark:bg-primary-950/95 dark:text-primary-100"
             @click.stop
           >
             <div
-              class="bg-gradient-to-br from-sand-500/15 via-transparent to-primary-500/10 px-5 py-5 border-b border-primary-200/70 dark:border-white/10"
+              class="bg-gradient-to-br from-sand-500/15 via-transparent to-primary-500/10 px-5 py-5 border-b border-primary-200/70 dark:from-primary-900/80 dark:via-primary-900/35 dark:to-primary-800/70 dark:border-primary-800/70"
             >
               <div class="flex items-start justify-between gap-4">
                 <div>
@@ -522,7 +522,7 @@
             <div class="max-h-[70vh] overflow-y-auto p-5 custom-scrollbar">
               <div v-if="workoutsLoading" class="text-center py-10">
                 <div
-                  class="inline-block animate-spin rounded-full h-9 w-9 border-2 border-primary-200 border-t-sand-500"
+                  class="inline-block animate-spin rounded-full h-9 w-9 border-2 border-primary-200 border-t-sand-500 dark:border-primary-700"
                 ></div>
               </div>
               <div v-else>
@@ -582,11 +582,11 @@
         >
           <div class="absolute inset-0 bg-black/75 backdrop-blur-md"></div>
           <div
-            class="relative w-full max-w-md overflow-hidden rounded-[28px] border border-white/10 bg-white/95 shadow-[0_30px_80px_rgba(15,23,42,0.28)] backdrop-blur-xl dark:bg-primary-950/95"
+            class="relative w-full max-w-md overflow-hidden rounded-[28px] border border-white/10 bg-white/95 text-primary-900 shadow-[0_30px_80px_rgba(15,23,42,0.28)] backdrop-blur-xl dark:border-primary-800/70 dark:bg-primary-950/95 dark:text-primary-100"
             @click.stop
           >
             <div
-              class="bg-gradient-to-br from-emerald-500/15 via-transparent to-sand-500/10 px-5 py-5 border-b border-primary-200/70 dark:border-white/10"
+              class="bg-gradient-to-br from-emerald-500/15 via-transparent to-sand-500/10 px-5 py-5 border-b border-primary-200/70 dark:from-primary-900/80 dark:via-primary-900/35 dark:to-primary-800/70 dark:border-primary-800/70"
             >
               <div class="flex items-start justify-between gap-4">
                 <div>
@@ -612,7 +612,7 @@
             <div class="max-h-[70vh] overflow-y-auto p-5 custom-scrollbar">
               <div v-if="gymBrosLoading" class="text-center py-10">
                 <div
-                  class="inline-block animate-spin rounded-full h-9 w-9 border-2 border-primary-200 border-t-sand-500"
+                  class="inline-block animate-spin rounded-full h-9 w-9 border-2 border-primary-200 border-t-sand-500 dark:border-primary-700"
                 ></div>
               </div>
               <div v-else>
@@ -642,7 +642,7 @@
                     </div>
                     <button
                       @click.prevent="navigateTo(`/profile/${g.username || g.id}`)"
-                      class="shrink-0 rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-primary-700 shadow-sm transition hover:bg-primary-950 hover:text-white dark:bg-primary-800 dark:text-primary-100 dark:hover:bg-white dark:hover:text-primary-950"
+                      class="shrink-0 rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-primary-700 shadow-sm transition hover:bg-primary-950 hover:text-white dark:bg-primary-800 dark:text-primary-100 dark:hover:bg-primary-700 dark:hover:text-white"
                     >
                       Voir
                     </button>
@@ -677,11 +677,11 @@
         >
           <div class="absolute inset-0 bg-black/75 backdrop-blur-md"></div>
           <div
-            class="relative w-full max-w-md overflow-hidden rounded-[28px] border border-white/10 bg-white/95 shadow-[0_30px_80px_rgba(15,23,42,0.28)] backdrop-blur-xl dark:bg-primary-950/95"
+            class="relative w-full max-w-md overflow-hidden rounded-[28px] border border-white/10 bg-white/95 text-primary-900 shadow-[0_30px_80px_rgba(15,23,42,0.28)] backdrop-blur-xl dark:border-primary-800/70 dark:bg-primary-950/95 dark:text-primary-100"
             @click.stop
           >
             <div
-              class="bg-gradient-to-br from-orange-500/15 via-transparent to-sand-500/10 px-5 py-5 border-b border-primary-200/70 dark:border-white/10"
+              class="bg-gradient-to-br from-orange-500/15 via-transparent to-sand-500/10 px-5 py-5 border-b border-primary-200/70 dark:from-primary-900/80 dark:via-primary-900/35 dark:to-primary-800/70 dark:border-primary-800/70"
             >
               <div class="flex items-start justify-between gap-4">
                 <div>
@@ -709,7 +709,7 @@
             <div class="max-h-[70vh] overflow-y-auto p-5 custom-scrollbar">
               <div v-if="streakLoading" class="text-center py-10">
                 <div
-                  class="inline-block animate-spin rounded-full h-9 w-9 border-2 border-primary-200 border-t-sand-500"
+                  class="inline-block animate-spin rounded-full h-9 w-9 border-2 border-primary-200 border-t-sand-500 dark:border-primary-700"
                 ></div>
               </div>
               <div v-else>
