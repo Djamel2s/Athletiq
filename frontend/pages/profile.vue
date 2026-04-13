@@ -112,7 +112,6 @@
                 :class="profileVisibility.badgeClass"
               >
                 <Icon :name="profileVisibility.icon" class="w-3.5 h-3.5" />
-                {{ profileVisibility.label }}
               </span>
             </div>
             <p v-if="profileData?.bio" class="text-sm text-primary-500 dark:text-primary-400 mt-1">
@@ -289,15 +288,6 @@
 
           <!-- Posts List (par defaut) -->
           <div v-if="!profileData?.restricted && activeTab === 'posts'" class="space-y-4 slide-up">
-            <div class="flex justify-center">
-              <span
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[11px] font-semibold tracking-wide uppercase"
-                :class="profileVisibility.badgeClass"
-              >
-                <Icon :name="profileVisibility.icon" class="w-3.5 h-3.5" />
-                {{ profileVisibility.label }}
-              </span>
-            </div>
             <div v-if="posts.length > 0">
               <div v-for="post in posts" :key="post.id" class="card-glass !p-4">
                 <div class="flex items-center gap-3 mb-3">
