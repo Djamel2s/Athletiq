@@ -4,7 +4,7 @@
     class="max-w-7xl mx-auto px-4 text-sm text-primary-500 dark:text-primary-400 mb-2"
   >
     <ol class="flex items-center gap-2">
-      <li v-for="(c, i) in allCrumbs" :key="i" class="flex items-center gap-2">
+      <li v-for="(c, i) in allCrumbs" :key="c.to" class="flex items-center gap-2">
         <span v-if="i !== 0" class="opacity-40 chevron">❯</span>
         <NuxtLink v-if="i !== allCrumbs.length - 1" :to="c.to" class="hover:underline">{{
           c.text
