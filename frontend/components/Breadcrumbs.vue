@@ -64,7 +64,18 @@ const crumbs = computed(() => {
     }
     results.push({ text, to: acc });
   }
-  return results;
+    // If the current route username matches the logged-in user, remove the username crumb
+    // so clicking "Profil" (own profile) doesn't leave the username visible in the breadcrumb.
+    try {
+      const currentUsername = String((route.params || {}).username || '');
+      if (currentUsername && authStore.user && authStore.user.username === currentUsername) {
+        return results.filter((r) => !r.to.endsWith(`/${currentUsername}`));
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    return results;
 });
 
 // Build full crumbs with a leading root based on auth state.

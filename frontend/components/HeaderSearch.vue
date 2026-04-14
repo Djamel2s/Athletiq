@@ -67,6 +67,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { apiFetch } from '~/utils/apiFetch';
+import { useAuthStore } from '~/stores/auth';
 const q = ref('');
 const suggestions = ref<
   Array<{ id: number; username: string; firstName?: string; lastName?: string; avatarUrl?: string }>
@@ -75,6 +76,8 @@ const suggestions = ref<
 const hover = ref(false);
 const hasFocus = ref(false);
 const expanded = computed(() => hover.value || hasFocus.value);
+
+const authStore = useAuthStore();
 
 let timer: any = null;
 function onInput() {
@@ -101,9 +104,14 @@ async function fetchSuggestions() {
 }
 
 function select(s: { id: number; username?: string; firstName?: string; lastName?: string }) {
-  // navigate to profile by username if available, otherwise by id
-  const target = s.username || s.id;
-  navigateTo(`/profile/${target}`);
+  // If the selected item is the current user, go to `/profile` (own profile)
+  const isMe = authStore.user && (s.username === authStore.user.username || s.id === authStore.user.id);
+  if (isMe) {
+    navigateTo('/profile');
+  } else {
+    const target = s.username || s.id;
+    navigateTo(`/profile/${target}`);
+  }
   q.value = '';
   suggestions.value = [];
 }
