@@ -18,12 +18,21 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from '#imports';
-import { computed } from 'vue';
+import { useRouter } from '#imports';
+import { computed, ref, watch } from 'vue';
 import { useAuthStore } from '~/stores/auth';
 
-const route = useRoute();
+const router = useRouter();
 const authStore = useAuthStore();
+
+const currentFullPath = ref('/');
+watch(
+  () => router.currentRoute.value.fullPath,
+  (value: string | undefined) => {
+    currentFullPath.value = String(value || '/');
+  },
+  { immediate: true }
+);
 
 const nameMap: Record<string, string> = {
   dashboard: 'Dashboard',
@@ -42,7 +51,7 @@ const nameMap: Record<string, string> = {
 };
 
 const normalizedPath = computed(() => {
-  const raw = String(route.fullPath || route.path || '/');
+  const raw = currentFullPath.value;
   const noQuery = raw.split('?')[0].split('#')[0] || '/';
   if (noQuery === '/') return '/';
   return noQuery.endsWith('/') ? noQuery.slice(0, -1) : noQuery;
