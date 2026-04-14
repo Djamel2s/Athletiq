@@ -1,6 +1,10 @@
 <template>
   <div class="flex items-center w-full">
-    <div class="relative w-full search-collapsible" @mouseenter="hover = true" @mouseleave="hover = false">
+    <div
+      class="relative w-full search-collapsible"
+      @mouseenter="hover = true"
+      @mouseleave="hover = false"
+    >
       <input
         v-model="q"
         @input="onInput"
@@ -86,7 +90,7 @@ function onInput() {
 }
 
 async function fetchSuggestions() {
-  if (!q.value || q.value.length < 2) {
+  if (!q.value) {
     suggestions.value = [];
     return;
   }
@@ -105,7 +109,8 @@ async function fetchSuggestions() {
 
 function select(s: { id: number; username?: string; firstName?: string; lastName?: string }) {
   // If the selected item is the current user, go to `/profile` (own profile)
-  const isMe = authStore.user && (s.username === authStore.user.username || s.id === authStore.user.id);
+  const isMe =
+    authStore.user && (s.username === authStore.user.username || s.id === authStore.user.id);
   if (isMe) {
     navigateTo('/profile');
   } else {
@@ -120,23 +125,23 @@ function select(s: { id: number; username?: string; firstName?: string; lastName
 <style scoped>
 /* Collapsible search: keep original markup but collapse to a square showing the icon.
    Expands on hover or focus-within. Minimal, non-invasive overrides. */
-.search-collapsible{
-  width:44px;
+.search-collapsible {
+  width: 44px;
   transition: width 180ms ease-in-out;
   /* allow dropdown suggestions to escape the small collapsed box */
   overflow: visible;
   position: relative;
 }
 .search-collapsible:hover,
-.search-collapsible:focus-within{
-  width:100%;
+.search-collapsible:focus-within {
+  width: 100%;
 }
 
 /* hide input visually when collapsed but keep it available when expanded */
-.search-collapsible input{
-  opacity:0;
+.search-collapsible input {
+  opacity: 0;
   /* keep clickable so focus works and :focus-within triggers expansion */
-  pointer-events:auto;
+  pointer-events: auto;
   transition: opacity 120ms ease-in-out;
   background: transparent !important;
   border: none !important;
@@ -145,12 +150,12 @@ function select(s: { id: number; username?: string; firstName?: string; lastName
   -webkit-appearance: none !important;
 }
 .search-collapsible:hover input,
-.search-collapsible:focus-within input{
-  opacity:1;
+.search-collapsible:focus-within input {
+  opacity: 1;
 }
 
 /* keep icon at the right end so collapsed view shows the loupe; center vertically */
-.search-collapsible svg{
+.search-collapsible svg {
   left: auto !important;
   right: 12px !important;
   top: 50% !important;
@@ -158,27 +163,27 @@ function select(s: { id: number; username?: string; firstName?: string; lastName
 }
 
 /* remove any focus ring or white overlay coming from focus styles */
-.search-collapsible input:focus{
+.search-collapsible input:focus {
   outline: none !important;
   box-shadow: none !important;
 }
 
 /* Hide native browser "clear" / cancel buttons for search inputs */
-input[type="search"]::-webkit-search-decoration,
-input[type="search"]::-webkit-search-cancel-button,
-input[type="search"]::-webkit-search-results-button,
-input[type="search"]::-webkit-search-results-decoration {
+input[type='search']::-webkit-search-decoration,
+input[type='search']::-webkit-search-cancel-button,
+input[type='search']::-webkit-search-results-button,
+input[type='search']::-webkit-search-results-decoration {
   display: none !important;
 }
-input[type="search"]::-ms-clear,
-input[type="search"]::-ms-reveal {
+input[type='search']::-ms-clear,
+input[type='search']::-ms-reveal {
   display: none !important;
 }
-input[type="search"]::-moz-search-clear {
+input[type='search']::-moz-search-clear {
   display: none !important;
 }
 /* fallback: remove default appearance so browsers don't draw their own control */
-input[type="search"]{
+input[type='search'] {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
