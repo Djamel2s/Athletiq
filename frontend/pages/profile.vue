@@ -488,38 +488,19 @@
           class="fixed inset-0 z-[100] flex items-center justify-center p-4"
           @click="showWorkoutsModal = false"
         >
-          <div class="absolute inset-0 bg-black/75 backdrop-blur-md"></div>
           <div
-            class="relative w-full max-w-lg overflow-hidden rounded-[28px] border border-white/10 bg-white/95 text-primary-900 shadow-[0_30px_80px_rgba(15,23,42,0.28)] backdrop-blur-xl dark:border-primary-800/70 dark:bg-primary-950/95 dark:text-primary-100"
+            class="relative w-full max-w-lg overflow-hidden rounded-3xl border border-primary-200/70 bg-white/95 text-primary-900 shadow-[0_30px_80px_rgba(15,23,42,0.18)] backdrop-blur-xl dark:border-primary-800/70 dark:bg-primary-950/95 dark:text-primary-100"
             @click.stop
           >
-            <div
-              class="bg-gradient-to-br from-sand-500/15 via-transparent to-primary-500/10 px-5 py-5 border-b border-primary-200/70 dark:from-primary-900/80 dark:via-primary-900/35 dark:to-primary-800/70 dark:border-primary-800/70"
-            >
-              <div class="flex items-start justify-between gap-4">
-                <div>
-                  <div
-                    class="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary-500 dark:bg-white/10 dark:text-primary-300"
-                  >
-                    <Icon name="lucide:dumbbell" class="w-3.5 h-3.5" />
-                    Activite
-                  </div>
-                  <h3 class="mt-3 text-xl font-bold text-primary-950 dark:text-white">
-                    Historique des workouts
-                  </h3>
-                  <p class="mt-1 text-sm text-primary-500 dark:text-primary-400">
-                    {{ isOwnProfile ? 'Tes dernières séances' : 'Les dernières séances du profil' }}
-                  </p>
-                </div>
-                <button
-                  @click="showWorkoutsModal = false"
-                  class="w-10 h-10 rounded-2xl bg-white/70 flex items-center justify-center text-primary-500 transition-colors hover:bg-white hover:text-primary-900 dark:bg-white/10 dark:text-primary-300 dark:hover:bg-white/15 dark:hover:text-white"
-                >
-                  <Icon name="lucide:x" class="w-5 h-5" />
-                </button>
-              </div>
+            <div class="flex justify-end px-3 pt-3">
+              <button
+                @click="showWorkoutsModal = false"
+                class="w-10 h-10 rounded-2xl bg-primary-50 flex items-center justify-center text-primary-500 transition-colors hover:bg-primary-100 hover:text-primary-900 dark:bg-primary-900/70 dark:text-primary-300 dark:hover:bg-primary-800 dark:hover:text-white"
+              >
+                <Icon name="lucide:x" class="w-5 h-5" />
+              </button>
             </div>
-            <div class="max-h-[70vh] overflow-y-auto p-5 custom-scrollbar">
+            <div class="max-h-[70vh] overflow-y-auto px-4 pb-4 custom-scrollbar">
               <div v-if="workoutsLoading" class="text-center py-10">
                 <div
                   class="inline-block animate-spin rounded-full h-9 w-9 border-2 border-primary-200 border-t-sand-500 dark:border-primary-700"
@@ -530,26 +511,24 @@
                   <div
                     v-for="w in workoutsList"
                     :key="w.id"
-                    class="rounded-2xl border border-primary-200/80 bg-primary-50/70 p-4 shadow-sm transition-colors hover:border-sand-300 hover:bg-sand-50/70 dark:border-primary-800 dark:bg-primary-900/60 dark:hover:border-sand-500/30"
+                    class="flex items-start justify-between gap-4 rounded-2xl border border-primary-200/80 bg-primary-50/70 p-4 shadow-sm transition-colors hover:border-sand-300 hover:bg-sand-50/70 dark:border-primary-800 dark:bg-primary-900/60 dark:hover:border-sand-500/30"
                   >
-                    <div class="flex items-start justify-between gap-4">
-                      <div class="min-w-0">
-                        <div class="flex items-center gap-2">
-                          <Icon name="lucide:calendar-check-2" class="w-4 h-4 text-sand-500" />
-                          <div class="font-semibold text-primary-950 dark:text-white truncate">
-                            {{ w.name }}
-                          </div>
-                        </div>
-                        <div class="mt-1 text-xs text-primary-500 dark:text-primary-400">
-                          {{ formatDate(w.completedAt || w.createdAt) }} ·
-                          {{ Math.max(1, Math.round((w.duration || 0) / 60)) }} min
+                    <div class="min-w-0">
+                      <div class="flex items-center gap-2">
+                        <Icon name="lucide:calendar-check-2" class="w-4 h-4 text-sand-500" />
+                        <div class="font-semibold text-primary-950 dark:text-white truncate">
+                          {{ w.name }}
                         </div>
                       </div>
-                      <div
-                        class="shrink-0 rounded-full bg-white px-3 py-1 text-xs font-semibold text-primary-600 shadow-sm dark:bg-primary-800 dark:text-primary-200"
-                      >
-                        {{ w.totalVolume ? `${Math.round(w.totalVolume)} kg` : '—' }}
+                      <div class="mt-1 text-xs text-primary-500 dark:text-primary-400">
+                        {{ formatDate(w.completedAt || w.createdAt) }} ·
+                        {{ Math.max(1, Math.round((w.duration || 0) / 60)) }} min
                       </div>
+                    </div>
+                    <div
+                      class="shrink-0 rounded-full bg-white px-3 py-1 text-xs font-semibold text-primary-600 shadow-sm dark:bg-primary-800 dark:text-primary-200"
+                    >
+                      {{ w.totalVolume ? `${Math.round(w.totalVolume)} kg` : '—' }}
                     </div>
                   </div>
                 </div>
@@ -580,36 +559,19 @@
           class="fixed inset-0 z-[100] flex items-center justify-center p-4"
           @click="showGymBrosModal = false"
         >
-          <div class="absolute inset-0 bg-black/75 backdrop-blur-md"></div>
           <div
-            class="relative w-full max-w-md overflow-hidden rounded-[28px] border border-white/10 bg-white/95 text-primary-900 shadow-[0_30px_80px_rgba(15,23,42,0.28)] backdrop-blur-xl dark:border-primary-800/70 dark:bg-primary-950/95 dark:text-primary-100"
+            class="relative w-full max-w-md overflow-hidden rounded-3xl border border-primary-200/70 bg-white/95 text-primary-900 shadow-[0_30px_80px_rgba(15,23,42,0.18)] backdrop-blur-xl dark:border-primary-800/70 dark:bg-primary-950/95 dark:text-primary-100"
             @click.stop
           >
-            <div
-              class="bg-gradient-to-br from-emerald-500/15 via-transparent to-sand-500/10 px-5 py-5 border-b border-primary-200/70 dark:from-primary-900/80 dark:via-primary-900/35 dark:to-primary-800/70 dark:border-primary-800/70"
-            >
-              <div class="flex items-start justify-between gap-4">
-                <div>
-                  <div
-                    class="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary-500 dark:bg-white/10 dark:text-primary-300"
-                  >
-                    <Icon name="lucide:users" class="w-3.5 h-3.5" />
-                    Communaute
-                  </div>
-                  <h3 class="mt-3 text-xl font-bold text-primary-950 dark:text-white">Gym Bros</h3>
-                  <p class="mt-1 text-sm text-primary-500 dark:text-primary-400">
-                    {{ isOwnProfile ? 'Tes contacts proches' : 'Les Gym Bros du profil' }}
-                  </p>
-                </div>
-                <button
-                  @click="showGymBrosModal = false"
-                  class="w-10 h-10 rounded-2xl bg-white/70 flex items-center justify-center text-primary-500 transition-colors hover:bg-white hover:text-primary-900 dark:bg-white/10 dark:text-primary-300 dark:hover:bg-white/15 dark:hover:text-white"
-                >
-                  <Icon name="lucide:x" class="w-5 h-5" />
-                </button>
-              </div>
+            <div class="flex justify-end px-3 pt-3">
+              <button
+                @click="showGymBrosModal = false"
+                class="w-10 h-10 rounded-2xl bg-primary-50 flex items-center justify-center text-primary-500 transition-colors hover:bg-primary-100 hover:text-primary-900 dark:bg-primary-900/70 dark:text-primary-300 dark:hover:bg-primary-800 dark:hover:text-white"
+              >
+                <Icon name="lucide:x" class="w-5 h-5" />
+              </button>
             </div>
-            <div class="max-h-[70vh] overflow-y-auto p-5 custom-scrollbar">
+            <div class="max-h-[70vh] overflow-y-auto px-4 pb-4 custom-scrollbar">
               <div v-if="gymBrosLoading" class="text-center py-10">
                 <div
                   class="inline-block animate-spin rounded-full h-9 w-9 border-2 border-primary-200 border-t-sand-500 dark:border-primary-700"
@@ -635,9 +597,6 @@
                     <div class="flex-1 min-w-0">
                       <div class="font-semibold text-primary-950 dark:text-white truncate">
                         {{ g.username || g.firstName || g.email }}
-                      </div>
-                      <div class="text-xs text-primary-500 dark:text-primary-400 truncate">
-                        {{ g.bio || 'Gym Bro' }}
                       </div>
                     </div>
                     <button
@@ -675,38 +634,19 @@
           class="fixed inset-0 z-[100] flex items-center justify-center p-4"
           @click="showStreakModal = false"
         >
-          <div class="absolute inset-0 bg-black/75 backdrop-blur-md"></div>
           <div
-            class="relative w-full max-w-md overflow-hidden rounded-[28px] border border-white/10 bg-white/95 text-primary-900 shadow-[0_30px_80px_rgba(15,23,42,0.28)] backdrop-blur-xl dark:border-primary-800/70 dark:bg-primary-950/95 dark:text-primary-100"
+            class="relative w-full max-w-md overflow-hidden rounded-3xl border border-primary-200/70 bg-white/95 text-primary-900 shadow-[0_30px_80px_rgba(15,23,42,0.18)] backdrop-blur-xl dark:border-primary-800/70 dark:bg-primary-950/95 dark:text-primary-100"
             @click.stop
           >
-            <div
-              class="bg-gradient-to-br from-orange-500/15 via-transparent to-sand-500/10 px-5 py-5 border-b border-primary-200/70 dark:from-primary-900/80 dark:via-primary-900/35 dark:to-primary-800/70 dark:border-primary-800/70"
-            >
-              <div class="flex items-start justify-between gap-4">
-                <div>
-                  <div
-                    class="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary-500 dark:bg-white/10 dark:text-primary-300"
-                  >
-                    <Icon name="lucide:flame" class="w-3.5 h-3.5" />
-                    Serie
-                  </div>
-                  <h3 class="mt-3 text-xl font-bold text-primary-950 dark:text-white">
-                    Résumé Streak
-                  </h3>
-                  <p class="mt-1 text-sm text-primary-500 dark:text-primary-400">
-                    {{ isOwnProfile ? 'Tes tendances de progression' : 'La progression du profil' }}
-                  </p>
-                </div>
-                <button
-                  @click="showStreakModal = false"
-                  class="w-10 h-10 rounded-2xl bg-white/70 flex items-center justify-center text-primary-500 transition-colors hover:bg-white hover:text-primary-900 dark:bg-white/10 dark:text-primary-300 dark:hover:bg-white/15 dark:hover:text-white"
-                >
-                  <Icon name="lucide:x" class="w-5 h-5" />
-                </button>
-              </div>
+            <div class="flex justify-end px-3 pt-3">
+              <button
+                @click="showStreakModal = false"
+                class="w-10 h-10 rounded-2xl bg-primary-50 flex items-center justify-center text-primary-500 transition-colors hover:bg-primary-100 hover:text-primary-900 dark:bg-primary-900/70 dark:text-primary-300 dark:hover:bg-primary-800 dark:hover:text-white"
+              >
+                <Icon name="lucide:x" class="w-5 h-5" />
+              </button>
             </div>
-            <div class="max-h-[70vh] overflow-y-auto p-5 custom-scrollbar">
+            <div class="max-h-[70vh] overflow-y-auto px-4 pb-4 custom-scrollbar">
               <div v-if="streakLoading" class="text-center py-10">
                 <div
                   class="inline-block animate-spin rounded-full h-9 w-9 border-2 border-primary-200 border-t-sand-500 dark:border-primary-700"
@@ -715,20 +655,14 @@
               <div v-else>
                 <div v-if="streakData" class="space-y-4">
                   <div class="grid grid-cols-2 gap-3">
-                    <div class="rounded-2xl bg-primary-50 p-4 dark:bg-primary-900/60">
-                      <p
-                        class="text-[11px] uppercase tracking-[0.16em] text-primary-500 dark:text-primary-400"
-                      >
-                        Streak actuel
-                      </p>
+                    <div class="card-glass !p-4">
+                      <p class="text-xs text-primary-500 dark:text-primary-400">Streak actuel</p>
                       <p class="mt-2 text-3xl font-bold text-primary-950 dark:text-white">
                         {{ streakData.currentStreak }}
                       </p>
                     </div>
-                    <div class="rounded-2xl bg-primary-50 p-4 dark:bg-primary-900/60">
-                      <p
-                        class="text-[11px] uppercase tracking-[0.16em] text-primary-500 dark:text-primary-400"
-                      >
+                    <div class="card-glass !p-4">
+                      <p class="text-xs text-primary-500 dark:text-primary-400">
                         Objectif / semaine
                       </p>
                       <p class="mt-2 text-3xl font-bold text-primary-950 dark:text-white">
@@ -738,9 +672,7 @@
                   </div>
 
                   <div class="grid grid-cols-2 gap-3">
-                    <div
-                      class="rounded-2xl border border-primary-200 bg-white p-4 dark:border-primary-800 dark:bg-primary-900/60"
-                    >
+                    <div class="card-glass !p-4">
                       <p class="text-xs text-primary-500 dark:text-primary-400">
                         Workouts cette semaine
                       </p>
@@ -748,9 +680,7 @@
                         {{ streakData.currentWeekWorkouts ?? '—' }}
                       </p>
                     </div>
-                    <div
-                      class="rounded-2xl border border-primary-200 bg-white p-4 dark:border-primary-800 dark:bg-primary-900/60"
-                    >
+                    <div class="card-glass !p-4">
                       <p class="text-xs text-primary-500 dark:text-primary-400">
                         Dernier entraînement
                       </p>
@@ -766,16 +696,8 @@
 
                   <div
                     v-if="streakData.weeklyHistory && streakData.weeklyHistory.length"
-                    class="rounded-2xl border border-primary-200 bg-white p-4 dark:border-primary-800 dark:bg-primary-900/60"
+                    class="card-glass !p-4"
                   >
-                    <div class="flex items-center justify-between mb-3">
-                      <p class="text-sm font-semibold text-primary-950 dark:text-white">
-                        Dernières semaines
-                      </p>
-                      <span class="text-xs text-primary-500 dark:text-primary-400"
-                        >{{ streakData.weeklyHistory.length }} semaines</span
-                      >
-                    </div>
                     <ul class="space-y-2 text-sm">
                       <li
                         v-for="w in streakData.weeklyHistory.slice(-8)"
