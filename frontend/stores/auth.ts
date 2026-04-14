@@ -223,6 +223,7 @@ export const useAuthStore = defineStore('auth', {
           'auth_user',
           JSON.stringify({
             id: this.user.id,
+            username: this.user.username,
             firstName: this.user.firstName,
             avatarUrl: this.user.avatarUrl,
             goal: this.user.goal,
@@ -248,7 +249,16 @@ export const useAuthStore = defineStore('auth', {
           if (userStr) {
             const user = JSON.parse(userStr);
             if (user && typeof user === 'object' && user.id) {
-              this.user = user;
+              this.user = {
+                id: user.id,
+                email: user.email || '',
+                username: user.username ?? null,
+                firstName: user.firstName ?? null,
+                lastName: user.lastName ?? null,
+                avatarUrl: user.avatarUrl ?? null,
+                goal: user.goal ?? null,
+                gender: user.gender ?? null,
+              };
               // Don't set isAuthenticated yet - need to refresh token first
             } else {
               this.clearLocalStorage();
