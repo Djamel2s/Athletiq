@@ -4,7 +4,7 @@
 
     <!-- Hero -->
     <section class="pb-16 md:pb-28 px-6 geometric-bg">
-      <div class="max-w-7xl mx-auto">
+      <div class="max-w-6xl mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div class="fade-in text-center lg:text-left">
             <p
@@ -581,36 +581,6 @@
         <p class="text-center text-xs text-primary-400 dark:text-primary-500 mt-6">
           Carte bancaire, Apple Pay, Google Pay. Paiement sécurisé via Stripe.
         </p>
-      </div>
-    </section>
-
-    <!-- Demo -->
-    <section class="py-16 md:py-24 px-4 md:px-6">
-      <div class="max-w-3xl mx-auto">
-        <div
-          class="card-glass !p-8 md:!p-12 flex flex-col md:flex-row items-center gap-6 md:gap-10"
-        >
-          <div class="flex-1">
-            <h2 class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 mb-3">
-              Pas convaincu ? Testez.
-            </h2>
-            <p class="text-primary-600 dark:text-primary-400 mb-4">
-              Un compte démo est déjà rempli avec des données : séances, stats, objectifs, photos.
-              Explorez sans créer de compte.
-            </p>
-            <p
-              class="text-sm text-primary-500 dark:text-primary-400 font-mono glass rounded-lg inline-block px-3 py-1.5"
-            >
-              demo@athletiq.fr / Athletiq!Demo2025
-            </p>
-          </div>
-          <NuxtLink
-            to="/login"
-            class="btn-primary text-base px-8 py-4 flex-shrink-0 w-full md:w-auto text-center"
-          >
-            Voir la démo
-          </NuxtLink>
-        </div>
       </div>
     </section>
 
