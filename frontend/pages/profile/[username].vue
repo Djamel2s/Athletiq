@@ -456,16 +456,14 @@ const handleBlock = async () => {
   }
 };
 
-onMounted(async () => {
-  await loadProfile();
-});
-
 watch(
-  () => username.value,
-  async (newUsername, oldUsername) => {
-    if (!newUsername || newUsername === oldUsername) return;
+  () => route.fullPath,
+  async (newPath, oldPath) => {
+    if (!username.value) return;
+    if (newPath === oldPath) return;
     await loadProfile();
-  }
+  },
+  { immediate: true }
 );
 </script>
 
