@@ -5,7 +5,7 @@
   >
     <ol class="flex items-center gap-2">
       <li v-for="(c, i) in allCrumbs" :key="i" class="flex items-center gap-2">
-        <span v-if="i > 0" class="opacity-40 chevron">❯</span>
+        <span v-if="i !== 0" class="opacity-40 chevron">❯</span>
         <NuxtLink v-if="i !== allCrumbs.length - 1" :to="c.to" class="hover:underline">{{
           c.text
         }}</NuxtLink>
@@ -41,53 +41,69 @@ const nameMap: Record<string, string> = {
   wrapped: 'Wrapped',
 };
 
+const normalizedPath = computed(() => {
+  const raw = String(route.fullPath || route.path || '/');
+  const noQuery = raw.split('?')[0].split('#')[0] || '/';
+  if (noQuery === '/') return '/';
+  return noQuery.endsWith('/') ? noQuery.slice(0, -1) : noQuery;
+});
+
+const ownUsername = computed(() => {
+  const fromStore = String((authStore.user as any)?.username || '').trim();
+  if (fromStore) return fromStore.toLowerCase();
+  if (typeof window === 'undefined') return '';
+  return String(localStorage.getItem('athletiq_username') || '')
+    .trim()
+    .toLowerCase();
+});
+
 const crumbs = computed(() => {
-  const path = route.path || '';
+  const path = normalizedPath.value;
   const parts = path.split('/').filter(Boolean);
   const results: Array<{ text: string; to: string }> = [];
   let acc = '';
-  for (const part of parts) {
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i];
     acc += `/${part}`;
     let text = nameMap[part] || part;
-    const paramKeys = Object.keys(route.params || {});
-    for (const key of paramKeys) {
-      const val = String(route.params[key]);
-      if (val === part) {
-        if (key === 'id') text = 'Détail';
-        else if (key === 'username') text = `@${val}`;
-        else text = val;
-      }
+
+    // Route-derived dynamic labels are more reliable than route.params during fast nav transitions.
+    if (parts[0] === 'profile' && i === 1) {
+      text = `@${part}`;
+    } else if (/^\d+$/.test(part)) {
+      text = 'Détail';
     }
-    if (!nameMap[part] && !Object.values(route.params || {}).includes(part)) {
+
+    if (!nameMap[part] && !(parts[0] === 'profile' && i === 1) && !/^\d+$/.test(part)) {
       text = text.replace(/-/g, ' ');
       text = text.charAt(0).toUpperCase() + text.slice(1);
     }
+
     results.push({ text, to: acc });
   }
-    // If the current route username matches the logged-in user, remove the username crumb
-    // so clicking "Profil" (own profile) doesn't leave the username visible in the breadcrumb.
-    try {
-      const currentUsername = String((route.params || {}).username || '');
-      if (currentUsername && authStore.user && authStore.user.username === currentUsername) {
-        return results.filter((r) => !r.to.endsWith(`/${currentUsername}`));
-      }
-    } catch (e) {
-      // ignore
-    }
 
-    return results;
+  // Hide username crumb on own profile: /profile/<my-username> => Dashboard > Profil
+  if (parts[0] === 'profile' && parts[1] && ownUsername.value) {
+    const current = parts[1].toLowerCase();
+    if (current === ownUsername.value) {
+      const ownCrumbPath = `/profile/${parts[1]}`;
+      return results.filter((r) => r.to !== ownCrumbPath);
+    }
+  }
+
+  return results;
 });
 
 // Build full crumbs with a leading root based on auth state.
 const allCrumbs = computed(() => {
   // If on root, just show Accueil
-  if ((route.path || '/') === '/' || crumbs.value.length === 0) {
+  if (normalizedPath.value === '/' || crumbs.value.length === 0) {
     return [{ text: 'Accueil', to: '/' }];
   }
 
   const head: Array<{ text: string; to: string }> = [];
   if (authStore.isAuthenticated) {
-    const firstPart = (route.path || '').split('/').filter(Boolean)[0];
+    const firstPart = normalizedPath.value.split('/').filter(Boolean)[0];
     if (firstPart !== 'dashboard') head.push({ text: 'Dashboard', to: '/dashboard' });
   } else {
     head.push({ text: 'Accueil', to: '/' });

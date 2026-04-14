@@ -396,6 +396,24 @@ const getPostText = (post: any) => {
   return post.type;
 };
 
+const loadProfile = async () => {
+  loading.value = true;
+  notFound.value = false;
+  profile.value = null;
+  try {
+    profile.value = await getProfile(username.value);
+  } catch (err: any) {
+    if (err?.statusCode === 404) {
+      notFound.value = true;
+    } else {
+      toast.error('Erreur', 'Impossible de charger le profil');
+      notFound.value = true;
+    }
+  } finally {
+    loading.value = false;
+  }
+};
+
 const handleSendRequest = async () => {
   if (actionLoading.value || !profile.value) return;
   actionLoading.value = true;
@@ -439,20 +457,16 @@ const handleBlock = async () => {
 };
 
 onMounted(async () => {
-  loading.value = true;
-  try {
-    profile.value = await getProfile(username.value);
-  } catch (err: any) {
-    if (err?.statusCode === 404) {
-      notFound.value = true;
-    } else {
-      toast.error('Erreur', 'Impossible de charger le profil');
-      notFound.value = true;
-    }
-  } finally {
-    loading.value = false;
-  }
+  await loadProfile();
 });
+
+watch(
+  () => username.value,
+  async (newUsername, oldUsername) => {
+    if (!newUsername || newUsername === oldUsername) return;
+    await loadProfile();
+  }
+);
 </script>
 
 <style scoped>
