@@ -335,6 +335,7 @@
                   </div>
                 </div>
                 <p class="text-sm text-primary-700 dark:text-primary-300">{{ getPostText(post) }}</p>
+                <p v-if="post.data?.caption" class="text-sm mt-2 text-primary-700 dark:text-primary-300">{{ post.data.caption }}</p>
 
                 <!-- Render media for photo / timelapse / before-after -->
                 <div v-if="post.type === 'PHOTO'" class="mt-3">
@@ -876,11 +877,7 @@
             <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-4">Nouveau post</h3>
             <textarea v-model="composerCaption" placeholder="Ajouter une description (optionnel)" class="w-full p-3 rounded-lg border border-primary-200 dark:border-primary-700 bg-white/60 dark:bg-primary-800/60 text-sm text-primary-900 dark:text-primary-100 mb-3"></textarea>
 
-            <div class="mb-3 flex gap-2">
-              <button :class="['px-3 py-1 rounded-lg text-sm', composerMode === 'photos' ? 'bg-gradient-primary text-white' : 'bg-white/10']" @click="composerMode = 'photos'">Photos</button>
-              <button :class="['px-3 py-1 rounded-lg text-sm', composerMode === 'timelapse' ? 'bg-gradient-primary text-white' : 'bg-white/10']" @click="composerMode = 'timelapse'">Timelapse</button>
-              <button :class="['px-3 py-1 rounded-lg text-sm', composerMode === 'beforeafter' ? 'bg-gradient-primary text-white' : 'bg-white/10']" @click="composerMode = 'beforeafter'">Avant / Apres</button>
-            </div>
+            <!-- Composer limited to Photos only per UX request -->
 
             <div class="grid grid-cols-3 gap-1 max-h-72 overflow-auto mb-3">
               <label v-for="photo in photos" :key="photo.id" class="relative cursor-pointer">
@@ -890,6 +887,14 @@
                   <Icon name="lucide:check" class="w-6 h-6" />
                 </div>
               </label>
+            </div>
+
+            <div v-if="selectedForPost.length > 1" class="flex items-center gap-3 mb-3">
+              <div class="text-sm text-primary-600">Présentation :</div>
+              <select v-model="composerLayout" class="rounded-md border border-primary-200 dark:border-primary-700 bg-white/60 dark:bg-primary-800/60 px-2 py-1 text-sm">
+                <option value="carousel">Carrousel</option>
+                <option value="gallery">Galerie</option>
+              </select>
             </div>
 
             <div class="flex justify-end gap-2">
@@ -925,7 +930,14 @@
                     </div>
                   </label>
                 </div>
-                <div class="text-xs text-primary-500 mb-2">Ou garde l_media actuelle si aucune sélection</div>
+                  <div class="text-xs text-primary-500 mb-2">Ou garde l_media actuelle si aucune sélection</div>
+                  <div v-if="editSelectedPhotos.length > 1" class="flex items-center gap-3 mb-2">
+                    <div class="text-sm text-primary-600">Présentation :</div>
+                    <select v-model="editLayout" class="rounded-md border border-primary-200 dark:border-primary-700 bg-white/60 dark:bg-primary-800/60 px-2 py-1 text-sm">
+                      <option value="carousel">Carrousel</option>
+                      <option value="gallery">Galerie</option>
+                    </select>
+                  </div>
               </div>
             <div class="flex justify-end gap-2">
               <button @click="showEditModal = false" class="btn-glass px-4 py-2">Annuler</button>
@@ -1370,6 +1382,7 @@ const composerCaption = ref('');
 const selectedForPost = ref<number[]>([]);
 const composerMode = ref<'photos' | 'timelapse' | 'beforeafter'>('photos');
 const composerLoading = ref(false);
+const composerLayout = ref<'carousel' | 'gallery'>('carousel');
 
 const toggleSelectForPost = (photoId: number) => {
   const idx = selectedForPost.value.indexOf(photoId);
@@ -1383,11 +1396,13 @@ const publishSelectedPhotos = async () => {
     .filter((p: any) => selectedForPost.value.includes(p.id))
     .map((p: any) => p.photoUrl);
   try {
-    const created: any = await createPost({ type: 'PHOTO', data: { photos: photosUrls, caption: composerCaption.value || null } });
+    const payloadData: any = { photos: photosUrls, caption: composerCaption.value || null };
+    if (photosUrls.length > 1) payloadData.layout = composerLayout.value;
+    const created: any = await createPost({ type: 'PHOTO', data: payloadData });
     const newPost = {
       id: created.id,
       type: 'PHOTO',
-      data: { photos: photosUrls, caption: composerCaption.value || null },
+      data: { photos: photosUrls, caption: composerCaption.value || null, ...(photosUrls.length > 1 ? { layout: composerLayout.value } : {}) },
       reactions: 0,
       createdAt: created.createdAt || new Date().toISOString(),
       user: {
@@ -1489,6 +1504,7 @@ const editCaption = ref('');
 const editUploadedUrl = ref('');
 const editReplaceKey = ref<'photoUrl' | 'beforeUrl' | 'afterUrl' | 'timelapseUrl' | null>(null);
 const editSelectedPhotos = ref<number[]>([]);
+const editLayout = ref<'carousel' | 'gallery'>('carousel');
 
 const openEditModal = (post: any) => {
   editingPostId.value = post.id;
@@ -1520,6 +1536,8 @@ const openEditModal = (post: any) => {
       if (afterMatch) arr.push(afterMatch.id);
       editSelectedPhotos.value = arr;
     }
+    // respect previously saved layout
+    editLayout.value = post.data?.layout || 'carousel';
   }
   showEditModal.value = true;
 };
@@ -1533,17 +1551,20 @@ const saveEdit = async () => {
       const urls = photos.value
         .filter((p: any) => editSelectedPhotos.value.includes(p.id))
         .map((p: any) => p.photoUrl);
-      // if post originally had gallery or multiple selected, set photos array
-      if (urls.length > 1) payload.photos = urls;
-      else if (urls.length === 1) payload.photoUrl = urls[0];
+      // if multiple selected, set photos array and layout
+      if (urls.length > 1) {
+        payload.photos = urls;
+        payload.layout = editLayout.value;
+      } else if (urls.length === 1) payload.photoUrl = urls[0];
       // for before/after posts, if exactly two selected, map to before/after
       const original = posts.value.find((p) => p.id === editingPostId.value);
       if (original?.type === 'PHOTO' && urls.length === 2) {
         payload.beforeUrl = urls[0];
         payload.afterUrl = urls[1];
-        // remove photos/photoUrl keys if set
+        // remove photos/photoUrl/layout keys if set
         delete payload.photos;
         delete payload.photoUrl;
+        delete payload.layout;
       }
     } else if (editUploadedUrl.value && editReplaceKey.value) {
       payload[editReplaceKey.value] = editUploadedUrl.value;

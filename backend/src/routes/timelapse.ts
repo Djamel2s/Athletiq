@@ -60,6 +60,8 @@ router.post('/generate', authenticate, async (req: AuthRequest, res) => {
       await new Promise((resolve, reject) => {
         const args = [
           '-y',
+          '-f',
+          'image2',
           '-framerate',
           String(fps),
           '-i',
@@ -68,18 +70,24 @@ router.post('/generate', authenticate, async (req: AuthRequest, res) => {
           'libx264',
           '-pix_fmt',
           'yuv420p',
+          '-vsync',
+          'vfr',
           '-vf',
           'scale=1080:1440:force_original_aspect_ratio=decrease,pad=1080:1440:(ow-iw)/2:(oh-ih)/2',
           '-r',
           '30',
+          '-movflags',
+          'faststart',
           outFile,
         ];
 
-        const ff = spawn('ffmpeg', args, { stdio: 'inherit' });
+        const ff = spawn('ffmpeg', args, { stdio: ['ignore', 'pipe', 'pipe'] });
+        let stderr = '';
+        ff.stderr.on('data', (chunk) => (stderr += chunk.toString()));
         ff.on('error', (err) => reject(err));
         ff.on('exit', (code) => {
           if (code === 0) resolve(null);
-          else reject(new Error(`ffmpeg exited with code ${code}`));
+          else reject(new Error(`ffmpeg exited with code ${code}: ${stderr}`));
         });
       });
 
