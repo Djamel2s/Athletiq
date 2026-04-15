@@ -150,17 +150,19 @@
                 <img v-for="(p, i) in post.data.photos" :key="i" :src="p" class="w-full h-24 object-cover rounded-md" />
               </div>
               <div v-else class="relative mt-2">
-                <div class="rounded-xl overflow-hidden aspect-square max-h-[400px]">
+                <div class="relative rounded-xl overflow-hidden aspect-square max-h-[400px]">
                   <img :src="post.data.photos[(carouselIndexMap[post.id] ?? 0)]" class="w-full h-full object-cover" loading="lazy" />
-                </div>
-                <button @click="prevCarousel(post.id, post.data.photos.length)" class="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/60 rounded-full flex items-center justify-center">
-                  <Icon name="lucide:chevron-left" class="w-4 h-4" />
-                </button>
-                <button @click="nextCarousel(post.id, post.data.photos.length)" class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/60 rounded-full flex items-center justify-center">
-                  <Icon name="lucide:chevron-right" class="w-4 h-4" />
-                </button>
-                <div class="flex items-center justify-center gap-1 mt-2">
-                  <span v-for="(p, i) in post.data.photos" :key="i" @click="carouselIndexMap[post.id] = i" :class="['w-2 h-2 rounded-full cursor-pointer', (carouselIndexMap[post.id] ?? 0) === i ? 'bg-primary-700' : 'bg-primary-200']"></span>
+
+                  <button @click="prevCarousel(post.id, post.data.photos.length)" class="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/60 rounded-full flex items-center justify-center z-20">
+                    <Icon name="lucide:chevron-left" class="w-4 h-4" />
+                  </button>
+                  <button @click="nextCarousel(post.id, post.data.photos.length)" class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/60 rounded-full flex items-center justify-center z-20">
+                    <Icon name="lucide:chevron-right" class="w-4 h-4" />
+                  </button>
+
+                  <div class="absolute left-1/2 -translate-x-1/2 bottom-3 z-20 flex items-center justify-center gap-1">
+                    <span v-for="(p, i) in post.data.photos" :key="i" @click="carouselIndexMap[post.id] = i" :class="['w-2 h-2 rounded-full cursor-pointer', (carouselIndexMap[post.id] ?? 0) === i ? 'bg-primary-700' : 'bg-primary-200']"></span>
+                  </div>
                 </div>
               </div>
             </template>
