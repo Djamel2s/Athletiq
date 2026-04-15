@@ -51,6 +51,21 @@ router.post('/generate', authenticate, async (req: AuthRequest, res) => {
       await fs.writeFile(filename, Buffer.from(buffer));
     }
 
+    // Normalize images to consistent JPEG (remove alpha, color profile) to avoid ffmpeg issues
+    try {
+      for (let i = 0; i < images.length; i++) {
+        const filename = path.join(tmpDir, `${String(i + 1).padStart(4, '0')}.jpg`);
+        const tmpOut = `${filename}.norm.jpg`;
+        await Sharp(filename)
+          .flatten({ background: '#000' })
+          .jpeg({ quality: 90 })
+          .toFile(tmpOut);
+        await fs.rename(tmpOut, filename);
+      }
+    } catch (e) {
+      logger.warn({ err: e }, 'Image normalization failed; continuing (ffmpeg may still succeed)');
+    }
+
     // If ffmpeg is available, use it to build an MP4; otherwise create an animated GIF and upload
     let result: any = null;
     if (hasFfmpeg) {

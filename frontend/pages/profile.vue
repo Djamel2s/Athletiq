@@ -355,9 +355,23 @@
                     </div>
                   </template>
                   <template v-else-if="Array.isArray(post.data?.photos)">
-                    <div class="grid grid-cols-3 gap-1 mt-2">
-                      <img v-for="(p, i) in post.data.photos" :key="i" :src="p" class="w-full h-24 object-cover rounded-md" />
-                    </div>
+                      <div v-if="post.data.layout === 'gallery'" class="grid grid-cols-3 gap-1 mt-2">
+                        <img v-for="(p, i) in post.data.photos" :key="i" :src="p" class="w-full h-24 object-cover rounded-md" />
+                      </div>
+                      <div v-else class="relative mt-2">
+                        <div class="rounded-xl overflow-hidden aspect-square max-h-[400px]">
+                          <img :src="post.data.photos[(carouselIndexMap[post.id] ?? 0)]" class="w-full h-full object-cover" />
+                        </div>
+                        <button @click="prevCarousel(post.id, post.data.photos.length)" class="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/60 rounded-full flex items-center justify-center">
+                          <Icon name="lucide:chevron-left" class="w-4 h-4" />
+                        </button>
+                        <button @click="nextCarousel(post.id, post.data.photos.length)" class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/60 rounded-full flex items-center justify-center">
+                          <Icon name="lucide:chevron-right" class="w-4 h-4" />
+                        </button>
+                        <div class="flex items-center justify-center gap-1 mt-2">
+                          <span v-for="(p, i) in post.data.photos" :key="i" @click="carouselIndexMap[post.id] = i" :class="['w-2 h-2 rounded-full cursor-pointer', (carouselIndexMap[post.id] ?? 0) === i ? 'bg-primary-700' : 'bg-primary-200']"></span>
+                        </div>
+                      </div>
                   </template>
                 </div>
 
@@ -1383,6 +1397,21 @@ const selectedForPost = ref<number[]>([]);
 const composerMode = ref<'photos' | 'timelapse' | 'beforeafter'>('photos');
 const composerLoading = ref(false);
 const composerLayout = ref<'carousel' | 'gallery'>('carousel');
+const carouselIndexMap = ref<Record<number, number>>({});
+
+const ensureCarouselIndex = (postId: number) => {
+  if (carouselIndexMap.value[postId] === undefined) carouselIndexMap.value[postId] = 0;
+};
+
+const nextCarousel = (postId: number, count: number) => {
+  ensureCarouselIndex(postId);
+  carouselIndexMap.value[postId] = (carouselIndexMap.value[postId] + 1) % Math.max(1, count);
+};
+
+const prevCarousel = (postId: number, count: number) => {
+  ensureCarouselIndex(postId);
+  carouselIndexMap.value[postId] = (carouselIndexMap.value[postId] - 1 + Math.max(1, count)) % Math.max(1, count);
+};
 
 const toggleSelectForPost = (photoId: number) => {
   const idx = selectedForPost.value.indexOf(photoId);
@@ -1417,6 +1446,7 @@ const publishSelectedPhotos = async () => {
     toast.success('Post publié');
     showPhotoComposer.value = false;
     composerCaption.value = '';
+    composerLayout.value = 'carousel';
     selectedForPost.value = [];
   } catch (e) {
     console.error(e);
@@ -1455,6 +1485,7 @@ const generateAndPublishTimelapse = async () => {
     toast.success('Timelapse publié');
     showPhotoComposer.value = false;
     composerCaption.value = '';
+    composerLayout.value = 'carousel';
     selectedForPost.value = [];
   } catch (e) {
     console.error(e);
@@ -1490,6 +1521,7 @@ const publishBeforeAfterFromComposer = async () => {
     toast.success('Avant / Après publié');
     showPhotoComposer.value = false;
     composerCaption.value = '';
+    composerLayout.value = 'carousel';
     selectedForPost.value = [];
   } catch (e) {
     console.error(e);
