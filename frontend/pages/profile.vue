@@ -401,6 +401,17 @@
                     <div v-else>Timelapse disponible — <a :href="post.data?.timelapseUrl" target="_blank" class="underline">ouvrir</a></div>
                     <div class="text-xs text-primary-400 mt-1">URL: <span class="break-all">{{ post.data?.timelapseUrl }}</span></div>
                   </div>
+                  <!-- DEBUG: force-load a simple non-lazy image with crossorigin to rule out CSP/CORS or lazy-loading issues -->
+                  <div class="mt-2">
+                    <img
+                      :src="post.data?.timelapseUrl"
+                      style="max-width:220px; display:block; border:1px solid rgba(255,255,255,0.06);"
+                      crossorigin="anonymous"
+                      ref="debugImg"
+                      @load="() => console.info('DEBUG timelapse img loaded', post.id, post.data?.timelapseUrl)"
+                      @error="() => console.error('DEBUG timelapse img error', post.id, post.data?.timelapseUrl)"
+                    />
+                  </div>
                 </div>
 
                 <div v-if="post.reactions" class="mt-3 flex items-center gap-1.5">
