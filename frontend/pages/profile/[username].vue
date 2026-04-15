@@ -391,9 +391,7 @@ const getPostText = (post: any) => {
     return `A termine ${post.data?.workoutName || 'un workout'}`;
   if (post.type === 'PR_ACHIEVED')
     return `Nouveau record ! ${post.data?.exerciseName} ${post.data?.weight}kg`;
-  if (post.type === 'PHOTO') return 'A partage une photo';
-  if (post.type === 'TEMPLATE_SHARED') return `A partage le template "${post.data?.templateName}"`;
-  return post.type;
+  return post.data?.text || post.data?.caption || '';
 };
 
 const loadProfile = async () => {

@@ -334,7 +334,7 @@
                     </button>
                   </div>
                 </div>
-                <p class="text-sm text-primary-700 dark:text-primary-300">{{ getPostText(post) }}</p>
+                <p v-if="getPostText(post)" class="text-sm text-primary-700 dark:text-primary-300">{{ getPostText(post) }}</p>
                 <p v-if="post.data?.caption" class="text-sm mt-2 text-primary-700 dark:text-primary-300">{{ post.data.caption }}</p>
 
                 <!-- Render media for photo / timelapse / before-after -->
@@ -376,42 +376,8 @@
                 </div>
 
                 <div v-else-if="post.type === 'TIMELAPSE' && post.data?.timelapseUrl" class="mt-3">
-                  <template>
-                    <img
-                      v-if="/\.gif(\?.*)?$/i.test(String(post.data.timelapseUrl))"
-                      :src="post.data.timelapseUrl"
-                      class="w-full rounded-lg"
-                      alt="Timelapse GIF"
-                      loading="lazy"
-                      @error="onTimelapseError(post)"
-                      @load="onTimelapseLoad(post)"
-                    />
-                    <video
-                      v-else
-                      controls
-                      :src="post.data.timelapseUrl"
-                      class="w-full rounded-lg"
-                      @error="onTimelapseError(post)"
-                      @loadedmetadata="onTimelapseLoad(post)"
-                    />
-                  </template>
-                  <div class="mt-2 text-xs text-primary-500">
-                    <div v-if="post._timelapseError">Erreur de lecture — <a :href="post.data?.timelapseUrl" target="_blank" class="underline">ouvrir le fichier</a></div>
-                    <div v-else-if="post._timelapseLoaded">Timelapse chargé — <a :href="post.data?.timelapseUrl" target="_blank" class="underline">ouvrir</a></div>
-                    <div v-else>Timelapse disponible — <a :href="post.data?.timelapseUrl" target="_blank" class="underline">ouvrir</a></div>
-                    <div class="text-xs text-primary-400 mt-1">URL: <span class="break-all">{{ post.data?.timelapseUrl }}</span></div>
-                  </div>
-                  <!-- DEBUG: force-load a simple non-lazy image with crossorigin to rule out CSP/CORS or lazy-loading issues -->
-                  <div class="mt-2">
-                    <img
-                      :src="post.data?.timelapseUrl"
-                      style="max-width:220px; display:block; border:1px solid rgba(255,255,255,0.06);"
-                      crossorigin="anonymous"
-                      ref="debugImg"
-                      @load="() => console.info('DEBUG timelapse img loaded', post.id, post.data?.timelapseUrl)"
-                      @error="() => console.error('DEBUG timelapse img error', post.id, post.data?.timelapseUrl)"
-                    />
-                  </div>
+                  <img v-if="/\.gif(\?.*)?$/i.test(String(post.data.timelapseUrl))" :src="post.data.timelapseUrl" class="w-full rounded-lg" alt="Timelapse GIF" loading="lazy" />
+                  <video v-else controls :src="post.data.timelapseUrl" class="w-full rounded-lg" />
                 </div>
 
                 <div v-if="post.reactions" class="mt-3 flex items-center gap-1.5">
@@ -1710,25 +1676,7 @@ const toggleTimelapsePlay = () => {
 };
 
 // Timelapse media error handler to aid debugging in UI
-const onTimelapseError = (post: any) => {
-  try {
-    console.error('Timelapse load error for post', post.id, post.data?.timelapseUrl);
-    // flag on the post so template can show a fallback link
-    if (!post._timelapseError) post._timelapseError = true;
-    toast.error('Impossible de charger le timelapse');
-  } catch (e) {
-    console.error(e);
-  }
-};
-
-const onTimelapseLoad = (post: any) => {
-  try {
-    console.info('Timelapse loaded for post', post.id, post.data?.timelapseUrl);
-    post._timelapseLoaded = true;
-  } catch (e) {
-    console.error(e);
-  }
-};
+// (Removed debug handlers: timelapse errors/logs are no longer tracked in UI)
 
 const startTimelapseInterval = () => {
   if (timelapseInterval) clearInterval(timelapseInterval);
@@ -2061,13 +2009,13 @@ const timeAgo = (dateStr: string) => {
 };
 
 const getPostText = (post: any) => {
+  // Avoid posting automatic default phrases for media posts.
+  // Show only explicit text/caption when present; keep workout/pr messages.
   if (post.type === 'WORKOUT_COMPLETED')
     return `A termine ${post.data?.workoutName || 'un workout'}`;
   if (post.type === 'PR_ACHIEVED')
     return `Nouveau record ! ${post.data?.exerciseName} ${post.data?.weight}kg`;
-  if (post.type === 'PHOTO') return 'A partage une photo';
-  if (post.type === 'TEMPLATE_SHARED') return `A partage le template "${post.data?.templateName}"`;
-  return post.type;
+  return post.data?.text || post.data?.caption || '';
 };
 
 const handleAvatarUpload = async (event: Event) => {
