@@ -384,6 +384,7 @@
                       alt="Timelapse GIF"
                       loading="lazy"
                       @error="onTimelapseError(post)"
+                      @load="onTimelapseLoad(post)"
                     />
                     <video
                       v-else
@@ -391,10 +392,14 @@
                       :src="post.data.timelapseUrl"
                       class="w-full rounded-lg"
                       @error="onTimelapseError(post)"
+                      @loadedmetadata="onTimelapseLoad(post)"
                     />
                   </template>
-                  <div v-if="post._timelapseError" class="mt-2 text-xs text-primary-500">
-                    Erreur de lecture — <a :href="post.data?.timelapseUrl" target="_blank" class="underline">ouvrir le fichier</a>
+                  <div class="mt-2 text-xs text-primary-500">
+                    <div v-if="post._timelapseError">Erreur de lecture — <a :href="post.data?.timelapseUrl" target="_blank" class="underline">ouvrir le fichier</a></div>
+                    <div v-else-if="post._timelapseLoaded">Timelapse chargé — <a :href="post.data?.timelapseUrl" target="_blank" class="underline">ouvrir</a></div>
+                    <div v-else>Timelapse disponible — <a :href="post.data?.timelapseUrl" target="_blank" class="underline">ouvrir</a></div>
+                    <div class="text-xs text-primary-400 mt-1">URL: <span class="break-all">{{ post.data?.timelapseUrl }}</span></div>
                   </div>
                 </div>
 
@@ -1700,6 +1705,15 @@ const onTimelapseError = (post: any) => {
     // flag on the post so template can show a fallback link
     if (!post._timelapseError) post._timelapseError = true;
     toast.error('Impossible de charger le timelapse');
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+const onTimelapseLoad = (post: any) => {
+  try {
+    console.info('Timelapse loaded for post', post.id, post.data?.timelapseUrl);
+    post._timelapseLoaded = true;
   } catch (e) {
     console.error(e);
   }
