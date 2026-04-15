@@ -11,6 +11,12 @@ body {
   min-height: -webkit-fill-available;
 }
 
+/* Prevent horizontal page scroll caused by decorative elements or overflows */
+html,
+body {
+  overflow-x: hidden;
+}
+
 /* ===== Sand Color Palette (CSS Variables for theme switching) ===== */
 :root {
   /* Sand/Beige palette (default) */

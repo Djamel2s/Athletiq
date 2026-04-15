@@ -289,7 +289,7 @@
           <!-- Posts Grid -->
           <div v-if="!profileData?.restricted && activeTab === 'posts'" class="slide-up">
             <div v-if="posts.length > 0" class="grid grid-cols-3 gap-4">
-              <div v-for="post in posts" :key="post.id" class="rounded-lg overflow-hidden bg-primary-900/40" @click="openPostModal(post)" style="cursor:pointer;">
+              <div v-for="post in posts" :key="post.id" class="relative rounded-lg overflow-hidden bg-primary-900/40" @click="openPostModal(post)" style="cursor:pointer;">
                 <div class="aspect-square w-full h-full">
                   <template v-if="post.type === 'PHOTO'">
                     <img v-if="post.data?.photoUrl" :src="post.data.photoUrl" class="w-full h-full object-cover" />
@@ -1120,8 +1120,8 @@
                     </div>
                   </template>
                   <template v-else-if="selectedPost?.type === 'TIMELAPSE'">
-                    <img v-if="/\\.gif(\\?.*)?$/i.test(String(selectedPost.data?.timelapseUrl))" :src="selectedPost.data.timelapseUrl" class="max-w-full max-h-full object-contain" />
-                    <video v-else controls :src="selectedPost.data?.timelapseUrl" class="max-w-full max-h-full" />
+                    <img v-if="/\\.gif(\\?.*)?$/i.test(String(selectedPost.data?.timelapseUrl))" :src="selectedPost.data.timelapseUrl" class="w-full h-full object-contain" />
+                    <video v-else controls :src="selectedPost.data?.timelapseUrl" class="w-full h-full object-contain" />
                   </template>
                 </div>
               </div>
