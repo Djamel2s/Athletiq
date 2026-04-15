@@ -4,22 +4,6 @@
 
     <!-- Main Content -->
     <div class="px-4 md:px-6 pb-28 lg:pb-20 max-w-7xl mx-auto">
-      <!-- Back button -->
-      <button
-        @click="navigateTo('/dashboard')"
-        class="inline-flex items-center gap-2 text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-colors mb-6"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M15 19l-7-7 7-7"
-          />
-        </svg>
-        Retour au dashboard
-      </button>
-
       <!-- Page Header -->
       <div class="fade-in text-center mb-10">
         <h1

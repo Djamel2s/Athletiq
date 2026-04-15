@@ -437,7 +437,7 @@ body {
   /* Typographie amelioree */
   .text-display {
     letter-spacing: -0.02em;
-    line-height: 1.1;
+    line-height: 1.35 !important;
   }
 
   .text-body-relaxed {
@@ -448,7 +448,7 @@ body {
   /* Fond geometrique subtil */
   .geometric-bg {
     position: relative;
-    overflow: hidden;
+    overflow: visible !important;
   }
 
   .geometric-bg::before {
