@@ -286,119 +286,29 @@
             </div>
           </div>
 
-          <!-- Posts List (par defaut) -->
-          <div v-if="!profileData?.restricted && activeTab === 'posts'" class="space-y-4 slide-up">
-            <div v-if="posts.length > 0">
-              <div v-for="post in posts" :key="post.id" class="card-glass !p-4">
-                <div class="flex items-center gap-3 mb-3">
-                  <div
-                    class="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0"
-                    :class="
-                      authStore.user?.avatarUrl
-                        ? ''
-                        : 'bg-gradient-primary flex items-center justify-center'
-                    "
-                  >
-                    <img
-                      v-if="authStore.user?.avatarUrl"
-                      :src="authStore.user.avatarUrl"
-                      alt=""
-                      class="w-full h-full object-cover"
-                    />
-                    <span v-else class="text-white text-xs font-bold">{{ initials }}</span>
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <p
-                      class="text-sm font-semibold text-primary-900 dark:text-primary-100 truncate"
-                    >
-                      @{{ profileData?.username || 'moi' }}
-                    </p>
-                    <p class="text-xs text-primary-400 dark:text-primary-500">
-                      {{ timeAgo(post.createdAt) }}
-                    </p>
-                  </div>
-                  <div v-if="isOwnProfile" class="flex items-center gap-2">
-                    <button
-                      @click="deletePostAction(post.id)"
-                      class="w-8 h-8 rounded-lg bg-white/60 dark:bg-primary-800/60 flex items-center justify-center text-primary-600 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
-                      title="Supprimer le post"
-                    >
-                      <Icon name="lucide:trash" class="w-4 h-4" />
-                    </button>
-                    <button
-                      @click.prevent="openEditModal(post)"
-                      class="w-8 h-8 rounded-lg bg-white/60 dark:bg-primary-800/60 flex items-center justify-center text-primary-600 hover:bg-primary-100 dark:hover:bg-primary-700 transition-colors"
-                      title="Modifier le post"
-                    >
-                      <Icon name="lucide:edit-3" class="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-                <p v-if="getPostText(post)" class="text-sm text-primary-700 dark:text-primary-300">{{ getPostText(post) }}</p>
-                <p v-if="post.data?.caption" class="text-sm mt-2 text-primary-700 dark:text-primary-300">{{ post.data.caption }}</p>
-
-                <!-- Render media for photo / timelapse / before-after -->
-                <div v-if="post.type === 'PHOTO'" class="mt-3">
-                  <template v-if="post.data?.photoUrl">
-                    <img :src="post.data.photoUrl" class="w-full rounded-lg object-cover" />
-                  </template>
-                  <template v-else-if="post.data?.beforeUrl && post.data?.afterUrl">
-                    <div class="grid grid-cols-2 gap-2 mt-2">
-                      <div>
-                        <img :src="post.data.beforeUrl" class="w-full rounded-lg object-cover" />
-                        <div class="text-xs text-primary-500 mt-1 text-center">Avant</div>
-                      </div>
-                      <div>
-                        <img :src="post.data.afterUrl" class="w-full rounded-lg object-cover" />
-                        <div class="text-xs text-primary-500 mt-1 text-center">Après</div>
-                      </div>
+          <!-- Posts Grid -->
+          <div v-if="!profileData?.restricted && activeTab === 'posts'" class="slide-up">
+            <div v-if="posts.length > 0" class="grid grid-cols-3 gap-4">
+              <div v-for="post in posts" :key="post.id" class="rounded-lg overflow-hidden bg-primary-900/40" @click="openPostModal(post)" style="cursor:pointer;">
+                <div class="aspect-square w-full h-full">
+                  <template v-if="post.type === 'PHOTO'">
+                    <img v-if="post.data?.photoUrl" :src="post.data.photoUrl" class="w-full h-full object-cover" />
+                    <img v-else-if="Array.isArray(post.data?.photos)" :src="post.data.photos[0]" class="w-full h-full object-cover" />
+                    <div v-else-if="post.data?.beforeUrl && post.data?.afterUrl" class="w-full h-full grid grid-cols-2">
+                      <img :src="post.data.beforeUrl" class="w-full h-full object-cover" />
+                      <img :src="post.data.afterUrl" class="w-full h-full object-cover" />
                     </div>
                   </template>
-                  <template v-else-if="Array.isArray(post.data?.photos)">
-                      <div v-if="post.data.layout === 'gallery'" class="grid grid-cols-3 gap-1 mt-2">
-                        <img v-for="(p, i) in post.data.photos" :key="i" :src="p" class="w-full h-24 object-cover rounded-md" />
-                      </div>
-                      <div v-else class="relative mt-2">
-                        <div class="relative rounded-xl overflow-hidden aspect-square max-h-[400px]">
-                          <img :src="post.data.photos[(carouselIndexMap[post.id] ?? 0)]" class="w-full h-full object-cover" />
-
-                          <button @click="prevCarousel(post.id, post.data.photos.length)" class="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/60 rounded-full flex items-center justify-center z-20">
-                            <Icon name="lucide:chevron-left" class="w-4 h-4" />
-                          </button>
-                          <button @click="nextCarousel(post.id, post.data.photos.length)" class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/60 rounded-full flex items-center justify-center z-20">
-                            <Icon name="lucide:chevron-right" class="w-4 h-4" />
-                          </button>
-
-                          <div class="absolute left-1/2 -translate-x-1/2 bottom-3 z-20 flex items-center justify-center gap-1">
-                            <span v-for="(p, i) in post.data.photos" :key="i" @click="carouselIndexMap[post.id] = i" :class="['w-2 h-2 rounded-full cursor-pointer', (carouselIndexMap[post.id] ?? 0) === i ? 'bg-primary-700' : 'bg-primary-200']"></span>
-                          </div>
-                        </div>
-                      </div>
+                  <template v-else-if="post.type === 'TIMELAPSE'">
+                    <img :src="post.data?.timelapseUrl" class="w-full h-full object-cover" />
                   </template>
-                </div>
-
-                <div v-else-if="post.type === 'TIMELAPSE' && post.data?.timelapseUrl" class="mt-3">
-                  <img v-if="/\.gif(\?.*)?$/i.test(String(post.data.timelapseUrl))" :src="post.data.timelapseUrl" class="w-full rounded-lg" alt="Timelapse GIF" loading="lazy" />
-                  <video v-else controls :src="post.data.timelapseUrl" class="w-full rounded-lg" />
-                </div>
-
-                <div v-if="post.reactions" class="mt-3 flex items-center gap-1.5">
-                  <span class="text-sm">🔥</span>
-                  <span class="text-xs text-primary-500 dark:text-primary-400">{{ post.reactions }}</span>
+                  <div v-if="Array.isArray(post.data?.photos) && post.data.photos.length > 1" class="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">{{ post.data.photos.length }}</div>
                 </div>
               </div>
             </div>
             <div v-else class="text-center py-16">
-              <Icon
-                name="lucide:activity"
-                class="w-16 h-16 mx-auto mb-4 text-primary-300 dark:text-primary-600"
-              />
-              <p class="text-primary-500 dark:text-primary-400 text-sm">
-                Aucun post pour le moment
-              </p>
-              <p class="text-primary-400 dark:text-primary-500 text-xs mt-1">
-                Tes activites apparaitront ici
-              </p>
+              <Icon name="lucide:activity" class="w-16 h-16 mx-auto mb-4 text-primary-300 dark:text-primary-600" />
+              <p class="text-primary-500 dark:text-primary-400 text-sm">Aucun post pour le moment</p>
             </div>
           </div>
 
@@ -1177,6 +1087,66 @@
       </Transition>
     </Teleport>
 
+    <!-- Post viewer modal (full-size) -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="showPostModal" class="fixed inset-0 z-[110] flex items-center justify-center p-4" @click="closePostModal">
+          <div class="absolute inset-0 bg-black/80"></div>
+          <div class="relative max-w-3xl w-full rounded-2xl bg-white dark:bg-primary-900 shadow-xl p-4" @click.stop>
+            <button @click="closePostModal" class="absolute top-4 right-4 w-10 h-10 rounded-lg flex items-center justify-center text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-800">
+              <Icon name="lucide:x" class="w-5 h-5" />
+            </button>
+            <div class="flex gap-4">
+              <div class="flex-1">
+                <div class="w-full h-[60vh] bg-black rounded-lg overflow-hidden flex items-center justify-center">
+                  <template v-if="selectedPost?.type === 'PHOTO'">
+                    <div v-if="selectedPost.data?.photoUrl" class="w-full h-full flex items-center justify-center">
+                      <img :src="selectedPost.data.photoUrl" class="w-full h-full object-contain" />
+                    </div>
+                    <div v-else-if="Array.isArray(selectedPost.data?.photos)">
+                      <div class="relative w-full h-full">
+                        <img :src="selectedPost.data.photos[(carouselIndexMap[selectedPost.id] ?? 0)]" class="w-full h-full object-contain" />
+                        <button @click="prevCarousel(selectedPost.id, selectedPost.data.photos.length)" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/60 rounded-full flex items-center justify-center z-20">
+                          <Icon name="lucide:chevron-left" class="w-5 h-5" />
+                        </button>
+                        <button @click="nextCarousel(selectedPost.id, selectedPost.data.photos.length)" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/60 rounded-full flex items-center justify-center z-20">
+                          <Icon name="lucide:chevron-right" class="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                    <div v-else-if="selectedPost.data?.beforeUrl && selectedPost.data?.afterUrl" class="w-full h-full grid grid-cols-2 gap-1">
+                      <img :src="selectedPost.data.beforeUrl" class="w-full h-full object-contain" />
+                      <img :src="selectedPost.data.afterUrl" class="w-full h-full object-contain" />
+                    </div>
+                  </template>
+                  <template v-else-if="selectedPost?.type === 'TIMELAPSE'">
+                    <img v-if="/\\.gif(\\?.*)?$/i.test(String(selectedPost.data?.timelapseUrl))" :src="selectedPost.data.timelapseUrl" class="max-w-full max-h-full object-contain" />
+                    <video v-else controls :src="selectedPost.data?.timelapseUrl" class="max-w-full max-h-full" />
+                  </template>
+                </div>
+              </div>
+              <div class="w-80 max-h-[60vh] overflow-auto p-3 border-l border-primary-200/60 dark:border-primary-800/60">
+                <div class="flex items-center gap-3 mb-2">
+                  <div class="w-10 h-10 rounded-lg overflow-hidden bg-gradient-primary flex items-center justify-center">
+                    <img v-if="selectedPost?.user?.avatarUrl" :src="selectedPost.user.avatarUrl" class="w-full h-full object-cover" />
+                    <Icon v-else name="lucide:user" class="w-5 h-5 text-white" />
+                  </div>
+                  <div class="min-w-0">
+                    <div class="font-semibold text-primary-900 dark:text-white truncate">@{{ selectedPost?.user?.username || selectedPost?.user?.firstName }}</div>
+                    <div class="text-xs text-primary-500">{{ timeAgo(selectedPost?.createdAt) }}</div>
+                  </div>
+                </div>
+                <p v-if="selectedPost?.data?.caption" class="text-sm text-primary-700 dark:text-primary-300 mb-2">{{ selectedPost.data.caption }}</p>
+                <div v-if="selectedPost?.data?.photos && selectedPost.data.photos.length" class="flex gap-2 items-center">
+                  <span v-for="(p, i) in selectedPost.data.photos" :key="i" @click="carouselIndexMap[selectedPost.id] = i" :class="['w-2 h-2 rounded-full cursor-pointer', (carouselIndexMap[selectedPost.id] ?? 0) === i ? 'bg-primary-700' : 'bg-primary-200']"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
     <MobileBottomNav active-path="/profile" />
   </div>
 </template>
@@ -1414,6 +1384,19 @@ const nextCarousel = (postId: number, count: number) => {
 const prevCarousel = (postId: number, count: number) => {
   ensureCarouselIndex(postId);
   carouselIndexMap.value[postId] = (carouselIndexMap.value[postId] - 1 + Math.max(1, count)) % Math.max(1, count);
+};
+
+// Post viewer modal
+const selectedPost = ref<any | null>(null);
+const showPostModal = ref(false);
+const openPostModal = (post: any) => {
+  selectedPost.value = post;
+  ensureCarouselIndex(post.id);
+  showPostModal.value = true;
+};
+const closePostModal = () => {
+  showPostModal.value = false;
+  selectedPost.value = null;
 };
 
 const toggleSelectForPost = (photoId: number) => {
