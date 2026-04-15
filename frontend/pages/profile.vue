@@ -383,14 +383,19 @@
                       class="w-full rounded-lg"
                       alt="Timelapse GIF"
                       loading="lazy"
+                      @error="onTimelapseError(post)"
                     />
                     <video
                       v-else
                       controls
                       :src="post.data.timelapseUrl"
                       class="w-full rounded-lg"
+                      @error="onTimelapseError(post)"
                     />
                   </template>
+                  <div v-if="post._timelapseError" class="mt-2 text-xs text-primary-500">
+                    Erreur de lecture — <a :href="post.data?.timelapseUrl" target="_blank" class="underline">ouvrir le fichier</a>
+                  </div>
                 </div>
 
                 <div v-if="post.reactions" class="mt-3 flex items-center gap-1.5">
@@ -1685,6 +1690,18 @@ const toggleTimelapsePlay = () => {
     timelapseAutoPlay.value = true;
     timelapseIndex.value = 0;
     startTimelapseInterval();
+  }
+};
+
+// Timelapse media error handler to aid debugging in UI
+const onTimelapseError = (post: any) => {
+  try {
+    console.error('Timelapse load error for post', post.id, post.data?.timelapseUrl);
+    // flag on the post so template can show a fallback link
+    if (!post._timelapseError) post._timelapseError = true;
+    toast.error('Impossible de charger le timelapse');
+  } catch (e) {
+    console.error(e);
   }
 };
 
