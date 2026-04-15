@@ -128,7 +128,7 @@ export default defineNuxtConfig({
 
         // Keep a strict CSP; development traffic to the local API is proxied via Nitro
         const csp =
-          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://*.athletiq.fr wss://*.athletiq.fr https://*.stripe.com; frame-src https://*.stripe.com; object-src 'none'; base-uri 'self'";
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' data: blob: https://res.cloudinary.com https://*.cloudinary.com; font-src 'self' data:; connect-src 'self' https://*.athletiq.fr wss://*.athletiq.fr https://*.stripe.com; frame-src https://*.stripe.com; object-src 'none'; base-uri 'self'";
 
         return {
           ...baseHeaders,
