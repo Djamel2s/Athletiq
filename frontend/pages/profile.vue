@@ -1096,7 +1096,7 @@
             <button @click="closePostModal" class="absolute top-4 right-4 w-10 h-10 rounded-lg flex items-center justify-center text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-800">
               <Icon name="lucide:x" class="w-5 h-5" />
             </button>
-            <div class="flex gap-4">
+                <div class="flex gap-4">
               <div class="flex-1">
                 <div class="w-full h-[60vh] bg-black rounded-lg overflow-hidden flex items-center justify-center">
                   <template v-if="selectedPost?.type === 'PHOTO'">
@@ -1120,7 +1120,12 @@
                     </div>
                   </template>
                   <template v-else-if="selectedPost?.type === 'TIMELAPSE'">
-                    <img v-if="/\\.gif(\\?.*)?$/i.test(String(selectedPost.data?.timelapseUrl))" :src="selectedPost.data.timelapseUrl" class="w-full h-full object-contain" />
+                    <img
+                      v-if="!modalImageError"
+                      :src="selectedPost.data?.timelapseUrl"
+                      class="w-full h-full object-contain"
+                      @error="modalImageError = true"
+                    />
                     <video v-else controls :src="selectedPost.data?.timelapseUrl" class="w-full h-full object-contain" />
                   </template>
                 </div>
@@ -1132,7 +1137,7 @@
                     <Icon v-else name="lucide:user" class="w-5 h-5 text-white" />
                   </div>
                   <div class="min-w-0">
-                    <div class="font-semibold text-primary-900 dark:text-white truncate">@{{ selectedPost?.user?.username || selectedPost?.user?.firstName }}</div>
+                    <div class="font-semibold text-primary-900 dark:text-white truncate">@{{ selectedPost?.user?.username || selectedPost?.user?.firstName || selectedPost?.userName || selectedPost?.username || selectedPost?.userId || 'utilisateur' }}</div>
                     <div class="text-xs text-primary-500">{{ timeAgo(selectedPost?.createdAt) }}</div>
                   </div>
                 </div>
@@ -1389,8 +1394,10 @@ const prevCarousel = (postId: number, count: number) => {
 // Post viewer modal
 const selectedPost = ref<any | null>(null);
 const showPostModal = ref(false);
+const modalImageError = ref(false);
 const openPostModal = (post: any) => {
   selectedPost.value = post;
+  modalImageError.value = false;
   ensureCarouselIndex(post.id);
   showPostModal.value = true;
 };
