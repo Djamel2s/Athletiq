@@ -376,7 +376,21 @@
                 </div>
 
                 <div v-else-if="post.type === 'TIMELAPSE' && post.data?.timelapseUrl" class="mt-3">
-                  <video controls :src="post.data.timelapseUrl" class="w-full rounded-lg" />
+                  <template>
+                    <img
+                      v-if="/\.gif(\?.*)?$/i.test(String(post.data.timelapseUrl))"
+                      :src="post.data.timelapseUrl"
+                      class="w-full rounded-lg"
+                      alt="Timelapse GIF"
+                      loading="lazy"
+                    />
+                    <video
+                      v-else
+                      controls
+                      :src="post.data.timelapseUrl"
+                      class="w-full rounded-lg"
+                    />
+                  </template>
                 </div>
 
                 <div v-if="post.reactions" class="mt-3 flex items-center gap-1.5">
