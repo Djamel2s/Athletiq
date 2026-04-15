@@ -127,14 +127,9 @@ router.post('/generate', authenticate, async (req: AuthRequest, res) => {
       // Fallback: create an animated GIF from downloaded images using Sharp + gifencoder
       try {
         // Load first image to determine size
-        const first = await Sharp(path.join(tmpDir, '0001.jpg'))
-          .metadata()
-          .then((metadata) => ({
-            width: metadata.width || 0,
-            height: metadata.height || 0,
-          }));
-        const width = Math.min(1080, first.width);
-        const height = Math.min(1440, first.height);
+        const firstMeta = await Sharp(path.join(tmpDir, '0001.jpg')).metadata();
+        const width = Math.min(1080, firstMeta.width || 1080);
+        const height = Math.min(1440, firstMeta.height || 1440);
 
         const encoder = new GIFEncoder(width, height);
         const gifPath = path.join(tmpDir, 'out.gif');
@@ -147,11 +142,18 @@ router.post('/generate', authenticate, async (req: AuthRequest, res) => {
 
         for (let i = 0; i < images.length; i++) {
           const file = path.join(tmpDir, `${String(i + 1).padStart(4, '0')}.jpg`);
-          // Obtain raw RGBA pixel data for GIFEncoder
-          const { data: rawBuffer } = await Sharp(file)
+          // Ensure RGBA pixel data (4 channels) to match GIFEncoder expectations
+          const { data: rawBuffer, info } = await Sharp(file)
             .resize(width, height, { fit: 'cover' })
+            .ensureAlpha()
             .raw()
             .toBuffer({ resolveWithObject: true });
+
+          // Verify channels; GIFEncoder expects 4-channel RGBA
+          if (info.channels !== 4) {
+            logger.warn({ file, channels: info.channels }, 'Unexpected channel count, converting to RGBA');
+          }
+
           encoder.addFrame(rawBuffer);
         }
         encoder.finish();
