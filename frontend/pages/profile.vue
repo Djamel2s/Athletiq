@@ -317,15 +317,56 @@
                       {{ timeAgo(post.createdAt) }}
                     </p>
                   </div>
+                  <div v-if="isOwnProfile" class="flex items-center gap-2">
+                    <button
+                      @click="deletePostAction(post.id)"
+                      class="w-8 h-8 rounded-lg bg-white/60 dark:bg-primary-800/60 flex items-center justify-center text-primary-600 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
+                      title="Supprimer le post"
+                    >
+                      <Icon name="lucide:trash" class="w-4 h-4" />
+                    </button>
+                    <button
+                      @click.prevent="openEditModal(post)"
+                      class="w-8 h-8 rounded-lg bg-white/60 dark:bg-primary-800/60 flex items-center justify-center text-primary-600 hover:bg-primary-100 dark:hover:bg-primary-700 transition-colors"
+                      title="Modifier le post"
+                    >
+                      <Icon name="lucide:edit-3" class="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
-                <p class="text-sm text-primary-700 dark:text-primary-300">
-                  {{ getPostText(post) }}
-                </p>
+                <p class="text-sm text-primary-700 dark:text-primary-300">{{ getPostText(post) }}</p>
+
+                <!-- Render media for photo / timelapse / before-after -->
+                <div v-if="post.type === 'PHOTO'" class="mt-3">
+                  <template v-if="post.data?.photoUrl">
+                    <img :src="post.data.photoUrl" class="w-full rounded-lg object-cover" />
+                  </template>
+                  <template v-else-if="post.data?.beforeUrl && post.data?.afterUrl">
+                    <div class="grid grid-cols-2 gap-2 mt-2">
+                      <div>
+                        <img :src="post.data.beforeUrl" class="w-full rounded-lg object-cover" />
+                        <div class="text-xs text-primary-500 mt-1 text-center">Avant</div>
+                      </div>
+                      <div>
+                        <img :src="post.data.afterUrl" class="w-full rounded-lg object-cover" />
+                        <div class="text-xs text-primary-500 mt-1 text-center">Après</div>
+                      </div>
+                    </div>
+                  </template>
+                  <template v-else-if="Array.isArray(post.data?.photos)">
+                    <div class="grid grid-cols-3 gap-1 mt-2">
+                      <img v-for="(p, i) in post.data.photos" :key="i" :src="p" class="w-full h-24 object-cover rounded-md" />
+                    </div>
+                  </template>
+                </div>
+
+                <div v-else-if="post.type === 'TIMELAPSE' && post.data?.timelapseUrl" class="mt-3">
+                  <video controls :src="post.data.timelapseUrl" class="w-full rounded-lg" />
+                </div>
+
                 <div v-if="post.reactions" class="mt-3 flex items-center gap-1.5">
-                  <span class="text-sm">&#128293;</span>
-                  <span class="text-xs text-primary-500 dark:text-primary-400">{{
-                    post.reactions
-                  }}</span>
+                  <span class="text-sm">🔥</span>
+                  <span class="text-xs text-primary-500 dark:text-primary-400">{{ post.reactions }}</span>
                 </div>
               </div>
             </div>
@@ -361,6 +402,14 @@
                 <Icon name="lucide:git-compare" class="w-3.5 h-3.5" />
                 Avant / Apres
               </button>
+                        <button
+                          v-if="isOwnProfile"
+                          @click="showPhotoComposer = true"
+                          class="btn-glass px-3 py-2 text-xs font-medium inline-flex items-center gap-1.5 flex-1 justify-center"
+                        >
+                          <Icon name="lucide:pen" class="w-3.5 h-3.5" />
+                          Nouveau post
+                        </button>
             </div>
 
             <!-- Photos grid with add button -->
@@ -393,6 +442,13 @@
                 <span v-if="photo.isPrimary" class="absolute top-1 left-1 text-yellow-400 text-xs"
                   >&#9733;</span
                 >
+                <button
+                  @click.stop="publishPhoto(photo)"
+                  class="absolute top-2 right-2 w-8 h-8 bg-white/80 dark:bg-primary-800/80 rounded-full flex items-center justify-center text-primary-900 dark:text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                  title="Publier"
+                >
+                  <Icon name="lucide:upload" class="w-4 h-4" />
+                </button>
               </div>
             </div>
 
@@ -804,6 +860,82 @@
       </Transition>
     </Teleport>
 
+    <!-- Photo Composer Modal (multi-select) -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div
+          v-if="showPhotoComposer"
+          class="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          @click="showPhotoComposer = false"
+        >
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+          <div class="relative bg-white dark:bg-primary-900 rounded-2xl p-6 max-w-lg w-full shadow-xl" @click.stop>
+            <button @click="showPhotoComposer = false" class="absolute top-3 right-3 w-8 h-8 rounded-lg flex items-center justify-center text-primary-400 hover:text-primary-600 hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors">
+              <Icon name="lucide:x" class="w-5 h-5" />
+            </button>
+            <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-4">Nouveau post</h3>
+            <textarea v-model="composerCaption" placeholder="Ajouter une description (optionnel)" class="w-full p-3 rounded-lg border border-primary-200 dark:border-primary-700 bg-white/60 dark:bg-primary-800/60 text-sm text-primary-900 dark:text-primary-100 mb-3"></textarea>
+
+            <div class="mb-3 flex gap-2">
+              <button :class="['px-3 py-1 rounded-lg text-sm', composerMode === 'photos' ? 'bg-gradient-primary text-white' : 'bg-white/10']" @click="composerMode = 'photos'">Photos</button>
+              <button :class="['px-3 py-1 rounded-lg text-sm', composerMode === 'timelapse' ? 'bg-gradient-primary text-white' : 'bg-white/10']" @click="composerMode = 'timelapse'">Timelapse</button>
+              <button :class="['px-3 py-1 rounded-lg text-sm', composerMode === 'beforeafter' ? 'bg-gradient-primary text-white' : 'bg-white/10']" @click="composerMode = 'beforeafter'">Avant / Apres</button>
+            </div>
+
+            <div class="grid grid-cols-3 gap-1 max-h-72 overflow-auto mb-3">
+              <label v-for="photo in photos" :key="photo.id" class="relative cursor-pointer">
+                <input type="checkbox" :value="photo.id" v-model="selectedForPost" class="hidden" />
+                <img :src="photo.photoUrl" class="w-full h-24 object-cover rounded-md" />
+                <div v-if="selectedForPost.includes(photo.id)" class="absolute inset-0 bg-black/30 flex items-center justify-center text-white">
+                  <Icon name="lucide:check" class="w-6 h-6" />
+                </div>
+              </label>
+            </div>
+
+            <div class="flex justify-end gap-2">
+              <button @click="showPhotoComposer = false" class="btn-glass px-4 py-2">Annuler</button>
+              <button v-if="composerMode === 'photos'" @click="publishSelectedPhotos" class="btn-primary px-4 py-2">Publier</button>
+              <button v-if="composerMode === 'timelapse'" @click="generateAndPublishTimelapse" :disabled="composerLoading" class="btn-primary px-4 py-2">{{ composerLoading ? 'Génération...' : 'Générer et publier timelapse' }}</button>
+              <button v-if="composerMode === 'beforeafter'" @click="publishBeforeAfterFromComposer" class="btn-primary px-4 py-2">Publier Avant/Après</button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <!-- Edit Post Modal -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="showEditModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4" @click="showEditModal = false">
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+          <div class="relative bg-white dark:bg-primary-900 rounded-2xl p-6 max-w-md w-full shadow-xl" @click.stop>
+            <button @click="showEditModal = false" class="absolute top-3 right-3 w-8 h-8 rounded-lg flex items-center justify-center text-primary-400 hover:text-primary-600 hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors">
+              <Icon name="lucide:x" class="w-5 h-5" />
+            </button>
+            <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-4">Modifier le post</h3>
+            <textarea v-model="editCaption" placeholder="Texte du post" class="w-full p-3 rounded-lg border border-primary-200 dark:border-primary-700 bg-white/60 dark:bg-primary-800/60 text-sm text-primary-900 dark:text-primary-100 mb-3"></textarea>
+              <div v-if="editingPostId && posts.find(p => p.id === editingPostId)?.data" class="mb-3">
+                <div class="text-sm text-primary-600 mb-2">Sélectionner depuis mes photos</div>
+                <div class="grid grid-cols-4 gap-2 max-h-56 overflow-auto mb-2">
+                  <label v-for="photo in photos" :key="photo.id" class="relative cursor-pointer">
+                    <input type="checkbox" :value="photo.id" v-model="editSelectedPhotos" class="hidden" />
+                    <img :src="photo.photoUrl" class="w-full h-20 object-cover rounded-md" />
+                    <div v-if="editSelectedPhotos.includes(photo.id)" class="absolute inset-0 bg-black/30 flex items-center justify-center text-white">
+                      <Icon name="lucide:check" class="w-6 h-6" />
+                    </div>
+                  </label>
+                </div>
+                <div class="text-xs text-primary-500 mb-2">Ou garde l_media actuelle si aucune sélection</div>
+              </div>
+            <div class="flex justify-end gap-2">
+              <button @click="showEditModal = false" class="btn-glass px-4 py-2">Annuler</button>
+              <button @click="saveEdit" class="btn-primary px-4 py-2">Enregistrer</button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
     <!-- Timelapse Modal -->
     <Teleport to="body">
       <Transition name="modal">
@@ -823,6 +955,13 @@
                   title="Partager"
                 >
                   <Icon name="lucide:share-2" class="w-5 h-5" />
+                </button>
+                <button
+                  @click="publishTimelapse"
+                  class="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center text-white transition-colors"
+                  title="Publier"
+                >
+                  <Icon name="lucide:upload" class="w-5 h-5" />
                 </button>
                 <button
                   @click="showTimelapseModal = false"
@@ -910,6 +1049,13 @@
                   title="Partager"
                 >
                   <Icon name="lucide:share-2" class="w-5 h-5" />
+                </button>
+                <button
+                  @click="publishBeforeAfter"
+                  class="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center text-white transition-colors"
+                  title="Publier"
+                >
+                  <Icon name="lucide:upload" class="w-5 h-5" />
                 </button>
                 <button
                   @click="showBeforeAfterModal = false"
@@ -1009,6 +1155,7 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth';
 import { useSocialApi } from '~/composables/useSocialApi';
+import { apiFetch } from '~/utils/apiFetch';
 import { useBodyApi } from '~/composables/useBodyApi';
 /* TopNav imported and rendered globally in app.vue; per-page import removed */
 
@@ -1020,7 +1167,7 @@ definePageMeta({
 useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] });
 
 const authStore = useAuthStore();
-const { getMyProfile, getProfile, updateProfile, checkUsername, sendFriendRequest, removeFriend } =
+const { getMyProfile, getProfile, updateProfile, checkUsername, sendFriendRequest, removeFriend, createPost, editPost, deletePost } =
   useSocialApi();
 const bodyApi = useBodyApi();
 const { getRecentPhotos } = bodyApi;
@@ -1217,6 +1364,233 @@ const handlePhotoUpload = async (event: Event) => {
   }
 };
 
+// Photo composer (multi-select + modes)
+const showPhotoComposer = ref(false);
+const composerCaption = ref('');
+const selectedForPost = ref<number[]>([]);
+const composerMode = ref<'photos' | 'timelapse' | 'beforeafter'>('photos');
+const composerLoading = ref(false);
+
+const toggleSelectForPost = (photoId: number) => {
+  const idx = selectedForPost.value.indexOf(photoId);
+  if (idx === -1) selectedForPost.value.push(photoId);
+  else selectedForPost.value.splice(idx, 1);
+};
+
+const publishSelectedPhotos = async () => {
+  if (!selectedForPost.value.length) return toast.error('Selectionne au moins une photo');
+  const photosUrls = photos.value
+    .filter((p: any) => selectedForPost.value.includes(p.id))
+    .map((p: any) => p.photoUrl);
+  try {
+    const created: any = await createPost({ type: 'PHOTO', data: { photos: photosUrls, caption: composerCaption.value || null } });
+    const newPost = {
+      id: created.id,
+      type: 'PHOTO',
+      data: { photos: photosUrls, caption: composerCaption.value || null },
+      reactions: 0,
+      createdAt: created.createdAt || new Date().toISOString(),
+      user: {
+        id: authStore.user?.id,
+        firstName: authStore.user?.firstName,
+        lastName: authStore.user?.lastName,
+        username: authStore.user?.username,
+        avatarUrl: authStore.user?.avatarUrl,
+      },
+    };
+    posts.value.unshift(newPost);
+    toast.success('Post publié');
+    showPhotoComposer.value = false;
+    composerCaption.value = '';
+    selectedForPost.value = [];
+  } catch (e) {
+    console.error(e);
+    toast.error("Impossible de publier le post");
+  }
+};
+
+// Generate timelapse from selected photos and publish
+const generateAndPublishTimelapse = async () => {
+  if (selectedForPost.value.length < 2) return toast.error('Selectionne au moins deux photos pour un timelapse');
+  const images = photos.value
+    .filter((p: any) => selectedForPost.value.includes(p.id))
+    .map((p: any) => p.photoUrl);
+  try {
+    composerLoading.value = true;
+    toast.info('Génération du timelapse...');
+    const res: any = await apiFetch('/timelapse/generate', { method: 'POST', body: { images } });
+    const url = res?.url || res?.secure_url || res?.secureUrl || res?.secure_url;
+    if (!url) throw new Error('No URL');
+    const created: any = await createPost({ type: 'TIMELAPSE', data: { timelapseUrl: url, photoCount: images.length, caption: composerCaption.value || null } });
+    const newPost = {
+      id: created.id,
+      type: 'TIMELAPSE',
+      data: { timelapseUrl: url, photoCount: images.length, caption: composerCaption.value || null },
+      reactions: 0,
+      createdAt: created.createdAt || new Date().toISOString(),
+      user: {
+        id: authStore.user?.id,
+        firstName: authStore.user?.firstName,
+        lastName: authStore.user?.lastName,
+        username: authStore.user?.username,
+        avatarUrl: authStore.user?.avatarUrl,
+      },
+    };
+    posts.value.unshift(newPost);
+    toast.success('Timelapse publié');
+    showPhotoComposer.value = false;
+    composerCaption.value = '';
+    selectedForPost.value = [];
+  } catch (e) {
+    console.error(e);
+    toast.error('Impossible de générer/publier le timelapse');
+  } finally {
+    composerLoading.value = false;
+  }
+};
+
+// Publish before/after using two selected photos (first/last)
+const publishBeforeAfterFromComposer = async () => {
+  if (selectedForPost.value.length < 2) return toast.error('Selectionne au moins deux photos');
+  const selected = photos.value.filter((p: any) => selectedForPost.value.includes(p.id));
+  const before = selected[0];
+  const after = selected[selected.length - 1];
+  try {
+    const created: any = await createPost({ type: 'PHOTO', data: { beforeUrl: before.photoUrl, afterUrl: after.photoUrl, caption: composerCaption.value || null } });
+    const newPost = {
+      id: created.id,
+      type: 'PHOTO',
+      data: { beforeUrl: before.photoUrl, afterUrl: after.photoUrl, caption: composerCaption.value || null },
+      reactions: 0,
+      createdAt: created.createdAt || new Date().toISOString(),
+      user: {
+        id: authStore.user?.id,
+        firstName: authStore.user?.firstName,
+        lastName: authStore.user?.lastName,
+        username: authStore.user?.username,
+        avatarUrl: authStore.user?.avatarUrl,
+      },
+    };
+    posts.value.unshift(newPost);
+    toast.success('Avant / Après publié');
+    showPhotoComposer.value = false;
+    composerCaption.value = '';
+    selectedForPost.value = [];
+  } catch (e) {
+    console.error(e);
+    toast.error('Impossible de publier');
+  }
+};
+
+// Edit post modal
+const showEditModal = ref(false);
+const editingPostId = ref<number | null>(null);
+const editCaption = ref('');
+const editUploadedUrl = ref('');
+const editReplaceKey = ref<'photoUrl' | 'beforeUrl' | 'afterUrl' | 'timelapseUrl' | null>(null);
+const editSelectedPhotos = ref<number[]>([]);
+
+const openEditModal = (post: any) => {
+  editingPostId.value = post.id;
+  // prefer caption stored on post.data.caption
+  editCaption.value = post.data?.caption || '';
+  editUploadedUrl.value = '';
+  // default replace key heuristics
+  if (post.data?.photoUrl) editReplaceKey.value = 'photoUrl';
+  else if (post.data?.beforeUrl && post.data?.afterUrl) editReplaceKey.value = 'afterUrl';
+  else if (post.data?.timelapseUrl) editReplaceKey.value = 'timelapseUrl';
+  else editReplaceKey.value = null;
+  // preselect photos from user's gallery when editing
+  editSelectedPhotos.value = [];
+  if (post.data) {
+    if (Array.isArray(post.data.photos)) {
+      // match by URL to local photos list and select ids
+      const urls = post.data.photos;
+      editSelectedPhotos.value = photos.value
+        .filter((p: any) => urls.includes(p.photoUrl))
+        .map((p: any) => p.id);
+    } else if (post.data.photoUrl) {
+      const match = photos.value.find((p: any) => p.photoUrl === post.data.photoUrl);
+      if (match) editSelectedPhotos.value = [match.id];
+    } else if (post.data.beforeUrl || post.data.afterUrl) {
+      const arr: number[] = [];
+      const beforeMatch = photos.value.find((p: any) => p.photoUrl === post.data.beforeUrl);
+      const afterMatch = photos.value.find((p: any) => p.photoUrl === post.data.afterUrl);
+      if (beforeMatch) arr.push(beforeMatch.id);
+      if (afterMatch) arr.push(afterMatch.id);
+      editSelectedPhotos.value = arr;
+    }
+  }
+  showEditModal.value = true;
+};
+
+const saveEdit = async () => {
+  if (!editingPostId.value) return;
+  try {
+    const payload: any = { caption: editCaption.value || null };
+    // If user selected photos from gallery, use them
+    if (editSelectedPhotos.value && editSelectedPhotos.value.length > 0) {
+      const urls = photos.value
+        .filter((p: any) => editSelectedPhotos.value.includes(p.id))
+        .map((p: any) => p.photoUrl);
+      // if post originally had gallery or multiple selected, set photos array
+      if (urls.length > 1) payload.photos = urls;
+      else if (urls.length === 1) payload.photoUrl = urls[0];
+      // for before/after posts, if exactly two selected, map to before/after
+      const original = posts.value.find((p) => p.id === editingPostId.value);
+      if (original?.type === 'PHOTO' && urls.length === 2) {
+        payload.beforeUrl = urls[0];
+        payload.afterUrl = urls[1];
+        // remove photos/photoUrl keys if set
+        delete payload.photos;
+        delete payload.photoUrl;
+      }
+    } else if (editUploadedUrl.value && editReplaceKey.value) {
+      payload[editReplaceKey.value] = editUploadedUrl.value;
+    }
+    const updated: any = await editPost(editingPostId.value, payload);
+    // update local posts array
+    const idx = posts.value.findIndex((p) => p.id === editingPostId.value);
+    if (idx !== -1) {
+      posts.value[idx].data = { ...(posts.value[idx].data || {}), ...(updated.data || {}) };
+      posts.value[idx].createdAt = updated.createdAt || posts.value[idx].createdAt;
+    }
+    showEditModal.value = false;
+    editingPostId.value = null;
+    editCaption.value = '';
+    toast.success('Post mis à jour');
+  } catch (e) {
+    console.error(e);
+    toast.error("Impossible de modifier le post");
+  }
+};
+
+const onEditFileChange = async (e: Event) => {
+  const input = e.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (!file) return;
+  try {
+    toast.info('Upload en cours...');
+    const form = new FormData();
+    form.append('file', file);
+    let res: any;
+    if (file.type.startsWith('video/')) {
+      res = await apiFetch('/photos/media/video', { method: 'POST', body: form });
+    } else {
+      res = await apiFetch('/photos/media/image', { method: 'POST', body: form });
+    }
+    if (res?.url) {
+      editUploadedUrl.value = res.url;
+      toast.success('Upload réussi');
+    } else {
+      throw new Error('No url');
+    }
+  } catch (err) {
+    console.error(err);
+    toast.error('Erreur lors de l\'upload');
+  }
+};
+
 // Timelapse
 const showTimelapseModal = ref(false);
 const timelapseIndex = ref(0);
@@ -1292,6 +1666,38 @@ const shareTimelapse = async () => {
   }
 };
 
+const publishTimelapse = async () => {
+  if (primaryPhotos.value.length < 2) return toast.error('Pas assez de photos pour timelapse');
+  try {
+    toast.info('Génération du timelapse, patiente...');
+    const images = primaryPhotos.value.map((p: any) => p.photoUrl).filter(Boolean);
+    const res: any = await apiFetch('/timelapse/generate', { method: 'POST', body: { images } });
+    const url = res?.url || res?.secure_url || res?.secureUrl || res?.secure_url;
+    if (!url) throw new Error('No URL');
+    const created: any = await createPost({ type: 'TIMELAPSE', data: { timelapseUrl: url, photoCount: images.length } });
+    const newPost = {
+      id: created.id,
+      type: 'TIMELAPSE',
+      data: { timelapseUrl: url, photoCount: images.length },
+      reactions: 0,
+      createdAt: created.createdAt || new Date().toISOString(),
+      user: {
+        id: authStore.user?.id,
+        firstName: authStore.user?.firstName,
+        lastName: authStore.user?.lastName,
+        username: authStore.user?.username,
+        avatarUrl: authStore.user?.avatarUrl,
+      },
+    };
+    posts.value.unshift(newPost);
+    toast.success('Timelapse publié sur ton fil');
+    showTimelapseModal.value = false;
+  } catch (e) {
+    console.error(e);
+    toast.error('Impossible de publier le timelapse');
+  }
+};
+
 // Before/After
 const showBeforeAfterModal = ref(false);
 const beforePhotoIndex = ref(0);
@@ -1349,6 +1755,72 @@ const shareBeforeAfter = async () => {
     }
   } else {
     toast.success('Partage non disponible sur cet appareil');
+  }
+};
+
+const publishBeforeAfter = async () => {
+  if (primaryPhotos.value.length < 2) return toast.error('Pas assez de photos');
+  const before = primaryPhotos.value[beforePhotoIndex.value];
+  const after = primaryPhotos.value[afterPhotoIndex.value];
+  try {
+    const created: any = await createPost({ type: 'PHOTO', data: { beforeUrl: before.photoUrl, afterUrl: after.photoUrl } });
+    const newPost = {
+      id: created.id,
+      type: 'PHOTO',
+      data: { beforeUrl: before.photoUrl, afterUrl: after.photoUrl },
+      reactions: 0,
+      createdAt: created.createdAt || new Date().toISOString(),
+      user: {
+        id: authStore.user?.id,
+        firstName: authStore.user?.firstName,
+        lastName: authStore.user?.lastName,
+        username: authStore.user?.username,
+        avatarUrl: authStore.user?.avatarUrl,
+      },
+    };
+    posts.value.unshift(newPost);
+    toast.success('Avant / Après publié');
+    showBeforeAfterModal.value = false;
+  } catch (e) {
+    console.error(e);
+    toast.error('Impossible de publier');
+  }
+};
+
+const publishPhoto = async (photo: any) => {
+  try {
+    const created: any = await createPost({ type: 'PHOTO', data: { photoUrl: photo.photoUrl } });
+    const newPost = {
+      id: created.id,
+      type: 'PHOTO',
+      data: { photoUrl: photo.photoUrl },
+      reactions: 0,
+      createdAt: created.createdAt || new Date().toISOString(),
+      user: {
+        id: authStore.user?.id,
+        firstName: authStore.user?.firstName,
+        lastName: authStore.user?.lastName,
+        username: authStore.user?.username,
+        avatarUrl: authStore.user?.avatarUrl,
+      },
+    };
+    posts.value.unshift(newPost);
+    toast.success('Photo publiée');
+  } catch (e) {
+    console.error(e);
+    toast.error('Impossible de publier la photo');
+  }
+};
+
+// Delete a post (owner-only)
+const deletePostAction = async (postId: number) => {
+  try {
+    await deletePost(postId);
+    posts.value = posts.value.filter((p) => p.id !== postId);
+    toast.success('Post supprimé');
+  } catch (e) {
+    console.error(e);
+    toast.error("Impossible de supprimer le post");
   }
 };
 

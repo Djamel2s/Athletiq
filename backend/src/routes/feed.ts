@@ -4,6 +4,7 @@ import { AppDataSource } from '../config/database.js';
 import { FeedPost } from '../entities/FeedPost.js';
 import { Friendship } from '../entities/Friendship.js';
 import { logger } from '../utils/logger.js';
+import cloudinary from '../config/cloudinary.js';
 import { authenticate, AuthRequest } from '../middlewares/auth.js';
 import { parseId } from '../utils/validation.js';
 import { isHttpError } from '../utils/errors.js';
@@ -168,6 +169,76 @@ router.delete('/:postId', authenticate, async (req: AuthRequest, res) => {
     res.json({ message: 'Post deleted' });
   } catch (error) {
     logger.error({ err: error, route: 'feed' }, 'Error deleting post');
+    handleRouteError(res, error);
+  }
+});
+
+// PATCH /api/feed/:postId — edit own post data (e.g., caption)
+router.patch('/:postId', authenticate, async (req: AuthRequest, res) => {
+  try {
+    const postId = parseId(req.params.postId);
+    const userId = req.user!.id;
+
+    const post = await feedPostRepo().findOne({ where: { id: postId } });
+    if (!post) return res.status(404).json({ error: 'Post not found' });
+    if (post.userId !== userId) return res.status(403).json({ error: 'Not authorized to edit this post' });
+
+    const { data } = req.body;
+    if (data && typeof data === 'object') {
+      // Delete replaced media from Cloudinary to avoid orphaned uploads
+      const oldData = post.data || {};
+      const newData = { ...(post.data || {}), ...data };
+
+      const deleteIfChanged = async (key: string, isVideo = false) => {
+        const oldUrl = oldData[key];
+        const newUrl = newData[key];
+        if (oldUrl && newUrl && oldUrl !== newUrl && oldUrl.includes('/athletiq/')) {
+          try {
+            const parts = oldUrl.split('/');
+            const athletiqIndex = parts.indexOf('athletiq');
+            if (athletiqIndex !== -1) {
+              const publicId = parts.slice(athletiqIndex).join('/').replace(/\.[^.]+$/, '');
+              await cloudinary.uploader.destroy(publicId, isVideo ? { resource_type: 'video' } : undefined).catch(() => {});
+            }
+          } catch (e) {
+            // ignore deletion errors
+          }
+        }
+      };
+
+      // Single-value keys
+      await deleteIfChanged('photoUrl', false);
+      await deleteIfChanged('beforeUrl', false);
+      await deleteIfChanged('afterUrl', false);
+      await deleteIfChanged('timelapseUrl', true);
+
+      // For gallery photos: remove any images that were removed in the new array
+      if (Array.isArray(oldData.photos) && Array.isArray(newData.photos)) {
+        const removed = oldData.photos.filter((p: string) => !newData.photos.includes(p));
+        for (const url of removed) {
+          if (url && url.includes('/athletiq/')) {
+            try {
+              const parts = url.split('/');
+              const athletiqIndex = parts.indexOf('athletiq');
+              if (athletiqIndex !== -1) {
+                const publicId = parts.slice(athletiqIndex).join('/').replace(/\.[^.]+$/, '');
+                await cloudinary.uploader.destroy(publicId).catch(() => {});
+              }
+            } catch (e) {
+              // ignore
+            }
+          }
+        }
+      }
+
+      post.data = newData;
+    }
+
+    await feedPostRepo().save(post);
+
+    res.json({ id: post.id, type: post.type, data: post.data, reactions: post.reactions, createdAt: post.createdAt });
+  } catch (error) {
+    logger.error({ err: error, route: 'feed' }, 'Error editing post');
     handleRouteError(res, error);
   }
 });

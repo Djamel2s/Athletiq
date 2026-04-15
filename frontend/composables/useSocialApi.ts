@@ -21,6 +21,7 @@ export const useSocialApi = () => {
   const getFeed = (offset = 0) => apiFetch(`/feed?offset=${offset}`);
   const createPost = (data: { type: string; data: any }) =>
     apiFetch('/feed', { method: 'POST', body: data });
+  const editPost = (postId: number, data: any) => apiFetch(`/feed/${postId}`, { method: 'PATCH', body: { data } });
   const reactToPost = (postId: number) => apiFetch(`/feed/${postId}/react`, { method: 'POST' });
   const deletePost = (postId: number) => apiFetch(`/feed/${postId}`, { method: 'DELETE' });
 
@@ -55,6 +56,7 @@ export const useSocialApi = () => {
     getRequests,
     getFeed,
     createPost,
+    editPost,
     reactToPost,
     deletePost,
     createPlannedWorkout,

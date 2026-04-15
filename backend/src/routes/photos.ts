@@ -271,4 +271,63 @@ router.post(
   }
 );
 
+// Generic image upload for posts (returns URL)
+router.post('/media/image', authenticate, upload.single('file'), async (req: AuthRequest, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'Aucun fichier fourni' });
+    if (!validateImageMagicBytes(req.file.buffer)) {
+      return res.status(400).json({ error: 'Fichier invalide' });
+    }
+
+    const result: any = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: `athletiq/posts/${req.user!.id}`,
+          transformation: [{ width: 1600, height: 1600, crop: 'limit' }, { quality: 'auto:good' }],
+        },
+        (error: any, result: any) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      uploadStream.end(req.file!.buffer);
+    });
+
+    if (!result?.secure_url) return res.status(500).json({ error: 'Erreur Cloudinary' });
+    res.json({ url: result.secure_url });
+  } catch (error) {
+    logger.error({ err: error }, 'Media image upload error');
+    handleRouteError(res, error, 'Erreur lors de l\'upload');
+  }
+});
+
+// Generic video upload for posts (returns URL)
+router.post('/media/video', authenticate, uploadVideo.single('file'), async (req: AuthRequest, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'Aucun fichier fourni' });
+
+    const fileBuffer = req.file!.buffer;
+    const result: any = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          resource_type: 'video',
+          folder: `athletiq/posts/${req.user!.id}`,
+          quality: 'auto',
+        },
+        (error: any, result: any) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      uploadStream.end(fileBuffer);
+    });
+
+    if (!result?.secure_url) return res.status(500).json({ error: 'Erreur Cloudinary' });
+    res.json({ url: result.secure_url });
+  } catch (error) {
+    logger.error({ err: error }, 'Media video upload error');
+    handleRouteError(res, error, 'Erreur lors de l\'upload');
+  }
+});
+
 export default router;
