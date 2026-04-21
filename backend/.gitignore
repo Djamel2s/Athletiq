@@ -35,3 +35,22 @@ Thumbs.db
 
 # Prisma
 prisma/migrations/*.sql
+backup*.dump
+*.dump
+schema.sql
+drop_constraints_and_indexes*.sql
+constraints_to_recreate*.sql
+public_constraints_to_apply*.sql
+*.dump
+*.dump
+backup*.dump
+*.dump
+schema.sql
+drop_constraints_and_indexes*.sql
+constraints_to_recreate*.sql
+public_constraints_to_apply*.sql
+backup*.dump
+schema.sql
+drop_constraints_and_indexes*.sql
+constraints_to_recreate*.sql
+public_constraints_to_apply*.sql
