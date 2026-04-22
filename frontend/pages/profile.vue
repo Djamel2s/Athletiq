@@ -347,7 +347,7 @@
                     class="bg-black/50 text-white text-xs px-2 py-1 rounded"
                     aria-label="Options"
                   >
-                    <Icon name="lucide:more-vertical" class="w-4 h-4" />
+                    <Icon name="lucide:more-vertical" class="w-2 h-2" />
                   </button>
                   <div v-if="openMenuPostId === post.id" class="mt-2 w-44 rounded-lg shadow-lg bg-white dark:bg-primary-900 border border-primary-200 dark:border-primary-800 overflow-hidden">
                     <button @click.stop.prevent="sharePost(post)" class="w-full text-left px-3 py-2 text-sm hover:bg-primary-50 dark:hover:bg-primary-800">Partager</button>
