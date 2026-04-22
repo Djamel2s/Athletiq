@@ -341,25 +341,23 @@
             <div v-if="posts.length > 0" class="grid grid-cols-3 gap-4">
               <div v-for="post in posts" :key="post.id" class="relative rounded-lg overflow-hidden bg-primary-900/40" @click="openPostModal(post)" style="cursor:pointer;">
                 <!-- Three-dots menu (top-right) -->
-                  <div class="absolute top-2 right-2">
+                <div class="absolute top-2 right-2 w-10 h-10">
                   <button
                     @click.stop="togglePostMenu(post.id)"
-                    class="text-white text-xs px-1 py-0.5 rounded z-30"
+                    class="text-white text-xs px-1 py-0.5 rounded z-50 w-10 h-10 flex items-center justify-center"
                     aria-label="Options"
                   >
                     <Icon name="lucide:more-vertical" class="w-3 h-3" />
                   </button>
-                  <div v-if="openMenuPostId === post.id" class="mt-2 rounded-lg shadow-lg bg-white dark:bg-primary-900 border border-primary-200 dark:border-primary-800 overflow-hidden">
-                    <div class="flex items-center gap-1 p-2">
-                      <button @click.stop.prevent="sharePost(post)" class="w-8 h-8 rounded-lg flex items-center justify-center text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors" title="Partager">
-                        <Icon name="lucide:share-2" class="w-4 h-4" />
-                        <span class="sr-only">Partager</span>
-                      </button>
-                      <button v-if="isOwnProfile" @click.stop.prevent="(async ()=>{ await deletePostAction(post.id) })()" class="w-8 h-8 rounded-lg flex items-center justify-center text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors" title="Supprimer">
-                        <Icon name="lucide:trash-2" class="w-4 h-4" />
-                        <span class="sr-only">Supprimer</span>
-                      </button>
-                    </div>
+                  <div v-if="openMenuPostId === post.id" class="absolute right-0 top-full mt-1 w-36 rounded-lg shadow-lg bg-white dark:bg-primary-900 border border-primary-200 dark:border-primary-800 overflow-hidden z-40">
+                    <button @click.stop.prevent="sharePost(post)" class="w-full py-2 flex items-center justify-center gap-2 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors" title="Partager">
+                      <Icon name="lucide:share-2" class="w-4 h-4" />
+                      <span class="sr-only">Partager</span>
+                    </button>
+                    <button v-if="isOwnProfile" @click.stop.prevent="(async ()=>{ await deletePostAction(post.id) })()" class="w-full py-2 flex items-center justify-center gap-2 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors" title="Supprimer">
+                      <Icon name="lucide:trash-2" class="w-4 h-4" />
+                      <span class="sr-only">Supprimer</span>
+                    </button>
                   </div>
                 </div>
                 <div class="aspect-square w-full h-full">
