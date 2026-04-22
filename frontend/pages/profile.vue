@@ -12,11 +12,11 @@
 
       <template v-else>
         <!-- GymBros requests carousel (top-right, like /friends) -->
-        <div v-if="isOwnProfile && (requestsList.length || requestsLoading)" class="hidden md:flex absolute -top-2 right-0 z-20 items-center">
-          <button @click="prevRequest" class="-mr-3 z-30 w-9 h-9 rounded-full shadow flex items-center justify-center">
+        <div v-if="isOwnProfile && (requestsList.length || requestsLoading)" class="hidden md:flex absolute -top-2 right-4 z-20 items-center">
+          <button @click="prevRequest" class="mr-2 z-30 w-9 h-9 rounded-full shadow flex items-center justify-center">
             <Icon name="lucide:chevron-left" class="w-4 h-4 text-primary-700" />
           </button>
-          <div class="relative w-80 max-w-xs rounded-xl shadow-lg p-3 mx-3">
+          <div class="relative w-80 max-w-xs rounded-xl shadow-lg p-3 mr-2">
             <div v-if="requestsLoading" class="text-center py-6">
               <div class="inline-block animate-spin rounded-full h-8 w-8 border-2 border-primary-200 border-t-sand-500"></div>
             </div>
@@ -57,7 +57,7 @@
             </div>
             <div v-else class="text-center py-4 text-xs text-primary-500">Aucune demande</div>
           </div>
-          <button @click="nextRequest" class="-ml-3 z-30 w-9 h-9 rounded-full shadow flex items-center justify-center">
+          <button @click="nextRequest" class="ml-2 z-30 w-9 h-9 rounded-full shadow flex items-center justify-center">
             <Icon name="lucide:chevron-right" class="w-4 h-4 text-primary-700" />
           </button>
         </div>
