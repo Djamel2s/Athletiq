@@ -25,23 +25,21 @@
               <div class="inline-block animate-spin rounded-full h-8 w-8 border-2 border-primary-200 border-t-sand-500"></div>
             </div>
             <div v-else-if="requestsList.length">
-              <div class="flex items-center gap-3">
+              <div class="card-glass !p-3 flex items-center gap-3">
+                <NuxtLink :to="`/profile/${requestsList[requestIndex].username || requestsList[requestIndex].id}`" class="flex-shrink-0">
+                  <div
+                    class="w-12 h-12 rounded-full overflow-hidden"
+                    :class="requestsList[requestIndex].avatarUrl ? '' : 'bg-gradient-primary flex items-center justify-center'"
+                  >
+                    <img v-if="requestsList[requestIndex].avatarUrl" :src="requestsList[requestIndex].avatarUrl" alt="" class="w-full h-full object-cover" />
+                    <span v-else class="text-white text-sm font-bold">{{ (requestsList[requestIndex].firstName?.charAt(0) || '?').toUpperCase() }}</span>
+                  </div>
+                </NuxtLink>
                 <div class="flex-1 min-w-0">
-                  <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full overflow-hidden bg-gradient-primary flex items-center justify-center">
-                      <img v-if="requestsList[requestIndex].avatarUrl" :src="requestsList[requestIndex].avatarUrl" class="w-full h-full object-cover" />
-                      <Icon v-else name="lucide:user" class="w-5 h-5 text-white" />
-                    </div>
-                    <div class="min-w-0">
-                      <div class="font-semibold text-sm text-primary-900 dark:text-white truncate">{{ requestsList[requestIndex].username || requestsList[requestIndex].firstName || requestsList[requestIndex].email }}</div>
-                      <div class="text-xs text-primary-500 dark:text-primary-400 truncate">{{ requestsList[requestIndex].message || 'Veut rejoindre tes GymBros' }}</div>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-2 mt-3">
-                    <button @click.prevent="acceptRequestAction(requestsList[requestIndex])" class="flex-1 py-2 rounded-lg bg-emerald-600 text-white text-sm">Accepter</button>
-                    <button @click.prevent="rejectRequestAction(requestsList[requestIndex])" class="py-2 px-3 rounded-lg bg-rose-50 text-rose-600 text-sm">Refuser</button>
-                    <button @click.prevent="ignoreRequest" class="ml-1 py-2 px-2 rounded-lg bg-primary-50 text-primary-600 text-sm">Ignorer</button>
-                  </div>
+                  <NuxtLink :to="`/profile/${requestsList[requestIndex].username || requestsList[requestIndex].id}`">
+                    <p class="text-sm font-semibold text-primary-900 dark:text-primary-100 truncate">{{ requestsList[requestIndex].firstName }} {{ requestsList[requestIndex].lastName }}</p>
+                    <p v-if="requestsList[requestIndex].username" class="text-xs text-primary-500 dark:text-primary-400">@{{ requestsList[requestIndex].username }}</p>
+                  </NuxtLink>
                 </div>
               </div>
             </div>
