@@ -12,7 +12,7 @@
 
       <template v-else>
         <!-- GymBros requests carousel (top-right, like /friends) -->
-        <div v-if="isOwnProfile && (requestsList.length || requestsLoading)" class="hidden md:flex md:fixed md:top-6 md:right-8 z-50 items-center">
+        <div v-if="isOwnProfile && (requestsList.length || requestsLoading)" class="hidden md:flex md:fixed md:bottom-6 md:right-6 z-50 items-center">
           <button @click="prevRequest" class="mr-2 z-30 w-9 h-9 rounded-full shadow flex items-center justify-center">
             <Icon name="lucide:chevron-left" class="w-4 h-4 text-primary-700" />
           </button>
@@ -377,7 +377,7 @@
                 <div class="absolute top-2 right-2 w-5 h-5">
                   <button
                     @click.stop="togglePostMenu(post.id)"
-                    class="absolute inset-0 text-white rounded z-50 flex items-center justify-center"
+                    class="absolute inset-0 text-white rounded z-30 flex items-center justify-center"
                     aria-label="Options"
                   >
                     <Icon name="lucide:more-vertical" class="w-3 h-3" />
