@@ -341,7 +341,7 @@
             <div v-if="posts.length > 0" class="grid grid-cols-3 gap-4">
               <div v-for="post in posts" :key="post.id" class="relative rounded-lg overflow-hidden bg-primary-900/40" @click="openPostModal(post)" style="cursor:pointer;">
                 <!-- Three-dots menu (top-right) -->
-                <div class="absolute top-2 right-2">
+                <div class="absolute top-2 right-2 w-3 h-3">
                   <button
                     @click.stop="togglePostMenu(post.id)"
                     class="absolute inset-0 text-white rounded z-50 flex items-center justify-center"
