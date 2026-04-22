@@ -41,6 +41,22 @@
                     <p v-if="requestsList[requestIndex].username" class="text-xs text-primary-500 dark:text-primary-400">@{{ requestsList[requestIndex].username }}</p>
                   </NuxtLink>
                 </div>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                  <button
+                    @click.prevent="acceptRequestAction(requestsList[requestIndex])"
+                    class="w-9 h-9 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors"
+                    title="Accepter"
+                  >
+                    <Icon name="lucide:check" class="w-5 h-5" />
+                  </button>
+                  <button
+                    @click.prevent="rejectRequestAction(requestsList[requestIndex])"
+                    class="w-9 h-9 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-500 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                    title="Refuser"
+                  >
+                    <Icon name="lucide:x" class="w-5 h-5" />
+                  </button>
+                </div>
               </div>
             </div>
             <div v-else class="text-center py-4 text-xs text-primary-500">Aucune demande</div>
