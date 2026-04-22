@@ -56,7 +56,7 @@ export const AppDataSource = new DataSource({
         : 'postgres'),
   database: process.env.DATABASE_URL ? undefined : process.env.DB_NAME || 'athletiq',
   schema: 'public',
-  ssl: isProduction ? { rejectUnauthorized: false } : false,
+  ssl: isProduction ? { rejectUnauthorized: true } : false,
   synchronize: !isProduction,
   logging: !isProduction,
   entities: [
