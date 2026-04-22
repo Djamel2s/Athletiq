@@ -17,10 +17,6 @@
             <Icon name="lucide:chevron-left" class="w-4 h-4 text-primary-700" />
           </button>
           <div class="relative w-80 max-w-xs rounded-xl shadow-lg bg-white dark:bg-primary-900 border border-primary-200 dark:border-primary-800 p-3 mx-3">
-            <div class="flex items-center justify-between mb-2">
-              <div class="text-xs font-semibold text-primary-600 dark:text-primary-300">Demandes</div>
-              <div class="text-xs text-primary-400">{{ requestsList.length }}</div>
-            </div>
             <div v-if="requestsLoading" class="text-center py-6">
               <div class="inline-block animate-spin rounded-full h-8 w-8 border-2 border-primary-200 border-t-sand-500"></div>
             </div>
