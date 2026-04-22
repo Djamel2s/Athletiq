@@ -2,7 +2,7 @@
   <div class="min-h-screen geometric-bg">
     <!-- TopNav is rendered globally in app.vue -->
 
-    <div class="px-4 md:px-6 pb-28 lg:pb-20 max-w-lg mx-auto">
+    <div class="px-4 md:px-6 pb-28 lg:pb-20 max-w-lg mx-auto relative">
       <!-- Loading -->
       <div v-if="pageLoading" class="text-center py-20">
         <div
@@ -11,6 +11,46 @@
       </div>
 
       <template v-else>
+        <!-- GymBros requests carousel (top-right, minimal) -->
+        <div v-if="isOwnProfile && (requestsList.length || requestsLoading)" class="hidden md:flex absolute -top-2 right-0 z-20">
+          <div class="w-80 max-w-xs rounded-xl shadow-lg bg-white dark:bg-primary-900 border border-primary-200 dark:border-primary-800 p-3">
+            <div class="flex items-center justify-between mb-2">
+              <div class="text-xs font-semibold text-primary-600 dark:text-primary-300">Demandes GymBros</div>
+              <div class="text-xs text-primary-400">{{ requestsList.length }}</div>
+            </div>
+            <div v-if="requestsLoading" class="text-center py-6">
+              <div class="inline-block animate-spin rounded-full h-8 w-8 border-2 border-primary-200 border-t-sand-500"></div>
+            </div>
+            <div v-else-if="requestsList.length">
+              <div class="flex items-center gap-3">
+                <button @click="prevRequest" class="w-8 h-8 rounded-lg bg-primary-50 dark:bg-primary-800 flex items-center justify-center">
+                  <Icon name="lucide:chevron-left" class="w-4 h-4" />
+                </button>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full overflow-hidden bg-gradient-primary flex items-center justify-center">
+                      <img v-if="requestsList[requestIndex].avatarUrl" :src="requestsList[requestIndex].avatarUrl" class="w-full h-full object-cover" />
+                      <Icon v-else name="lucide:user" class="w-5 h-5 text-white" />
+                    </div>
+                    <div class="min-w-0">
+                      <div class="font-semibold text-sm text-primary-900 dark:text-white truncate">{{ requestsList[requestIndex].username || requestsList[requestIndex].firstName || requestsList[requestIndex].email }}</div>
+                      <div class="text-xs text-primary-500 dark:text-primary-400 truncate">{{ requestsList[requestIndex].message || 'Veut rejoindre tes GymBros' }}</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2 mt-3">
+                    <button @click.prevent="acceptRequestAction(requestsList[requestIndex].id)" class="flex-1 py-2 rounded-lg bg-emerald-600 text-white text-sm">Accepter</button>
+                    <button @click.prevent="rejectRequestAction(requestsList[requestIndex].id)" class="py-2 px-3 rounded-lg bg-rose-50 text-rose-600 text-sm">Refuser</button>
+                    <button @click.prevent="ignoreRequest" class="ml-1 py-2 px-2 rounded-lg bg-primary-50 text-primary-600 text-sm">Ignorer</button>
+                  </div>
+                </div>
+                <button @click="nextRequest" class="w-8 h-8 rounded-lg bg-primary-50 dark:bg-primary-800 flex items-center justify-center">
+                  <Icon name="lucide:chevron-right" class="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            <div v-else class="text-center py-4 text-xs text-primary-500">Aucune demande</div>
+          </div>
+        </div>
         <!-- Username setup prompt (first visit) -->
         <div v-if="showUsernameSetup" class="card-glass !p-6 text-center mb-6 fade-in">
           <Icon name="lucide:at-sign" class="w-12 h-12 mx-auto mb-3 text-sand-500" />
@@ -290,6 +330,20 @@
           <div v-if="!profileData?.restricted && activeTab === 'posts'" class="slide-up">
             <div v-if="posts.length > 0" class="grid grid-cols-3 gap-4">
               <div v-for="post in posts" :key="post.id" class="relative rounded-lg overflow-hidden bg-primary-900/40" @click="openPostModal(post)" style="cursor:pointer;">
+                <!-- Three-dots menu (top-right) -->
+                <div class="absolute top-2 right-2 z-10">
+                  <button
+                    @click.stop="togglePostMenu(post.id)"
+                    class="w-8 h-8 rounded-lg bg-white/80 dark:bg-primary-800/80 flex items-center justify-center text-primary-700 hover:bg-primary-950 hover:text-white transition-colors"
+                    aria-label="Options"
+                  >
+                    <Icon name="lucide:more-vertical" class="w-4 h-4" />
+                  </button>
+                  <div v-if="openMenuPostId === post.id" class="mt-2 w-44 rounded-lg shadow-lg bg-white dark:bg-primary-900 border border-primary-200 dark:border-primary-800 overflow-hidden">
+                    <button @click.stop.prevent="sharePost(post)" class="w-full text-left px-3 py-2 text-sm hover:bg-primary-50 dark:hover:bg-primary-800">Partager</button>
+                    <button v-if="isOwnProfile" @click.stop.prevent="(async ()=>{ await deletePostAction(post.id) })()" class="w-full text-left px-3 py-2 text-sm text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20">Supprimer</button>
+                  </div>
+                </div>
                 <div class="aspect-square w-full h-full">
                   <template v-if="post.type === 'PHOTO'">
                     <img v-if="post.data?.photoUrl" :src="post.data.photoUrl" class="w-full h-full object-cover" />
@@ -1171,7 +1225,7 @@ definePageMeta({
 useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] });
 
 const authStore = useAuthStore();
-const { getMyProfile, getProfile, updateProfile, checkUsername, sendFriendRequest, removeFriend, createPost, editPost, deletePost } =
+const { getMyProfile, getProfile, updateProfile, checkUsername, sendFriendRequest, removeFriend, createPost, editPost, deletePost, getRequests, acceptRequest, rejectRequest } =
   useSocialApi();
 const bodyApi = useBodyApi();
 const { getRecentPhotos } = bodyApi;
@@ -1183,6 +1237,62 @@ const statsApi = useStatsApi();
 const showWorkoutsModal = ref(false);
 const showGymBrosModal = ref(false);
 const showStreakModal = ref(false);
+
+// Gym bro requests (carousel)
+const requestsLoading = ref(false);
+const requestsList = ref<any[]>([]);
+const requestIndex = ref(0);
+
+const loadRequests = async () => {
+  requestsLoading.value = true;
+  try {
+    const res: any = await getRequests();
+    requestsList.value = res?.requests || res || [];
+    requestIndex.value = 0;
+  } catch (e) {
+    console.error('Failed to load requests', e);
+  } finally {
+    requestsLoading.value = false;
+  }
+};
+
+const prevRequest = () => {
+  if (!requestsList.value.length) return;
+  requestIndex.value = (requestIndex.value - 1 + requestsList.value.length) % requestsList.value.length;
+};
+const nextRequest = () => {
+  if (!requestsList.value.length) return;
+  requestIndex.value = (requestIndex.value + 1) % requestsList.value.length;
+};
+
+const acceptRequestAction = async (id: number) => {
+  try {
+    await acceptRequest(id);
+    requestsList.value = requestsList.value.filter((r) => r.id !== id);
+    requestIndex.value = Math.min(requestIndex.value, Math.max(0, requestsList.value.length - 1));
+    toast.success('Demande acceptée');
+  } catch (e) {
+    console.error(e);
+    toast.error('Impossible d\'accepter la demande');
+  }
+};
+
+const rejectRequestAction = async (id: number) => {
+  try {
+    await rejectRequest(id);
+    requestsList.value = requestsList.value.filter((r) => r.id !== id);
+    requestIndex.value = Math.min(requestIndex.value, Math.max(0, requestsList.value.length - 1));
+    toast.success('Demande refusée');
+  } catch (e) {
+    console.error(e);
+    toast.error('Impossible de refuser la demande');
+  }
+};
+
+const ignoreRequest = () => {
+  // just advance the carousel without hitting API
+  nextRequest();
+};
 
 const workoutsLoading = ref(false);
 const gymBrosLoading = ref(false);
@@ -1314,6 +1424,7 @@ const activeTab = ref<'photos' | 'posts'>('posts');
 const profileData = ref<any>(null);
 const photos = ref<any[]>([]);
 const posts = ref<any[]>([]);
+const openMenuPostId = ref<number | null>(null);
 const selectedPhoto = ref<any>(null);
 const avatarUploading = ref(false);
 const showQrModal = ref(false);
@@ -1950,6 +2061,32 @@ const shareQr = async () => {
   }
 };
 
+// Share a specific post (uses Web Share API when available, fallback to clipboard)
+const postUrlFor = (post: any) => `https://athletiq.fr/post/${post.id}`;
+const sharePost = async (post: any) => {
+  const url = postUrlFor(post);
+  const text = `Regarde ma publication sur Athletiq: ${url}`;
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: 'Ma publication Athletiq', text, url });
+    } catch (e) {
+      console.warn('Native share cancelled or failed:', e);
+    }
+  } else {
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success('Lien copié !');
+    } catch (e) {
+      toast.error('Impossible de copier le lien');
+    }
+  }
+  openMenuPostId.value = null;
+};
+
+const togglePostMenu = (postId: number) => {
+  openMenuPostId.value = openMenuPostId.value === postId ? null : postId;
+};
+
 // Determine requested username from route reactively
 const requestedUsername = computed(() => {
   const p = route.path || '';
@@ -1979,6 +2116,11 @@ const isOwnProfile = computed(() => {
     (authStore.user as any)?.username === profileData.value?.username
   );
 });
+
+// Load requests when viewing own profile
+watch(isOwnProfile, (v) => {
+  if (v) loadRequests();
+}, { immediate: true });
 
 const initials = computed(() => {
   const f = (displayedUser.value?.firstName || '').charAt(0) || '';
