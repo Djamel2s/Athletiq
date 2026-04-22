@@ -341,17 +341,25 @@
             <div v-if="posts.length > 0" class="grid grid-cols-3 gap-4">
               <div v-for="post in posts" :key="post.id" class="relative rounded-lg overflow-hidden bg-primary-900/40" @click="openPostModal(post)" style="cursor:pointer;">
                 <!-- Three-dots menu (top-right) -->
-                <div class="absolute top-2 right-2 z-10">
+                  <div class="absolute top-2 right-2">
                   <button
                     @click.stop="togglePostMenu(post.id)"
-                    class="text-white text-xs px-2 py-1 rounded"
+                    class="text-white text-xs px-1 py-0.5 rounded z-30"
                     aria-label="Options"
                   >
                     <Icon name="lucide:more-vertical" class="w-3 h-3" />
                   </button>
-                  <div v-if="openMenuPostId === post.id" class="mt-2 w-44 rounded-lg shadow-lg bg-white dark:bg-primary-900 border border-primary-200 dark:border-primary-800 overflow-hidden">
-                    <button @click.stop.prevent="sharePost(post)" class="w-full text-left px-3 py-2 text-sm hover:bg-primary-50 dark:hover:bg-primary-800">Partager</button>
-                    <button v-if="isOwnProfile" @click.stop.prevent="(async ()=>{ await deletePostAction(post.id) })()" class="w-full text-left px-3 py-2 text-sm text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20">Supprimer</button>
+                  <div v-if="openMenuPostId === post.id" class="mt-2 rounded-lg shadow-lg bg-white dark:bg-primary-900 border border-primary-200 dark:border-primary-800 overflow-hidden">
+                    <div class="flex items-center gap-1 p-2">
+                      <button @click.stop.prevent="sharePost(post)" class="w-8 h-8 rounded-lg flex items-center justify-center text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors" title="Partager">
+                        <Icon name="lucide:share-2" class="w-4 h-4" />
+                        <span class="sr-only">Partager</span>
+                      </button>
+                      <button v-if="isOwnProfile" @click.stop.prevent="(async ()=>{ await deletePostAction(post.id) })()" class="w-8 h-8 rounded-lg flex items-center justify-center text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors" title="Supprimer">
+                        <Icon name="lucide:trash-2" class="w-4 h-4" />
+                        <span class="sr-only">Supprimer</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
                 <div class="aspect-square w-full h-full">
@@ -2100,6 +2108,19 @@ const sharePost = async (post: any) => {
 const togglePostMenu = (postId: number) => {
   openMenuPostId.value = openMenuPostId.value === postId ? null : postId;
 };
+
+// Close post menu when clicking outside (clicks inside use @click.stop)
+const handleDocumentClick = (e: MouseEvent) => {
+  if (openMenuPostId.value !== null) openMenuPostId.value = null;
+};
+
+onMounted(() => {
+  document.addEventListener('click', handleDocumentClick);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleDocumentClick);
+});
 
 // Determine requested username from route reactively
 const requestedUsername = computed(() => {
