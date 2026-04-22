@@ -344,7 +344,7 @@
                 <div class="absolute top-2 right-2 z-10">
                   <button
                     @click.stop="togglePostMenu(post.id)"
-                    class="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded"
+                    class="bg-black/50 text-white text-xs px-2 py-1 rounded"
                     aria-label="Options"
                   >
                     <Icon name="lucide:more-vertical" class="w-4 h-4" />
