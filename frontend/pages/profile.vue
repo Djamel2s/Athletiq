@@ -12,7 +12,7 @@
 
       <template v-else>
         <!-- GymBros requests carousel (top-right, like /friends) -->
-        <div v-if="isOwnProfile && (requestsList.length || requestsLoading)" class="hidden md:flex absolute -top-2 right-4 z-20 items-center">
+        <div v-if="isOwnProfile && (requestsList.length || requestsLoading)" class="hidden md:flex md:fixed md:top-20 md:right-6 z-50 items-center">
           <button @click="prevRequest" class="mr-2 z-30 w-9 h-9 rounded-full shadow flex items-center justify-center">
             <Icon name="lucide:chevron-left" class="w-4 h-4 text-primary-700" />
           </button>
