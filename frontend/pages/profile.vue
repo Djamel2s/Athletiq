@@ -11,11 +11,14 @@
       </div>
 
       <template v-else>
-        <!-- GymBros requests carousel (top-right, minimal) -->
-        <div v-if="isOwnProfile && (requestsList.length || requestsLoading)" class="hidden md:flex absolute -top-2 right-0 z-20">
-          <div class="w-80 max-w-xs rounded-xl shadow-lg bg-white dark:bg-primary-900 border border-primary-200 dark:border-primary-800 p-3">
+        <!-- GymBros requests carousel (top-right, like /friends) -->
+        <div v-if="isOwnProfile && (requestsList.length || requestsLoading)" class="hidden md:flex absolute -top-2 right-0 z-20 items-center">
+          <button @click="prevRequest" class="-mr-3 z-30 w-9 h-9 rounded-full bg-white/90 dark:bg-primary-900/80 shadow flex items-center justify-center">
+            <Icon name="lucide:chevron-left" class="w-4 h-4 text-primary-700" />
+          </button>
+          <div class="relative w-80 max-w-xs rounded-xl shadow-lg bg-white dark:bg-primary-900 border border-primary-200 dark:border-primary-800 p-3 mx-3">
             <div class="flex items-center justify-between mb-2">
-              <div class="text-xs font-semibold text-primary-600 dark:text-primary-300">Demandes GymBros</div>
+              <div class="text-xs font-semibold text-primary-600 dark:text-primary-300">Demandes</div>
               <div class="text-xs text-primary-400">{{ requestsList.length }}</div>
             </div>
             <div v-if="requestsLoading" class="text-center py-6">
@@ -23,9 +26,6 @@
             </div>
             <div v-else-if="requestsList.length">
               <div class="flex items-center gap-3">
-                <button @click="prevRequest" class="w-8 h-8 rounded-lg bg-primary-50 dark:bg-primary-800 flex items-center justify-center">
-                  <Icon name="lucide:chevron-left" class="w-4 h-4" />
-                </button>
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full overflow-hidden bg-gradient-primary flex items-center justify-center">
@@ -38,18 +38,18 @@
                     </div>
                   </div>
                   <div class="flex items-center gap-2 mt-3">
-                    <button @click.prevent="acceptRequestAction(requestsList[requestIndex].id)" class="flex-1 py-2 rounded-lg bg-emerald-600 text-white text-sm">Accepter</button>
-                    <button @click.prevent="rejectRequestAction(requestsList[requestIndex].id)" class="py-2 px-3 rounded-lg bg-rose-50 text-rose-600 text-sm">Refuser</button>
+                    <button @click.prevent="acceptRequestAction(requestsList[requestIndex])" class="flex-1 py-2 rounded-lg bg-emerald-600 text-white text-sm">Accepter</button>
+                    <button @click.prevent="rejectRequestAction(requestsList[requestIndex])" class="py-2 px-3 rounded-lg bg-rose-50 text-rose-600 text-sm">Refuser</button>
                     <button @click.prevent="ignoreRequest" class="ml-1 py-2 px-2 rounded-lg bg-primary-50 text-primary-600 text-sm">Ignorer</button>
                   </div>
                 </div>
-                <button @click="nextRequest" class="w-8 h-8 rounded-lg bg-primary-50 dark:bg-primary-800 flex items-center justify-center">
-                  <Icon name="lucide:chevron-right" class="w-4 h-4" />
-                </button>
               </div>
             </div>
             <div v-else class="text-center py-4 text-xs text-primary-500">Aucune demande</div>
           </div>
+          <button @click="nextRequest" class="-ml-3 z-30 w-9 h-9 rounded-full bg-white/90 dark:bg-primary-900/80 shadow flex items-center justify-center">
+            <Icon name="lucide:chevron-right" class="w-4 h-4 text-primary-700" />
+          </button>
         </div>
         <!-- Username setup prompt (first visit) -->
         <div v-if="showUsernameSetup" class="card-glass !p-6 text-center mb-6 fade-in">
@@ -1265,10 +1265,12 @@ const nextRequest = () => {
   requestIndex.value = (requestIndex.value + 1) % requestsList.value.length;
 };
 
-const acceptRequestAction = async (id: number) => {
+const acceptRequestAction = async (req: any) => {
+  const id = req?.friendshipId ?? req?.id;
+  if (!id) return;
   try {
     await acceptRequest(id);
-    requestsList.value = requestsList.value.filter((r) => r.id !== id);
+    requestsList.value = requestsList.value.filter((r) => (r.friendshipId ?? r.id) !== id);
     requestIndex.value = Math.min(requestIndex.value, Math.max(0, requestsList.value.length - 1));
     toast.success('Demande acceptée');
   } catch (e) {
@@ -1277,10 +1279,12 @@ const acceptRequestAction = async (id: number) => {
   }
 };
 
-const rejectRequestAction = async (id: number) => {
+const rejectRequestAction = async (req: any) => {
+  const id = req?.friendshipId ?? req?.id;
+  if (!id) return;
   try {
     await rejectRequest(id);
-    requestsList.value = requestsList.value.filter((r) => r.id !== id);
+    requestsList.value = requestsList.value.filter((r) => (r.friendshipId ?? r.id) !== id);
     requestIndex.value = Math.min(requestIndex.value, Math.max(0, requestsList.value.length - 1));
     toast.success('Demande refusée');
   } catch (e) {
