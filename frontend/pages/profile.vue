@@ -344,7 +344,7 @@
                 <div class="absolute top-2 right-2 z-10">
                   <button
                     @click.stop="togglePostMenu(post.id)"
-                    class="w-8 h-8 rounded-lg bg-white/80 dark:bg-primary-800/80 flex items-center justify-center text-primary-700 hover:bg-primary-950 hover:text-white transition-colors"
+                    class="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded"
                     aria-label="Options"
                   >
                     <Icon name="lucide:more-vertical" class="w-4 h-4" />
@@ -366,7 +366,7 @@
                   <template v-else-if="post.type === 'TIMELAPSE'">
                     <img :src="post.data?.timelapseUrl" class="w-full h-full object-cover" />
                   </template>
-                  <div v-if="Array.isArray(post.data?.photos) && post.data.photos.length > 1" class="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">{{ post.data.photos.length }}</div>
+                  <div v-if="Array.isArray(post.data?.photos) && post.data.photos.length > 1" class="absolute top-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded">{{ post.data.photos.length }}</div>
                 </div>
               </div>
             </div>
