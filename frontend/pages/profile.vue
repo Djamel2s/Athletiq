@@ -2118,9 +2118,11 @@ const isOwnProfile = computed(() => {
 });
 
 // Load requests when viewing own profile
-watch(isOwnProfile, (v) => {
-  if (v) loadRequests();
-}, { immediate: true });
+import { onMounted } from 'vue';
+
+onMounted(() => {
+  if (isOwnProfile.value) loadRequests();
+});
 
 const initials = computed(() => {
   const f = (displayedUser.value?.firstName || '').charAt(0) || '';
