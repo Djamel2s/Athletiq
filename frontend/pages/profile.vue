@@ -12,7 +12,7 @@
 
       <template v-else>
         <!-- GymBros requests carousel (top-right, like /friends) -->
-        <div v-if="isOwnProfile && (requestsList.length || requestsLoading)" class="hidden md:flex md:fixed md:top-20 md:right-6 z-50 items-center">
+        <div v-if="isOwnProfile && (requestsList.length || requestsLoading)" class="hidden md:flex md:fixed md:top-6 md:right-8 z-50 items-center">
           <button @click="prevRequest" class="mr-2 z-30 w-9 h-9 rounded-full shadow flex items-center justify-center">
             <Icon name="lucide:chevron-left" class="w-4 h-4 text-primary-700" />
           </button>
@@ -62,6 +62,39 @@
           </button>
         </div>
         <!-- Username setup prompt (first visit) -->
+        <!-- Small-screen GymBros requests (shown above username on mobile) -->
+        <div v-if="isOwnProfile && (requestsList.length || requestsLoading)" class="md:hidden flex items-center justify-center mb-4">
+          <div class="w-full max-w-md rounded-xl shadow-lg p-3">
+            <div v-if="requestsLoading" class="text-center py-4">
+              <div class="inline-block animate-spin rounded-full h-8 w-8 border-2 border-primary-200 border-t-sand-500"></div>
+            </div>
+            <div v-else-if="requestsList.length">
+              <div class="card-glass !p-3 flex items-center gap-3">
+                <NuxtLink :to="`/profile/${requestsList[requestIndex].username || requestsList[requestIndex].id}`" class="flex-shrink-0">
+                  <div class="w-10 h-10 rounded-full overflow-hidden" :class="requestsList[requestIndex].avatarUrl ? '' : 'bg-gradient-primary flex items-center justify-center'">
+                    <img v-if="requestsList[requestIndex].avatarUrl" :src="requestsList[requestIndex].avatarUrl" alt="" class="w-full h-full object-cover" />
+                    <span v-else class="text-white text-sm font-bold">{{ (requestsList[requestIndex].firstName?.charAt(0) || '?').toUpperCase() }}</span>
+                  </div>
+                </NuxtLink>
+                <div class="flex-1 min-w-0">
+                  <NuxtLink :to="`/profile/${requestsList[requestIndex].username || requestsList[requestIndex].id}`">
+                    <p class="text-sm font-semibold text-primary-900 dark:text-primary-100 truncate">{{ requestsList[requestIndex].firstName }} {{ requestsList[requestIndex].lastName }}</p>
+                    <p v-if="requestsList[requestIndex].username" class="text-xs text-primary-500 dark:text-primary-400">@{{ requestsList[requestIndex].username }}</p>
+                  </NuxtLink>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                  <button @click.prevent="acceptRequestAction(requestsList[requestIndex])" class="w-9 h-9 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors" title="Accepter">
+                    <Icon name="lucide:check" class="w-5 h-5" />
+                  </button>
+                  <button @click.prevent="rejectRequestAction(requestsList[requestIndex])" class="w-9 h-9 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-500 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors" title="Refuser">
+                    <Icon name="lucide:x" class="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div v-else class="text-center py-4 text-xs text-primary-500">Aucune demande</div>
+          </div>
+        </div>
         <div v-if="showUsernameSetup" class="card-glass !p-6 text-center mb-6 fade-in">
           <Icon name="lucide:at-sign" class="w-12 h-12 mx-auto mb-3 text-sand-500" />
           <h2 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-2">
