@@ -341,15 +341,15 @@
             <div v-if="posts.length > 0" class="grid grid-cols-3 gap-4">
               <div v-for="post in posts" :key="post.id" class="relative rounded-lg overflow-hidden bg-primary-900/40" @click="openPostModal(post)" style="cursor:pointer;">
                 <!-- Three-dots menu (top-right) -->
-                <div class="absolute top-2 right-2 w-10 h-10">
+                <div class="absolute top-2 right-2 w-8 h-8">
                   <button
                     @click.stop="togglePostMenu(post.id)"
-                    class="text-white text-xs px-1 py-0.5 rounded z-50 w-10 h-10 flex items-center justify-center"
+                    class="absolute inset-0 text-white rounded z-50 flex items-center justify-center"
                     aria-label="Options"
                   >
                     <Icon name="lucide:more-vertical" class="w-3 h-3" />
                   </button>
-                  <div v-if="openMenuPostId === post.id" class="absolute right-0 top-full mt-1 w-36 rounded-lg shadow-lg bg-white dark:bg-primary-900 border border-primary-200 dark:border-primary-800 overflow-hidden z-40">
+                  <div v-if="openMenuPostId === post.id" class="absolute right-0 top-full mt-1 rounded-lg shadow-lg bg-white dark:bg-primary-900 border border-primary-200 dark:border-primary-800 overflow-hidden z-40">
                     <button @click.stop.prevent="sharePost(post)" class="w-full py-2 flex items-center justify-center gap-2 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors" title="Partager">
                       <Icon name="lucide:share-2" class="w-4 h-4" />
                       <span class="sr-only">Partager</span>
