@@ -64,8 +64,8 @@
         <!-- Username setup prompt (first visit) -->
         <!-- Small-screen GymBros requests (shown above username on mobile) -->
         <div v-if="isOwnProfile && (requestsList.length || requestsLoading)" class="md:hidden flex items-center justify-center mb-4">
-          <button v-if="requestsList.length > 1" @click.prevent="prevRequest" class="mr-2 z-30 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-            <Icon name="lucide:chevron-left" class="w-4 h-4 text-white" />
+          <button v-if="requestsList.length > 1" @click.prevent="prevRequest" class="mr-2 z-30 w-8 h-8 rounded-full shadow flex items-center justify-center">
+            <Icon name="lucide:chevron-left" class="w-4 h-4 text-primary-700" />
           </button>
           <div class="w-full max-w-md rounded-xl shadow-lg p-3">
             <div v-if="requestsLoading" class="text-center py-4">
@@ -97,8 +97,8 @@
             </div>
             <div v-else class="text-center py-4 text-xs text-primary-500">Aucune demande</div>
           </div>
-          <button v-if="requestsList.length > 1" @click.prevent="nextRequest" class="ml-2 z-30 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-            <Icon name="lucide:chevron-right" class="w-4 h-4 text-white" />
+          <button v-if="requestsList.length > 1" @click.prevent="nextRequest" class="ml-2 z-30 w-8 h-8 rounded-full shadow flex items-center justify-center">
+            <Icon name="lucide:chevron-right" class="w-4 h-4 text-primary-700" />
           </button>
         </div>
         <div v-if="showUsernameSetup" class="card-glass !p-6 text-center mb-6 fade-in">
