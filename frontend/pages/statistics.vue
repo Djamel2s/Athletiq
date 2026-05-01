@@ -272,8 +272,8 @@
                 Calories au fil du temps
               </h4>
               <div class="h-[250px] md:h-[300px]">
-                <ClientOnly>
-                  <StatsVolumeChart v-if="volumeData.datasets?.length" :data="volumeData" />
+                <ClientOnly v-if="volumeData.datasets?.length">
+                  <StatsVolumeChart :data="volumeData" />
                 </ClientOnly>
                 <div v-else class="flex items-center justify-center h-full text-primary-400">
                   Pas de données
@@ -285,8 +285,8 @@
                 Fréquence par jour
               </h4>
               <div class="h-[250px] md:h-[300px]">
-                <ClientOnly>
-                  <StatsFrequencyChart v-if="frequencyData.datasets?.length" :data="frequencyData" />
+                <ClientOnly v-if="frequencyData.datasets?.length">
+                  <StatsFrequencyChart :data="frequencyData" />
                 </ClientOnly>
                 <div v-else class="flex items-center justify-center h-full text-primary-400">
                   Pas de données
@@ -348,11 +348,8 @@
                 Séances par groupe musculaire
               </h4>
               <div class="h-[250px] md:h-[300px]">
-                <ClientOnly>
-                  <StatsMuscleGroupChart
-                    v-if="muscleGroupData.datasets?.length"
-                    :data="muscleGroupData"
-                  />
+                <ClientOnly v-if="muscleGroupData.datasets?.length">
+                  <StatsMuscleGroupChart :data="muscleGroupData" />
                 </ClientOnly>
                 <div v-else class="flex items-center justify-center h-full text-primary-400">
                   Pas de données
@@ -364,11 +361,8 @@
                 Distribution des exercices
               </h4>
               <div class="h-[250px] md:h-[300px]">
-                <ClientOnly>
-                  <StatsExerciseDistributionChart
-                    v-if="exerciseDistributionData.datasets?.length"
-                    :data="exerciseDistributionData"
-                  />
+                <ClientOnly v-if="exerciseDistributionData.datasets?.length">
+                  <StatsExerciseDistributionChart :data="exerciseDistributionData" />
                 </ClientOnly>
                 <div v-else class="flex items-center justify-center h-full text-primary-400">
                   Pas de données

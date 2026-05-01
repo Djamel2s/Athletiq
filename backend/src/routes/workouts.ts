@@ -131,7 +131,8 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
 
     const [workouts, total] = await workoutRepo.findAndCount({
       where,
-      relations: ['exercises'],
+      // Include exercises with their performed sets and library metadata so frontend charts have needed data
+      relations: ['exercises', 'exercises.sets', 'exercises.exerciseLibrary'],
       order: { date: 'DESC' },
       take: limit,
       skip: offset,
