@@ -652,15 +652,15 @@ onMounted(async () => {
   ]);
   // Debug: log chart data presence to help trace empty charts / hydration issues
   // eslint-disable-next-line no-console
-  console.debug('statistics: volume datasets', volumeData.value?.datasets?.length);
+  console.log('statistics: volume datasets', volumeData.value?.datasets?.length);
   // eslint-disable-next-line no-console
-  console.debug('statistics: frequency datasets', frequencyData.value?.datasets?.length);
+  console.log('statistics: frequency datasets', frequencyData.value?.datasets?.length);
   // eslint-disable-next-line no-console
-  console.debug('statistics: muscleGroup datasets', muscleGroupData.value?.datasets?.length);
+  console.log('statistics: muscleGroup datasets', muscleGroupData.value?.datasets?.length);
   // eslint-disable-next-line no-console
-  console.debug('statistics: exerciseDistribution datasets', exerciseDistributionData.value?.datasets?.length);
+  console.log('statistics: exerciseDistribution datasets', exerciseDistributionData.value?.datasets?.length);
   // eslint-disable-next-line no-console
-  console.debug('statistics: activeProgressionData', !!activeProgressionData.value);
+  console.log('statistics: activeProgressionData', !!activeProgressionData.value);
   pageReady.value = true;
 });
 
@@ -682,6 +682,12 @@ const {
   selectedTimeRange,
   selectedExercise
 );
+
+// Quick client-side entry log to ensure script runs
+if (process.client) {
+  // eslint-disable-next-line no-console
+  console.log('statistics.vue script executed (client)');
+}
 
 // Calories estimation: ~6 kcal/min for moderate weight training
 const estimateCalories = (seconds: number) => Math.round((seconds / 60) * 6);
