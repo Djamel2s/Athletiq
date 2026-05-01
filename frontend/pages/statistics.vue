@@ -272,7 +272,9 @@
                 Calories au fil du temps
               </h4>
               <div class="h-[250px] md:h-[300px]">
-                <StatsVolumeChart v-if="volumeData.datasets?.length" :data="volumeData" />
+                <ClientOnly>
+                  <StatsVolumeChart v-if="volumeData.datasets?.length" :data="volumeData" />
+                </ClientOnly>
                 <div v-else class="flex items-center justify-center h-full text-primary-400">
                   Pas de données
                 </div>
@@ -283,7 +285,9 @@
                 Fréquence par jour
               </h4>
               <div class="h-[250px] md:h-[300px]">
-                <StatsFrequencyChart v-if="frequencyData.datasets?.length" :data="frequencyData" />
+                <ClientOnly>
+                  <StatsFrequencyChart v-if="frequencyData.datasets?.length" :data="frequencyData" />
+                </ClientOnly>
                 <div v-else class="flex items-center justify-center h-full text-primary-400">
                   Pas de données
                 </div>
@@ -320,7 +324,9 @@
               </select>
             </div>
             <div v-if="activeProgressionData" class="h-[300px] md:h-[400px]">
-              <StatsExerciseProgressionChart :data="activeProgressionData" />
+              <ClientOnly>
+                <StatsExerciseProgressionChart :data="activeProgressionData" />
+              </ClientOnly>
             </div>
             <div v-else class="flex items-center justify-center h-[200px] text-primary-400">
               Aucune donnée disponible
@@ -342,10 +348,12 @@
                 Séances par groupe musculaire
               </h4>
               <div class="h-[250px] md:h-[300px]">
-                <StatsMuscleGroupChart
-                  v-if="muscleGroupData.datasets?.length"
-                  :data="muscleGroupData"
-                />
+                <ClientOnly>
+                  <StatsMuscleGroupChart
+                    v-if="muscleGroupData.datasets?.length"
+                    :data="muscleGroupData"
+                  />
+                </ClientOnly>
                 <div v-else class="flex items-center justify-center h-full text-primary-400">
                   Pas de données
                 </div>
@@ -356,10 +364,12 @@
                 Distribution des exercices
               </h4>
               <div class="h-[250px] md:h-[300px]">
-                <StatsExerciseDistributionChart
-                  v-if="exerciseDistributionData.datasets?.length"
-                  :data="exerciseDistributionData"
-                />
+                <ClientOnly>
+                  <StatsExerciseDistributionChart
+                    v-if="exerciseDistributionData.datasets?.length"
+                    :data="exerciseDistributionData"
+                  />
+                </ClientOnly>
                 <div v-else class="flex items-center justify-center h-full text-primary-400">
                   Pas de données
                 </div>
@@ -547,10 +557,12 @@
 
       <!-- Progression Analysis -->
       <div class="mt-8 md:mt-12 slide-up">
-        <StatsProgressionChart
-          v-if="workoutStore.workoutHistory.length > 0"
-          :workouts="workoutStore.workoutHistory"
-        />
+        <ClientOnly>
+          <StatsProgressionChart
+            v-if="workoutStore.workoutHistory.length > 0"
+            :workouts="workoutStore.workoutHistory"
+          />
+        </ClientOnly>
       </div>
 
       <!-- Wrapped CTA -->
@@ -638,6 +650,17 @@ onMounted(async () => {
     subscriptionStore.fetchSubscription(),
     fetchUsage(),
   ]);
+  // Debug: log chart data presence to help trace empty charts / hydration issues
+  // eslint-disable-next-line no-console
+  console.debug('statistics: volume datasets', volumeData.value?.datasets?.length);
+  // eslint-disable-next-line no-console
+  console.debug('statistics: frequency datasets', frequencyData.value?.datasets?.length);
+  // eslint-disable-next-line no-console
+  console.debug('statistics: muscleGroup datasets', muscleGroupData.value?.datasets?.length);
+  // eslint-disable-next-line no-console
+  console.debug('statistics: exerciseDistribution datasets', exerciseDistributionData.value?.datasets?.length);
+  // eslint-disable-next-line no-console
+  console.debug('statistics: activeProgressionData', !!activeProgressionData.value);
   pageReady.value = true;
 });
 
