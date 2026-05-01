@@ -447,7 +447,7 @@
           </div>
         </div>
 
-        <div class="p-4 md:p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+        <div class="p-4 md:p-6">
           <div v-if="isLoadingExercises" class="text-center py-12">
             <div
               class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary-200 dark:border-primary-700 border-t-primary-600 dark:border-t-primary-400"

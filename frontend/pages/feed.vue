@@ -311,7 +311,7 @@
             </div>
 
             <!-- Search results -->
-            <div class="max-h-[60vh] overflow-y-auto">
+            <div>
               <div v-if="searching" class="p-8 text-center">
                 <div
                   class="inline-block animate-spin rounded-full h-6 w-6 border-2 border-primary-300 border-t-primary-600"

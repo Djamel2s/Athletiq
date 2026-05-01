@@ -1207,7 +1207,7 @@
             </button>
                 <div class="flex gap-4">
               <div class="flex-1">
-                <div class="w-full h-[60vh] bg-black rounded-lg overflow-hidden flex items-center justify-center">
+                <div class="w-full bg-black rounded-lg overflow-hidden flex items-center justify-center">
                   <template v-if="selectedPost?.type === 'PHOTO'">
                     <div v-if="selectedPost.data?.photoUrl" class="w-full h-full flex items-center justify-center">
                       <img :src="selectedPost.data.photoUrl" class="w-full h-full object-contain" />
@@ -1239,7 +1239,7 @@
                   </template>
                 </div>
               </div>
-              <div class="w-80 max-h-[60vh] overflow-auto p-3 border-l border-primary-200/60 dark:border-primary-800/60">
+              <div class="w-80 p-3 border-l border-primary-200/60 dark:border-primary-800/60">
                 <div class="flex items-center gap-3 mb-2">
                   <div class="w-10 h-10 rounded-lg overflow-hidden bg-gradient-primary flex items-center justify-center">
                     <img v-if="selectedPost?.user?.avatarUrl" :src="selectedPost.user.avatarUrl" class="w-full h-full object-cover" />

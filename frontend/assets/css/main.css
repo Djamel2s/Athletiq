@@ -7,7 +7,8 @@ html {
   height: -webkit-fill-available;
 }
 body {
-  min-height: 100vh;
+  /* Use dynamic --vh to avoid mobile 100vh issues */
+  min-height: calc(var(--vh, 1vh) * 100);
   min-height: -webkit-fill-available;
 }
 
@@ -15,6 +16,19 @@ body {
 html,
 body {
   overflow-x: hidden;
+}
+
+/* Force a single vertical scroll container: use body as the sole scrollable element.
+   This prevents duplicate scrollbars when both html and body can scroll in some browsers. */
+html {
+  height: 100%;
+  overflow-y: hidden;
+}
+
+body, #__nuxt {
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* ===== Sand Color Palette (CSS Variables for theme switching) ===== */
@@ -428,6 +442,15 @@ body {
       transform: translateY(-10px);
     }
   }
+}
+
+/* Debug helper: outline elements that create internal scrolling
+   Usage: add class `debug-scroll` to <html> or <body> while debugging, then reload. */
+.debug-scroll .overflow-auto,
+.debug-scroll .overflow-y-auto,
+.debug-scroll .overflow-x-auto {
+  outline: 2px dashed rgba(220, 38, 38, 0.6) !important;
+  box-shadow: inset 0 0 0 1px rgba(220, 38, 38, 0.1) !important;
 }
 
 @layer utilities {

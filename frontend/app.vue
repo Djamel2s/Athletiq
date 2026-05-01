@@ -24,7 +24,21 @@ useHead({
 
 // Apply gender-based theme (rose for female users)
 const { applyTheme } = useTheme();
-onMounted(() => applyTheme());
+
+function setVh() {
+  const vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+onMounted(() => {
+  applyTheme();
+  setVh();
+  window.addEventListener('resize', setVh);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', setVh);
+});
 </script>
 
 <style>

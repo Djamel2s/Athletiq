@@ -425,7 +425,7 @@
         </div>
 
         <!-- Exercise list -->
-        <div class="flex-1 overflow-y-auto px-4 py-3">
+        <div class="flex-1 px-4 py-3">
           <div v-if="isLoadingLiveExercises" class="text-center py-12">
             <div
               class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-primary-200 dark:border-primary-700 border-t-primary-600 dark:border-t-primary-400"
