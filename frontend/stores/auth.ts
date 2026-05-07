@@ -75,7 +75,14 @@ export const useAuthStore = defineStore('auth', {
           body: { email, password },
         });
 
-        this.setAuth(response);
+        // If backend requires migration, redirect user to migration page
+        if ((response as any).migrationRequired) {
+          const token = encodeURIComponent((response as any).migrationToken);
+          navigateTo(`/auth/migrate?token=${token}`);
+          return { success: false, migrationRequired: true };
+        }
+
+        this.setAuth(response as any);
         return { success: true };
       } catch (error: any) {
         logger.error('Login error:', error);
