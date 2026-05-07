@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import { z } from 'zod';
 import jwt from 'jsonwebtoken';
 import { logger } from '../utils/logger.js';
+import { verifyJwtWithJwks } from '../utils/jwksClient.js';
 import { AppDataSource } from '../config/database.js';
 import { User } from '../entities/User.js';
 import {
@@ -182,6 +183,71 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Erreur de validation', details: error.errors });
     }
     res.status(500).json({ error: 'Erreur lors de la connexion' });
+  }
+});
+
+// Exchange Supabase token for local account + local JWT
+router.post('/supabase-exchange', async (req, res) => {
+  try {
+    // Accept token in Authorization header or body
+    const authHeader = req.headers.authorization;
+    let token: string | undefined = undefined;
+    if (authHeader && authHeader.startsWith('Bearer ')) token = authHeader.substring(7);
+    if (!token && req.body?.token) token = req.body.token;
+
+    if (!token) return res.status(400).json({ error: 'Token Supabase manquant' });
+
+    const supabaseUrl = env.supabaseUrl;
+    if (!supabaseUrl) return res.status(500).json({ error: 'Configuration Supabase manquante' });
+
+    const payload = await verifyJwtWithJwks(token, supabaseUrl + '/auth/v1');
+    const email = String(payload.email || payload.user_email || '');
+    const sub = String(payload.sub || payload.user_id || '');
+
+    if (!email) return res.status(400).json({ error: 'Email absent du token' });
+
+    let user = await userRepository.findOne({ where: { email } });
+    if (!user) {
+      // Create local profile for Supabase user. Generate username and random password.
+      const localUsername = email.split('@')[0].replace(/[^a-z0-9_]/gi, '').toLowerCase().slice(0, 20) || `u${Date.now()}`;
+      const randomPassword = crypto.randomBytes(32).toString('hex');
+      const hashedPassword = await bcrypt.hash(randomPassword, 12);
+
+      const newUser = userRepository.create({
+        email,
+        username: localUsername,
+        password: hashedPassword,
+        firstName: undefined,
+        lastName: undefined,
+        isAdmin: false,
+      });
+      user = await userRepository.save(newUser);
+    }
+
+    // Generate local tokens
+    const tokenLocal = generateToken({ userId: user.id, email: user.email, isAdmin: user.isAdmin });
+    const refreshToken = generateRefreshToken({ userId: user.id, email: user.email, isAdmin: user.isAdmin });
+
+    user.refreshTokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
+    await userRepository.save(user);
+
+    setRefreshTokenCookie(res, refreshToken);
+
+    res.json({
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        goal: user.goal,
+        gender: user.gender,
+        avatarUrl: user.avatarUrl,
+      },
+      token: tokenLocal,
+    });
+  } catch (error: any) {
+    logger.error({ err: error }, 'Supabase exchange failed');
+    res.status(500).json({ error: 'Échec de l échange Supabase' });
   }
 });
 

@@ -63,4 +63,6 @@ export const env = {
   corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:3000',
   appUrl: process.env.APP_URL || 'http://localhost:3000',
   databaseUrl: process.env.DATABASE_URL,
+  supabaseUrl: process.env.SUPABASE_URL || process.env.SUPABASE_API_URL || undefined,
+  supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || undefined,
 } as const;

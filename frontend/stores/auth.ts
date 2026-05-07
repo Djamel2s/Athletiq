@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import getSupabase from '~/composables/useSupabase';
 
 interface User {
   id: number;
@@ -82,6 +83,19 @@ export const useAuthStore = defineStore('auth', {
           success: false,
           error: error.data?.error || 'Email ou mot de passe incorrect',
         };
+      }
+    },
+
+    async sendMagicLink(email: string) {
+      try {
+        if (!process.client) return { success: false, error: 'Client only' };
+        const supabase = getSupabase();
+        const redirectTo = window.location.origin + '/auth/callback';
+        const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo } });
+        if (error) throw error;
+        return { success: true };
+      } catch (error: any) {
+        return { success: false, error: error.message || 'Erreur lors de l envoi du lien magique' };
       }
     },
 

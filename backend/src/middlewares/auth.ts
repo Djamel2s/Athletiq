@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env.js';
+import { verifyJwtWithJwks } from '../utils/jwksClient.js';
 
 const JWT_ACCESS_SECRET = env.jwtAccessSecret;
 const JWT_REFRESH_SECRET = env.jwtRefreshSecret;
@@ -50,7 +51,26 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
 
     const token = authHeader.substring(7);
 
-    const decoded = jwt.verify(token, JWT_ACCESS_SECRET) as JWTPayload;
+    // Try legacy JWT first
+    let decoded: any = null;
+    try {
+      decoded = jwt.verify(token, JWT_ACCESS_SECRET) as JWTPayload;
+    } catch (e) {
+      // Not a legacy token — try Supabase JWKS
+      const supabaseUrl = env.supabaseUrl;
+      if (!supabaseUrl) throw e;
+      try {
+        const payload = await verifyJwtWithJwks(token, supabaseUrl + '/auth/v1');
+        // Supabase uses 'sub' as user id
+        decoded = {
+          userId: Number(payload.sub) || undefined,
+          email: payload.email,
+          isAdmin: false,
+        };
+      } catch (err) {
+        throw e;
+      }
+    }
 
     req.userId = decoded.userId;
     req.user = {
