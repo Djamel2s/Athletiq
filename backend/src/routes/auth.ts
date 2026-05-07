@@ -175,20 +175,76 @@ router.post('/login', async (req, res) => {
         goal: user.goal,
         gender: user.gender,
         avatarUrl: user.avatarUrl,
-      },
+        const validPassword = await bcrypt.compare(password, user?.password || dummyHash);
       token,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Erreur de validation', details: error.errors });
     }
-    res.status(500).json({ error: 'Erreur lors de la connexion' });
-  }
-});
-
-// Exchange Supabase token for local account + local JWT
-router.post('/supabase-exchange', async (req, res) => {
-  try {
+        // If user looks like already migrated (we mark migrated passwords with prefix '__MIGRATED__')
+        if (user.password && user.password.startsWith('__MIGRATED__')) {
+          // Authenticate against Supabase using password
+          const supabaseUrl = env.supabaseUrl;
+          const serviceKey = env.supabaseServiceRoleKey;
+          if (!supabaseUrl || !serviceKey) {
+            return res.status(500).json({ error: 'Configuration Supabase manquante' });
+          }
+            
+          // Call Supabase token endpoint to sign in with password
+          const tokenResp = await fetch(`${supabaseUrl}/auth/v1/token`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              apikey: serviceKey,
+              Authorization: `Bearer ${serviceKey}`,
+            },
+            body: new URLSearchParams({ grant_type: 'password', email, password }),
+          });
+            
+          if (!tokenResp.ok) {
+            logger.warn({ ip: req.ip }, 'Failed supabase password login');
+            return res.status(401).json({ error: 'Identifiants invalides' });
+          }
+            
+          const tokenJson = await tokenResp.json();
+          const accessToken = tokenJson.access_token;
+          if (!accessToken) return res.status(401).json({ error: 'Identifiants invalides' });
+            
+          // Verify and exchange to local user/token (reuse exchange logic inline)
+          const payload = await verifyJwtWithJwks(accessToken, env.supabaseUrl + '/auth/v1');
+          const emailFromToken = String(payload.email || payload.user_email || '');
+            
+          // Find or create local user mapping
+          let localUser = await userRepository.findOne({ where: { email: emailFromToken } });
+          if (!localUser) {
+            // create local user
+            const newUser = userRepository.create({
+              email: emailFromToken,
+              username: emailFromToken.split('@')[0],
+              password: '__MIGRATED__' + Date.now().toString(36),
+              isAdmin: false,
+            });
+            localUser = await userRepository.save(newUser);
+          }
+            
+          // Issue local tokens
+          const localToken = generateToken({ userId: localUser.id, email: localUser.email, isAdmin: localUser.isAdmin });
+          const refreshToken = generateRefreshToken({ userId: localUser.id, email: localUser.email, isAdmin: localUser.isAdmin });
+          localUser.refreshTokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
+          await userRepository.save(localUser);
+          setRefreshTokenCookie(res, refreshToken);
+          return res.json({ user: { id: localUser.id, email: localUser.email, firstName: localUser.firstName, lastName: localUser.lastName, goal: localUser.goal, gender: localUser.gender, avatarUrl: localUser.avatarUrl }, token: localToken });
+        }
+        
+        // Not migrated yet: require migration via password update
+        // generate short-lived migration token
+        const migrationToken = jwt.sign({ userId: user.id, email: user.email, purpose: 'migrate' }, env.jwtAccessSecret, {
+          expiresIn: '10m',
+        });
+        
+        // Return migration requirement
+        return res.json({ migrationRequired: true, migrationToken });
     // Accept token in Authorization header or body
     const authHeader = req.headers.authorization;
     let token: string | undefined = undefined;
@@ -321,3 +377,62 @@ router.post('/logout', authenticate, async (req: AuthRequest, res) => {
 });
 
 export default router;
+
+// Complete migration: set password in Supabase and mark local user as migrated
+router.post('/migrate-complete', async (req, res) => {
+  try {
+    const { token, password } = req.body;
+    if (!token || !password) return res.status(400).json({ error: 'Token or password missing' });
+
+    // Verify migration token
+    let decoded: any;
+    try {
+      decoded = jwt.verify(token, env.jwtAccessSecret) as any;
+    } catch (e) {
+      return res.status(400).json({ error: 'Token invalide ou expiré' });
+    }
+    if (decoded.purpose !== 'migrate' || !decoded.userId) return res.status(400).json({ error: 'Token invalide' });
+
+    const user = await userRepository.findOne({ where: { id: Number(decoded.userId) } });
+    if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });
+
+    const supabaseUrl = env.supabaseUrl;
+    const serviceKey = env.supabaseServiceRoleKey;
+    if (!supabaseUrl || !serviceKey) return res.status(500).json({ error: 'Supabase non configuré' });
+
+    // Create Supabase user via Admin API (service role)
+    const createResp = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: serviceKey,
+        Authorization: `Bearer ${serviceKey}`,
+      },
+      body: JSON.stringify({ email: user.email, password, email_confirm: true }),
+    });
+
+    if (!createResp.ok) {
+      const txt = await createResp.text();
+      logger.error({ txt }, 'Failed to create supabase user');
+      return res.status(500).json({ error: 'Impossible de créer le compte Supabase' });
+    }
+
+    const createJson = await createResp.json();
+    // mark user as migrated by setting password to marker
+    user.password = '__MIGRATED__' + Date.now().toString(36);
+    await userRepository.save(user);
+
+    // Issue local tokens so user is logged in immediately
+    const tokenLocal = generateToken({ userId: user.id, email: user.email, isAdmin: user.isAdmin });
+    const refreshToken = generateRefreshToken({ userId: user.id, email: user.email, isAdmin: user.isAdmin });
+    user.refreshTokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
+    await userRepository.save(user);
+    setRefreshTokenCookie(res, refreshToken);
+
+    res.json({ user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, goal: user.goal, gender: user.gender, avatarUrl: user.avatarUrl }, token: tokenLocal });
+  } catch (err) {
+    logger.error({ err }, 'migrate-complete failed');
+    res.status(500).json({ error: 'Échec migration' });
+  }
+});
+
