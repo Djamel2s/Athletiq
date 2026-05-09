@@ -18,6 +18,42 @@ body {
   overflow-x: hidden;
 }
 
+/* ===== Defensive guards against accidental horizontal overflow ===== */
+/* Ensure boxes include padding/border in size calculations */
+* {
+  box-sizing: border-box;
+}
+
+/* Prevent media elements from overflowing their containers */
+img, picture, video, canvas {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Override inline 100vw usages or w-screen accidental overflow */
+*[style*="width:100vw"], *[style*="width: 100vw"] {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Defensive rule for any element using the Tailwind `w-screen` class */
+.w-screen {
+  max-width: 100%;
+}
+
+/* Force root containers to avoid accidental viewport overflow (Nuxt/SSR) */
+#__nuxt, #__layout, #nuxt, #app, .nuxt, .app {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+}
+
+/* Defensive: ensure fixed/absolute elements don't create horizontal scroll
+   unless explicitly allowed (we avoid changing positioning, only cap width) */
+.fixed, .absolute {
+  max-width: 100vw;
+}
+
 /* Force a single vertical scroll container: use body as the sole scrollable element.
    This prevents duplicate scrollbars when both html and body can scroll in some browsers. */
 html {
