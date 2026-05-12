@@ -24,16 +24,7 @@
         </p>
       </div>
 
-      <!-- Quick link to body tracking (mobile only) -->
-      <div class="flex justify-center mb-6 fade-in lg:hidden">
-        <NuxtLink
-          to="/body"
-          class="btn-glass px-4 py-2 text-sm font-medium inline-flex items-center gap-2"
-        >
-          <Icon name="lucide:ruler" class="w-4 h-4" />
-          Suivi corporel
-        </NuxtLink>
-      </div>
+      <!-- Quick link to body tracking (mobile only) removed per UX change -->
 
       <!-- Time Range Selector -->
       <div class="flex justify-center mb-8 fade-in">
