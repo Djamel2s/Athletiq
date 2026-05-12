@@ -1,7 +1,7 @@
 <template>
   <nav
     v-if="allCrumbs.length"
-    class="max-w-7xl mx-auto px-4 text-sm text-primary-500 dark:text-primary-400 mb-2"
+    class="max-w-7xl mx-auto px-4 text-sm text-primary-500 dark:text-primary-400 mb-4"
   >
     <ol :class="['flex items-center gap-2', showAccueilFirst ? 'pl-3 md:pl-3' : '']">
       <li v-for="(c, i) in allCrumbs" :key="c.to" class="flex items-center gap-2">

@@ -8,7 +8,7 @@ const props = withDefaults(
     class?: string;
   }>(),
   {
-    class: 'h-10 md:h-14 w-auto transition-transform duration-300 hover:scale-105',
+    class: 'h-10 w-auto transition-transform duration-300 hover:scale-105',
   }
 );
 

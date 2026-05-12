@@ -43,12 +43,12 @@ onUnmounted(() => {
 
 <style>
 :root {
-  --header-height: 5rem;
+  --header-height: 4rem;
 }
 
 @media (min-width: 768px) {
   :root {
-    --header-height: 6rem;
+    --header-height: 4rem;
   }
 }
 
