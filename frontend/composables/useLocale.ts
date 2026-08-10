@@ -362,6 +362,24 @@ const translations: Record<AppLocale, Record<string, string>> = {
     'auth.emailPlaceholder': 'you@example.com',
     'auth.forgot.send': 'Send reset link',
     'auth.forgot.sending': 'Sending...',
+
+    'auth.register.firstNamePlaceholder': 'John',
+    'auth.register.lastNamePlaceholder': 'Doe',
+    'auth.register.emailPlaceholder': 'you@example.com',
+    'auth.register.passwordHint': 'At least 8 characters',
+    'auth.register.usernameRequired': 'Username is required',
+    'auth.register.usernameFormat':
+      '3-20 characters, lowercase letters, numbers and underscores only',
+    'auth.register.usernameTaken': 'This username is already taken',
+
+    'dashboard.nav.statistics': 'Statistics',
+    'dashboard.nav.motivation': 'Motivation',
+    'dashboard.nav.activity': 'Activity',
+    'dashboard.nav.body': 'Body',
+    'dashboard.nav.workouts': 'Workouts',
+    'dashboard.nav.programs': 'Programs',
+    'dashboard.loading': 'Loading your dashboard...',
+    'dashboard.emptyState': 'No recent activity',
   },
   fr: {
     'nav.login': 'Connexion',
@@ -725,6 +743,24 @@ const translations: Record<AppLocale, Record<string, string>> = {
     'auth.emailPlaceholder': 'votre@email.com',
     'auth.forgot.send': 'Envoyer le lien',
     'auth.forgot.sending': 'Envoi en cours...',
+
+    'auth.register.firstNamePlaceholder': 'Jean',
+    'auth.register.lastNamePlaceholder': 'Dupont',
+    'auth.register.emailPlaceholder': 'votre@email.com',
+    'auth.register.passwordHint': '8 caractères minimum',
+    'auth.register.usernameRequired': 'Le pseudo est requis',
+    'auth.register.usernameFormat':
+      '3 à 20 caractères, lettres minuscules, chiffres et underscores uniquement',
+    'auth.register.usernameTaken': 'Ce pseudo est déjà pris',
+
+    'dashboard.nav.statistics': 'Statistiques',
+    'dashboard.nav.motivation': 'Motivation',
+    'dashboard.nav.activity': 'Activité',
+    'dashboard.nav.body': 'Corps',
+    'dashboard.nav.workouts': 'Séances',
+    'dashboard.nav.programs': 'Programmes',
+    'dashboard.loading': 'Chargement de ton tableau de bord...',
+    'dashboard.emptyState': 'Aucune activité récente',
   },
 };
 
