@@ -3,6 +3,7 @@ import { User } from '../entities/User.js';
 import { Workout } from '../entities/Workout.js';
 import { WorkoutSession } from '../entities/WorkoutSession.js';
 import { Notification, NotificationType } from '../entities/Notification.js';
+import { CoachClientLink, CoachLinkStatus } from '../entities/CoachClientLink.js';
 import { createNotification } from './notificationService.js';
 import { sendPushToUser } from './pushService.js';
 import { logger } from '../utils/logger.js';
@@ -124,6 +125,73 @@ async function checkInactivity() {
 }
 
 /**
+ * Coach inactivity alerts: runs every 6 hours.
+ * Pour chaque client actif d'un coach, si le client est inactif depuis son
+ * propre seuil, on prévient le coach une fois par 48h (pour ne pas spammer).
+ */
+async function checkCoachClientInactivity() {
+  try {
+    const links = await AppDataSource.getRepository(CoachClientLink).find({
+      where: { status: CoachLinkStatus.ACTIVE },
+    });
+
+    for (const link of links) {
+      const athlete = await AppDataSource.getRepository(User).findOne({
+        where: { id: link.athleteId },
+      });
+      if (!athlete) continue;
+
+      const threshold = athlete.inactivityThresholdDays || 3;
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - threshold);
+
+      const recentWorkout = await AppDataSource.getRepository(Workout)
+        .createQueryBuilder('w')
+        .where('w.userId = :userId', { userId: link.athleteId })
+        .andWhere('w.completedAt >= :cutoff', { cutoff })
+        .getCount();
+
+      if (recentWorkout > 0) continue;
+
+      const anyWorkout = await AppDataSource.getRepository(Workout)
+        .createQueryBuilder('w')
+        .where('w.userId = :userId', { userId: link.athleteId })
+        .andWhere('w.completedAt IS NOT NULL')
+        .getCount();
+
+      // Ne pas alerter pour un client qui n'a encore jamais fait de séance
+      if (anyWorkout === 0) continue;
+
+      const twoDaysAgo = new Date();
+      twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+
+      const recentNotif = await AppDataSource.getRepository(Notification)
+        .createQueryBuilder('n')
+        .where('n.userId = :userId', { userId: link.coachId })
+        .andWhere('n.type = :type', { type: NotificationType.COACH_CLIENT_INACTIVE })
+        .andWhere('n.message LIKE :name', { name: `%#${link.athleteId}%` })
+        .andWhere('n.createdAt >= :twoDaysAgo', { twoDaysAgo })
+        .getCount();
+
+      if (recentNotif > 0) continue;
+
+      const title = 'Client inactif';
+      const message = `${athlete.firstName || 'Un client'} (#${link.athleteId}) n'a pas fait de séance depuis ${threshold} jours.`;
+
+      await createNotification(
+        link.coachId,
+        NotificationType.COACH_CLIENT_INACTIVE,
+        title,
+        message
+      );
+      sendPushToUser(link.coachId, title, message).catch(() => {});
+    }
+  } catch (error) {
+    logger.error({ err: error, route: 'scheduler' }, 'Coach client inactivity check error');
+  }
+}
+
+/**
  * Session cleanup: runs every hour.
  * Deletes completed sessions older than 7 days and
  * waiting/paused sessions older than 24 hours.
@@ -154,6 +222,7 @@ async function cleanupSessions() {
 
 let reminderInterval: ReturnType<typeof setInterval> | null = null;
 let inactivityInterval: ReturnType<typeof setInterval> | null = null;
+let coachInactivityInterval: ReturnType<typeof setInterval> | null = null;
 let sessionCleanupInterval: ReturnType<typeof setInterval> | null = null;
 let analyticsInterval: ReturnType<typeof setInterval> | null = null;
 
@@ -166,11 +235,15 @@ export async function startScheduler() {
   // Inactivity check: every hour
   inactivityInterval = setInterval(checkInactivity, 60 * 60 * 1000);
 
+  // Coach client inactivity alerts: every 6 hours
+  coachInactivityInterval = setInterval(checkCoachClientInactivity, 6 * 60 * 60 * 1000);
+
   // Session cleanup: every hour
   sessionCleanupInterval = setInterval(cleanupSessions, 60 * 60 * 1000);
 
   // Run inactivity check once on startup (delayed by 30s to let things settle)
   setTimeout(checkInactivity, 30 * 1000);
+  setTimeout(checkCoachClientInactivity, 45 * 1000);
   // Run session cleanup once on startup (delayed by 60s)
   setTimeout(cleanupSessions, 60 * 1000);
   // Analytics: compute daily (every 24h). Run once after 2 minutes on startup.
@@ -187,10 +260,12 @@ export async function startScheduler() {
 export function stopScheduler() {
   if (reminderInterval) clearInterval(reminderInterval);
   if (inactivityInterval) clearInterval(inactivityInterval);
+  if (coachInactivityInterval) clearInterval(coachInactivityInterval);
   if (sessionCleanupInterval) clearInterval(sessionCleanupInterval);
   if (analyticsInterval) clearInterval(analyticsInterval);
   reminderInterval = null;
   inactivityInterval = null;
+  coachInactivityInterval = null;
   sessionCleanupInterval = null;
   logger.info('Scheduler stopped');
 }

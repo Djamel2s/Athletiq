@@ -6,13 +6,13 @@
     <!-- Main Content -->
     <div class="px-4 md:px-6 pb-28 lg:pb-20 max-w-7xl mx-auto">
       <!-- Page Header -->
-      <div class="fade-in text-center mb-8">
+      <div class="fade-in text-center mb-6 md:mb-8">
         <h1
-          class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2"
+          class="text-2xl md:text-3xl lg:text-4xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2"
         >
-          Mon Activité
+          {{ t('calendar.title') }}
         </h1>
-        <p class="text-lg text-primary-600 dark:text-primary-400">Ton historique d'entrainement</p>
+        <p class="text-lg text-primary-600 dark:text-primary-400">{{ t('calendar.subtitle') }}</p>
       </div>
 
       <!-- Loading State -->
@@ -20,12 +20,14 @@
         <div
           class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary-300 dark:border-primary-600 border-t-primary-600 dark:border-t-primary-400"
         ></div>
-        <p class="mt-4 text-primary-600 dark:text-primary-400 text-lg">Chargement...</p>
+        <p class="mt-4 text-primary-600 dark:text-primary-400 text-lg">
+          {{ t('calendar.loading') }}
+        </p>
       </div>
 
       <template v-else>
         <!-- Quick Stats Row -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8 fade-in">
+        <div class="grid grid-cols-4 sm:grid-cols-4 gap-2.5 md:gap-3 mb-5 md:mb-6 fade-in">
           <!-- Streak -->
           <div class="card-glass text-center">
             <div
@@ -41,7 +43,7 @@
               {{ currentStreak }}
             </p>
             <p class="text-xs md:text-sm text-primary-500 dark:text-primary-400 mt-1">
-              Série en cours
+              {{ t('calendar.streak') }}
             </p>
           </div>
 
@@ -63,7 +65,7 @@
               {{ workoutsThisWeek }}
             </p>
             <p class="text-xs md:text-sm text-primary-500 dark:text-primary-400 mt-1">
-              Cette semaine
+              {{ t('calendar.thisWeek') }}
             </p>
           </div>
 
@@ -84,7 +86,9 @@
             <p class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100">
               {{ workoutsThisMonth }}
             </p>
-            <p class="text-xs md:text-sm text-primary-500 dark:text-primary-400 mt-1">Ce mois</p>
+            <p class="text-xs md:text-sm text-primary-500 dark:text-primary-400 mt-1">
+              {{ t('calendar.thisMonth') }}
+            </p>
           </div>
 
           <!-- Total -->
@@ -104,12 +108,14 @@
             <p class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100">
               {{ totalWorkouts }}
             </p>
-            <p class="text-xs md:text-sm text-primary-500 dark:text-primary-400 mt-1">Total</p>
+            <p class="text-xs md:text-sm text-primary-500 dark:text-primary-400 mt-1">
+              {{ t('calendar.total') }}
+            </p>
           </div>
         </div>
 
         <!-- Calendar + Week Comparison -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 mb-6 md:mb-8 slide-up">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mb-5 md:mb-6 slide-up">
           <!-- Calendar (takes 2 cols on large screens) -->
           <div class="lg:col-span-2">
             <DashboardWorkoutCalendar
@@ -131,12 +137,14 @@
                 />
               </svg>
               <p class="text-primary-500 dark:text-primary-400 text-lg font-medium mb-2">
-                Aucun entraînement
+                {{ t('calendar.emptyTitle') }}
               </p>
               <p class="text-primary-400 dark:text-primary-500 text-sm mb-4">
-                Commencez à vous entraîner pour voir votre calendrier
+                {{ t('calendar.emptySubtitle') }}
               </p>
-              <button @click="navigateTo('/workouts/start')" class="btn-primary">Commencer</button>
+              <button @click="navigateTo('/workouts/start')" class="btn-primary">
+                {{ t('calendar.start') }}
+              </button>
             </div>
           </div>
 
@@ -147,14 +155,16 @@
               <div class="flex items-center gap-3 mb-4">
                 <div class="w-1 h-6 bg-gradient-primary rounded-full"></div>
                 <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100">
-                  Cette semaine vs précédente
+                  {{ t('calendar.weekComparison.title') }}
                 </h3>
               </div>
               <div class="space-y-4">
                 <!-- Workouts comparison -->
                 <div class="flex items-center justify-between">
                   <div>
-                    <p class="text-sm text-primary-500 dark:text-primary-400">Séances</p>
+                    <p class="text-sm text-primary-500 dark:text-primary-400">
+                      {{ t('calendar.metrics.workouts') }}
+                    </p>
                     <p class="text-xl font-bold text-primary-900 dark:text-primary-100">
                       {{ weekStats.current.workouts }}
                     </p>
@@ -184,7 +194,9 @@
                 <!-- Calories comparison -->
                 <div class="flex items-center justify-between">
                   <div>
-                    <p class="text-sm text-primary-500 dark:text-primary-400">Calories</p>
+                    <p class="text-sm text-primary-500 dark:text-primary-400">
+                      {{ t('calendar.metrics.calories') }}
+                    </p>
                     <p class="text-xl font-bold text-primary-900 dark:text-primary-100">
                       {{ estimateCalories(weekStats.current.totalTime).toLocaleString('fr-FR') }}
                       <span class="text-sm font-normal text-primary-500">kcal</span>
@@ -215,7 +227,9 @@
                 <!-- Duration comparison -->
                 <div class="flex items-center justify-between">
                   <div>
-                    <p class="text-sm text-primary-500 dark:text-primary-400">Durée moy.</p>
+                    <p class="text-sm text-primary-500 dark:text-primary-400">
+                      {{ t('calendar.metrics.avgDuration') }}
+                    </p>
                     <p class="text-xl font-bold text-primary-900 dark:text-primary-100">
                       {{ formatDuration(weekStats.current.avgDuration) }}
                     </p>
@@ -247,7 +261,7 @@
               <div class="flex items-center gap-3 mb-4">
                 <div class="w-1 h-6 bg-gradient-primary rounded-full"></div>
                 <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100">
-                  Jour favori
+                  {{ t('calendar.favouriteDay') }}
                 </h3>
               </div>
               <div v-if="favouriteDay" class="flex items-center gap-4">
@@ -265,7 +279,7 @@
                   </p>
                 </div>
               </div>
-              <p v-else class="text-sm text-primary-400">Pas encore de données</p>
+              <p v-else class="text-sm text-primary-400">{{ t('calendar.noData') }}</p>
             </div>
 
             <!-- Monthly Calories -->
@@ -273,17 +287,17 @@
               <div class="flex items-center gap-3 mb-4">
                 <div class="w-1 h-6 bg-gradient-primary rounded-full"></div>
                 <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100">
-                  Calories mensuelles
+                  {{ t('calendar.monthlyCalories') }}
                 </h3>
               </div>
               <p class="text-3xl font-bold text-primary-900 dark:text-primary-100">
-                {{ monthlyCalories.toLocaleString('fr-FR') }}
-                <span class="text-base font-normal text-primary-500 dark:text-primary-400"
-                  >kcal</span
-                >
+                {{ monthlyCalories.toLocaleString(locale.value === 'fr' ? 'fr-FR' : 'en-US') }}
+                <span class="text-base font-normal text-primary-500 dark:text-primary-400">{{
+                  t('calendar.kcal')
+                }}</span>
               </p>
               <p class="text-sm text-primary-500 dark:text-primary-400 mt-1">
-                {{ workoutsThisMonth }} séance{{ workoutsThisMonth > 1 ? 's' : '' }} ce mois
+                {{ t('calendar.sessionsThisMonth', { count: workoutsThisMonth }) }}
               </p>
             </div>
           </div>
@@ -302,7 +316,11 @@ import { useAuthStore } from '~/stores/auth';
 import { useWorkoutStore } from '~/stores/workout';
 import type { Workout } from '~/types/workout';
 
+import { useLocale } from '~/composables/useLocale';
+
 useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] });
+
+const { t, locale } = useLocale();
 
 const authStore = useAuthStore();
 const workoutStore = useWorkoutStore();

@@ -17,3 +17,15 @@ export const PLAN_LIMITS = {
 } as const;
 
 export type PlanType = keyof typeof PLAN_LIMITS;
+
+// Limites de l'espace coach — FREE permet de tester avant de passer Pro
+export const COACH_PLAN_LIMITS = {
+  FREE: {
+    maxClients: 3,
+  },
+  PRO: {
+    maxClients: Infinity,
+  },
+} as const;
+
+export type CoachPlanType = keyof typeof COACH_PLAN_LIMITS;

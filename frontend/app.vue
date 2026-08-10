@@ -1,10 +1,10 @@
 <template>
-  <div class="min-h-screen bg-dark-900">
+  <div class="min-h-screen bg-primary-900">
     <OfflineBanner />
     <TopNav />
     <AuthLoader>
       <div class="pt-header">
-        <Breadcrumbs :key="route.fullPath" />
+        <Breadcrumbs :key="route.fullPath"/>
         <NuxtPage />
       </div>
     </AuthLoader>

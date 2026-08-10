@@ -9,10 +9,10 @@
           <h1
             class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2"
           >
-            Mon Profil
+            {{ t('profile.edit.title') }}
           </h1>
           <p class="text-sm md:text-base text-primary-600 dark:text-primary-400 text-body-relaxed">
-            Gerez vos informations personnelles
+            {{ t('profile.edit.subtitle') }}
           </p>
         </div>
 
@@ -76,7 +76,7 @@
             :disabled="avatarUploading || avatarDeleting"
             class="text-xs text-red-500 hover:text-red-600 mt-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {{ avatarDeleting ? 'Suppression...' : 'Supprimer la photo' }}
+            {{ avatarDeleting ? t('profile.avatar.deleting') : t('profile.avatar.delete') }}
           </button>
         </div>
 
@@ -88,7 +88,7 @@
               <label
                 for="username"
                 class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1.5"
-                >Pseudo</label
+                >{{ t('profile.username.label') }}</label
               >
               <div class="relative">
                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-primary-400 text-sm"
@@ -102,21 +102,23 @@
                   placeholder="ton_pseudo"
                 />
               </div>
-              <p v-if="usernameChecking" class="text-xs text-primary-400 mt-1">Verification...</p>
+              <p v-if="usernameChecking" class="text-xs text-primary-400 mt-1">
+                {{ t('profile.username.verifying') }}
+              </p>
               <p
                 v-else-if="usernameAvailable === true && usernameInput.length >= 3"
                 class="text-xs text-green-500 mt-1"
               >
-                Disponible
+                {{ t('profile.username.available') }}
               </p>
               <p v-else-if="usernameAvailable === false" class="text-xs text-red-500 mt-1">
-                Deja pris
+                {{ t('profile.username.taken') }}
               </p>
               <p
                 v-else-if="usernameInput.length > 0 && usernameInput.length < 3"
                 class="text-xs text-primary-400 mt-1"
               >
-                3 caracteres minimum
+                {{ t('profile.username.minChars') }}
               </p>
             </div>
 
@@ -125,14 +127,14 @@
               <label
                 for="bio"
                 class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1.5"
-                >Bio</label
+                >{{ t('profile.bio.label') }}</label
               >
               <textarea
                 id="bio"
                 v-model="bioInput"
                 rows="3"
                 class="input-primary resize-none"
-                placeholder="Parle de toi en quelques mots..."
+                :placeholder="t('profile.bio.placeholder')"
                 maxlength="200"
               ></textarea>
               <p class="text-xs text-primary-400 text-right mt-0.5">{{ bioInput.length }}/200</p>
@@ -141,14 +143,18 @@
             <!-- Profil public -->
             <div class="flex items-center justify-between py-1">
               <div>
-                <span class="text-primary-800 dark:text-primary-200 text-sm">Profil public</span>
+                <span class="text-primary-800 dark:text-primary-200 text-sm">{{
+                  t('profile.public.label')
+                }}</span>
                 <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
-                  Visible par tous les utilisateurs
+                  {{ t('profile.public.hint') }}
                 </p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" v-model="isPublicInput" class="sr-only" />
-                <div class="w-10 h-10 rounded-md flex items-center justify-center transition-colors">
+                <div
+                  class="w-10 h-10 rounded-md flex items-center justify-center transition-colors"
+                >
                   <template v-if="isPublicInput">
                     <Icon name="lucide:globe" class="w-5 h-5 text-sand-700 dark:text-pink-300" />
                   </template>
@@ -167,7 +173,7 @@
                 <label
                   for="firstName"
                   class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1.5"
-                  >Prenom</label
+                  >{{ t('profile.firstName') }}</label
                 >
                 <input
                   id="firstName"
@@ -182,7 +188,7 @@
                 <label
                   for="lastName"
                   class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1.5"
-                  >Nom</label
+                  >{{ t('profile.lastName') }}</label
                 >
                 <input
                   id="lastName"
@@ -200,7 +206,7 @@
               <label
                 for="email"
                 class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1.5"
-                >Email</label
+                >{{ t('profile.email') }}</label
               >
               <input
                 id="email"
@@ -213,8 +219,9 @@
 
             <!-- Genre -->
             <div>
-              <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-3"
-                >Genre</label
+              <label
+                class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-3"
+                >{{ t('profile.gender') }}</label
               >
               <div class="grid grid-cols-2 gap-2 md:gap-3">
                 <button
@@ -239,8 +246,9 @@
 
             <!-- Objectif -->
             <div>
-              <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-3"
-                >Objectif d'entrainement</label
+              <label
+                class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-3"
+                >{{ t('profile.goal') }}</label
               >
               <div class="grid grid-cols-2 gap-2 md:gap-3">
                 <button
@@ -303,7 +311,7 @@
               v-if="success"
               class="p-3 rounded-xl bg-sand-500/15 dark:bg-sand-600/15 border border-sand-500/40 dark:border-sand-600/30"
             >
-              <p class="text-sm text-sand-700 font-medium">Profil mis a jour avec succes</p>
+              <p class="text-sm text-sand-700 font-medium">{{ t('profile.edit.success') }}</p>
             </div>
 
             <!-- Error message -->
@@ -320,12 +328,12 @@
               :disabled="loading"
               class="btn-primary w-full text-base md:text-lg py-3 md:py-4"
             >
-              <span v-if="!loading">Enregistrer</span>
+              <span v-if="!loading">{{ t('common.save') }}</span>
               <span v-else class="flex items-center justify-center gap-2">
                 <div
                   class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
                 ></div>
-                Enregistrement...
+                {{ t('common.saving') }}
               </span>
             </button>
           </form>
@@ -345,7 +353,7 @@
                 d="M10 19l-7-7m0 0l7-7m-7 7h18"
               />
             </svg>
-            Retour au profil
+            {{ t('profile.edit.backToProfile') }}
           </NuxtLink>
         </div>
       </div>
@@ -357,6 +365,9 @@
 /* TopNav imported and rendered globally in app.vue; per-page import removed */
 import { useAuthStore } from '~/stores/auth';
 import { useSocialApi } from '~/composables/useSocialApi';
+import { useLocale } from '~/composables/useLocale';
+
+const { t } = useLocale();
 
 definePageMeta({
   layout: false,

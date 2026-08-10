@@ -54,7 +54,7 @@
                 <span
                   class="text-primary-900 dark:text-primary-100 font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300"
                 >
-                  Statistiques
+                  {{ t('dashboard.nav.statistics') }}
                 </span>
               </button>
 
@@ -75,7 +75,7 @@
                 <span
                   class="text-primary-900 dark:text-primary-100 font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300"
                 >
-                  Motivation
+                  {{ t('dashboard.nav.motivation') }}
                 </span>
               </button>
 
@@ -104,7 +104,7 @@
                 <span
                   class="text-primary-900 dark:text-primary-100 font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300"
                 >
-                  Activité
+                  {{ t('dashboard.nav.activity') }}
                 </span>
               </button>
 
@@ -133,7 +133,7 @@
                 <span
                   class="text-primary-900 dark:text-primary-100 font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300"
                 >
-                  Suivi
+                  {{ t('dashboard.nav.body') }}
                 </span>
               </button>
 
@@ -162,7 +162,7 @@
                 <span
                   class="text-primary-900 dark:text-primary-100 font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300"
                 >
-                  Workouts
+                  {{ t('dashboard.nav.workouts') }}
                 </span>
               </button>
 
@@ -221,7 +221,7 @@
                 <span
                   class="text-primary-900 dark:text-primary-100 font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300"
                 >
-                  Programmes
+                  {{ t('dashboard.nav.programs') }}
                 </span>
               </button>
 
@@ -286,7 +286,7 @@
               <span
                 class="text-primary-900 dark:text-primary-100 font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300"
               >
-                Déconnexion
+                {{ t('nav.logout') }}
               </span>
             </button>
           </div>
@@ -299,7 +299,7 @@
             <h1
               class="text-3xl md:text-5xl lg:text-6xl font-bold mb-2 md:mb-4 text-display text-primary-900 dark:text-primary-100"
             >
-              Bienvenue {{ authStore.user?.firstName || 'sur Athletiq' }} !
+              {{ t('dashboard.welcome', { name: authStore.user?.firstName || 'Athletiq' }) }}
             </h1>
             <p
               class="text-base md:text-xl text-primary-600 dark:text-primary-400 text-body-relaxed"
@@ -335,15 +335,20 @@
               </div>
               <div class="flex-1">
                 <p class="text-lg font-bold text-primary-900 dark:text-primary-100">
-                  {{ currentStreak }} jour{{ currentStreak > 1 ? 's' : '' }} de suite !
+                  {{
+                    t('dashboard.streak.count', {
+                      count: currentStreak,
+                      plural: currentStreak > 1 ? 's' : '',
+                    })
+                  }}
                 </p>
                 <p class="text-sm text-primary-600 dark:text-primary-400">
                   {{
                     currentStreak >= 7
-                      ? 'Incroyable, continuez comme ça !'
+                      ? t('dashboard.streak.message.incredible')
                       : currentStreak >= 3
-                        ? 'Belle série, ne lâchez rien !'
-                        : 'Bon début, gardez le rythme !'
+                        ? t('dashboard.streak.message.great')
+                        : t('dashboard.streak.message.good')
                   }}
                 </p>
               </div>
@@ -385,12 +390,14 @@
                 </svg>
               </div>
               <h3 class="text-2xl font-semibold mb-3 text-primary-900 dark:text-primary-100">
-                Nouvel entraînement
+                {{ t('dashboard.newWorkout.title') }}
               </h3>
               <p class="text-primary-600 dark:text-primary-400 text-body-relaxed mb-6">
-                Commencez une nouvelle séance
+                {{ t('dashboard.newWorkout.subtitle') }}
               </p>
-              <button @click="navigateTo('/workouts/start')" class="btn-primary w-full">GO</button>
+              <button @click="navigateTo('/workouts/start')" class="btn-primary w-full">
+                {{ t('dashboard.newWorkout.cta') }}
+              </button>
             </div>
 
             <!-- Activity Heatmap -->
@@ -418,7 +425,7 @@
           <!-- Seances planifiees -->
           <div v-if="plannedWorkouts.length > 0" class="mb-8 md:mb-12 slide-up">
             <h2 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100 mb-4">
-              Seances planifiees
+              {{ t('dashboard.planned.title') }}
             </h2>
             <div class="space-y-3">
               <div
@@ -477,7 +484,11 @@
                           : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400',
                       ]"
                     >
-                      {{ pw.status === 'ACCEPTED' ? 'Accepte' : 'En attente' }}
+                      {{
+                        pw.status === 'ACCEPTED'
+                          ? t('dashboard.planned.status.accepted')
+                          : t('dashboard.planned.status.pending')
+                      }}
                     </span>
 
                     <!-- Accept/Decline buttons if invitee -->
@@ -485,7 +496,7 @@
                       <button
                         @click="handleAcceptPlanned(pw.id)"
                         class="w-8 h-8 flex items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors"
-                        title="Accepter"
+                        :title="t('dashboard.planned.action.accept')"
                       >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
@@ -499,7 +510,7 @@
                       <button
                         @click="handleDeclinePlanned(pw.id)"
                         class="w-8 h-8 flex items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/30 text-red-500 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
-                        title="Decliner"
+                        :title="t('dashboard.planned.action.decline')"
                       >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
@@ -517,7 +528,7 @@
                       v-if="pw.inviterId === currentUserId"
                       @click="handleCancelPlanned(pw.id)"
                       class="w-8 h-8 flex items-center justify-center rounded-lg text-primary-300 dark:text-primary-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                      title="Annuler"
+                      :title="t('dashboard.planned.action.cancel')"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -539,13 +550,13 @@
             <div
               class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary-200 dark:border-primary-700 border-t-primary-600"
             ></div>
-            <p class="mt-4 text-primary-600 dark:text-primary-400">Chargement...</p>
+            <p class="mt-4 text-primary-600 dark:text-primary-400">{{ t('dashboard.loading') }}</p>
           </div>
 
           <LazyActivityTimeline
             v-else
             :workouts="workoutStore.recentWorkouts"
-            empty-message="Aucun entraînement pour le moment"
+            :empty-message="t('dashboard.emptyState')"
             :show-create-button="true"
           />
         </div>
@@ -567,6 +578,7 @@ useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] });
 const authStore = useAuthStore();
 const workoutStore = useWorkoutStore();
 const statsApi = useStatsApi();
+const { t, locale } = useLocale();
 
 const pageReady = ref(false);
 const recoveryData = ref<{
@@ -585,7 +597,8 @@ const plannedBro = (pw: any) => {
 };
 
 const formatPlannedDate = (dateStr: string) => {
-  return new Intl.DateTimeFormat('fr-FR', {
+  const localeTag = locale.value === 'fr' ? 'fr-FR' : 'en-US';
+  return new Intl.DateTimeFormat(localeTag, {
     weekday: 'short',
     day: 'numeric',
     month: 'long',
@@ -694,11 +707,11 @@ const currentStreak = computed(() => {
 const motivationMessage = computed(() => {
   const streak = currentStreak.value;
   const total = completedWorkouts.value.length;
-  if (total === 0) return 'Commencez votre premier entraînement !';
-  if (streak >= 7) return 'Vous êtes en feu, continuez !';
-  if (streak >= 3) return 'Belle régularité, gardez le cap !';
-  if (streak > 0) return 'Prêt pour votre prochain entraînement ?';
-  return 'On reprend ? Votre prochain entraînement vous attend !';
+  if (total === 0) return t('dashboard.motivation.start');
+  if (streak >= 7) return t('dashboard.motivation.fire');
+  if (streak >= 3) return t('dashboard.motivation.consistent');
+  if (streak > 0) return t('dashboard.motivation.next');
+  return t('dashboard.motivation.default');
 });
 
 definePageMeta({

@@ -17,6 +17,16 @@ export enum Goal {
   CUT = 'CUT',
 }
 
+export enum UserRole {
+  ATHLETE = 'ATHLETE',
+  COACH = 'COACH',
+}
+
+export enum CoachPlan {
+  FREE = 'FREE',
+  PRO = 'PRO',
+}
+
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
@@ -60,6 +70,21 @@ export class User {
 
   @Column({ type: 'boolean', default: false })
   isAdmin!: boolean;
+
+  // --- Espace Coach ---
+  @Column({ type: 'varchar', default: UserRole.ATHLETE })
+  role!: UserRole;
+
+  // Code unique que le coach communique à ses clients (en salle, par QR code, etc.)
+  @Column({ type: 'varchar', nullable: true, unique: true })
+  coachInviteCode?: string;
+
+  // Bio / spécialité affichée aux clients (ex: "Préparateur physique, spécialiste force")
+  @Column({ type: 'text', nullable: true })
+  coachBio?: string;
+
+  @Column({ type: 'varchar', default: CoachPlan.FREE })
+  coachPlan!: CoachPlan;
 
   @Column({ type: 'boolean', default: true })
   reminderEnabled!: boolean;

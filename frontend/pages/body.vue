@@ -1,18 +1,15 @@
 <template>
   <div class="min-h-screen">
-    <!-- Navigation (moved to app.vue) -->
-
-    <!-- Main Content -->
     <div class="px-4 md:px-6 pb-28 lg:pb-20 max-w-7xl mx-auto">
       <!-- Page Header -->
-      <div class="fade-in text-center mb-8">
+      <div class="fade-in text-center mb-6 md:mb-8">
         <h1
-          class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2"
+          class="text-2xl md:text-3xl lg:text-4xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2"
         >
-          Votre Transformation
+          {{ t('body.title') }}
         </h1>
         <p class="text-lg text-primary-600 dark:text-primary-400">
-          Suivez votre progression physique
+          {{ t('body.subtitle') }}
         </p>
       </div>
 
@@ -32,7 +29,7 @@
                 : 'text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100',
             ]"
           >
-            {{ tab.label }}
+            {{ t(tab.label) }}
           </button>
         </div>
       </div>
@@ -42,109 +39,155 @@
         <div
           class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary-300 dark:border-primary-600 border-t-primary-600 dark:border-t-primary-400"
         ></div>
-        <p class="mt-4 text-primary-600 dark:text-primary-400 text-lg">Chargement...</p>
+        <p class="mt-4 text-primary-600 dark:text-primary-400 text-lg">{{ t('body.loading') }}</p>
       </div>
 
       <!-- ==================== ONGLET POIDS ==================== -->
       <div v-else-if="activeTab === 'weight'" class="space-y-8 slide-up">
-        <!-- Quick Add Form -->
-        <div class="card-glass">
-          <h3 class="text-2xl font-bold text-primary-900 dark:text-primary-100 mb-6">
-            Ajouter une pesée
-          </h3>
-          <form @submit.prevent="submitWeight" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <!-- Resultat : donnees d'abord -->
+        <div v-if="bodyStore.bodyStats.length > 0" class="card-glass !p-6">
+          <div class="flex items-start justify-between mb-5 flex-wrap gap-3">
             <div>
-              <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1"
-                >Poids (kg) *</label
-              >
-              <input
-                v-model.number="weightForm.weight"
-                type="number"
-                step="0.1"
-                min="0"
-                max="500"
-                placeholder="75.5"
-                class="input-primary"
-                required
-              />
+              <p class="text-sm text-primary-600 dark:text-primary-400 mb-1">
+                {{ t('body.currentWeight') }}
+              </p>
+              <div class="flex items-baseline gap-2">
+                <p class="text-3xl md:text-4xl font-bold text-primary-900 dark:text-primary-100">
+                  {{ bodyStore.latestWeight?.weight }} <span class="text-lg">kg</span>
+                </p>
+                <span
+                  v-if="bodyStore.weightChange30d !== null"
+                  :class="['text-sm font-semibold', weightChangeClass]"
+                >
+                  {{ (bodyStore.weightChange30d > 0 ? '+' : '') + bodyStore.weightChange30d }} kg /
+                  30j
+                </span>
+              </div>
             </div>
-            <div>
-              <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1"
-                >Body fat (%)</label
-              >
-              <input
-                v-model.number="weightForm.bodyFat"
-                type="number"
-                step="0.1"
-                min="0"
-                max="100"
-                placeholder="15.0"
-                class="input-primary"
-              />
+            <div
+              v-if="weighInsThisMonth > 0"
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-sand-100 dark:bg-sand-900/30 text-sand-700 dark:text-sand-400 text-xs font-semibold"
+            >
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"
+                />
+              </svg>
+              {{ weighInsThisMonth }}
+              {{ weighInsThisMonth > 1 ? t('body.weighIns') : t('body.weighIn') }}
+              {{ t('body.thisMonth') }}
             </div>
-            <div>
-              <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1"
-                >Notes</label
-              >
-              <input
-                v-model="weightForm.notes"
-                type="text"
-                placeholder="À jeun, après sport..."
-                class="input-primary"
-              />
+          </div>
+          <div v-if="bodyStore.bodyStats.length > 1" class="h-[220px] md:h-[280px]">
+            <BodyWeightChart :stats="bodyStore.bodyStats" />
+          </div>
+          <div
+            class="grid grid-cols-2 gap-2.5 mt-4 pt-4 border-t border-primary-100 dark:border-primary-800"
+          >
+            <div class="text-center">
+              <p class="text-[11px] text-primary-500 dark:text-primary-400 mb-1">
+                {{ t('body.min') }}
+              </p>
+              <p class="text-base font-bold text-primary-900 dark:text-primary-100">
+                {{ minWeight }} kg
+              </p>
             </div>
-            <div class="flex items-end">
+            <div class="text-center">
+              <p class="text-[11px] text-primary-500 dark:text-primary-400 mb-1">
+                {{ t('body.max') }}
+              </p>
+              <p class="text-base font-bold text-primary-900 dark:text-primary-100">
+                {{ maxWeight }} kg
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Etat vide -->
+        <div v-else class="card-glass text-center py-14">
+          <p class="text-lg text-primary-600 dark:text-primary-400 mb-1">
+            {{ t('body.noWeighIns') }}
+          </p>
+          <p class="text-sm text-primary-400 dark:text-primary-500">
+            {{ t('body.startTrackingWeight') }}
+          </p>
+        </div>
+
+        <!-- Action : peser -->
+        <div>
+          <button
+            v-if="!showWeightForm"
+            @click="showWeightForm = true"
+            class="btn-primary w-full md:w-auto px-8 py-3.5"
+          >
+            {{ t('body.addWeightCta') }}
+          </button>
+          <div v-else class="card-glass">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100">
+                {{ t('body.addWeightTitle') }}
+              </h3>
               <button
-                type="submit"
-                class="btn-primary w-full"
-                :disabled="!weightForm.weight || weightSaving"
+                @click="showWeightForm = false"
+                class="w-8 h-8 flex items-center justify-center rounded-lg text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-800"
               >
-                {{ weightSaving ? 'Enregistrement...' : 'Enregistrer' }}
+                <Icon name="lucide:x" class="w-4 h-4" />
               </button>
             </div>
-          </form>
-        </div>
-
-        <!-- Weight Stats -->
-        <div v-if="bodyStore.bodyStats.length > 0" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="card-glass !p-6 text-center">
-            <p class="text-sm text-primary-600 dark:text-primary-400 mb-1">Poids actuel</p>
-            <p class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100">
-              {{ bodyStore.latestWeight?.weight }} <span class="text-lg">kg</span>
-            </p>
-          </div>
-          <div class="card-glass !p-6 text-center">
-            <p class="text-sm text-primary-600 dark:text-primary-400 mb-1">Variation 30j</p>
-            <p :class="['text-2xl md:text-3xl font-bold', weightChangeClass]">
-              {{
-                bodyStore.weightChange30d !== null
-                  ? (bodyStore.weightChange30d > 0 ? '+' : '') + bodyStore.weightChange30d
-                  : '—'
-              }}
-              <span class="text-lg">kg</span>
-            </p>
-          </div>
-          <div class="card-glass !p-6 text-center">
-            <p class="text-sm text-primary-600 dark:text-primary-400 mb-1">Min</p>
-            <p class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100">
-              {{ minWeight }} <span class="text-lg">kg</span>
-            </p>
-          </div>
-          <div class="card-glass !p-6 text-center">
-            <p class="text-sm text-primary-600 dark:text-primary-400 mb-1">Max</p>
-            <p class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100">
-              {{ maxWeight }} <span class="text-lg">kg</span>
-            </p>
-          </div>
-        </div>
-
-        <!-- Weight Chart -->
-        <div v-if="bodyStore.bodyStats.length > 1" class="card-glass">
-          <h3 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">
-            Évolution du poids
-          </h3>
-          <div class="h-[250px] md:h-[300px]">
-            <BodyWeightChart :stats="bodyStore.bodyStats" />
+            <form @submit.prevent="submitWeight" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1"
+                  >{{ t('body.weightLabel') }} *</label
+                >
+                <input
+                  v-model.number="weightForm.weight"
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="500"
+                  placeholder="75.5"
+                  class="input-primary"
+                  autofocus
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1"
+                  >{{ t('body.bodyFat') }}</label
+                >
+                <input
+                  v-model.number="weightForm.bodyFat"
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="100"
+                  placeholder="15.0"
+                  class="input-primary"
+                />
+              </div>
+              <div>
+                <label
+                  class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1"
+                  >{{ t('body.notes') }}</label
+                >
+                <input
+                  v-model="weightForm.notes"
+                  type="text"
+                  :placeholder="t('body.notesPlaceholder')"
+                  class="input-primary"
+                />
+              </div>
+              <div class="flex items-end">
+                <button
+                  type="submit"
+                  class="btn-primary w-full"
+                  :disabled="!weightForm.weight || weightSaving"
+                >
+                  {{ weightSaving ? 'Enregistrement...' : 'Enregistrer' }}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
 
@@ -162,7 +205,6 @@
           </div>
 
           <div class="relative">
-            <!-- Timeline line -->
             <div
               class="absolute left-[23px] top-0 bottom-0 w-px bg-gradient-to-b from-sand-500/40 via-primary-200 dark:via-primary-700 to-transparent"
             ></div>
@@ -173,7 +215,6 @@
                 :key="stat.id"
                 class="relative flex gap-4 md:gap-5 group"
               >
-                <!-- Timeline dot -->
                 <div class="relative z-10 flex flex-col items-center pt-4">
                   <div
                     class="w-[13px] h-[13px] rounded-full border-[3px] flex-shrink-0 transition-all"
@@ -185,7 +226,6 @@
                   ></div>
                 </div>
 
-                <!-- Content card -->
                 <div class="flex-1 pb-6">
                   <div
                     class="rounded-2xl border border-primary-100 dark:border-primary-800 p-4 transition-all group-hover:border-primary-200 dark:group-hover:border-primary-700 group-hover:shadow-sm"
@@ -195,7 +235,6 @@
                         : ''
                     "
                   >
-                    <!-- Top row: date + delete -->
                     <div class="flex items-center justify-between mb-3">
                       <div class="flex items-center gap-2">
                         <span
@@ -227,7 +266,6 @@
                       </button>
                     </div>
 
-                    <!-- Weight value + diff -->
                     <div class="flex items-end justify-between mb-3">
                       <div class="flex items-baseline gap-1.5">
                         <span
@@ -247,7 +285,6 @@
                       </span>
                     </div>
 
-                    <!-- Progress bar -->
                     <div
                       class="h-1.5 rounded-full bg-primary-100 dark:bg-primary-800 overflow-hidden mb-2.5"
                     >
@@ -262,7 +299,6 @@
                       ></div>
                     </div>
 
-                    <!-- Meta row -->
                     <div class="flex items-center gap-2 flex-wrap">
                       <span
                         v-if="stat.bodyFat"
@@ -286,41 +322,10 @@
 
       <!-- ==================== ONGLET MENSURATIONS ==================== -->
       <div v-else-if="activeTab === 'measurements'" class="space-y-8 slide-up">
-        <!-- Add Form -->
-        <div class="card-glass">
-          <h3 class="text-2xl font-bold text-primary-900 dark:text-primary-100 mb-6">
-            Nouvelle mesure
-          </h3>
-          <form @submit.prevent="submitMeasurement" class="space-y-4">
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              <div v-for="field in measurementFields" :key="field.key">
-                <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1"
-                  >{{ field.label }} (cm)</label
-                >
-                <input
-                  v-model.number="(measurementForm as any)[field.key]"
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  :placeholder="field.placeholder"
-                  class="input-primary"
-                />
-              </div>
-            </div>
-            <button
-              type="submit"
-              class="btn-primary"
-              :disabled="!hasAnyMeasurement || measurementSaving"
-            >
-              {{ measurementSaving ? 'Enregistrement...' : 'Enregistrer' }}
-            </button>
-          </form>
-        </div>
-
-        <!-- Latest Measurement -->
+        <!-- Dernieres mesures d'abord -->
         <div
           v-if="bodyStore.latestMeasurement"
-          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+          class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 gap-4"
         >
           <div
             v-for="field in measurementFields"
@@ -342,7 +347,6 @@
                 >cm</span
               >
             </p>
-            <!-- Variation -->
             <p
               v-if="getMeasurementVariation(field.key)"
               :class="[
@@ -353,6 +357,63 @@
               {{ getMeasurementVariation(field.key)! > 0 ? '+' : ''
               }}{{ getMeasurementVariation(field.key) }} cm
             </p>
+          </div>
+        </div>
+        <div v-else class="card-glass text-center py-14">
+          <p class="text-lg text-primary-600 dark:text-primary-400 mb-1">
+            Pas encore de mensuration
+          </p>
+          <p class="text-sm text-primary-400 dark:text-primary-500">
+            Ajoutez votre première mesure ci-dessous
+          </p>
+        </div>
+
+        <!-- Action : ajouter -->
+        <div>
+          <button
+            v-if="!showMeasurementForm"
+            @click="showMeasurementForm = true"
+            class="btn-primary w-full md:w-auto px-8 py-3.5"
+          >
+            + Ajouter une mensuration
+          </button>
+          <div v-else class="card-glass">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100">
+                Nouvelle mesure
+              </h3>
+              <button
+                @click="showMeasurementForm = false"
+                class="w-8 h-8 flex items-center justify-center rounded-lg text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-800"
+              >
+                <Icon name="lucide:x" class="w-4 h-4" />
+              </button>
+            </div>
+            <form @submit.prevent="submitMeasurement" class="space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <div v-for="field in measurementFields" :key="field.key">
+                  <label
+                    class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1"
+                    >{{ field.label }} (cm)</label
+                  >
+                  <input
+                    v-model.number="(measurementForm as any)[field.key]"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    :placeholder="field.placeholder"
+                    class="input-primary"
+                  />
+                </div>
+              </div>
+              <button
+                type="submit"
+                class="btn-primary"
+                :disabled="!hasAnyMeasurement || measurementSaving"
+              >
+                {{ measurementSaving ? 'Enregistrement...' : 'Enregistrer' }}
+              </button>
+            </form>
           </div>
         </div>
 
@@ -379,7 +440,6 @@
               :key="m.id"
               class="rounded-xl border border-primary-200/60 dark:border-primary-700/60 overflow-hidden group hover:border-primary-300 dark:hover:border-primary-600 transition-colors"
             >
-              <!-- Date header -->
               <div
                 class="flex items-center justify-between px-4 py-2.5 bg-primary-50/70 dark:bg-primary-800/50"
               >
@@ -400,7 +460,6 @@
                   </svg>
                 </button>
               </div>
-              <!-- Measurement values grid -->
               <div
                 class="grid grid-cols-3 sm:grid-cols-6 divide-x divide-primary-100 dark:divide-primary-800"
               >
@@ -472,7 +531,6 @@
 
       <!-- ==================== ONGLET PHOTOS ==================== -->
       <div v-else-if="activeTab === 'photos'" class="space-y-8 slide-up">
-        <!-- Upgrade banner photos -->
         <ProWall
           v-if="!isPremium && !canUploadPhoto"
           title="Galerie photo illimitee"
@@ -481,60 +539,7 @@
           compact
         />
 
-        <!-- Upload Section -->
-        <div class="card-glass">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold text-primary-900 dark:text-primary-100">
-              Ajouter une photo
-            </h3>
-            <span v-if="!isPremium" class="text-xs text-primary-500 dark:text-primary-400">{{
-              photoUsageText
-            }}</span>
-          </div>
-          <div class="flex flex-col md:flex-row gap-4 items-end">
-            <div class="flex-1">
-              <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1"
-                >Workout associé</label
-              >
-              <select v-model="photoForm.workoutId" class="input-primary">
-                <option :value="null" disabled>Sélectionner un workout</option>
-                <option v-for="w in completedWorkouts" :key="w.id" :value="w.id">
-                  {{ w.name }} — {{ formatDate(w.completedAt!) }}
-                </option>
-              </select>
-            </div>
-            <div class="flex items-center h-[46px]">
-              <label
-                class="flex items-center space-x-2 text-sm text-primary-700 dark:text-primary-300 cursor-pointer"
-              >
-                <input type="checkbox" v-model="photoForm.isPrimary" class="checkbox-primary" />
-                <span>Photo principale (timelapse)</span>
-              </label>
-            </div>
-            <div>
-              <label class="btn-primary cursor-pointer inline-flex items-center space-x-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-                <span>{{ photoUploading ? 'Upload...' : 'Choisir photo' }}</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  class="hidden"
-                  @change="handlePhotoUpload"
-                  :disabled="!photoForm.workoutId || photoUploading"
-                />
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <!-- Timelapse Section -->
+        <!-- Le plus gratifiant d'abord : timelapse + comparaison -->
         <div v-if="timelapsePhotos.length > 0" class="card-glass">
           <div class="flex items-center justify-between mb-6">
             <h3 class="text-xl font-semibold text-primary-900 dark:text-primary-100">Timelapse</h3>
@@ -547,14 +552,13 @@
           </ClientOnly>
         </div>
 
-        <!-- Comparaison Avant / Après -->
         <BodyPhotoComparison
           v-if="bodyStore.photos.length >= 2"
           :photos="bodyStore.photos"
           :user-name="authStore.user?.firstName || ''"
         />
 
-        <!-- Photo Grid -->
+        <!-- Galerie -->
         <div v-if="bodyStore.photos.length > 0" class="card-glass">
           <h3 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">Galerie</h3>
           <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -582,7 +586,6 @@
                   <p v-if="photo.isPrimary" class="text-yellow-300 text-xs">★ Principale</p>
                 </div>
               </div>
-              <!-- Delete button -->
               <button
                 @click.stop="deletePhoto(photo.id)"
                 class="absolute top-2 right-2 w-8 h-8 bg-black/50 hover:bg-red-500 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
@@ -605,7 +608,7 @@
           </div>
         </div>
 
-        <!-- Empty State -->
+        <!-- Etat vide -->
         <div
           v-if="bodyStore.photos.length === 0 && !bodyStore.isLoading"
           class="card-glass text-center py-16"
@@ -635,6 +638,76 @@
           <p class="text-sm text-primary-500 dark:text-primary-500">
             Ajoutez des photos pour suivre votre transformation
           </p>
+        </div>
+
+        <!-- Action : ajouter une photo -->
+        <div>
+          <button
+            v-if="!showPhotoUpload"
+            @click="showPhotoUpload = true"
+            class="btn-primary w-full md:w-auto px-8 py-3.5"
+          >
+            + Ajouter une photo
+          </button>
+          <div v-else class="card-glass">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100">
+                Ajouter une photo
+              </h3>
+              <div class="flex items-center gap-3">
+                <span v-if="!isPremium" class="text-xs text-primary-500 dark:text-primary-400">{{
+                  photoUsageText
+                }}</span>
+                <button
+                  @click="showPhotoUpload = false"
+                  class="w-8 h-8 flex items-center justify-center rounded-lg text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-800"
+                >
+                  <Icon name="lucide:x" class="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            <div class="flex flex-col md:flex-row gap-4 items-end">
+              <div class="flex-1">
+                <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1"
+                  >Workout associé</label
+                >
+                <select v-model="photoForm.workoutId" class="input-primary">
+                  <option :value="null" disabled>Sélectionner un workout</option>
+                  <option v-for="w in completedWorkouts" :key="w.id" :value="w.id">
+                    {{ w.name }} — {{ formatDate(w.completedAt!) }}
+                  </option>
+                </select>
+              </div>
+              <div class="flex items-center h-[46px]">
+                <label
+                  class="flex items-center space-x-2 text-sm text-primary-700 dark:text-primary-300 cursor-pointer"
+                >
+                  <input type="checkbox" v-model="photoForm.isPrimary" class="checkbox-primary" />
+                  <span>Photo principale (timelapse)</span>
+                </label>
+              </div>
+              <div>
+                <label class="btn-primary cursor-pointer inline-flex items-center space-x-2">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <span>{{ photoUploading ? 'Upload...' : 'Choisir photo' }}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    class="hidden"
+                    @change="handlePhotoUpload"
+                    :disabled="!photoForm.workoutId || photoUploading"
+                  />
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -678,11 +751,11 @@
 import { useAuthStore } from '~/stores/auth';
 import { useBodyStore } from '~/stores/body';
 import { useWorkoutStore } from '~/stores/workout';
-
-useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] });
 import { useSubscriptionStore } from '~/stores/subscription';
 import { useSubscriptionLimits } from '~/composables/useSubscriptionLimits';
 import type { ProgressPhoto, Measurement } from '~/types/body';
+
+useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] });
 
 const authStore = useAuthStore();
 const bodyStore = useBodyStore();
@@ -694,10 +767,15 @@ const toast = useToast();
 const activeTab = ref<'weight' | 'measurements' | 'photos'>('weight');
 
 const tabs = [
-  { key: 'weight' as const, label: 'Poids' },
-  { key: 'measurements' as const, label: 'Mensurations' },
-  { key: 'photos' as const, label: 'Photos' },
+  { key: 'weight' as const, label: 'body.tabs.weight' },
+  { key: 'measurements' as const, label: 'body.tabs.measurements' },
+  { key: 'photos' as const, label: 'body.tabs.photos' },
 ];
+
+// Formulaires repliés par defaut : on les affiche a la demande, pas en permanence
+const showWeightForm = ref(false);
+const showMeasurementForm = ref(false);
+const showPhotoUpload = ref(false);
 
 // ========== WEIGHT ==========
 const weightForm = reactive({
@@ -706,6 +784,12 @@ const weightForm = reactive({
   notes: '',
 });
 const weightSaving = ref(false);
+
+const weighInsThisMonth = computed(() => {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 30);
+  return bodyStore.bodyStats.filter((s) => new Date(s.date) >= cutoff).length;
+});
 
 const submitWeight = async () => {
   if (!weightForm.weight) return;
@@ -719,6 +803,7 @@ const submitWeight = async () => {
     weightForm.weight = null;
     weightForm.bodyFat = null;
     weightForm.notes = '';
+    showWeightForm.value = false;
     toast.success('Poids enregistré');
   } catch (e) {
     toast.error("Erreur lors de l'enregistrement");
@@ -752,18 +837,20 @@ const maxWeight = computed(() => {
 });
 
 const weightChangeClass = computed(() => {
-  if (bodyStore.weightChange30d === null) return 'text-primary-900 dark:text-primary-100';
+  if (bodyStore.weightChange30d === null) return 'text-primary-500 dark:text-primary-400';
   return bodyStore.weightChange30d > 0
     ? 'text-green-500'
     : bodyStore.weightChange30d < 0
       ? 'text-red-500'
-      : 'text-primary-900 dark:text-primary-100';
+      : 'text-primary-500 dark:text-primary-400';
 });
 
 const getWeightDiff = (index: number): number | null => {
   const stats = bodyStore.bodyStats;
-  if (index >= stats.length - 1) return null;
-  return Math.round((stats[index].weight - stats[index + 1].weight) * 10) / 10;
+  const current = stats[index];
+  const previous = stats[index + 1];
+  if (!current || !previous) return null;
+  return Math.round((current.weight - previous.weight) * 10) / 10;
 };
 
 const getWeightBarWidth = (weight: number): number => {
@@ -818,10 +905,10 @@ const submitMeasurement = async () => {
       if (val && val > 0) data[field.key] = val;
     }
     await bodyStore.addMeasurement(data);
-    // Reset form
     for (const field of measurementFields) {
       (measurementForm as any)[field.key] = null;
     }
+    showMeasurementForm.value = false;
     toast.success('Mensurations enregistrées');
   } catch (e) {
     toast.error("Erreur lors de l'enregistrement");
@@ -844,8 +931,11 @@ const deleteMeasurement = async (id: number) => {
 
 const getMeasurementVariation = (key: string) => {
   if (bodyStore.measurements.length < 2) return null;
-  const latest = bodyStore.measurements[0][key as keyof Measurement] as number | undefined;
-  const previous = bodyStore.measurements[1][key as keyof Measurement] as number | undefined;
+  const latestMeasurement = bodyStore.measurements[0];
+  const previousMeasurement = bodyStore.measurements[1];
+  if (!latestMeasurement || !previousMeasurement) return null;
+  const latest = latestMeasurement[key as keyof Measurement] as number | undefined;
+  const previous = previousMeasurement[key as keyof Measurement] as number | undefined;
   if (!latest || !previous) return null;
   return +((latest as number) - (previous as number)).toFixed(1);
 };
@@ -887,7 +977,6 @@ const handlePhotoUpload = async (event: Event) => {
   try {
     await bodyStore.uploadPhoto(photoForm.workoutId, file, photoForm.isPrimary);
     input.value = '';
-    // Refresh timelapse
     timelapsePhotos.value = await bodyStore.fetchTimelapse();
     toast.success('Photo uploadée');
   } catch (e) {
@@ -928,7 +1017,7 @@ onMounted(async () => {
   try {
     timelapsePhotos.value = await bodyStore.fetchTimelapse();
   } catch (e) {
-    // Timelapse may be empty
+    // Timelapse peut etre vide
   }
 });
 

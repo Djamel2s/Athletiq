@@ -36,6 +36,8 @@ import { ProcessedWebhookEvent } from '../entities/ProcessedWebhookEvent.js';
 import { Fatigue } from '../entities/Fatigue.js';
 import { ProgressionSlope } from '../entities/ProgressionSlope.js';
 import { ExpectedPR } from '../entities/ExpectedPR.js';
+import { CoachClientLink } from '../entities/CoachClientLink.js';
+import { CoachNote } from '../entities/CoachNote.js';
 import { logger } from '../utils/logger.js';
 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -83,6 +85,8 @@ export const AppDataSource = new DataSource({
     Fatigue,
     ProgressionSlope,
     ExpectedPR,
+    CoachClientLink,
+    CoachNote,
   ],
   extra: {
     max: 20,

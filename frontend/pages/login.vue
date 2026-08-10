@@ -13,10 +13,10 @@
         <h1
           class="text-2xl md:text-4xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-display"
         >
-          Connexion
+          {{ t('auth.login.title') }}
         </h1>
         <p class="text-primary-600 dark:text-primary-400 text-body-relaxed">
-          Connectez-vous à votre compte
+          {{ t('auth.login.subtitle') }}
         </p>
       </div>
 
@@ -40,9 +40,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            <p class="text-sm text-green-700 dark:text-green-300">
-              Email verifie avec succes. Connectez-vous maintenant.
-            </p>
+            <p class="text-sm text-green-700 dark:text-green-300">{{ t('auth.login.verified') }}</p>
           </div>
         </div>
 
@@ -55,7 +53,7 @@
                 for="email"
                 class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-2"
               >
-                Email
+                {{ t('auth.login.email') }}
               </label>
               <input
                 id="email"
@@ -64,7 +62,7 @@
                 required
                 autocomplete="email"
                 class="input"
-                placeholder="votre@email.com"
+                :placeholder="t('auth.login.emailPlaceholder')"
               />
             </div>
 
@@ -74,7 +72,7 @@
                 for="password"
                 class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-2"
               >
-                Mot de passe
+                {{ t('auth.login.password') }}
               </label>
               <input
                 id="password"
@@ -83,14 +81,14 @@
                 required
                 autocomplete="current-password"
                 class="input"
-                placeholder="••••••••"
+                :placeholder="t('auth.login.passwordPlaceholder')"
               />
               <div class="mt-2 text-right">
                 <NuxtLink
                   to="/forgot-password"
                   class="text-sm text-sand-600 dark:text-sand-400 hover:text-sand-800 dark:hover:text-sand-300 transition-colors"
                 >
-                  Mot de passe oublié ?
+                  {{ t('auth.login.forgot') }}
                 </NuxtLink>
               </div>
             </div>
@@ -105,20 +103,20 @@
 
             <!-- Submit button -->
             <button type="submit" :disabled="loading" class="btn-primary w-full text-lg py-4">
-              <span v-if="!loading">Se connecter</span>
-              <span v-else>Connexion en cours...</span>
+              <span v-if="!loading">{{ t('auth.login.submit') }}</span>
+              <span v-else>{{ t('auth.login.loading') }}</span>
             </button>
           </form>
 
           <!-- Liens -->
           <div class="mt-8 pt-6 border-t border-sand-200 dark:border-primary-700 text-center">
             <p class="text-primary-600 dark:text-primary-400">
-              Pas encore de compte ?
+              {{ t('auth.login.noAccount') }}
               <NuxtLink
                 to="/register"
                 class="font-medium text-sand-600 dark:text-sand-400 hover:text-sand-800 dark:hover:text-sand-300 transition-colors"
               >
-                S'inscrire
+                {{ t('auth.login.signup') }}
               </NuxtLink>
             </p>
           </div>
@@ -138,7 +136,7 @@
                 d="M10 19l-7-7m0 0l7-7m-7 7h18"
               />
             </svg>
-            Retour à l'accueil
+            {{ t('auth.login.backHome') }}
           </NuxtLink>
         </div>
       </template>
@@ -153,13 +151,13 @@ definePageMeta({
   layout: false,
 });
 
+const { t } = useLocale();
+
 useSeoMeta({
-  title: 'Connexion · Athletiq',
-  ogTitle: 'Connexion · Athletiq',
-  description:
-    'Connectez-vous à votre compte Athletiq pour suivre vos entraînements et votre progression.',
-  ogDescription:
-    'Connectez-vous à votre compte Athletiq pour suivre vos entraînements et votre progression.',
+  title: t('auth.login.seoTitle'),
+  ogTitle: t('auth.login.seoTitle'),
+  description: t('auth.login.seoDescription'),
+  ogDescription: t('auth.login.seoDescription'),
 });
 
 const authStore = useAuthStore();
@@ -182,10 +180,10 @@ const handleLogin = async () => {
     if (result.success) {
       navigateTo('/dashboard');
     } else {
-      error.value = result.error || 'Une erreur est survenue';
+      error.value = result.error || t('auth.login.errorGeneric');
     }
   } catch (err) {
-    error.value = 'Une erreur est survenue lors de la connexion';
+    error.value = t('auth.login.errorConnection');
   } finally {
     loading.value = false;
   }

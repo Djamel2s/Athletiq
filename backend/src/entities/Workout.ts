@@ -30,6 +30,10 @@ export class Workout {
   @Column({ type: 'boolean', default: false })
   isTemplate!: boolean;
 
+  // Renseigné si ce template a été créé/assigné par un coach pour ce client
+  @Column({ type: 'int', nullable: true })
+  assignedByCoachId?: number;
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   date!: Date;
 

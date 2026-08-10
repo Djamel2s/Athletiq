@@ -9,7 +9,7 @@
         <h1
           class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2"
         >
-          Badges
+          {{ t('achievements.title') }}
         </h1>
         <p v-if="stats" class="text-lg text-primary-600 dark:text-primary-400">
           {{ stats.unlocked }}/{{ stats.total }} badges &mdash; {{ stats.totalXP }} XP
@@ -49,7 +49,7 @@
           <div
             class="flex items-center justify-between text-sm text-primary-600 dark:text-primary-400 mb-2"
           >
-            <span>Progression globale</span>
+            <span>{{ t('achievements.overallProgress') }}</span>
             <span class="font-semibold">{{ overallPercent }}%</span>
           </div>
           <div class="h-4 bg-primary-200 dark:bg-primary-800 rounded-full overflow-hidden">
@@ -71,14 +71,14 @@
               activeTab === tab.key ? 'bg-gradient-primary text-white shadow-lg' : 'btn-glass',
             ]"
           >
-            {{ tab.label }}
+            {{ t(tab.label) }}
           </button>
         </div>
 
         <!-- Empty state -->
         <div v-if="filteredAchievements.length === 0" class="text-center py-16">
           <Icon name="lucide:medal" class="w-12 h-12 mx-auto mb-4 text-primary-300" />
-          <p class="text-primary-600 dark:text-primary-400">Aucun badge dans cette catégorie</p>
+          <p class="text-primary-600 dark:text-primary-400">{{ t('achievements.empty') }}</p>
         </div>
 
         <!-- Achievement grid -->
@@ -153,7 +153,7 @@
 
               <!-- Unlocked date -->
               <p v-else class="text-[10px] md:text-xs text-sand-700 dark:text-sand-500 font-medium">
-                Débloqué le {{ formatDate(achievement.unlockedAt) }}
+                {{ t('achievements.unlockedOn', { date: formatDate(achievement.unlockedAt) }) }}
               </p>
             </div>
           </div>
@@ -168,6 +168,7 @@
 <script setup lang="ts">
 /* TopNav imported and rendered globally in app.vue; per-page import removed */
 import { useAchievementApi, type Achievement } from '~/composables/useAchievementApi';
+import { useLocale } from '~/composables/useLocale';
 
 useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] });
 
@@ -183,14 +184,14 @@ const stats = ref<{ total: number; unlocked: number; totalXP: number } | null>(n
 const activeTab = ref<string>('all');
 
 const tabs = [
-  { key: 'all', label: 'Tous' },
-  { key: 'WORKOUT', label: 'Séances' },
-  { key: 'VOLUME', label: 'Volume' },
-  { key: 'STREAK', label: 'Streak' },
-  { key: 'PR', label: 'Records' },
-  { key: 'BODY', label: 'Corps' },
-  { key: 'MILESTONE', label: 'Étapes' },
-  { key: 'SOCIAL', label: 'Social' },
+  { key: 'all', label: 'achievements.tabs.all' },
+  { key: 'WORKOUT', label: 'achievements.tabs.WORKOUT' },
+  { key: 'VOLUME', label: 'achievements.tabs.VOLUME' },
+  { key: 'STREAK', label: 'achievements.tabs.STREAK' },
+  { key: 'PR', label: 'achievements.tabs.PR' },
+  { key: 'BODY', label: 'achievements.tabs.BODY' },
+  { key: 'MILESTONE', label: 'achievements.tabs.MILESTONE' },
+  { key: 'SOCIAL', label: 'achievements.tabs.SOCIAL' },
 ];
 
 const overallPercent = computed(() => {
@@ -215,10 +216,16 @@ const filteredAchievements = computed(() => {
   });
 });
 
+const { locale, t } = useLocale();
+
 const formatDate = (dateStr: string | null) => {
   if (!dateStr) return '';
   const d = new Date(dateStr);
-  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+  return d.toLocaleDateString(locale.value === 'fr' ? 'fr-FR' : 'en-US', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
 };
 
 const formatProgress = (value: number) => {

@@ -9,10 +9,10 @@
           />
         </NuxtLink>
         <h1 class="text-4xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-display">
-          Inscription
+          {{ t('auth.register.title') }}
         </h1>
         <p class="text-primary-600 dark:text-primary-400 text-body-relaxed">
-          Créez votre compte gratuitement
+          {{ t('auth.register.subtitle') }}
         </p>
       </div>
 
@@ -22,8 +22,10 @@
           <!-- Photo de profil -->
           <div class="flex flex-col items-center gap-2">
             <label class="block text-sm font-medium text-primary-700 dark:text-primary-300">
-              Photo de profil
-              <span class="text-primary-400 dark:text-primary-500 font-normal">(optionnel)</span>
+              {{ t('auth.register.profilePhoto') }}
+              <span class="text-primary-400 dark:text-primary-500 font-normal"
+                >({{ t('auth.register.optional') }})</span
+              >
             </label>
             <div class="relative group cursor-pointer">
               <div
@@ -87,7 +89,7 @@
               for="username"
               class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-2"
             >
-              Pseudo
+              {{ t('auth.register.username') }}
             </label>
             <input
               id="username"
@@ -109,7 +111,7 @@
                 for="firstName"
                 class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-2"
               >
-                Prénom
+                {{ t('auth.register.firstName') }}
               </label>
               <input
                 id="firstName"
@@ -117,7 +119,7 @@
                 type="text"
                 autocomplete="given-name"
                 class="input"
-                placeholder="Jean"
+                :placeholder="t('auth.register.firstNamePlaceholder')"
               />
             </div>
             <div>
@@ -125,7 +127,7 @@
                 for="lastName"
                 class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-2"
               >
-                Nom
+                {{ t('auth.register.lastName') }}
               </label>
               <input
                 id="lastName"
@@ -133,7 +135,7 @@
                 type="text"
                 autocomplete="family-name"
                 class="input"
-                placeholder="Dupont"
+                :placeholder="t('auth.register.lastNamePlaceholder')"
               />
             </div>
           </div>
@@ -141,7 +143,7 @@
           <!-- Genre -->
           <div>
             <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-2">
-              Je suis
+              {{ t('auth.register.gender') }}
             </label>
             <div class="grid grid-cols-2 gap-3">
               <button
@@ -163,7 +165,7 @@
                     d="M5.5 21v-2a6.5 6.5 0 0113 0v2"
                   />
                 </svg>
-                Homme
+                {{ t('auth.register.genderMale') }}
               </button>
               <button
                 type="button"
@@ -184,7 +186,7 @@
                     d="M5.5 21v-2a6.5 6.5 0 0113 0v2"
                   />
                 </svg>
-                Femme
+                {{ t('auth.register.genderFemale') }}
               </button>
             </div>
           </div>
@@ -195,7 +197,7 @@
               for="email"
               class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-2"
             >
-              Email
+              {{ t('auth.register.email') }}
             </label>
             <input
               id="email"
@@ -204,7 +206,7 @@
               required
               autocomplete="email"
               class="input"
-              placeholder="votre@email.com"
+              :placeholder="t('auth.register.emailPlaceholder')"
             />
           </div>
 
@@ -214,7 +216,7 @@
               for="password"
               class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-2"
             >
-              Mot de passe
+              {{ t('auth.register.password') }}
             </label>
             <input
               id="password"
@@ -225,7 +227,9 @@
               class="input"
               placeholder="••••••••"
             />
-            <p class="mt-2 text-xs text-primary-500 dark:text-primary-400">Minimum 8 caractères</p>
+            <p class="mt-2 text-xs text-primary-500 dark:text-primary-400">
+              {{ t('auth.register.passwordHint') }}
+            </p>
           </div>
 
           <!-- Confirm Password -->
@@ -234,7 +238,7 @@
               for="confirmPassword"
               class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-2"
             >
-              Confirmer le mot de passe
+              {{ t('auth.register.confirmPassword') }}
             </label>
             <input
               id="confirmPassword"
@@ -247,6 +251,38 @@
             />
           </div>
 
+          <div
+            class="rounded-2xl border border-primary-200/70 bg-primary-50/70 p-3 dark:border-primary-700 dark:bg-primary-800/40"
+          >
+            <p class="text-sm font-medium text-primary-700 dark:text-primary-200">
+              {{ t('auth.register.language') }}
+            </p>
+            <p class="mt-1 text-xs text-primary-500 dark:text-primary-400">
+              {{ t('auth.register.languageHint') }}
+            </p>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <button
+                v-for="option in availableLocales"
+                :key="option.code"
+                type="button"
+                class="rounded-xl px-3 py-2 text-sm font-medium transition-all flex items-center gap-2"
+                :class="
+                  locale === option.code
+                    ? 'bg-sand-500 text-white shadow-sm'
+                    : 'bg-white text-primary-700 dark:bg-primary-900 dark:text-primary-200'
+                "
+                @click="setLocale(option.code)"
+              >
+                <img
+                  :src="option.flag"
+                  :alt="option.label"
+                  class="w-5 h-5 rounded-sm object-cover"
+                />
+                {{ option.label }}
+              </button>
+            </div>
+          </div>
+
           <!-- Error message -->
           <div
             v-if="error"
@@ -257,20 +293,20 @@
 
           <!-- Submit button -->
           <button type="submit" :disabled="loading" class="btn-primary w-full text-lg py-4">
-            <span v-if="!loading">Créer mon compte</span>
-            <span v-else>Création en cours...</span>
+            <span v-if="!loading">{{ t('auth.register.submit') }}</span>
+            <span v-else>{{ t('auth.register.loading') }}</span>
           </button>
         </form>
 
         <!-- Liens -->
         <div class="mt-8 pt-6 border-t border-sand-200 dark:border-primary-700 text-center">
           <p class="text-primary-600 dark:text-primary-400">
-            Déjà un compte ?
+            {{ t('auth.register.hasAccount') }}
             <NuxtLink
               to="/login"
               class="font-medium text-sand-600 dark:text-sand-400 hover:text-sand-800 dark:hover:text-sand-300 transition-colors"
             >
-              Se connecter
+              {{ t('auth.register.signIn') }}
             </NuxtLink>
           </p>
         </div>
@@ -290,7 +326,7 @@
               d="M10 19l-7-7m0 0l7-7m-7 7h18"
             />
           </svg>
-          Retour à l'accueil
+          {{ t('auth.register.backHome') }}
         </NuxtLink>
       </div>
     </div>
@@ -313,6 +349,7 @@ useSeoMeta({
 });
 
 const authStore = useAuthStore();
+const { locale, availableLocales, setLocale, t } = useLocale();
 
 const firstName = ref('');
 const lastName = ref('');
@@ -331,23 +368,22 @@ const checkUsername = async () => {
   usernameError.value = '';
   const val = (username.value || '').trim();
   if (!val) {
-    usernameError.value = 'Le pseudo est requis';
+    usernameError.value = t('auth.register.usernameRequired');
     return;
   }
   const regex = /^[a-z0-9_]{3,20}$/;
   if (!regex.test(val)) {
-    usernameError.value =
-      'Le pseudo doit contenir 3-20 caractères en minuscules, chiffres ou underscore';
+    usernameError.value = t('auth.register.usernameFormat');
     return;
   }
 
   try {
     const config = useRuntimeConfig();
-    const res = await $fetch(
+    const res = await $fetch<{ available: boolean }>(
       `${config.public.apiUrl}/profile/check-username/${encodeURIComponent(val)}`
     );
     if (!res.available) {
-      usernameError.value = 'Pseudo déjà utilisé';
+      usernameError.value = t('auth.register.usernameTaken');
     }
   } catch (err) {
     // ignore network errors here — backend might be unreachable

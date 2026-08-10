@@ -9,10 +9,10 @@
         <h1
           class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-3"
         >
-          Programmes
+          {{ t('programs.title') }}
         </h1>
         <p class="text-lg text-primary-600 dark:text-primary-400 max-w-2xl mx-auto">
-          Choisissez un programme adapt&eacute; &agrave; votre objectif et votre niveau
+          {{ t('programs.subtitle') }}
         </p>
       </div>
 
@@ -30,7 +30,7 @@
           ]"
         >
           <Icon :name="cat.icon" class="w-4 h-4 inline-block mr-1.5 -mt-0.5" />
-          {{ cat.label }}
+          {{ t(cat.labelKey) }}
         </button>
       </div>
 
@@ -75,7 +75,7 @@
           />
         </svg>
         <p class="text-red-700 dark:text-red-400 mb-4">{{ error }}</p>
-        <button @click="loadPrograms" class="btn-outline">Reessayer</button>
+        <button @click="loadPrograms" class="btn-outline">{{ t('programs.retry') }}</button>
       </div>
 
       <!-- Programs by category -->
@@ -177,7 +177,7 @@
                     class="mt-4 pt-3 border-t border-primary-100 dark:border-primary-700/60 flex items-center justify-center gap-1.5 text-xs font-medium text-primary-400 dark:text-primary-500 hover:text-sand-600 dark:hover:text-sand-400 transition-colors w-full cursor-pointer"
                   >
                     <span>{{
-                      expandedId === program.id ? 'Masquer le detail' : 'Voir le detail'
+                      expandedId === program.id ? t('programs.collapse') : t('programs.expand')
                     }}</span>
                     <svg
                       :class="[
@@ -208,7 +208,7 @@
                   <!-- Program name reminder -->
                   <div class="flex items-center justify-between">
                     <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100">
-                      {{ program.name }} — Detail des seances
+                      {{ t('programs.detailsTitle', { name: program.name }) }}
                     </h3>
                     <button
                       @click="expandedId = null"
@@ -229,7 +229,7 @@
                         <span
                           class="w-7 h-7 rounded-lg bg-gradient-primary text-white text-xs font-bold flex items-center justify-center flex-shrink-0"
                         >
-                          J{{ day.dayIndex + 1 }}
+                          {{ t('programs.dayLabel', { number: day.dayIndex + 1 }) }}
                         </span>
                         <h4 class="font-semibold text-sm text-primary-900 dark:text-primary-100">
                           {{ day.name }}
@@ -292,11 +292,11 @@
                           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                         ></path>
                       </svg>
-                      Adoption en cours...
+                      {{ t('programs.adoptionInProgress') }}
                     </span>
                     <span v-else class="inline-flex items-center gap-2">
                       <Icon name="lucide:plus" class="w-5 h-5" />
-                      Adopter ce programme
+                      {{ t('programs.adopt') }}
                     </span>
                   </button>
                 </div>
@@ -309,7 +309,7 @@
       <!-- Empty state -->
       <div v-if="!loading && !error && programs.length === 0" class="card-glass text-center py-16">
         <Icon name="lucide:package" class="w-20 h-20 mx-auto mb-6 text-primary-300" />
-        <p class="text-xl text-primary-600 dark:text-primary-400">Aucun programme disponible</p>
+        <p class="text-xl text-primary-600 dark:text-primary-400">{{ t('programs.empty') }}</p>
       </div>
     </div>
 
@@ -326,6 +326,8 @@ useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] });
 const { getPrograms, adoptProgram } = useProgramApi();
 const toast = useToast();
 
+const { t } = useLocale();
+
 const programs = ref<WorkoutProgram[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
@@ -333,13 +335,13 @@ const expandedId = ref<number | null>(null);
 const adoptingSlug = ref<string | null>(null);
 const activeCategory = ref('all');
 
-const categories = [
-  { key: 'all', label: 'Tous', icon: 'lucide:layout-grid' },
-  { key: 'hypertrophy', label: 'Hypertrophie', icon: 'lucide:dumbbell' },
-  { key: 'strength', label: 'Force', icon: 'lucide:shield' },
-  { key: 'general', label: 'General', icon: 'lucide:target' },
-  { key: 'endurance', label: 'Endurance', icon: 'lucide:heart-pulse' },
-];
+const categories = computed(() => [
+  { key: 'all', labelKey: 'programs.categories.all', icon: 'lucide:layout-grid' },
+  { key: 'hypertrophy', labelKey: 'programs.categories.hypertrophy', icon: 'lucide:dumbbell' },
+  { key: 'strength', labelKey: 'programs.categories.strength', icon: 'lucide:shield' },
+  { key: 'general', labelKey: 'programs.categories.general', icon: 'lucide:target' },
+  { key: 'endurance', labelKey: 'programs.categories.endurance', icon: 'lucide:heart-pulse' },
+]);
 
 interface ProgramGroup {
   key: string;
@@ -349,28 +351,30 @@ interface ProgramGroup {
   programs: WorkoutProgram[];
 }
 
-const goalGroupConfig: Record<string, { label: string; icon: string; description: string }> = {
+const goalGroupConfig = computed<
+  Record<string, { label: string; icon: string; description: string }>
+>(() => ({
   HYPERTROPHY: {
-    label: 'Hypertrophie',
+    label: t('programs.categories.hypertrophy'),
     icon: 'lucide:dumbbell',
-    description: 'Programmes axes sur le gain de masse musculaire',
+    description: t('programs.goalDescriptions.hypertrophy'),
   },
   STRENGTH: {
-    label: 'Force',
+    label: t('programs.categories.strength'),
     icon: 'lucide:shield',
-    description: 'Programmes axes sur les gains de force',
+    description: t('programs.goalDescriptions.strength'),
   },
   GENERAL: {
-    label: 'General',
+    label: t('programs.categories.general'),
     icon: 'lucide:target',
-    description: 'Programmes polyvalents pour tous les objectifs',
+    description: t('programs.goalDescriptions.general'),
   },
   ENDURANCE: {
-    label: 'Endurance',
+    label: t('programs.categories.endurance'),
     icon: 'lucide:heart-pulse',
-    description: "Programmes axes sur l'endurance musculaire",
+    description: t('programs.goalDescriptions.endurance'),
   },
-};
+}));
 
 const programGroups = computed<ProgramGroup[]>(() => {
   const groups: Record<string, WorkoutProgram[]> = {};
@@ -385,7 +389,7 @@ const programGroups = computed<ProgramGroup[]>(() => {
     .filter((key) => groups[key]?.length)
     .map((key) => ({
       key: key.toLowerCase(),
-      ...goalGroupConfig[key],
+      ...goalGroupConfig.value[key],
       programs: groups[key],
     }));
 });
@@ -401,7 +405,7 @@ const loadPrograms = async () => {
   try {
     programs.value = await getPrograms();
   } catch (err: any) {
-    error.value = err?.data?.error || 'Impossible de charger les programmes';
+    error.value = err?.data?.error || t('programs.loadError');
   } finally {
     loading.value = false;
   }
@@ -425,12 +429,12 @@ const handleAdopt = async (program: WorkoutProgram) => {
   try {
     const result = await adoptProgram(program.slug);
     toast.success(
-      'Programme adopte !',
-      `${result.workoutIds.length} templates crees pour "${program.name}"`
+      t('programs.adoptSuccess'),
+      t('programs.adoptSuccessBody', { count: result.workoutIds.length, name: program.name })
     );
     navigateTo('/workouts');
   } catch (err: any) {
-    toast.error('Erreur', err?.data?.error || "Impossible d'adopter ce programme");
+    toast.error(t('programs.adoptError'), err?.data?.error || t('programs.adoptError'));
   } finally {
     adoptingSlug.value = null;
   }
@@ -447,9 +451,9 @@ const formatRest = (seconds: number) => {
 
 const difficultyLabel = (difficulty: string) => {
   const labels: Record<string, string> = {
-    BEGINNER: 'Debutant',
-    INTERMEDIATE: 'Intermediaire',
-    ADVANCED: 'Avance',
+    BEGINNER: t('programs.difficulty.beginner'),
+    INTERMEDIATE: t('programs.difficulty.intermediate'),
+    ADVANCED: t('programs.difficulty.advanced'),
   };
   return labels[difficulty] || difficulty;
 };
@@ -466,10 +470,10 @@ const difficultyBadgeClass = (difficulty: string) => {
 
 const goalLabel = (goal: string) => {
   const labels: Record<string, string> = {
-    STRENGTH: 'Force',
-    HYPERTROPHY: 'Hypertrophie',
-    ENDURANCE: 'Endurance',
-    GENERAL: 'General',
+    STRENGTH: t('programs.goal.strength'),
+    HYPERTROPHY: t('programs.goal.hypertrophy'),
+    ENDURANCE: t('programs.goal.endurance'),
+    GENERAL: t('programs.goal.general'),
   };
   return labels[goal] || goal;
 };

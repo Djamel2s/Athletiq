@@ -1,17 +1,21 @@
 <template>
   <div class="card-glass text-center">
     <div
-      class="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center mb-4 mx-auto icon-container"
+      class="w-10 h-10 md:w-11 md:h-11 bg-gradient-primary rounded-xl flex items-center justify-center mb-3 mx-auto icon-container"
     >
       <slot name="icon">
         <div class="w-6 h-6 text-white" />
       </slot>
     </div>
-    <p class="text-sm text-primary-600 dark:text-primary-400 mb-2">{{ title }}</p>
-    <p class="text-3xl font-bold text-primary-900 dark:text-primary-100 mb-1">
+    <p class="text-xs sm:text-sm text-primary-600 dark:text-primary-400 mb-2">{{ title }}</p>
+    <p
+      class="text-xl sm:text-2xl font-bold text-primary-900 dark:text-primary-100 mb-1 leading-tight"
+    >
       {{ formattedValue }}
     </p>
-    <p v-if="subtitle" class="text-xs text-primary-500 dark:text-primary-400">{{ subtitle }}</p>
+    <p v-if="subtitle" class="text-[11px] sm:text-xs text-primary-500 dark:text-primary-400">
+      {{ subtitle }}
+    </p>
   </div>
 </template>
 

@@ -48,6 +48,27 @@ export default {
           800: '#b08838',
           900: '#8f6e2c',
         },
+        // Fonte grise chaude — utilisée pour les sections "salle de sport" (hero, CTA)
+        iron: {
+          950: '#15110d',
+          900: '#1e1712',
+          800: '#2b221a',
+          700: '#3d2f23',
+          600: '#5a4735',
+        },
+        // Accent rare — braise/fer oxydé, réservé aux moments "record"
+        ember: {
+          500: '#c1512f',
+          600: '#a83f22',
+        },
+        // Blanc craie — texte sur fond iron
+        chalk: {
+          100: '#f3efe6',
+        },
+      },
+      fontFamily: {
+        display: ['"Oswald"', 'sans-serif'],
+        plate: ['"JetBrains Mono"', 'monospace'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

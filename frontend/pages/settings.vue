@@ -9,10 +9,10 @@
         <h1
           class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2"
         >
-          Paramètres
+          {{ t('settings.title') }}
         </h1>
         <p class="text-primary-600 dark:text-primary-400 text-body-relaxed">
-          Configurez votre expérience
+          {{ t('settings.subtitle') }}
         </p>
       </div>
 
@@ -35,14 +35,16 @@
                 />
               </svg>
             </div>
-            Compte
+            {{ t('settings.account') }}
           </h2>
           <div class="space-y-1">
             <NuxtLink
               to="/edit-profile"
               class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors"
             >
-              <span class="text-primary-800 dark:text-primary-200">Modifier mon profil</span>
+              <span class="text-primary-800 dark:text-primary-200">{{
+                t('settings.editProfile')
+              }}</span>
               <svg
                 class="w-5 h-5 text-primary-400"
                 fill="none"
@@ -61,7 +63,9 @@
               to="/subscription"
               class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors"
             >
-              <span class="text-primary-800 dark:text-primary-200">Abonnement</span>
+              <span class="text-primary-800 dark:text-primary-200">{{
+                t('settings.subscription')
+              }}</span>
               <svg
                 class="w-5 h-5 text-primary-400"
                 fill="none"
@@ -89,14 +93,16 @@
             >
               <Icon name="lucide:users" class="w-4 h-4 text-white" />
             </div>
-            Gym Bros
+            {{ t('settings.gymBros') }}
           </h2>
           <div class="space-y-1">
             <NuxtLink
               to="/friends"
               class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors"
             >
-              <span class="text-primary-800 dark:text-primary-200">Liste des Gym Bros</span>
+              <span class="text-primary-800 dark:text-primary-200">{{
+                t('settings.gymBrosList')
+              }}</span>
               <div class="flex items-center gap-2">
                 <span
                   v-if="pendingRequestsCount > 0"
@@ -122,7 +128,67 @@
               to="/feed"
               class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors"
             >
-              <span class="text-primary-800 dark:text-primary-200">Feed d'activite</span>
+              <span class="text-primary-800 dark:text-primary-200">{{
+                t('settings.activityFeed')
+              }}</span>
+              <svg
+                class="w-5 h-5 text-primary-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </NuxtLink>
+          </div>
+        </div>
+
+        <!-- Coaching -->
+        <div class="card-glass">
+          <h2
+            class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-5 flex items-center gap-3"
+          >
+            <div
+              class="w-10 h-10 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center"
+            >
+              <Icon name="lucide:whistle" class="w-4 h-4 text-white" />
+            </div>
+            {{ t('settings.coaching') }}
+          </h2>
+          <div class="space-y-1">
+            <NuxtLink
+              to="/my-coach"
+              class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors"
+            >
+              <span class="text-primary-800 dark:text-primary-200">{{
+                t('settings.myCoach')
+              }}</span>
+              <svg
+                class="w-5 h-5 text-primary-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </NuxtLink>
+            <NuxtLink
+              to="/coaching"
+              class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors"
+            >
+              <span class="text-primary-800 dark:text-primary-200">{{
+                t('settings.coachSpace')
+              }}</span>
               <svg
                 class="w-5 h-5 text-primary-400"
                 fill="none"
@@ -163,9 +229,43 @@
                 />
               </svg>
             </div>
-            Preferences
+            {{ t('settings.preferences') }}
           </h2>
           <div class="space-y-1">
+            <div class="flex items-center justify-between p-3">
+              <div>
+                <span class="text-primary-800 dark:text-primary-200">{{
+                  t('settings.language')
+                }}</span>
+                <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
+                  {{ t('settings.languageHint') }}
+                </p>
+              </div>
+              <div
+                class="flex items-center gap-2 rounded-xl bg-primary-100 p-1 dark:bg-primary-800"
+              >
+                <button
+                  v-for="option in availableLocales"
+                  :key="option.code"
+                  type="button"
+                  class="rounded-lg px-3 py-1.5 text-sm font-medium transition-all flex items-center gap-2"
+                  :class="
+                    locale === option.code
+                      ? 'bg-white text-primary-900 shadow-sm dark:bg-primary-700 dark:text-primary-100'
+                      : 'text-primary-500 dark:text-primary-400'
+                  "
+                  @click="setLocale(option.code)"
+                >
+                  <img
+                    :src="option.flag"
+                    :alt="option.label"
+                    class="w-5 h-5 rounded-sm object-cover"
+                  />
+                  {{ option.label }}
+                </button>
+              </div>
+            </div>
+
             <!-- Theme -->
             <div class="flex items-center justify-between p-3">
               <div class="flex bg-primary-100 dark:bg-primary-800 rounded-xl p-1 w-full">
@@ -186,7 +286,7 @@
                       d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
                     />
                   </svg>
-                  <span class="hidden sm:inline">Clair</span>
+                  <span class="hidden sm:inline">{{ t('settings.themeLight') }}</span>
                 </button>
                 <button
                   @click="setTheme('dark')"
@@ -205,7 +305,7 @@
                       d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
                     />
                   </svg>
-                  <span class="hidden sm:inline">Sombre</span>
+                  <span class="hidden sm:inline">{{ t('settings.themeDark') }}</span>
                 </button>
                 <button
                   @click="setTheme('system')"
@@ -224,14 +324,16 @@
                       d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                     />
                   </svg>
-                  <span class="hidden sm:inline">Auto</span>
+                  <span class="hidden sm:inline">{{ t('settings.themeSystem') }}</span>
                 </button>
               </div>
             </div>
 
             <!-- Unite de poids -->
             <div class="flex items-center justify-between p-3">
-              <span class="text-primary-800 dark:text-primary-200">Unite de poids</span>
+              <span class="text-primary-800 dark:text-primary-200">{{
+                t('settings.weightUnit')
+              }}</span>
               <div class="flex bg-primary-100 dark:bg-primary-800 rounded-xl p-1">
                 <button
                   @click="weightUnit = 'kg'"
@@ -260,7 +362,9 @@
 
             <!-- Timer de repos -->
             <div class="flex items-center justify-between p-3">
-              <span class="text-primary-800 dark:text-primary-200">Timer de repos par defaut</span>
+              <span class="text-primary-800 dark:text-primary-200">{{
+                t('settings.restTimer')
+              }}</span>
               <div class="flex items-center gap-2">
                 <button
                   @click="restTimer = Math.max(30, restTimer - 15)"
@@ -323,7 +427,7 @@
                 />
               </svg>
             </div>
-            Notifications
+            {{ t('settings.notifications') }}
           </h2>
           <div class="space-y-1">
             <div class="flex items-center justify-between p-3">
@@ -454,7 +558,7 @@
                 />
               </svg>
             </div>
-            A propos
+            {{ t('settings.about') }}
           </h2>
           <div class="space-y-1">
             <div class="flex items-center justify-between p-3">
@@ -680,6 +784,7 @@ useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] });
 
 const authStore = useAuthStore();
 const colorMode = useColorMode();
+const { locale, availableLocales, setLocale, t } = useLocale();
 
 const weightUnit = ref('kg');
 const restTimer = ref(90);

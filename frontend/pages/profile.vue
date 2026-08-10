@@ -12,102 +12,193 @@
 
       <template v-else>
         <!-- GymBros requests carousel (top-right, like /friends) -->
-        <div v-if="isOwnProfile && (requestsList.length || requestsLoading)" class="hidden md:flex md:fixed md:bottom-6 md:right-6 z-50 items-center">
-          <button @click="prevRequest" class="mr-2 z-30 w-9 h-9 rounded-full shadow flex items-center justify-center">
+        <div
+          v-if="isOwnProfile && (requestsList.length || requestsLoading)"
+          class="hidden md:flex md:fixed md:bottom-6 md:right-6 z-50 items-center"
+        >
+          <button
+            @click="prevRequest"
+            class="mr-2 z-30 w-9 h-9 rounded-full shadow flex items-center justify-center"
+          >
             <Icon name="lucide:chevron-left" class="w-4 h-4 text-primary-700" />
           </button>
           <div class="relative w-80 max-w-xs rounded-xl shadow-lg p-3 mr-2">
             <div v-if="requestsLoading" class="text-center py-6">
-              <div class="inline-block animate-spin rounded-full h-8 w-8 border-2 border-primary-200 border-t-sand-500"></div>
+              <div
+                class="inline-block animate-spin rounded-full h-8 w-8 border-2 border-primary-200 border-t-sand-500"
+              ></div>
             </div>
             <div v-else-if="requestsList.length">
               <div class="card-glass !p-3 flex items-center gap-3">
-                <NuxtLink :to="`/profile/${requestsList[requestIndex].username || requestsList[requestIndex].id}`" class="flex-shrink-0">
+                <NuxtLink
+                  :to="`/profile/${requestsList[requestIndex].username || requestsList[requestIndex].id}`"
+                  class="flex-shrink-0"
+                >
                   <div
                     class="w-12 h-12 rounded-full overflow-hidden"
-                    :class="requestsList[requestIndex].avatarUrl ? '' : 'bg-gradient-primary flex items-center justify-center'"
+                    :class="
+                      requestsList[requestIndex].avatarUrl
+                        ? ''
+                        : 'bg-gradient-primary flex items-center justify-center'
+                    "
                   >
-                    <img v-if="requestsList[requestIndex].avatarUrl" :src="requestsList[requestIndex].avatarUrl" alt="" class="w-full h-full object-cover" />
-                    <span v-else class="text-white text-sm font-bold">{{ (requestsList[requestIndex].firstName?.charAt(0) || '?').toUpperCase() }}</span>
+                    <img
+                      v-if="requestsList[requestIndex].avatarUrl"
+                      :src="requestsList[requestIndex].avatarUrl"
+                      alt=""
+                      class="w-full h-full object-cover"
+                    />
+                    <span v-else class="text-white text-sm font-bold">{{
+                      (requestsList[requestIndex].firstName?.charAt(0) || '?').toUpperCase()
+                    }}</span>
                   </div>
                 </NuxtLink>
                 <div class="flex-1 min-w-0">
-                  <NuxtLink :to="`/profile/${requestsList[requestIndex].username || requestsList[requestIndex].id}`">
-                    <p class="text-sm font-semibold text-primary-900 dark:text-primary-100 truncate">{{ requestsList[requestIndex].firstName }} {{ requestsList[requestIndex].lastName }}</p>
-                    <p v-if="requestsList[requestIndex].username" class="text-xs text-primary-500 dark:text-primary-400">@{{ requestsList[requestIndex].username }}</p>
+                  <NuxtLink
+                    :to="`/profile/${requestsList[requestIndex].username || requestsList[requestIndex].id}`"
+                  >
+                    <p
+                      class="text-sm font-semibold text-primary-900 dark:text-primary-100 truncate"
+                    >
+                      {{ requestsList[requestIndex].firstName }}
+                      {{ requestsList[requestIndex].lastName }}
+                    </p>
+                    <p
+                      v-if="requestsList[requestIndex].username"
+                      class="text-xs text-primary-500 dark:text-primary-400"
+                    >
+                      @{{ requestsList[requestIndex].username }}
+                    </p>
                   </NuxtLink>
                 </div>
                 <div class="flex items-center gap-2 flex-shrink-0">
                   <button
                     @click.prevent="acceptRequestAction(requestsList[requestIndex])"
                     class="w-9 h-9 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors"
-                    title="Accepter"
+                    :title="t('profile.requests.accept')"
                   >
                     <Icon name="lucide:check" class="w-5 h-5" />
                   </button>
                   <button
                     @click.prevent="rejectRequestAction(requestsList[requestIndex])"
                     class="w-9 h-9 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-500 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
-                    title="Refuser"
+                    :title="t('profile.requests.reject')"
                   >
                     <Icon name="lucide:x" class="w-5 h-5" />
                   </button>
                 </div>
               </div>
             </div>
-            <div v-else class="text-center py-4 text-xs text-primary-500">Aucune demande</div>
+            <div v-else class="text-center py-4 text-xs text-primary-500">
+              {{ t('profile.requests.empty') }}
+            </div>
           </div>
-          <button @click="nextRequest" class="ml-2 z-30 w-9 h-9 rounded-full shadow flex items-center justify-center">
+          <button
+            @click="nextRequest"
+            class="ml-2 z-30 w-9 h-9 rounded-full shadow flex items-center justify-center"
+          >
             <Icon name="lucide:chevron-right" class="w-4 h-4 text-primary-700" />
           </button>
         </div>
         <!-- Username setup prompt (first visit) -->
         <!-- Small-screen GymBros requests (shown above username on mobile) -->
-        <div v-if="isOwnProfile && (requestsList.length || requestsLoading)" class="md:hidden flex items-center justify-center mb-4">
-          <button v-if="requestsList.length > 1" @click.prevent="prevRequest" class="mr-2 z-30 w-8 h-8 rounded-full shadow flex items-center justify-center">
+        <div
+          v-if="isOwnProfile && (requestsList.length || requestsLoading)"
+          class="md:hidden flex items-center justify-center mb-4"
+        >
+          <button
+            v-if="requestsList.length > 1"
+            @click.prevent="prevRequest"
+            class="mr-2 z-30 w-8 h-8 rounded-full shadow flex items-center justify-center"
+          >
             <Icon name="lucide:chevron-left" class="w-4 h-4 text-primary-700" />
           </button>
           <div class="w-full max-w-md rounded-xl shadow-lg p-3">
             <div v-if="requestsLoading" class="text-center py-4">
-              <div class="inline-block animate-spin rounded-full h-8 w-8 border-2 border-primary-200 border-t-sand-500"></div>
+              <div
+                class="inline-block animate-spin rounded-full h-8 w-8 border-2 border-primary-200 border-t-sand-500"
+              ></div>
             </div>
             <div v-else-if="requestsList.length">
               <div class="card-glass !p-3 flex items-center gap-3">
-                <NuxtLink :to="`/profile/${requestsList[requestIndex].username || requestsList[requestIndex].id}`" class="flex-shrink-0">
-                  <div class="w-10 h-10 rounded-full overflow-hidden" :class="requestsList[requestIndex].avatarUrl ? '' : 'bg-gradient-primary flex items-center justify-center'">
-                    <img v-if="requestsList[requestIndex].avatarUrl" :src="requestsList[requestIndex].avatarUrl" alt="" class="w-full h-full object-cover" />
-                    <span v-else class="text-white text-sm font-bold">{{ (requestsList[requestIndex].firstName?.charAt(0) || '?').toUpperCase() }}</span>
+                <NuxtLink
+                  :to="`/profile/${requestsList[requestIndex].username || requestsList[requestIndex].id}`"
+                  class="flex-shrink-0"
+                >
+                  <div
+                    class="w-10 h-10 rounded-full overflow-hidden"
+                    :class="
+                      requestsList[requestIndex].avatarUrl
+                        ? ''
+                        : 'bg-gradient-primary flex items-center justify-center'
+                    "
+                  >
+                    <img
+                      v-if="requestsList[requestIndex].avatarUrl"
+                      :src="requestsList[requestIndex].avatarUrl"
+                      alt=""
+                      class="w-full h-full object-cover"
+                    />
+                    <span v-else class="text-white text-sm font-bold">{{
+                      (requestsList[requestIndex].firstName?.charAt(0) || '?').toUpperCase()
+                    }}</span>
                   </div>
                 </NuxtLink>
                 <div class="flex-1 min-w-0">
-                  <NuxtLink :to="`/profile/${requestsList[requestIndex].username || requestsList[requestIndex].id}`">
-                    <p class="text-sm font-semibold text-primary-900 dark:text-primary-100 truncate">{{ requestsList[requestIndex].firstName }} {{ requestsList[requestIndex].lastName }}</p>
-                    <p v-if="requestsList[requestIndex].username" class="text-xs text-primary-500 dark:text-primary-400">@{{ requestsList[requestIndex].username }}</p>
+                  <NuxtLink
+                    :to="`/profile/${requestsList[requestIndex].username || requestsList[requestIndex].id}`"
+                  >
+                    <p
+                      class="text-sm font-semibold text-primary-900 dark:text-primary-100 truncate"
+                    >
+                      {{ requestsList[requestIndex].firstName }}
+                      {{ requestsList[requestIndex].lastName }}
+                    </p>
+                    <p
+                      v-if="requestsList[requestIndex].username"
+                      class="text-xs text-primary-500 dark:text-primary-400"
+                    >
+                      @{{ requestsList[requestIndex].username }}
+                    </p>
                   </NuxtLink>
                 </div>
                 <div class="flex items-center gap-2 flex-shrink-0">
-                  <button @click.prevent="acceptRequestAction(requestsList[requestIndex])" class="w-9 h-9 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors" title="Accepter">
+                  <button
+                    @click.prevent="acceptRequestAction(requestsList[requestIndex])"
+                    class="w-9 h-9 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors"
+                    :title="t('profile.requests.accept')"
+                  >
                     <Icon name="lucide:check" class="w-5 h-5" />
                   </button>
-                  <button @click.prevent="rejectRequestAction(requestsList[requestIndex])" class="w-9 h-9 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-500 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors" title="Refuser">
+                  <button
+                    @click.prevent="rejectRequestAction(requestsList[requestIndex])"
+                    class="w-9 h-9 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-500 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                    :title="t('profile.requests.reject')"
+                  >
                     <Icon name="lucide:x" class="w-5 h-5" />
                   </button>
                 </div>
               </div>
             </div>
-            <div v-else class="text-center py-4 text-xs text-primary-500">Aucune demande</div>
+            <div v-else class="text-center py-4 text-xs text-primary-500">
+              {{ t('profile.requests.empty') }}
+            </div>
           </div>
-          <button v-if="requestsList.length > 1" @click.prevent="nextRequest" class="ml-2 z-30 w-8 h-8 rounded-full shadow flex items-center justify-center">
+          <button
+            v-if="requestsList.length > 1"
+            @click.prevent="nextRequest"
+            class="ml-2 z-30 w-8 h-8 rounded-full shadow flex items-center justify-center"
+          >
             <Icon name="lucide:chevron-right" class="w-4 h-4 text-primary-700" />
           </button>
         </div>
         <div v-if="showUsernameSetup" class="card-glass !p-6 text-center mb-6 fade-in">
           <Icon name="lucide:at-sign" class="w-12 h-12 mx-auto mb-3 text-sand-500" />
           <h2 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-2">
-            Choisis ton pseudo
+            {{ t('profile.username.title') }}
           </h2>
           <p class="text-sm text-primary-500 dark:text-primary-400 mb-4">
-            C'est ton identifiant unique sur Athletiq
+            {{ t('profile.username.subtitle') }}
           </p>
           <form @submit.prevent="saveUsername" class="space-y-3">
             <div class="relative">
@@ -118,21 +209,23 @@
                 v-model="usernameInput"
                 type="text"
                 class="input-primary pl-8"
-                placeholder="ton_pseudo"
+                :placeholder="t('profile.username.placeholder')"
                 pattern="[a-z0-9_]{3,20}"
                 required
               />
             </div>
             <p v-if="usernameError" class="text-xs text-red-500">{{ usernameError }}</p>
             <p v-if="usernameAvailable === true" class="text-xs text-green-500">
-              Pseudo disponible
+              {{ t('profile.username.available') }}
             </p>
             <button
               type="submit"
               :disabled="!usernameAvailable || usernameLoading"
               class="btn-primary w-full py-3 disabled:opacity-50"
             >
-              {{ usernameLoading ? 'Verification...' : 'Valider' }}
+              {{
+                usernameLoading ? t('profile.username.verifying') : t('profile.username.validate')
+              }}
             </button>
           </form>
         </div>
@@ -285,20 +378,20 @@
                 class="btn-glass px-5 py-2.5 text-sm font-medium inline-flex items-center gap-2"
               >
                 <Icon name="lucide:edit-3" class="w-4 h-4" />
-                Modifier
+                {{ t('profile.actions.edit') }}
               </NuxtLink>
               <button
                 v-if="profileData?.username"
                 @click="showQrModal = true"
                 class="btn-glass px-4 py-2.5 text-sm font-medium inline-flex items-center gap-2"
-                title="Mon QR Code"
+                :title="t('profile.actions.qr')"
               >
                 <Icon name="lucide:qr-code" class="w-4 h-4" />
               </button>
               <NuxtLink
                 to="/settings"
                 class="btn-glass px-4 py-2.5 text-sm font-medium inline-flex items-center gap-2"
-                title="Parametres"
+                :title="t('profile.actions.settings')"
               >
                 <Icon name="lucide:settings" class="w-4 h-4" />
               </NuxtLink>
@@ -311,7 +404,7 @@
                   disabled
                 >
                   <Icon name="lucide:clock" class="w-4 h-4" />
-                  Demande envoyée
+                  {{ t('profile.request.pendingLabel') }}
                 </button>
                 <button
                   v-else-if="profileData?.isFriend"
@@ -319,7 +412,7 @@
                   class="btn-danger px-4 py-2.5 text-sm font-medium inline-flex items-center gap-2"
                 >
                   <Icon name="lucide:user-minus" class="w-4 h-4" />
-                  Supprimer
+                  {{ t('profile.actions.remove') }}
                 </button>
                 <button
                   v-else
@@ -327,7 +420,7 @@
                   class="btn-primary px-4 py-2.5 text-sm font-medium inline-flex items-center gap-2"
                 >
                   <Icon name="lucide:user-plus" class="w-4 h-4" />
-                  Ajouter
+                  {{ t('profile.actions.add') }}
                 </button>
                 <!-- Removed extra Workouts / Gym Bros buttons: counters above now link to the right pages -->
               </div>
@@ -378,7 +471,13 @@
           <!-- Posts Grid -->
           <div v-if="!profileData?.restricted && activeTab === 'posts'" class="slide-up">
             <div v-if="posts.length > 0" class="grid grid-cols-3 gap-4">
-              <div v-for="post in posts" :key="post.id" class="relative rounded-lg overflow-hidden bg-primary-900/40" @click="openPostModal(post)" style="cursor:pointer;">
+              <div
+                v-for="post in posts"
+                :key="post.id"
+                class="relative rounded-lg overflow-hidden bg-primary-900/40"
+                @click="openPostModal(post)"
+                style="cursor: pointer"
+              >
                 <!-- Three-dots menu (top-right) -->
                 <div class="absolute top-2 right-2 w-5 h-5">
                   <button
@@ -388,12 +487,28 @@
                   >
                     <Icon name="lucide:more-vertical" class="w-3 h-3" />
                   </button>
-                  <div v-if="openMenuPostId === post.id" class="absolute right-0 top-full mt-1 w-10 rounded-lg shadow-lg bg-white dark:bg-primary-900 border border-primary-200 dark:border-primary-800 overflow-hidden z-40">
-                    <button @click.stop.prevent="sharePost(post)" class="w-full py-2 flex items-center justify-center gap-2 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors" title="Partager">
+                  <div
+                    v-if="openMenuPostId === post.id"
+                    class="absolute right-0 top-full mt-1 w-10 rounded-lg shadow-lg bg-white dark:bg-primary-900 border border-primary-200 dark:border-primary-800 overflow-hidden z-40"
+                  >
+                    <button
+                      @click.stop.prevent="sharePost(post)"
+                      class="w-full py-2 flex items-center justify-center gap-2 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors"
+                      title="Partager"
+                    >
                       <Icon name="lucide:share-2" class="w-4 h-4" />
                       <span class="sr-only">Partager</span>
                     </button>
-                    <button v-if="isOwnProfile" @click.stop.prevent="(async ()=>{ await deletePostAction(post.id) })()" class="w-full py-2 flex items-center justify-center gap-2 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors" title="Supprimer">
+                    <button
+                      v-if="isOwnProfile"
+                      @click.stop.prevent="
+                        (async () => {
+                          await deletePostAction(post.id);
+                        })()
+                      "
+                      class="w-full py-2 flex items-center justify-center gap-2 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors"
+                      title="Supprimer"
+                    >
                       <Icon name="lucide:trash-2" class="w-4 h-4" />
                       <span class="sr-only">Supprimer</span>
                     </button>
@@ -401,9 +516,20 @@
                 </div>
                 <div class="aspect-square w-full h-full">
                   <template v-if="post.type === 'PHOTO'">
-                    <img v-if="post.data?.photoUrl" :src="post.data.photoUrl" class="w-full h-full object-cover" />
-                    <img v-else-if="Array.isArray(post.data?.photos)" :src="post.data.photos[0]" class="w-full h-full object-cover" />
-                    <div v-else-if="post.data?.beforeUrl && post.data?.afterUrl" class="w-full h-full grid grid-cols-2">
+                    <img
+                      v-if="post.data?.photoUrl"
+                      :src="post.data.photoUrl"
+                      class="w-full h-full object-cover"
+                    />
+                    <img
+                      v-else-if="Array.isArray(post.data?.photos)"
+                      :src="post.data.photos[0]"
+                      class="w-full h-full object-cover"
+                    />
+                    <div
+                      v-else-if="post.data?.beforeUrl && post.data?.afterUrl"
+                      class="w-full h-full grid grid-cols-2"
+                    >
                       <img :src="post.data.beforeUrl" class="w-full h-full object-cover" />
                       <img :src="post.data.afterUrl" class="w-full h-full object-cover" />
                     </div>
@@ -411,13 +537,23 @@
                   <template v-else-if="post.type === 'TIMELAPSE'">
                     <img :src="post.data?.timelapseUrl" class="w-full h-full object-cover" />
                   </template>
-                  <div v-if="Array.isArray(post.data?.photos) && post.data.photos.length > 1" class="absolute top-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded">{{ post.data.photos.length }}</div>
+                  <div
+                    v-if="Array.isArray(post.data?.photos) && post.data.photos.length > 1"
+                    class="absolute top-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded"
+                  >
+                    {{ post.data.photos.length }}
+                  </div>
                 </div>
               </div>
             </div>
             <div v-else class="text-center py-16">
-              <Icon name="lucide:activity" class="w-16 h-16 mx-auto mb-4 text-primary-300 dark:text-primary-600" />
-              <p class="text-primary-500 dark:text-primary-400 text-sm">Aucun post pour le moment</p>
+              <Icon
+                name="lucide:activity"
+                class="w-16 h-16 mx-auto mb-4 text-primary-300 dark:text-primary-600"
+              />
+              <p class="text-primary-500 dark:text-primary-400 text-sm">
+                Aucun post pour le moment
+              </p>
             </div>
           </div>
 
@@ -439,14 +575,14 @@
                 <Icon name="lucide:git-compare" class="w-3.5 h-3.5" />
                 Avant / Apres
               </button>
-                        <button
-                          v-if="isOwnProfile"
-                          @click="showPhotoComposer = true"
-                          class="btn-glass px-3 py-2 text-xs font-medium inline-flex items-center gap-1.5 flex-1 justify-center"
-                        >
-                          <Icon name="lucide:pen" class="w-3.5 h-3.5" />
-                          Nouveau post
-                        </button>
+              <button
+                v-if="isOwnProfile"
+                @click="showPhotoComposer = true"
+                class="btn-glass px-3 py-2 text-xs font-medium inline-flex items-center gap-1.5 flex-1 justify-center"
+              >
+                <Icon name="lucide:pen" class="w-3.5 h-3.5" />
+                Nouveau post
+              </button>
             </div>
 
             <!-- Photos grid with add button -->
@@ -457,7 +593,9 @@
                 class="aspect-square rounded-lg border-2 border-dashed border-primary-300 dark:border-primary-600 flex flex-col items-center justify-center cursor-pointer hover:border-sand-500 dark:hover:border-sand-400 hover:bg-sand-500/5 transition-colors"
               >
                 <Icon name="lucide:plus" class="w-6 h-6 text-primary-400 dark:text-primary-500" />
-                <span class="text-[10px] text-primary-400 dark:text-primary-500 mt-1">Ajouter</span>
+                <span class="text-[10px] text-primary-400 dark:text-primary-500 mt-1">{{
+                  t('profile.photos.add')
+                }}</span>
               </div>
 
               <!-- Photo items -->
@@ -482,7 +620,7 @@
                 <button
                   @click.stop="publishPhoto(photo)"
                   class="absolute top-2 right-2 w-8 h-8 bg-white/80 dark:bg-primary-800/80 rounded-full flex items-center justify-center text-primary-900 dark:text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                  title="Publier"
+                  :title="t('profile.photos.publish')"
                 >
                   <Icon name="lucide:upload" class="w-4 h-4" />
                 </button>
@@ -492,7 +630,7 @@
             <!-- Empty state (no photos at all) -->
             <div v-if="photos.length === 0" class="text-center py-8">
               <p class="text-primary-400 dark:text-primary-500 text-xs">
-                Prends des photos apres tes workouts pour suivre ta transformation
+                {{ t('profile.photos.empty') }}
               </p>
             </div>
           </div>
@@ -520,7 +658,7 @@
               <Icon name="lucide:x" class="w-5 h-5" />
             </button>
             <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-4">
-              Mon QR Code
+              {{ t('profile.actions.qr') }}
             </h3>
             <div class="flex justify-center mb-4">
               <div class="bg-white p-3 rounded-xl">
@@ -542,7 +680,7 @@
               class="w-full py-2.5 rounded-xl bg-gradient-primary text-white text-sm font-semibold inline-flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
             >
               <Icon name="lucide:share-2" class="w-4 h-4" />
-              Partager
+              {{ t('profile.actions.share') }}
             </button>
           </div>
         </div>
@@ -696,7 +834,7 @@
                       @click.prevent="navigateTo(`/profile/${g.username || g.id}`)"
                       class="shrink-0 rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-primary-700 shadow-sm transition hover:bg-primary-950 hover:text-white dark:bg-primary-800 dark:text-primary-100 dark:hover:bg-primary-700 dark:hover:text-white"
                     >
-                      Voir
+                      {{ t('common.view') }}
                     </button>
                   </div>
                 </div>
@@ -850,19 +988,21 @@
               <Icon name="lucide:x" class="w-5 h-5" />
             </button>
             <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-4">
-              Ajouter une photo
+              {{ t('profile.upload.title') }}
             </h3>
             <div class="space-y-4">
               <div>
                 <label
                   class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1.5"
-                  >Workout associe</label
+                  >{{ t('profile.upload.workoutLabel') }}</label
                 >
                 <select
                   v-model="uploadWorkoutId"
                   class="w-full px-3 py-2.5 rounded-xl border border-primary-200 dark:border-primary-700 bg-white/60 dark:bg-primary-800/60 text-sm text-primary-900 dark:text-primary-100 focus:outline-none focus:ring-2 focus:ring-sand-500/50"
                 >
-                  <option :value="null" disabled>Selectionner...</option>
+                  <option :value="null" disabled>
+                    {{ t('profile.upload.selectPlaceholder') }}
+                  </option>
                   <option v-for="w in completedWorkouts" :key="w.id" :value="w.id">
                     {{ w.name }} — {{ formatDate(w.completedAt || w.createdAt) }}
                   </option>
@@ -876,13 +1016,15 @@
                   v-model="uploadIsPrimary"
                   class="w-4 h-4 rounded border-primary-300 dark:border-primary-600 text-sand-600 focus:ring-sand-600"
                 />
-                Photo principale (timelapse)
+                {{ t('profile.upload.primary') }}
               </label>
               <label
                 class="btn-primary w-full cursor-pointer inline-flex items-center justify-center gap-2"
               >
                 <Icon name="lucide:camera" class="w-4 h-4" />
-                <span>{{ uploadingPhoto ? 'Upload...' : 'Choisir une photo' }}</span>
+                <span>{{
+                  uploadingPhoto ? t('profile.upload.uploading') : t('profile.upload.choose')
+                }}</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -906,12 +1048,24 @@
           @click="showPhotoComposer = false"
         >
           <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-          <div class="relative bg-white dark:bg-primary-900 rounded-2xl p-6 max-w-lg w-full shadow-xl" @click.stop>
-            <button @click="showPhotoComposer = false" class="absolute top-3 right-3 w-8 h-8 rounded-lg flex items-center justify-center text-primary-400 hover:text-primary-600 hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors">
+          <div
+            class="relative bg-white dark:bg-primary-900 rounded-2xl p-6 max-w-lg w-full shadow-xl"
+            @click.stop
+          >
+            <button
+              @click="showPhotoComposer = false"
+              class="absolute top-3 right-3 w-8 h-8 rounded-lg flex items-center justify-center text-primary-400 hover:text-primary-600 hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors"
+            >
               <Icon name="lucide:x" class="w-5 h-5" />
             </button>
-            <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-4">Nouveau post</h3>
-            <textarea v-model="composerCaption" placeholder="Ajouter une description (optionnel)" class="w-full p-3 rounded-lg border border-primary-200 dark:border-primary-700 bg-white/60 dark:bg-primary-800/60 text-sm text-primary-900 dark:text-primary-100 mb-3"></textarea>
+            <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-4">
+              {{ t('profile.photos.newPost') }}
+            </h3>
+            <textarea
+              v-model="composerCaption"
+              :placeholder="t('profile.composer.placeholder')"
+              class="w-full p-3 rounded-lg border border-primary-200 dark:border-primary-700 bg-white/60 dark:bg-primary-800/60 text-sm text-primary-900 dark:text-primary-100 mb-3"
+            ></textarea>
 
             <!-- Composer limited to Photos only per UX request -->
 
@@ -919,7 +1073,10 @@
               <label v-for="photo in photos" :key="photo.id" class="relative cursor-pointer">
                 <input type="checkbox" :value="photo.id" v-model="selectedForPost" class="hidden" />
                 <img :src="photo.photoUrl" class="w-full h-24 object-cover rounded-md" />
-                <div v-if="selectedForPost.includes(photo.id)" class="absolute inset-0 bg-black/30 flex items-center justify-center text-white">
+                <div
+                  v-if="selectedForPost.includes(photo.id)"
+                  class="absolute inset-0 bg-black/30 flex items-center justify-center text-white"
+                >
                   <Icon name="lucide:check" class="w-6 h-6" />
                 </div>
               </label>
@@ -927,17 +1084,45 @@
 
             <div v-if="selectedForPost.length > 1" class="flex items-center gap-3 mb-3">
               <div class="text-sm text-primary-600">Présentation :</div>
-              <select v-model="composerLayout" class="rounded-md border border-primary-200 dark:border-primary-700 bg-white/60 dark:bg-primary-800/60 px-2 py-1 text-sm">
+              <select
+                v-model="composerLayout"
+                class="rounded-md border border-primary-200 dark:border-primary-700 bg-white/60 dark:bg-primary-800/60 px-2 py-1 text-sm"
+              >
                 <option value="carousel">Carrousel</option>
                 <option value="gallery">Galerie</option>
               </select>
             </div>
 
             <div class="flex justify-end gap-2">
-              <button @click="showPhotoComposer = false" class="btn-glass px-4 py-2">Annuler</button>
-              <button v-if="composerMode === 'photos'" @click="publishSelectedPhotos" class="btn-primary px-4 py-2">Publier</button>
-              <button v-if="composerMode === 'timelapse'" @click="generateAndPublishTimelapse" :disabled="composerLoading" class="btn-primary px-4 py-2">{{ composerLoading ? 'Génération...' : 'Générer et publier timelapse' }}</button>
-              <button v-if="composerMode === 'beforeafter'" @click="publishBeforeAfterFromComposer" class="btn-primary px-4 py-2">Publier Avant/Après</button>
+              <button @click="showPhotoComposer = false" class="btn-glass px-4 py-2">
+                {{ t('common.cancel') }}
+              </button>
+              <button
+                v-if="composerMode === 'photos'"
+                @click="publishSelectedPhotos"
+                class="btn-primary px-4 py-2"
+              >
+                {{ t('common.publish') }}
+              </button>
+              <button
+                v-if="composerMode === 'timelapse'"
+                @click="generateAndPublishTimelapse"
+                :disabled="composerLoading"
+                class="btn-primary px-4 py-2"
+              >
+                {{
+                  composerLoading
+                    ? t('profile.composer.generating')
+                    : t('profile.composer.generatePublish')
+                }}
+              </button>
+              <button
+                v-if="composerMode === 'beforeafter'"
+                @click="publishBeforeAfterFromComposer"
+                class="btn-primary px-4 py-2"
+              >
+                {{ t('profile.composer.publishBeforeAfter') }}
+              </button>
             </div>
           </div>
         </div>
@@ -947,37 +1132,73 @@
     <!-- Edit Post Modal -->
     <Teleport to="body">
       <Transition name="modal">
-        <div v-if="showEditModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4" @click="showEditModal = false">
+        <div
+          v-if="showEditModal"
+          class="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          @click="showEditModal = false"
+        >
           <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-          <div class="relative bg-white dark:bg-primary-900 rounded-2xl p-6 max-w-md w-full shadow-xl" @click.stop>
-            <button @click="showEditModal = false" class="absolute top-3 right-3 w-8 h-8 rounded-lg flex items-center justify-center text-primary-400 hover:text-primary-600 hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors">
+          <div
+            class="relative bg-white dark:bg-primary-900 rounded-2xl p-6 max-w-md w-full shadow-xl"
+            @click.stop
+          >
+            <button
+              @click="showEditModal = false"
+              class="absolute top-3 right-3 w-8 h-8 rounded-lg flex items-center justify-center text-primary-400 hover:text-primary-600 hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors"
+            >
               <Icon name="lucide:x" class="w-5 h-5" />
             </button>
-            <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-4">Modifier le post</h3>
-            <textarea v-model="editCaption" placeholder="Texte du post" class="w-full p-3 rounded-lg border border-primary-200 dark:border-primary-700 bg-white/60 dark:bg-primary-800/60 text-sm text-primary-900 dark:text-primary-100 mb-3"></textarea>
-              <div v-if="editingPostId && posts.find(p => p.id === editingPostId)?.data" class="mb-3">
-                <div class="text-sm text-primary-600 mb-2">Sélectionner depuis mes photos</div>
-                <div class="grid grid-cols-4 gap-2 max-h-56 overflow-auto mb-2">
-                  <label v-for="photo in photos" :key="photo.id" class="relative cursor-pointer">
-                    <input type="checkbox" :value="photo.id" v-model="editSelectedPhotos" class="hidden" />
-                    <img :src="photo.photoUrl" class="w-full h-20 object-cover rounded-md" />
-                    <div v-if="editSelectedPhotos.includes(photo.id)" class="absolute inset-0 bg-black/30 flex items-center justify-center text-white">
-                      <Icon name="lucide:check" class="w-6 h-6" />
-                    </div>
-                  </label>
-                </div>
-                  <div class="text-xs text-primary-500 mb-2">Ou garde l_media actuelle si aucune sélection</div>
-                  <div v-if="editSelectedPhotos.length > 1" class="flex items-center gap-3 mb-2">
-                    <div class="text-sm text-primary-600">Présentation :</div>
-                    <select v-model="editLayout" class="rounded-md border border-primary-200 dark:border-primary-700 bg-white/60 dark:bg-primary-800/60 px-2 py-1 text-sm">
-                      <option value="carousel">Carrousel</option>
-                      <option value="gallery">Galerie</option>
-                    </select>
-                  </div>
+            <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-4">
+              {{ t('profile.editPost.title') }}
+            </h3>
+            <textarea
+              v-model="editCaption"
+              :placeholder="t('profile.editPost.captionPlaceholder')"
+              class="w-full p-3 rounded-lg border border-primary-200 dark:border-primary-700 bg-white/60 dark:bg-primary-800/60 text-sm text-primary-900 dark:text-primary-100 mb-3"
+            ></textarea>
+            <div
+              v-if="editingPostId && posts.find((p) => p.id === editingPostId)?.data"
+              class="mb-3"
+            >
+              <div class="text-sm text-primary-600 mb-2">
+                {{ t('profile.editPost.selectFromPhotos') }}
               </div>
+              <div class="grid grid-cols-4 gap-2 max-h-56 overflow-auto mb-2">
+                <label v-for="photo in photos" :key="photo.id" class="relative cursor-pointer">
+                  <input
+                    type="checkbox"
+                    :value="photo.id"
+                    v-model="editSelectedPhotos"
+                    class="hidden"
+                  />
+                  <img :src="photo.photoUrl" class="w-full h-20 object-cover rounded-md" />
+                  <div
+                    v-if="editSelectedPhotos.includes(photo.id)"
+                    class="absolute inset-0 bg-black/30 flex items-center justify-center text-white"
+                  >
+                    <Icon name="lucide:check" class="w-6 h-6" />
+                  </div>
+                </label>
+              </div>
+              <div class="text-xs text-primary-500 mb-2">{{ t('profile.editPost.keepMedia') }}</div>
+              <div v-if="editSelectedPhotos.length > 1" class="flex items-center gap-3 mb-2">
+                <div class="text-sm text-primary-600">Présentation :</div>
+                <select
+                  v-model="editLayout"
+                  class="rounded-md border border-primary-200 dark:border-primary-700 bg-white/60 dark:bg-primary-800/60 px-2 py-1 text-sm"
+                >
+                  <option value="carousel">Carrousel</option>
+                  <option value="gallery">Galerie</option>
+                </select>
+              </div>
+            </div>
             <div class="flex justify-end gap-2">
-              <button @click="showEditModal = false" class="btn-glass px-4 py-2">Annuler</button>
-              <button @click="saveEdit" class="btn-primary px-4 py-2">Enregistrer</button>
+              <button @click="showEditModal = false" class="btn-glass px-4 py-2">
+                {{ t('common.cancel') }}
+              </button>
+              <button @click="saveEdit" class="btn-primary px-4 py-2">
+                {{ t('common.save') }}
+              </button>
             </div>
           </div>
         </div>
@@ -1199,32 +1420,62 @@
     <!-- Post viewer modal (full-size) -->
     <Teleport to="body">
       <Transition name="modal">
-        <div v-if="showPostModal" class="fixed inset-0 z-[110] flex items-center justify-center p-4" @click="closePostModal">
+        <div
+          v-if="showPostModal"
+          class="fixed inset-0 z-[110] flex items-center justify-center p-4"
+          @click="closePostModal"
+        >
           <div class="absolute inset-0 bg-black/80"></div>
-          <div class="relative max-w-3xl w-full rounded-2xl bg-white dark:bg-primary-900 shadow-xl p-4" @click.stop>
-            <button @click="closePostModal" class="absolute top-4 right-4 w-10 h-10 rounded-lg flex items-center justify-center text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-800">
+          <div
+            class="relative max-w-3xl w-full rounded-2xl bg-white dark:bg-primary-900 shadow-xl p-4"
+            @click.stop
+          >
+            <button
+              @click="closePostModal"
+              class="absolute top-4 right-4 w-10 h-10 rounded-lg flex items-center justify-center text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-800"
+            >
               <Icon name="lucide:x" class="w-5 h-5" />
             </button>
-                <div class="flex gap-4">
+            <div class="flex gap-4">
               <div class="flex-1">
-                <div class="w-full bg-black rounded-lg overflow-hidden flex items-center justify-center">
+                <div
+                  class="w-full bg-black rounded-lg overflow-hidden flex items-center justify-center"
+                >
                   <template v-if="selectedPost?.type === 'PHOTO'">
-                    <div v-if="selectedPost.data?.photoUrl" class="w-full h-full flex items-center justify-center">
+                    <div
+                      v-if="selectedPost.data?.photoUrl"
+                      class="w-full h-full flex items-center justify-center"
+                    >
                       <img :src="selectedPost.data.photoUrl" class="w-full h-full object-contain" />
                     </div>
                     <div v-else-if="Array.isArray(selectedPost.data?.photos)">
                       <div class="relative w-full h-full">
-                        <img :src="selectedPost.data.photos[(carouselIndexMap[selectedPost.id] ?? 0)]" class="w-full h-full object-contain" />
-                        <button @click="prevCarousel(selectedPost.id, selectedPost.data.photos.length)" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/60 rounded-full flex items-center justify-center z-20">
+                        <img
+                          :src="selectedPost.data.photos[carouselIndexMap[selectedPost.id] ?? 0]"
+                          class="w-full h-full object-contain"
+                        />
+                        <button
+                          @click="prevCarousel(selectedPost.id, selectedPost.data.photos.length)"
+                          class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/60 rounded-full flex items-center justify-center z-20"
+                        >
                           <Icon name="lucide:chevron-left" class="w-5 h-5" />
                         </button>
-                        <button @click="nextCarousel(selectedPost.id, selectedPost.data.photos.length)" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/60 rounded-full flex items-center justify-center z-20">
+                        <button
+                          @click="nextCarousel(selectedPost.id, selectedPost.data.photos.length)"
+                          class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/60 rounded-full flex items-center justify-center z-20"
+                        >
                           <Icon name="lucide:chevron-right" class="w-5 h-5" />
                         </button>
                       </div>
                     </div>
-                    <div v-else-if="selectedPost.data?.beforeUrl && selectedPost.data?.afterUrl" class="w-full h-full grid grid-cols-2 gap-1">
-                      <img :src="selectedPost.data.beforeUrl" class="w-full h-full object-contain" />
+                    <div
+                      v-else-if="selectedPost.data?.beforeUrl && selectedPost.data?.afterUrl"
+                      class="w-full h-full grid grid-cols-2 gap-1"
+                    >
+                      <img
+                        :src="selectedPost.data.beforeUrl"
+                        class="w-full h-full object-contain"
+                      />
                       <img :src="selectedPost.data.afterUrl" class="w-full h-full object-contain" />
                     </div>
                   </template>
@@ -1235,24 +1486,64 @@
                       class="w-full h-full object-contain"
                       @error="modalImageError = true"
                     />
-                    <video v-else controls :src="selectedPost.data?.timelapseUrl" class="w-full h-full object-contain" />
+                    <video
+                      v-else
+                      controls
+                      :src="selectedPost.data?.timelapseUrl"
+                      class="w-full h-full object-contain"
+                    />
                   </template>
                 </div>
               </div>
               <div class="w-80 p-3 border-l border-primary-200/60 dark:border-primary-800/60">
                 <div class="flex items-center gap-3 mb-2">
-                  <div class="w-10 h-10 rounded-lg overflow-hidden bg-gradient-primary flex items-center justify-center">
-                    <img v-if="selectedPost?.user?.avatarUrl" :src="selectedPost.user.avatarUrl" class="w-full h-full object-cover" />
+                  <div
+                    class="w-10 h-10 rounded-lg overflow-hidden bg-gradient-primary flex items-center justify-center"
+                  >
+                    <img
+                      v-if="selectedPost?.user?.avatarUrl"
+                      :src="selectedPost.user.avatarUrl"
+                      class="w-full h-full object-cover"
+                    />
                     <Icon v-else name="lucide:user" class="w-5 h-5 text-white" />
                   </div>
                   <div class="min-w-0">
-                    <div class="font-semibold text-primary-900 dark:text-white truncate">@{{ selectedPost?.user?.username || selectedPost?.user?.firstName || selectedPost?.userName || selectedPost?.username || selectedPost?.userId || 'utilisateur' }}</div>
-                    <div class="text-xs text-primary-500">{{ timeAgo(selectedPost?.createdAt) }}</div>
+                    <div class="font-semibold text-primary-900 dark:text-white truncate">
+                      @{{
+                        selectedPost?.user?.username ||
+                        selectedPost?.user?.firstName ||
+                        selectedPost?.userName ||
+                        selectedPost?.username ||
+                        selectedPost?.userId ||
+                        'utilisateur'
+                      }}
+                    </div>
+                    <div class="text-xs text-primary-500">
+                      {{ timeAgo(selectedPost?.createdAt) }}
+                    </div>
                   </div>
                 </div>
-                <p v-if="selectedPost?.data?.caption" class="text-sm text-primary-700 dark:text-primary-300 mb-2">{{ selectedPost.data.caption }}</p>
-                <div v-if="selectedPost?.data?.photos && selectedPost.data.photos.length" class="flex gap-2 items-center">
-                  <span v-for="(p, i) in selectedPost.data.photos" :key="i" @click="carouselIndexMap[selectedPost.id] = i" :class="['w-2 h-2 rounded-full cursor-pointer', (carouselIndexMap[selectedPost.id] ?? 0) === i ? 'bg-primary-700' : 'bg-primary-200']"></span>
+                <p
+                  v-if="selectedPost?.data?.caption"
+                  class="text-sm text-primary-700 dark:text-primary-300 mb-2"
+                >
+                  {{ selectedPost.data.caption }}
+                </p>
+                <div
+                  v-if="selectedPost?.data?.photos && selectedPost.data.photos.length"
+                  class="flex gap-2 items-center"
+                >
+                  <span
+                    v-for="(p, i) in selectedPost.data.photos"
+                    :key="i"
+                    @click="carouselIndexMap[selectedPost.id] = i"
+                    :class="[
+                      'w-2 h-2 rounded-full cursor-pointer',
+                      (carouselIndexMap[selectedPost.id] ?? 0) === i
+                        ? 'bg-primary-700'
+                        : 'bg-primary-200',
+                    ]"
+                  ></span>
                 </div>
               </div>
             </div>
@@ -1280,8 +1571,21 @@ definePageMeta({
 useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] });
 
 const authStore = useAuthStore();
-const { getMyProfile, getProfile, updateProfile, checkUsername, sendFriendRequest, removeFriend, createPost, editPost, deletePost, getRequests, acceptRequest, rejectRequest } =
-  useSocialApi();
+const { t } = useLocale();
+const {
+  getMyProfile,
+  getProfile,
+  updateProfile,
+  checkUsername,
+  sendFriendRequest,
+  removeFriend,
+  createPost,
+  editPost,
+  deletePost,
+  getRequests,
+  acceptRequest,
+  rejectRequest,
+} = useSocialApi();
 const bodyApi = useBodyApi();
 const { getRecentPhotos } = bodyApi;
 const toast = useToast();
@@ -1313,7 +1617,8 @@ const loadRequests = async () => {
 
 const prevRequest = () => {
   if (!requestsList.value.length) return;
-  requestIndex.value = (requestIndex.value - 1 + requestsList.value.length) % requestsList.value.length;
+  requestIndex.value =
+    (requestIndex.value - 1 + requestsList.value.length) % requestsList.value.length;
 };
 const nextRequest = () => {
   if (!requestsList.value.length) return;
@@ -1330,7 +1635,7 @@ const acceptRequestAction = async (req: any) => {
     toast.success('Demande acceptée');
   } catch (e) {
     console.error(e);
-    toast.error('Impossible d\'accepter la demande');
+    toast.error("Impossible d'accepter la demande");
   }
 };
 
@@ -1558,7 +1863,8 @@ const nextCarousel = (postId: number, count: number) => {
 
 const prevCarousel = (postId: number, count: number) => {
   ensureCarouselIndex(postId);
-  carouselIndexMap.value[postId] = (carouselIndexMap.value[postId] - 1 + Math.max(1, count)) % Math.max(1, count);
+  carouselIndexMap.value[postId] =
+    (carouselIndexMap.value[postId] - 1 + Math.max(1, count)) % Math.max(1, count);
 };
 
 // Post viewer modal
@@ -1594,7 +1900,11 @@ const publishSelectedPhotos = async () => {
     const newPost = {
       id: created.id,
       type: 'PHOTO',
-      data: { photos: photosUrls, caption: composerCaption.value || null, ...(photosUrls.length > 1 ? { layout: composerLayout.value } : {}) },
+      data: {
+        photos: photosUrls,
+        caption: composerCaption.value || null,
+        ...(photosUrls.length > 1 ? { layout: composerLayout.value } : {}),
+      },
       reactions: 0,
       createdAt: created.createdAt || new Date().toISOString(),
       user: {
@@ -1613,13 +1923,14 @@ const publishSelectedPhotos = async () => {
     selectedForPost.value = [];
   } catch (e) {
     console.error(e);
-    toast.error("Impossible de publier le post");
+    toast.error('Impossible de publier le post');
   }
 };
 
 // Generate timelapse from selected photos and publish
 const generateAndPublishTimelapse = async () => {
-  if (selectedForPost.value.length < 2) return toast.error('Selectionne au moins deux photos pour un timelapse');
+  if (selectedForPost.value.length < 2)
+    return toast.error('Selectionne au moins deux photos pour un timelapse');
   const images = photos.value
     .filter((p: any) => selectedForPost.value.includes(p.id))
     .map((p: any) => p.photoUrl);
@@ -1629,11 +1940,22 @@ const generateAndPublishTimelapse = async () => {
     const res: any = await apiFetch('/timelapse/generate', { method: 'POST', body: { images } });
     const url = res?.url || res?.secure_url || res?.secureUrl || res?.secure_url;
     if (!url) throw new Error('No URL');
-    const created: any = await createPost({ type: 'TIMELAPSE', data: { timelapseUrl: url, photoCount: images.length, caption: composerCaption.value || null } });
+    const created: any = await createPost({
+      type: 'TIMELAPSE',
+      data: {
+        timelapseUrl: url,
+        photoCount: images.length,
+        caption: composerCaption.value || null,
+      },
+    });
     const newPost = {
       id: created.id,
       type: 'TIMELAPSE',
-      data: { timelapseUrl: url, photoCount: images.length, caption: composerCaption.value || null },
+      data: {
+        timelapseUrl: url,
+        photoCount: images.length,
+        caption: composerCaption.value || null,
+      },
       reactions: 0,
       createdAt: created.createdAt || new Date().toISOString(),
       user: {
@@ -1665,11 +1987,22 @@ const publishBeforeAfterFromComposer = async () => {
   const before = selected[0];
   const after = selected[selected.length - 1];
   try {
-    const created: any = await createPost({ type: 'PHOTO', data: { beforeUrl: before.photoUrl, afterUrl: after.photoUrl, caption: composerCaption.value || null } });
+    const created: any = await createPost({
+      type: 'PHOTO',
+      data: {
+        beforeUrl: before.photoUrl,
+        afterUrl: after.photoUrl,
+        caption: composerCaption.value || null,
+      },
+    });
     const newPost = {
       id: created.id,
       type: 'PHOTO',
-      data: { beforeUrl: before.photoUrl, afterUrl: after.photoUrl, caption: composerCaption.value || null },
+      data: {
+        beforeUrl: before.photoUrl,
+        afterUrl: after.photoUrl,
+        caption: composerCaption.value || null,
+      },
       reactions: 0,
       createdAt: created.createdAt || new Date().toISOString(),
       user: {
@@ -1777,7 +2110,7 @@ const saveEdit = async () => {
     toast.success('Post mis à jour');
   } catch (e) {
     console.error(e);
-    toast.error("Impossible de modifier le post");
+    toast.error('Impossible de modifier le post');
   }
 };
 
@@ -1803,7 +2136,7 @@ const onEditFileChange = async (e: Event) => {
     }
   } catch (err) {
     console.error(err);
-    toast.error('Erreur lors de l\'upload');
+    toast.error("Erreur lors de l'upload");
   }
 };
 
@@ -1893,7 +2226,10 @@ const publishTimelapse = async () => {
     const res: any = await apiFetch('/timelapse/generate', { method: 'POST', body: { images } });
     const url = res?.url || res?.secure_url || res?.secureUrl || res?.secure_url;
     if (!url) throw new Error('No URL');
-    const created: any = await createPost({ type: 'TIMELAPSE', data: { timelapseUrl: url, photoCount: images.length } });
+    const created: any = await createPost({
+      type: 'TIMELAPSE',
+      data: { timelapseUrl: url, photoCount: images.length },
+    });
     const newPost = {
       id: created.id,
       type: 'TIMELAPSE',
@@ -1982,7 +2318,10 @@ const publishBeforeAfter = async () => {
   const before = primaryPhotos.value[beforePhotoIndex.value];
   const after = primaryPhotos.value[afterPhotoIndex.value];
   try {
-    const created: any = await createPost({ type: 'PHOTO', data: { beforeUrl: before.photoUrl, afterUrl: after.photoUrl } });
+    const created: any = await createPost({
+      type: 'PHOTO',
+      data: { beforeUrl: before.photoUrl, afterUrl: after.photoUrl },
+    });
     const newPost = {
       id: created.id,
       type: 'PHOTO',
@@ -2039,7 +2378,7 @@ const deletePostAction = async (postId: number) => {
     toast.success('Post supprimé');
   } catch (e) {
     console.error(e);
-    toast.error("Impossible de supprimer le post");
+    toast.error('Impossible de supprimer le post');
   }
 };
 

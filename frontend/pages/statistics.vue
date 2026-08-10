@@ -1,8 +1,5 @@
 <template>
   <div class="min-h-screen">
-    <!-- Navigation -->
-    <!-- TopNav is rendered globally in app.vue -->
-
     <!-- Loading -->
     <div v-if="!pageReady" class="pb-28 lg:pb-20 flex items-center justify-center min-h-[60vh]">
       <div
@@ -13,18 +10,16 @@
     <!-- Main Content -->
     <div v-else class="px-4 md:px-6 pb-28 lg:pb-20 max-w-7xl mx-auto">
       <!-- Page Header -->
-      <div class="fade-in text-center mb-8">
+      <div class="fade-in text-center mb-6 md:mb-8">
         <h1
-          class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2"
+          class="text-2xl md:text-3xl lg:text-4xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2"
         >
-          Statistiques
+          {{ t('statistics.title') }}
         </h1>
         <p class="text-lg text-primary-600 dark:text-primary-400">
-          Ta progression en un coup d'oeil
+          {{ t('statistics.subtitle') }}
         </p>
       </div>
-
-      <!-- Quick link to body tracking (mobile only) removed per UX change -->
 
       <!-- Time Range Selector -->
       <div class="flex justify-center mb-8 fade-in">
@@ -42,7 +37,7 @@
                 : 'text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100',
             ]"
           >
-            {{ range.label }}
+            {{ t(range.labelKey) }}
           </button>
         </div>
       </div>
@@ -53,7 +48,7 @@
           class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary-300 dark:border-primary-600 border-t-primary-600 dark:border-t-primary-400"
         ></div>
         <p class="mt-4 text-primary-600 dark:text-primary-400 text-lg">
-          Chargement des statistiques...
+          {{ t('statistics.loading') }}
         </p>
       </div>
 
@@ -74,13 +69,13 @@
             />
           </svg>
           <h2 class="text-3xl font-bold text-primary-900 dark:text-primary-100 mb-4">
-            Aucune statistique disponible
+            {{ t('statistics.emptyTitle') }}
           </h2>
           <p class="text-lg text-primary-600 dark:text-primary-400 mb-8">
-            Commencez votre premier entraînement pour voir vos statistiques
+            {{ t('statistics.emptySubtitle') }}
           </p>
           <button @click="navigateTo('/workouts/start')" class="btn-primary px-8 py-4">
-            Démarrer un entraînement
+            {{ t('statistics.startWorkout') }}
           </button>
         </div>
       </div>
@@ -89,469 +84,312 @@
       <div v-else-if="!hasData && selectedTimeRange" class="fade-in">
         <div class="card-glass text-center py-16">
           <p class="text-xl text-primary-600 dark:text-primary-400 mb-6">
-            Aucun entraînement dans cette période
+            {{ t('statistics.emptyRange') }}
           </p>
           <button @click="selectedTimeRange = null" class="btn-outline">
-            Voir toutes les statistiques
+            {{ t('statistics.showAll') }}
           </button>
         </div>
       </div>
 
       <!-- Statistics Content -->
-      <div v-else class="space-y-8 md:space-y-12">
-        <!-- Overview Stats -->
-        <div class="flex justify-end -mb-6 slide-up">
+      <div v-else class="space-y-8 md:space-y-10">
+        <!-- L'essentiel : 4 chiffres, plus de redondance avec le reste -->
+        <div class="flex justify-end -mb-4 slide-up">
           <StatsShareButton
             card-type="overview"
             :data="shareOverviewData"
             :user-name="authStore.fullName"
           />
         </div>
-        <div
-          class="flex overflow-x-auto gap-3 md:grid md:grid-cols-5 md:overflow-visible snap-x snap-mandatory pb-2 -mx-4 px-4 md:mx-0 md:px-0 slide-up"
-        >
-          <div class="snap-start flex-shrink-0 w-[140px] md:w-auto">
-            <StatsStatCard title="Entraînements" :value="overviewStats.totalWorkouts">
-              <template #icon
-                ><svg
-                  class="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                  /></svg
-              ></template>
-            </StatsStatCard>
-          </div>
-          <div class="snap-start flex-shrink-0 w-[140px] md:w-auto">
-            <StatsStatCard
-              title="Calories brûlées"
-              :value="estimateCalories(overviewStats.totalTime)"
-              format="calories"
-            >
-              <template #icon
-                ><svg
-                  class="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"
-                  /></svg
-              ></template>
-            </StatsStatCard>
-          </div>
-          <div class="snap-start flex-shrink-0 w-[140px] md:w-auto">
-            <StatsStatCard title="Temps total" :value="overviewStats.totalTime" format="time">
-              <template #icon
-                ><svg
-                  class="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  /></svg
-              ></template>
-            </StatsStatCard>
-          </div>
-          <div class="snap-start flex-shrink-0 w-[140px] md:w-auto">
-            <StatsStatCard
-              title="Durée moyenne"
-              :value="overviewStats.averageDuration"
-              format="duration"
-            >
-              <template #icon
-                ><svg
-                  class="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  /></svg
-              ></template>
-            </StatsStatCard>
-          </div>
-          <div class="snap-start flex-shrink-0 w-[140px] md:w-auto">
-            <StatsStatCard
-              title="Série en cours"
-              :value="overviewStats.currentStreak"
-              :subtitle="overviewStats.currentStreak > 1 ? 'jours consécutifs' : 'jour'"
-            >
-              <template #icon
-                ><svg
-                  class="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"
-                  />
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"
-                  /></svg
-              ></template>
-            </StatsStatCard>
-          </div>
-        </div>
-
-        <!-- Week Comparison -->
-        <div class="space-y-6 slide-up">
-          <div class="flex items-center gap-3">
-            <div class="w-1 h-6 bg-gradient-primary rounded-full"></div>
-            <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">
-              Cette semaine
-            </h3>
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
-            <StatsWeekComparisonCard
-              title="Entraînements"
-              :value="weekComparison.currentWeek.workouts"
-              :change="weekComparison.changes.workouts"
-            />
-            <StatsWeekComparisonCard
-              title="Calories"
-              :value="estimateCalories(weekComparison.currentWeek.totalTime)"
-              :change="weekComparison.changes.totalTime"
-              format="calories"
-            />
-            <StatsWeekComparisonCard
-              title="Durée moyenne"
-              :value="weekComparison.currentWeek.avgDuration"
-              :change="weekComparison.changes.avgDuration"
-              format="duration"
-            />
-          </div>
-        </div>
-
-        <!-- Progression Charts -->
-        <div class="space-y-6 slide-up">
-          <div class="flex items-center gap-3">
-            <div class="w-1 h-6 bg-gradient-primary rounded-full"></div>
-            <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">
-              Progression
-            </h3>
-          </div>
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
-            <div class="card-glass hover:shadow-lg transition-shadow">
-              <h4 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">
-                Calories au fil du temps
-              </h4>
-              <div class="h-[250px] md:h-[300px]">
-                <ClientOnly v-if="volumeData.datasets?.length">
-                  <StatsVolumeChart :data="volumeData" />
-                </ClientOnly>
-                <div v-else class="flex items-center justify-center h-full text-primary-400">
-                  Pas de données
-                </div>
-              </div>
-            </div>
-            <div class="card-glass hover:shadow-lg transition-shadow">
-              <h4 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">
-                Fréquence par jour
-              </h4>
-              <div class="h-[250px] md:h-[300px]">
-                <ClientOnly v-if="frequencyData.datasets?.length">
-                  <StatsFrequencyChart :data="frequencyData" />
-                </ClientOnly>
-                <div v-else class="flex items-center justify-center h-full text-primary-400">
-                  Pas de données
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Exercise Progression -->
-        <div v-if="allExerciseNames.length > 0" class="space-y-6 slide-up">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <div class="w-1 h-6 bg-gradient-primary rounded-full"></div>
-              <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">
-                Progression par exercice
-              </h3>
-            </div>
-            <StatsShareButton
-              card-type="progression"
-              :data="shareProgressionData"
-              :user-name="authStore.fullName"
-            />
-          </div>
-          <div class="card-glass hover:shadow-lg transition-shadow">
-            <div class="mb-6">
-              <select
-                v-model="selectedExercise"
-                class="input-primary !w-auto min-w-full md:min-w-[250px]"
-              >
-                <option value="__ALL__">Tous les exercices</option>
-                <option v-for="name in allExerciseNames" :key="name" :value="name">
-                  {{ name }}
-                </option>
-              </select>
-            </div>
-            <div v-if="activeProgressionData" class="h-[300px] md:h-[400px]">
-              <ClientOnly>
-                <StatsExerciseProgressionChart :data="activeProgressionData" />
-              </ClientOnly>
-            </div>
-            <div v-else class="flex items-center justify-center h-[200px] text-primary-400">
-              Aucune donnée disponible
-            </div>
-          </div>
-        </div>
-
-        <!-- Exercise Analysis -->
-        <div class="space-y-6 slide-up">
-          <div class="flex items-center gap-3">
-            <div class="w-1 h-6 bg-gradient-primary rounded-full"></div>
-            <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">
-              Analyse des exercices
-            </h3>
-          </div>
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
-            <div class="card-glass hover:shadow-lg transition-shadow">
-              <h4 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">
-                Séances par groupe musculaire
-              </h4>
-              <div class="h-[250px] md:h-[300px]">
-                <ClientOnly v-if="muscleGroupData.datasets?.length">
-                  <StatsMuscleGroupChart :data="muscleGroupData" />
-                </ClientOnly>
-                <div v-else class="flex items-center justify-center h-full text-primary-400">
-                  Pas de données
-                </div>
-              </div>
-            </div>
-            <div class="card-glass hover:shadow-lg transition-shadow">
-              <h4 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">
-                Distribution des exercices
-              </h4>
-              <div class="h-[250px] md:h-[300px]">
-                <ClientOnly v-if="exerciseDistributionData.datasets?.length">
-                  <StatsExerciseDistributionChart :data="exerciseDistributionData" />
-                </ClientOnly>
-                <div v-else class="flex items-center justify-center h-full text-primary-400">
-                  Pas de données
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Top Exercises -->
-        <div v-if="topExercises.length > 0" class="card-glass slide-up">
-          <div class="flex items-center justify-between mb-6">
-            <div class="flex items-center gap-3">
-              <div class="w-1 h-6 bg-gradient-primary rounded-full"></div>
-              <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">
-                Top 5 Exercices
-              </h3>
-            </div>
-            <StatsShareButton
-              card-type="top5"
-              :data="{ exercises: topExercises }"
-              :user-name="authStore.fullName"
-            />
-          </div>
-          <div class="space-y-4">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 md:gap-3 slide-up">
+          <StatCard
+            :title="t('statistics.totalVolume')"
+            :value="overviewStats.totalVolume"
+            format="weight"
+            class="!p-3 md:!p-4"
+          >
+            <template #icon>
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M20 7h-9m0 10h9M8 12h13M3 7h1m0 5h1m0 5h1"
+                />
+              </svg>
+            </template>
+          </StatCard>
+          <StatCard
+            :title="t('statistics.workouts')"
+            :value="overviewStats.totalWorkouts"
+            class="!p-3 md:!p-4"
+          >
+            <template #icon>
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
+              </svg>
+            </template>
+          </StatCard>
+          <div v-if="mostRecentRecord" class="card-glass !p-3 md:!p-4 text-center">
             <div
-              v-for="(exercise, index) in topExercises"
-              :key="exercise.name"
-              class="flex items-center justify-between p-4 bg-primary-50 dark:bg-primary-800 rounded-xl"
+              class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center mb-3 mx-auto"
             >
-              <div class="flex items-center space-x-4">
-                <span
-                  class="flex items-center justify-center w-8 h-8 bg-gradient-primary text-white font-bold rounded-lg text-sm"
-                >
-                  {{ index + 1 }}
-                </span>
-                <div>
-                  <p class="font-semibold text-primary-900 dark:text-primary-100">
-                    {{ exercise.name }}
-                  </p>
-                  <p class="text-sm text-primary-600 dark:text-primary-400">
-                    {{ exercise.count }} fois réalisé
-                  </p>
-                </div>
-              </div>
-              <div class="text-right">
-                <p class="font-bold text-primary-900 dark:text-primary-100">
-                  {{ exercise.count }} séances
-                </p>
-              </div>
+              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                />
+              </svg>
             </div>
-          </div>
-        </div>
-
-        <!-- Personal Records -->
-        <div v-if="personalRecords && personalRecords.length > 0" class="space-y-6 slide-up">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <div class="w-1 h-6 bg-gradient-primary rounded-full"></div>
-              <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">
-                Records Personnels
-              </h3>
-            </div>
-            <StatsShareButton
-              card-type="records"
-              :data="{ records: personalRecords }"
-              :user-name="authStore.fullName"
-            />
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div
-              v-for="record in personalRecords"
-              :key="record?.exerciseName || record?.exerciseId"
-              class="card-glass !p-6 flex items-start space-x-4"
+            <p class="text-xs sm:text-sm text-primary-600 dark:text-primary-400 mb-2">
+              {{ t('statistics.latestRecord') }}
+            </p>
+            <p
+              class="text-sm sm:text-base font-bold text-primary-900 dark:text-primary-100 mb-1 truncate"
             >
-              <div
-                class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center flex-shrink-0"
-              >
-                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path
-                    d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-                  />
-                </svg>
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="font-bold text-primary-900 dark:text-primary-100 truncate">
-                  {{ record?.exerciseName || 'Exercice inconnu' }}
-                </p>
-                <p
-                  class="text-2xl font-bold bg-gradient-to-r from-sand-500 to-sand-700 bg-clip-text text-transparent"
-                >
-                  {{ record?.maxWeight || 0 }} kg
-                </p>
-                <div
-                  class="flex items-center space-x-3 text-sm text-primary-600 dark:text-primary-400 mt-1"
-                >
-                  <span>{{ record?.reps || 0 }} reps</span>
-                  <span>·</span>
-                  <span>{{ record?.date ? formatDate(record.date) : 'Date inconnue' }}</span>
-                </div>
-              </div>
-            </div>
+              {{ mostRecentRecord.exerciseName }}
+            </p>
+            <p class="text-xs text-primary-500 dark:text-primary-400">
+              {{ mostRecentRecord.maxWeight }} kg
+            </p>
           </div>
-        </div>
-
-        <!-- Upgrade banner objectifs -->
-        <div v-if="!isPremium && !canCreateGoal" class="mb-6">
-          <ProWall
-            title="Objectifs illimites"
-            :message="`Vous avez ${goalUsageText} objectif(s). Debloquez Pro pour suivre tous vos objectifs en parallele.`"
-            icon="target"
-            compact
+          <div
+            v-else
+            class="card-glass !p-3 md:!p-4 text-center flex flex-col items-center justify-center"
+          >
+            <p class="text-xs sm:text-sm text-primary-500 dark:text-primary-400">
+              {{ t('statistics.noRecord') }}
+            </p>
+          </div>
+          <StatsWeekComparisonCard
+            title="Volume"
+            :value="weekComparison.currentWeek.volume"
+            :change="weekComparison.changes.volume"
+            format="weight"
           />
         </div>
 
-        <!-- Goals / Objectifs -->
-        <div class="space-y-6 slide-up">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <div class="w-1 h-6 bg-gradient-primary rounded-full"></div>
-              <h3 class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100">
-                Mes Objectifs
-              </h3>
+        <!-- Onglets : fusionne muscles/exercices/progression/records/objectifs -->
+        <div class="slide-up">
+          <div
+            class="flex gap-2 overflow-x-auto pb-1 mb-6 border-b border-primary-100 dark:border-primary-800"
+          >
+            <button
+              v-for="tab in statsTabs"
+              :key="tab.key"
+              @click="activeStatsTab = tab.key"
+              :class="[
+                'px-4 py-2.5 text-sm font-semibold whitespace-nowrap border-b-2 -mb-px transition-colors',
+                activeStatsTab === tab.key
+                  ? 'border-sand-500 text-primary-900 dark:text-primary-100'
+                  : 'border-transparent text-primary-500 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-200',
+              ]"
+            >
+              {{ t(tab.labelKey) }}
+            </button>
+          </div>
+
+          <!-- Onglet Muscles : fusionne repartition + top exercices (avant : 3 vues separees) -->
+          <div v-if="activeStatsTab === 'muscles'" class="space-y-6">
+            <div class="card-glass">
+              <h4 class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-5">
+                {{ t('statistics.muscleDistribution') }}
+              </h4>
+              <div v-if="muscleGroupBars.length" class="space-y-3">
+                <div
+                  v-for="bar in muscleGroupBars"
+                  :key="bar.label"
+                  class="flex items-center gap-3"
+                >
+                  <span
+                    class="text-sm text-primary-600 dark:text-primary-400 w-28 flex-shrink-0 truncate"
+                    >{{ bar.label }}</span
+                  >
+                  <div
+                    class="flex-1 h-2 rounded-full bg-primary-100 dark:bg-primary-800 overflow-hidden"
+                  >
+                    <div
+                      class="h-full rounded-full bg-gradient-primary transition-all duration-500"
+                      :style="{ width: bar.pct + '%' }"
+                    ></div>
+                  </div>
+                  <span
+                    class="text-xs text-primary-400 dark:text-primary-500 w-10 text-right flex-shrink-0"
+                    >{{ bar.pct }}%</span
+                  >
+                </div>
+              </div>
+              <p v-else class="text-primary-400 text-center py-8">Pas de données</p>
             </div>
-            <div class="flex items-center gap-2">
+
+            <div v-if="topExercises.length > 0" class="card-glass">
+              <h4 class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-5">
+                {{ t('statistics.favoriteExercises') }}
+              </h4>
+              <div class="space-y-3">
+                <div
+                  v-for="(exercise, index) in topExercises"
+                  :key="exercise.name"
+                  class="flex items-center justify-between p-3 bg-primary-50 dark:bg-primary-800 rounded-xl"
+                >
+                  <div class="flex items-center space-x-3">
+                    <span
+                      class="flex items-center justify-center w-7 h-7 bg-gradient-primary text-white font-bold rounded-lg text-xs"
+                    >
+                      {{ index + 1 }}
+                    </span>
+                    <p class="font-semibold text-primary-900 dark:text-primary-100 text-sm">
+                      {{ exercise.name }}
+                    </p>
+                  </div>
+                  <p class="text-sm text-primary-500 dark:text-primary-400">
+                    {{ exercise.count }}x
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Onglet Progression : fusionne l'ancien double graphique en un seul avec detection de plateau -->
+          <div v-if="activeStatsTab === 'progression'">
+            <ClientOnly>
+              <StatsProgressionChartFull
+                v-if="workoutStore.workoutHistory.length > 0"
+                :workouts="workoutStore.workoutHistory"
+              />
+            </ClientOnly>
+          </div>
+
+          <!-- Onglet Records -->
+          <div v-if="activeStatsTab === 'records'">
+            <div v-if="personalRecords && personalRecords.length > 0">
+              <div class="flex justify-end mb-4">
+                <StatsShareButton
+                  card-type="records"
+                  :data="{ records: personalRecords }"
+                  :user-name="authStore.fullName"
+                />
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div
+                  v-for="record in personalRecords"
+                  :key="record?.exerciseName || record?.exerciseId"
+                  class="card-glass !p-6 flex items-start space-x-4"
+                >
+                  <div
+                    class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center flex-shrink-0"
+                  >
+                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                      <path
+                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                      />
+                    </svg>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="font-bold text-primary-900 dark:text-primary-100 truncate">
+                      {{ record?.exerciseName || t('statistics.unknownExercise') }}
+                    </p>
+                    <p
+                      class="text-2xl font-bold bg-gradient-to-r from-sand-500 to-sand-700 bg-clip-text text-transparent"
+                    >
+                      {{ record?.maxWeight || 0 }} kg
+                    </p>
+                    <div
+                      class="flex items-center space-x-3 text-sm text-primary-600 dark:text-primary-400 mt-1"
+                    >
+                      <span>{{ t('statistics.reps', { count: record?.reps || 0 }) }}</span>
+                      <span>·</span>
+                      <span>{{
+                        record?.date ? formatDate(record.date) : t('statistics.unknownDate')
+                      }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-else class="card-glass text-center py-16">
+              <p class="text-primary-500 dark:text-primary-400">{{ t('statistics.noRecords') }}</p>
+            </div>
+          </div>
+
+          <!-- Onglet Objectifs -->
+          <div v-if="activeStatsTab === 'goals'" class="space-y-6">
+            <div v-if="!isPremium && !canCreateGoal">
+              <ProWall
+                :title="t('statistics.proWallTitle')"
+                :message="t('statistics.proWallMessage', { count: goalUsageText })"
+                icon="target"
+                compact
+              />
+            </div>
+
+            <div class="flex items-center justify-end gap-2">
               <StatsShareButton
                 v-if="goalStore.goals.length > 0"
                 card-type="goals"
                 :data="shareGoalsData"
                 :user-name="authStore.fullName"
               />
-              <div class="flex items-center gap-2">
-                <span v-if="!isPremium" class="text-xs text-primary-500 dark:text-primary-400">{{
-                  goalUsageText
-                }}</span>
-                <button
-                  @click="handleNewGoal"
-                  :disabled="!canCreateGoal"
-                  class="btn-primary !py-2 !px-4 text-sm disabled:opacity-50"
-                >
-                  + Nouvel objectif
-                </button>
-              </div>
+              <span v-if="!isPremium" class="text-xs text-primary-500 dark:text-primary-400">{{
+                goalUsageText
+              }}</span>
+              <button
+                @click="handleNewGoal"
+                :disabled="!canCreateGoal"
+                class="btn-primary !py-2 !px-4 text-sm disabled:opacity-50"
+              >
+                + {{ t('statistics.newGoal') }}
+              </button>
             </div>
-          </div>
 
-          <!-- Active Goals -->
-          <div
-            v-if="goalStore.activeGoals.length > 0"
-            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-          >
-            <GoalsGoalCard
-              v-for="goal in goalStore.activeGoals"
-              :key="goal.id"
-              :goal="goal"
-              @delete="handleDeleteGoal"
-            />
-          </div>
-          <div v-else class="card-glass text-center py-10">
-            <p class="text-primary-500 dark:text-primary-400 mb-4">Aucun objectif en cours</p>
-            <button
-              @click="handleNewGoal"
-              :disabled="!canCreateGoal"
-              class="btn-outline text-sm disabled:opacity-50"
+            <div
+              v-if="goalStore.activeGoals.length > 0"
+              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
             >
-              Créer mon premier objectif
-            </button>
-          </div>
-
-          <!-- Achieved Goals -->
-          <div v-if="goalStore.achievedGoals.length > 0">
-            <h4 class="text-lg font-semibold text-primary-700 dark:text-primary-300 mb-3">
-              Objectifs atteints
-            </h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <GoalsGoalCard
-                v-for="goal in goalStore.achievedGoals"
+                v-for="goal in goalStore.activeGoals"
                 :key="goal.id"
                 :goal="goal"
                 @delete="handleDeleteGoal"
               />
             </div>
+            <div v-else class="card-glass text-center py-10">
+              <p class="text-primary-500 dark:text-primary-400 mb-4">
+                {{ t('statistics.noGoals') }}
+              </p>
+              <button
+                @click="handleNewGoal"
+                :disabled="!canCreateGoal"
+                class="btn-outline text-sm disabled:opacity-50"
+              >
+                {{ t('statistics.createFirstGoal') }}
+              </button>
+            </div>
+
+            <div v-if="goalStore.achievedGoals.length > 0">
+              <h4 class="text-lg font-semibold text-primary-700 dark:text-primary-300 mb-3">
+                {{ t('statistics.achievedGoals') }}
+              </h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <GoalsGoalCard
+                  v-for="goal in goalStore.achievedGoals"
+                  :key="goal.id"
+                  :goal="goal"
+                  @delete="handleDeleteGoal"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Progression Analysis -->
-      <div class="mt-8 md:mt-12 slide-up">
-        <ClientOnly>
-          <StatsProgressionChart
-            v-if="workoutStore.workoutHistory.length > 0"
-            :workouts="workoutStore.workoutHistory"
-          />
-        </ClientOnly>
-      </div>
-
       <!-- Wrapped CTA -->
-      <div class="mt-8 md:mt-12 slide-up">
+      <div v-if="!workoutStore.isLoading && hasData" class="mt-8 md:mt-12 slide-up">
         <div class="card-glass">
           <div class="flex items-center gap-4">
             <div
@@ -568,13 +406,15 @@
             </div>
             <div class="flex-1">
               <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100">
-                Athletiq Wrapped
+                {{ t('statistics.wrappedTitle') }}
               </h3>
               <p class="text-sm text-primary-600 dark:text-primary-400">
-                Découvre ton bilan complet avec des stats partageables
+                {{ t('statistics.wrappedSubtitle') }}
               </p>
             </div>
-            <button @click="navigateTo('/wrapped')" class="btn-primary text-sm">Voir</button>
+            <button @click="navigateTo('/wrapped')" class="btn-primary text-sm">
+              {{ t('statistics.view') }}
+            </button>
           </div>
         </div>
       </div>
@@ -595,18 +435,20 @@
 </template>
 
 <script setup lang="ts">
-/* TopNav imported and rendered globally in app.vue; per-page import removed */
 import { useWorkoutStore } from '~/stores/workout';
 import { useAuthStore } from '~/stores/auth';
 import { useGoalStore } from '~/stores/goals';
-
-useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] });
 import { useBodyStore } from '~/stores/body';
 import { useSubscriptionStore } from '~/stores/subscription';
 import { useSubscriptionLimits } from '~/composables/useSubscriptionLimits';
+import StatCard from '~/components/stats/StatCard.vue';
+import StatsProgressionChartFull from '~/components/stats/ProgressionChart.vue';
 import type { TimeRange } from '~/types/statistics';
 import type { CreateGoalPayload } from '~/types/goals';
 
+useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] });
+
+const { locale, t } = useLocale();
 const workoutStore = useWorkoutStore();
 const authStore = useAuthStore();
 const goalStore = useGoalStore();
@@ -617,15 +459,22 @@ const { isPremium, canCreateGoal, goalUsageText, fetchUsage } = useSubscriptionL
 const toast = useToast();
 
 const selectedTimeRange = ref<TimeRange>(null);
-const selectedExercise = ref<string | null>('__ALL__');
 const showGoalModal = ref(false);
+const activeStatsTab = ref<'muscles' | 'progression' | 'records' | 'goals'>('muscles');
 
-const timeRanges = [
-  { label: '7j', value: 7 as TimeRange },
-  { label: '30j', value: 30 as TimeRange },
-  { label: '90j', value: 90 as TimeRange },
-  { label: 'Tout', value: null },
-];
+const statsTabs = computed(() => [
+  { key: 'muscles' as const, labelKey: 'statistics.tab.muscles' },
+  { key: 'progression' as const, labelKey: 'statistics.tab.progression' },
+  { key: 'records' as const, labelKey: 'statistics.tab.records' },
+  { key: 'goals' as const, labelKey: 'statistics.tab.goals' },
+]);
+
+const timeRanges = computed(() => [
+  { labelKey: 'statistics.range.7d', value: 7 as TimeRange },
+  { labelKey: 'statistics.range.30d', value: 30 as TimeRange },
+  { labelKey: 'statistics.range.90d', value: 90 as TimeRange },
+  { labelKey: 'statistics.range.all', value: null },
+]);
 
 onMounted(async () => {
   await Promise.all([
@@ -635,181 +484,52 @@ onMounted(async () => {
     subscriptionStore.fetchSubscription(),
     fetchUsage(),
   ]);
-  // Debug: log chart data presence to help trace empty charts / hydration issues
-  // eslint-disable-next-line no-console
-  console.log('statistics: volume datasets', volumeData.value?.datasets?.length);
-  // eslint-disable-next-line no-console
-  console.log('statistics: frequency datasets', frequencyData.value?.datasets?.length);
-  // eslint-disable-next-line no-console
-  console.log('statistics: muscleGroup datasets', muscleGroupData.value?.datasets?.length);
-  // eslint-disable-next-line no-console
-  console.log('statistics: exerciseDistribution datasets', exerciseDistributionData.value?.datasets?.length);
-  // eslint-disable-next-line no-console
-  console.log('statistics: activeProgressionData', !!activeProgressionData.value);
   pageReady.value = true;
 });
 
-// Calculate statistics — destructure all computeds so Vue auto-unwraps them in template
 const {
   overviewStats,
-  volumeData,
-  frequencyData,
   muscleGroupData,
-  exerciseDistributionData,
   topExercises,
   personalRecords,
   weekComparison,
   allExerciseNames,
-  exerciseProgressionData,
   hasData,
 } = useStatistics(
   computed(() => workoutStore.workoutHistory),
-  selectedTimeRange,
-  selectedExercise
+  selectedTimeRange
 );
 
-// Quick client-side entry log to ensure script runs
-if (process.client) {
-  // eslint-disable-next-line no-console
-  console.log('statistics.vue script executed (client)');
-}
-
-// Calories estimation: ~6 kcal/min for moderate weight training
-const estimateCalories = (seconds: number) => Math.round((seconds / 60) * 6);
-
-// "All exercises" multi-line chart data
-const allExercisesProgressionData = computed(() => {
-  if (allExerciseNames.value.length === 0) return null;
-
-  const workouts = computed(() => workoutStore.workoutHistory).value;
-  const colors = [
-    '#d4c4b0',
-    '#b8a48f',
-    '#9b8772',
-    '#e8a87c',
-    '#85cdca',
-    '#d4a5a5',
-    '#a3c4bc',
-    '#c9b1ff',
-    '#ffb347',
-    '#87ceeb',
-  ];
-
-  // Collect max weight per date per exercise
-  const exerciseMap: Record<string, { date: string; maxWeight: number }[]> = {};
-  const allDatesSet = new Set<string>();
-
-  for (const w of workouts) {
-    if (!w.completedAt) continue;
-    const dateKey = new Date(w.completedAt).toISOString().split('T')[0];
-    allDatesSet.add(dateKey);
-
-    w.exercises?.forEach((e) => {
-      const name = e.exerciseLibrary?.name || e.name;
-      let maxWeight = 0;
-      e.sets?.forEach((s) => {
-        if ((s.weight || 0) > maxWeight) maxWeight = s.weight || 0;
-      });
-      if (maxWeight > 0) {
-        if (!exerciseMap[name]) exerciseMap[name] = [];
-        exerciseMap[name].push({ date: dateKey, maxWeight });
-      }
-    });
-  }
-
-  const sortedDates = Array.from(allDatesSet).sort();
-  const labels = sortedDates.map((d) => {
-    const date = new Date(d);
-    return new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(date);
-  });
-
-  // Only include exercises that have data, take top 10 by frequency
-  const exerciseNames = Object.entries(exerciseMap)
-    .sort((a, b) => b[1].length - a[1].length)
-    .slice(0, 10)
-    .map(([name]) => name);
-
-  const datasets = exerciseNames.map((name, i) => {
-    const sessions = exerciseMap[name];
-    const sessionsByDate: Record<string, number> = {};
-    sessions.forEach((s) => {
-      sessionsByDate[s.date] = Math.max(sessionsByDate[s.date] || 0, s.maxWeight);
-    });
-
-    return {
-      label: name,
-      data: sortedDates.map((d) => sessionsByDate[d] ?? null),
-      borderColor: colors[i % colors.length],
-      backgroundColor: 'transparent',
-      borderWidth: 2,
-      tension: 0.4,
-      spanGaps: true,
-      pointRadius: 2,
-      pointHoverRadius: 6,
-    };
-  });
-
-  return { labels, datasets };
+// Le record le plus recent (personalRecords est trie par poids, on re-trie par date)
+const mostRecentRecord = computed(() => {
+  if (!personalRecords.value.length) return null;
+  return (
+    [...personalRecords.value]
+      .filter((r) => r.date)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0] ?? null
+  );
 });
 
-// Active chart data: single exercise or all
-const activeProgressionData = computed(() => {
-  if (selectedExercise.value === '__ALL__') return allExercisesProgressionData.value;
-  return exerciseProgressionData.value;
+// Repartition par groupe musculaire en pourcentage, pour l'affichage en barres simples
+const muscleGroupBars = computed(() => {
+  const ds = muscleGroupData.value.datasets?.[0]?.data as number[] | undefined;
+  const labels = muscleGroupData.value.labels as string[] | undefined;
+  if (!ds || !labels || ds.length === 0) return [];
+  const total = ds.reduce((s, v) => s + v, 0) || 1;
+  return labels.map((label, i) => ({
+    label,
+    pct: Math.round(((ds[i] || 0) / total) * 100),
+  }));
 });
-
-// ── Share data computeds ──
-const formatTime = (seconds: number) => {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  return h > 0 ? `${h}h${m}` : `${m}min`;
-};
 
 const shareOverviewData = computed(() => ({
   totalWorkouts: overviewStats.value.totalWorkouts,
-  calories: estimateCalories(overviewStats.value.totalTime).toLocaleString('fr-FR'),
-  totalTime: formatTime(overviewStats.value.totalTime),
-  avgDuration: formatTime(overviewStats.value.averageDuration),
+  totalVolume: overviewStats.value.totalVolume.toLocaleString(
+    locale.value === 'en' ? 'en-US' : 'fr-FR'
+  ),
   streak: overviewStats.value.currentStreak,
-  totalVolume: Math.round(
-    (workoutStore.workoutHistory || []).reduce((s, w) => s + (w.totalVolume || 0), 0)
-  ).toLocaleString('fr-FR'),
   period: timeRangeLabel.value,
 }));
-
-const shareProgressionData = computed(() => {
-  const workouts = workoutStore.workoutHistory || [];
-  const exName = selectedExercise.value === '__ALL__' ? null : selectedExercise.value;
-  const points: { date: string; weight: number }[] = [];
-
-  for (const w of workouts) {
-    if (!w.completedAt) continue;
-    const dateKey = new Date(w.completedAt).toISOString().split('T')[0];
-    w.exercises?.forEach((e) => {
-      const name = e.exerciseLibrary?.name || e.name;
-      if (exName && name !== exName) return;
-      let maxW = 0;
-      e.sets?.forEach((s) => {
-        if ((s.weight || 0) > maxW) maxW = s.weight || 0;
-      });
-      if (maxW > 0) points.push({ date: dateKey, weight: maxW });
-    });
-  }
-
-  // Aggregate by date (keep max per date)
-  const byDate: Record<string, number> = {};
-  points.forEach((p) => {
-    byDate[p.date] = Math.max(byDate[p.date] || 0, p.weight);
-  });
-  const sorted = Object.entries(byDate)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([date, weight]) => ({ date, weight }));
-
-  return {
-    exerciseName: exName || 'Tous les exercices',
-    points: sorted,
-  };
-});
 
 const shareGoalsData = computed(() => ({
   goals: goalStore.goals.map((g) => ({
@@ -822,24 +542,22 @@ const shareGoalsData = computed(() => ({
 }));
 
 const timeRangeLabel = computed(() => {
-  if (!selectedTimeRange.value) return 'Toutes les statistiques';
-  return `Statistiques des ${selectedTimeRange.value} derniers jours`;
+  if (!selectedTimeRange.value) return t('statistics.rangeAll');
+  return t('statistics.rangeLabel', { count: selectedTimeRange.value });
 });
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
-  return new Intl.DateTimeFormat('fr-FR', {
+  return new Intl.DateTimeFormat(locale.value === 'en' ? 'en-US' : 'fr-FR', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
   }).format(date);
 };
 
-// Body data for goal creation
 const currentWeight = computed(() => bodyStore.latestWeight?.weight ?? null);
 const currentBodyFat = computed(() => bodyStore.latestWeight?.bodyFat ?? null);
 
-// Goal handlers
 const handleCreateGoal = async (payload: CreateGoalPayload) => {
   try {
     await goalStore.addGoal(payload);
@@ -867,7 +585,6 @@ const handleDeleteGoal = async (id: number) => {
   }
 };
 
-// Icons (inline SVG)
 definePageMeta({
   middleware: 'auth',
 });

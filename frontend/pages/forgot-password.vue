@@ -9,10 +9,10 @@
           />
         </NuxtLink>
         <h1 class="text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-display">
-          Mot de passe oublié
+          {{ t('auth.forgot.title') }}
         </h1>
         <p class="text-primary-600 dark:text-primary-400 text-body-relaxed">
-          Entrez votre email pour recevoir un lien de réinitialisation
+          {{ t('auth.forgot.subtitle') }}
         </p>
       </div>
 
@@ -37,14 +37,14 @@
             </svg>
           </div>
           <h2 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-2">
-            Email envoyé !
+            {{ t('auth.forgot.sentTitle') }}
           </h2>
           <p class="text-primary-600 dark:text-primary-400 mb-6">
-            Si un compte existe avec cet email, vous recevrez un lien de réinitialisation.
+            {{ t('auth.forgot.sentBody') }}
           </p>
-          <NuxtLink to="/login" class="btn-primary inline-block px-8"
-            >Retour à la connexion</NuxtLink
-          >
+          <NuxtLink to="/login" class="btn-primary inline-block px-8">{{
+            t('auth.forgot.backToLogin')
+          }}</NuxtLink>
         </div>
 
         <!-- Form -->
@@ -53,7 +53,7 @@
             <label
               for="email"
               class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-2"
-              >Email</label
+              >{{ t('auth.email') }}</label
             >
             <input
               id="email"
@@ -62,7 +62,7 @@
               required
               autocomplete="email"
               class="input"
-              placeholder="votre@email.com"
+              :placeholder="t('auth.emailPlaceholder')"
             />
           </div>
 
@@ -74,8 +74,8 @@
           </div>
 
           <button type="submit" :disabled="loading" class="btn-primary w-full text-lg py-4">
-            <span v-if="!loading">Envoyer le lien</span>
-            <span v-else>Envoi en cours...</span>
+            <span v-if="!loading">{{ t('auth.forgot.send') }}</span>
+            <span v-else>{{ t('auth.forgot.sending') }}</span>
           </button>
         </form>
       </div>
@@ -103,11 +103,15 @@
 <script setup lang="ts">
 definePageMeta({ layout: false });
 
+import { useLocale } from '~/composables/useLocale';
+
+const { t } = useLocale();
+
 useSeoMeta({
-  title: 'Mot de passe oublié · Athletiq',
-  ogTitle: 'Mot de passe oublié · Athletiq',
-  description: 'Réinitialisez votre mot de passe Athletiq.',
-  ogDescription: 'Réinitialisez votre mot de passe Athletiq.',
+  title: t('auth.forgot.seoTitle'),
+  ogTitle: t('auth.forgot.seoTitle'),
+  description: t('auth.forgot.seoDescription'),
+  ogDescription: t('auth.forgot.seoDescription'),
 });
 
 const email = ref('');
