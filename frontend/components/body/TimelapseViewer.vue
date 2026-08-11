@@ -149,6 +149,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useLocale();
 import type { ProgressPhoto } from '~/types/body';
 
 interface Props {
@@ -251,7 +252,7 @@ const loadImage = (src: string): Promise<HTMLImageElement> => {
 const exportVideo = async () => {
   if (exporting.value || props.photos.length < 2) return;
   exporting.value = true;
-  exportProgress.value = 'Chargement...';
+  exportProgress.value = t('common.loading');
 
   try {
     // Load all images first
@@ -302,7 +303,7 @@ const exportVideo = async () => {
       const blob = new Blob(chunks, { type: recorder.mimeType });
 
       try {
-        exportProgress.value = 'Upload en cours...';
+        exportProgress.value = t('timelapse.uploading');
 
         const form = new FormData();
         form.append('file', blob, `athletiq-timelapse.${ext}`);
@@ -326,7 +327,7 @@ const exportVideo = async () => {
           credentials: 'include',
           headers,
         });
-        if (!resp.ok) throw new Error('Upload serveur échoué');
+        if (!resp.ok) throw new Error(t('timelapse.uploadFailed'));
         const data = await resp.json();
         const publicUrl = data.url;
 
@@ -337,6 +338,7 @@ const exportVideo = async () => {
             url: publicUrl,
             backgroundImageUrl: publicUrl,
             blob,
+            title: t('timelapse.shareTitle'),
           });
           if (storyRes?.success) {
             exporting.value = false;
@@ -350,8 +352,8 @@ const exportVideo = async () => {
         if (navigator.share) {
           try {
             await navigator.share({
-              title: 'Mon timelapse Athletiq',
-              text: 'Regarde ma progression',
+              title: t('timelapse.shareTitle'),
+              text: t('timelapse.shareText'),
               url: publicUrl,
             });
             exporting.value = false;
@@ -367,7 +369,7 @@ const exportVideo = async () => {
         // fallback to local share/download
         try {
           const { shareBlob } = await import('~/composables/useShare');
-          const res = await shareBlob(blob, `athletiq-timelapse.${ext}`, 'Mon timelapse Athletiq');
+          const res = await shareBlob(blob, `athletiq-timelapse.${ext}`, t('timelapse.shareTitle'));
           if (!res.success) {
             const url = URL.createObjectURL(blob);
             downloadBlob(url, `athletiq-timelapse.${ext}`);

@@ -15,15 +15,19 @@
         class="w-3 h-3 border-2 border-primary-300 dark:border-primary-600 border-t-sand-500 rounded-full animate-spin"
       ></span>
       <Icon v-else name="lucide:wifi-off" class="w-3.5 h-3.5" />
-      <span v-if="isSyncing">Synchronisation...</span>
+      <span v-if="isSyncing">{{ t('offline.syncing') }}</span>
       <span v-else
-        >Hors-ligne<span v-if="pendingCount > 0"> · {{ pendingCount }} en attente</span></span
+        >{{ t('offline.offline')
+        }}<span v-if="pendingCount > 0">
+          · {{ t('offline.pending', { count: pendingCount }) }}</span
+        ></span
       >
     </div>
   </Transition>
 </template>
 
 <script setup lang="ts">
+const { t } = useLocale();
 const { isOnline, isSyncing, pendingCount } = useOfflineStorage();
 </script>
 

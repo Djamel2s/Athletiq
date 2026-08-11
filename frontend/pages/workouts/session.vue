@@ -48,9 +48,11 @@
               ></div>
             </div>
             <p class="text-lg font-bold text-primary-900 dark:text-primary-100">
-              Creer une session
+              {{ t('workoutSession.createSession') }}
             </p>
-            <p class="text-sm text-primary-500 dark:text-primary-400 mt-1">Tu es l'hote</p>
+            <p class="text-sm text-primary-500 dark:text-primary-400 mt-1">
+              {{ t('workoutSession.youAreHost') }}
+            </p>
           </button>
 
           <button
@@ -74,26 +76,31 @@
                 />
               </svg>
             </div>
-            <p class="text-lg font-bold text-primary-900 dark:text-primary-100">Rejoindre</p>
-            <p class="text-sm text-primary-500 dark:text-primary-400 mt-1">Avec un code</p>
+            <p class="text-lg font-bold text-primary-900 dark:text-primary-100">
+              {{ t('coach.joinBtn') }}
+            </p>
+            <p class="text-sm text-primary-500 dark:text-primary-400 mt-1">
+              {{ t('workoutSession.withCode') }}
+            </p>
           </button>
         </div>
 
         <!-- Join form -->
         <div v-if="showJoinForm" class="card-glass space-y-4">
           <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100">
-            Rejoindre une session
+            {{ t('workoutSession.joinSession') }}
           </h3>
 
           <div>
-            <label class="block text-sm font-semibold text-primary-700 dark:text-primary-300 mb-2"
-              >Code de session</label
+            <label
+              class="block text-sm font-semibold text-primary-700 dark:text-primary-300 mb-2"
+              >{{ t('workoutSession.sessionCode') }}</label
             >
             <input
               v-model="joinCode"
               type="text"
               maxlength="6"
-              placeholder="ABC123"
+              :placeholder="t('workoutSession.codePlaceholder')"
               class="input-primary text-center text-2xl font-mono font-bold tracking-[0.3em] uppercase"
               @input="joinCode = joinCode.toUpperCase()"
             />
@@ -104,15 +111,15 @@
             :disabled="joinCode.length < 6 || isJoining"
             class="w-full py-3 rounded-2xl bg-gradient-primary text-white font-medium hover:shadow-md transition-all disabled:opacity-50"
           >
-            {{ isJoining ? 'Connexion...' : 'Rejoindre' }}
+            {{ isJoining ? t('workoutSession.connecting') : t('coach.joinBtn') }}
           </button>
 
           <!-- Separator -->
           <div class="flex items-center gap-3">
             <div class="flex-1 h-px bg-primary-200 dark:bg-primary-700"></div>
-            <span class="text-xs text-primary-400 dark:text-primary-500 uppercase tracking-wider"
-              >ou</span
-            >
+            <span class="text-xs text-primary-400 dark:text-primary-500 uppercase tracking-wider">{{
+              t('common.or')
+            }}</span>
             <div class="flex-1 h-px bg-primary-200 dark:bg-primary-700"></div>
           </div>
 
@@ -121,24 +128,24 @@
             @click="showLocalLogin = !showLocalLogin"
             class="w-full py-3 rounded-2xl bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-200 font-medium hover:bg-primary-200 dark:hover:bg-primary-700 transition-colors text-sm"
           >
-            Mode meme telephone
+            {{ t('workoutSession.sameDeviceMode') }}
           </button>
 
           <!-- Local login form for guest on same phone -->
           <div v-if="showLocalLogin" class="space-y-3 pt-2">
             <p class="text-xs text-primary-500 dark:text-primary-400">
-              Connecte le compte de ton partenaire pour l'ajouter sur ce telephone
+              {{ t('workoutSession.sameDeviceDesc') }}
             </p>
             <input
               v-model="localEmail"
               type="email"
-              placeholder="Email du partenaire"
+              :placeholder="t('workoutSession.partnerEmail')"
               class="input-primary text-sm"
             />
             <input
               v-model="localPassword"
               type="password"
-              placeholder="Mot de passe"
+              :placeholder="t('auth.login.passwordPlaceholder')"
               class="input-primary text-sm"
             />
             <button
@@ -146,7 +153,7 @@
               :disabled="!localEmail || !localPassword || !joinCode || isJoining"
               class="w-full py-2.5 rounded-2xl bg-gradient-primary text-white font-medium text-sm hover:shadow-md transition-all disabled:opacity-50"
             >
-              {{ isJoining ? 'Connexion...' : 'Ajouter sur ce telephone' }}
+              {{ isJoining ? t('workoutSession.connecting') : t('workoutSession.addOnThisDevice') }}
             </button>
           </div>
 
@@ -157,7 +164,7 @@
             "
             class="w-full text-sm text-primary-500 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-200 transition-colors"
           >
-            Annuler
+            {{ t('common.cancel') }}
           </button>
         </div>
       </div>
@@ -293,10 +300,10 @@
             <!-- Empty state -->
             <div v-if="participants.length < 2" class="text-center py-4">
               <p class="text-sm text-primary-500 dark:text-primary-400">
-                En attente d'autres participants...
+                {{ t('workoutSession.waitingParticipants') }}
               </p>
               <p class="text-xs text-primary-400 dark:text-primary-500 mt-1">
-                Partagez le code <strong>{{ session.code }}</strong> a vos partenaires
+                {{ t('workoutSession.shareCode') }} <strong>{{ session.code }}</strong>
               </p>
             </div>
           </div>
@@ -304,19 +311,23 @@
 
         <!-- Workout selection -->
         <div class="card-glass">
-          <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-4">Ton workout</h3>
+          <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-4">
+            {{ t('workoutSession.yourWorkout') }}
+          </h3>
           <div v-if="workoutStore.isLoading" class="text-center py-4">
             <div
               class="inline-block animate-spin rounded-full h-8 w-8 border-2 border-primary-200 dark:border-primary-700 border-t-primary-600 dark:border-t-primary-400"
             ></div>
           </div>
           <div v-else-if="workoutStore.templates.length === 0" class="text-center py-4">
-            <p class="text-sm text-primary-500 dark:text-primary-400">Aucun template disponible</p>
+            <p class="text-sm text-primary-500 dark:text-primary-400">
+              {{ t('workoutSession.noTemplates') }}
+            </p>
             <NuxtLink
               to="/workouts/builder"
               class="text-sm text-sand-600 dark:text-sand-400 hover:underline mt-1 inline-block"
             >
-              Creer un workout
+              {{ t('workoutSession.createWorkout') }}
             </NuxtLink>
           </div>
           <div v-else class="space-y-2">
@@ -336,7 +347,11 @@
                   {{ template.name }}
                 </p>
                 <p class="text-xs text-primary-500 dark:text-primary-400">
-                  {{ template.exercises?.length || 0 }} exercices
+                  {{
+                    t('workoutSession.exerciseCountShort', {
+                      count: template.exercises?.length || 0,
+                    })
+                  }}
                 </p>
               </div>
               <div
@@ -370,17 +385,17 @@
             :disabled="!canStart || isStarting"
             class="w-full py-4 rounded-2xl bg-gradient-primary text-white font-bold text-lg hover:shadow-lg transition-all disabled:opacity-50"
           >
-            <span v-if="isStarting">Lancement...</span>
-            <span v-else-if="!canStart"
-              >En attente ({{ participants.length }}/2+ participants)</span
-            >
-            <span v-else>Lancer la session</span>
+            <span v-if="isStarting">{{ t('workoutSession.launching') }}</span>
+            <span v-else-if="!canStart">{{
+              t('workoutSession.waitingCount', { count: participants.length })
+            }}</span>
+            <span v-else>{{ t('workoutSession.launchSession') }}</span>
           </button>
 
           <!-- Waiting message (non-host) -->
           <div v-else class="text-center py-4">
             <p class="text-primary-600 dark:text-primary-400 font-medium">
-              En attente du lancement par l'hote...
+              {{ t('workoutSession.waitingHost') }}
             </p>
           </div>
 
@@ -400,6 +415,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useLocale();
 /* TopNav imported and rendered globally in app.vue; per-page import removed */
 import { useWorkoutStore } from '~/stores/workout';
 import { useAuthStore } from '~/stores/auth';
@@ -444,9 +460,12 @@ const handleCreate = async () => {
     session.value = data.session || data;
     participants.value = data.participants || [data.session?.participants] || [];
     await setupSocket();
-    toast.success('Session creee', `Code: ${session.value.code}`);
+    toast.success(
+      t('workoutSession.toastCreated'),
+      `${t('workoutSession.codeLabel')}: ${session.value.code}`
+    );
   } catch (err: any) {
-    toast.error('Erreur', err?.data?.error || 'Impossible de creer la session');
+    toast.error(t('common.error'), err?.data?.error || t('workoutSession.errorCreate'));
   } finally {
     isCreating.value = false;
   }
@@ -460,9 +479,9 @@ const handleJoin = async () => {
     session.value = data.session || data;
     participants.value = data.participants || [];
     await setupSocket();
-    toast.success('Rejoint !', 'Vous avez rejoint la session');
+    toast.success(t('workoutSession.toastJoined'), t('workoutSession.toastJoinedDesc'));
   } catch (err: any) {
-    toast.error('Erreur', err?.data?.error || 'Impossible de rejoindre la session');
+    toast.error(t('common.error'), err?.data?.error || t('workoutSession.errorJoin'));
   } finally {
     isJoining.value = false;
   }
@@ -483,12 +502,12 @@ const handleJoinLocal = async () => {
     } else if (data.participant) {
       participants.value.push(data.participant);
     }
-    toast.success('Ajoute !', 'Le participant a ete ajoute sur ce telephone');
+    toast.success(t('workoutSession.toastAdded'), t('workoutSession.toastAddedDesc'));
     showLocalLogin.value = false;
     localEmail.value = '';
     localPassword.value = '';
   } catch (err: any) {
-    toast.error('Erreur', err?.data?.error || "Impossible d'ajouter le participant");
+    toast.error(t('common.error'), err?.data?.error || t('workoutSession.errorAddParticipant'));
   } finally {
     localEmail.value = '';
     localPassword.value = '';
@@ -508,7 +527,7 @@ const selectWorkout = async (template: Workout) => {
         me.workoutName = template.name;
       }
     } catch (err: any) {
-      toast.error('Erreur', 'Impossible de selectionner le workout');
+      toast.error(t('common.error'), t('workoutSession.errorSelectWorkout'));
     }
   }
 };
@@ -520,7 +539,7 @@ const handleStart = async () => {
     await sessionApi.startSession(session.value.id);
     // WebSocket will emit session:started which triggers navigation
   } catch (err: any) {
-    toast.error('Erreur', err?.data?.error || 'Impossible de lancer la session');
+    toast.error(t('common.error'), err?.data?.error || t('workoutSession.errorLaunch'));
   } finally {
     isStarting.value = false;
   }
@@ -534,9 +553,9 @@ const handleLeave = async () => {
     session.value = null;
     participants.value = [];
     selectedWorkoutId.value = null;
-    toast.success('Quitte', 'Vous avez quitte la session');
+    toast.success(t('workoutSession.toastLeft'), t('workoutSession.toastLeftDesc'));
   } catch (err: any) {
-    toast.error('Erreur', 'Impossible de quitter la session');
+    toast.error(t('common.error'), t('workoutSession.errorLeave'));
   }
 };
 
@@ -544,10 +563,10 @@ const copyCode = async () => {
   if (!session.value?.code) return;
   try {
     await navigator.clipboard.writeText(session.value.code);
-    toast.success('Copie !', 'Code copie dans le presse-papier');
+    toast.success(t('workoutSession.toastCopied'), t('workoutSession.toastCopiedDesc'));
   } catch {
     // Fallback
-    toast.success('Code', session.value.code);
+    toast.success(t('workoutSession.codeLabel'), session.value.code);
   }
 };
 

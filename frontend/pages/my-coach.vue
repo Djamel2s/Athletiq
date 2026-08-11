@@ -8,19 +8,21 @@
         >
           <Icon name="lucide:arrow-left" class="w-5 h-5 text-primary-600 dark:text-primary-400" />
         </NuxtLink>
-        <h1 class="text-2xl font-bold text-primary-900 dark:text-primary-100">Mon coach</h1>
+        <h1 class="text-2xl font-bold text-primary-900 dark:text-primary-100">
+          {{ t('coach.title') }}
+        </h1>
       </div>
 
       <!-- Join by code -->
       <div class="card-glass !p-4 mb-6 slide-up">
         <h2 class="text-sm font-semibold text-primary-900 dark:text-primary-100 mb-3">
-          Rejoindre un coach
+          {{ t('coach.join') }}
         </h2>
         <form @submit.prevent="handleJoin" class="flex gap-2">
           <input
             v-model="joinCode"
             type="text"
-            placeholder="Code de votre coach"
+            :placeholder="t('coach.codePlaceholder')"
             class="input-primary flex-1 text-sm uppercase tracking-widest"
             maxlength="10"
           />
@@ -30,11 +32,11 @@
             class="btn-primary !px-4 !py-2 text-sm font-semibold disabled:opacity-50"
           >
             <Icon v-if="joining" name="lucide:loader-2" class="w-4 h-4 animate-spin" />
-            <span v-else>Rejoindre</span>
+            <span v-else>{{ t('coach.joinBtn') }}</span>
           </button>
         </form>
         <p class="text-xs text-primary-400 dark:text-primary-500 mt-2">
-          Votre coach vous a communiqué un code à 7 caractères — souvent affiché en salle.
+          {{ t('coach.codeHint') }}
         </p>
       </div>
 
@@ -48,7 +50,7 @@
         <!-- Pending invites -->
         <div v-if="pendingInvites.length" class="mb-6">
           <h2 class="text-sm font-semibold text-primary-900 dark:text-primary-100 mb-3">
-            Invitations reçues
+            {{ t('coach.invitesReceived') }}
           </h2>
           <div
             v-for="invite in pendingInvites"
@@ -60,37 +62,42 @@
                 {{ invite.coach.firstName }} {{ invite.coach.lastName }}
               </p>
               <p class="text-xs text-primary-400 dark:text-primary-500">
-                souhaite vous suivre comme coach
+                {{ t('coach.wantsToFollow') }}
               </p>
             </div>
             <button
               @click="handleAccept(invite.linkId)"
               class="btn-glass !px-3 !py-1.5 text-xs font-semibold !rounded-lg"
             >
-              Accepter
+              {{ t('common.accept') }}
             </button>
             <button
               @click="handleDecline(invite.linkId)"
               class="text-xs text-primary-400 dark:text-primary-500 px-2"
             >
-              Refuser
+              {{ t('common.decline') }}
             </button>
           </div>
         </div>
 
         <!-- Active coaches -->
         <h2 class="text-sm font-semibold text-primary-900 dark:text-primary-100 mb-3">
-          Mes coachs
+          {{ t('coach.myCoaches') }}
         </h2>
-        <div v-if="coaches.length === 0" class="card-glass !p-6 text-center text-sm text-primary-500 dark:text-primary-400">
-          Vous n'avez pas encore de coach relié à votre compte.
+        <div
+          v-if="coaches.length === 0"
+          class="card-glass !p-6 text-center text-sm text-primary-500 dark:text-primary-400"
+        >
+          {{ t('coach.noCoach') }}
         </div>
 
         <div v-for="entry in coaches" :key="entry.linkId" class="card-glass !p-4 mb-3">
           <div class="flex items-center gap-3 mb-3">
             <div
               class="w-11 h-11 rounded-full overflow-hidden flex-shrink-0"
-              :class="entry.coach.avatarUrl ? '' : 'bg-gradient-primary flex items-center justify-center'"
+              :class="
+                entry.coach.avatarUrl ? '' : 'bg-gradient-primary flex items-center justify-center'
+              "
             >
               <img
                 v-if="entry.coach.avatarUrl"
@@ -106,7 +113,10 @@
               <p class="text-sm font-semibold text-primary-900 dark:text-primary-100 truncate">
                 {{ entry.coach.firstName }} {{ entry.coach.lastName }}
               </p>
-              <p v-if="entry.coach.coachBio" class="text-xs text-primary-400 dark:text-primary-500 truncate">
+              <p
+                v-if="entry.coach.coachBio"
+                class="text-xs text-primary-400 dark:text-primary-500 truncate"
+              >
                 {{ entry.coach.coachBio }}
               </p>
             </div>
@@ -133,7 +143,7 @@
             @click="handleRevoke(entry.linkId)"
             class="w-full text-center text-xs text-red-500 py-1.5"
           >
-            Retirer l'accès de ce coach
+            {{ t('coach.revokeAccess') }}
           </button>
         </div>
       </template>
@@ -144,7 +154,12 @@
 </template>
 
 <script setup lang="ts">
-import { useCoachingApi, type MyCoachEntry, type CoachLinkPermissions } from '~/composables/useCoachingApi';
+const { t } = useLocale();
+import {
+  useCoachingApi,
+  type MyCoachEntry,
+  type CoachLinkPermissions,
+} from '~/composables/useCoachingApi';
 
 definePageMeta({
   layout: false,
@@ -164,11 +179,11 @@ const coaches = ref<MyCoachEntry[]>([]);
 const pendingInvites = ref<MyCoachEntry[]>([]);
 
 const permissionFields: { key: keyof CoachLinkPermissions; label: string }[] = [
-  { key: 'canViewWorkouts', label: 'Voir mes séances' },
-  { key: 'canViewBodyStats', label: 'Voir mon poids' },
-  { key: 'canViewMeasurements', label: 'Voir mes mensurations' },
-  { key: 'canViewPhotos', label: 'Voir mes photos de progression' },
-  { key: 'canAssignPrograms', label: "M'assigner des programmes" },
+  { key: 'canViewWorkouts', label: t('coach.perm.viewWorkouts') },
+  { key: 'canViewBodyStats', label: t('coach.perm.viewWeight') },
+  { key: 'canViewMeasurements', label: t('coach.perm.viewMeasurements') },
+  { key: 'canViewPhotos', label: t('coach.perm.viewPhotos') },
+  { key: 'canAssignPrograms', label: t('coach.perm.assignPrograms') },
 ];
 
 async function load() {
@@ -189,7 +204,7 @@ async function handleJoin() {
   joining.value = true;
   try {
     await joinByCode(joinCode.value.trim());
-    toast.success('Coach ajouté', 'Vous pouvez ajuster ce qu\'il voit ci-dessous');
+    toast.success('Coach ajouté', "Vous pouvez ajuster ce qu'il voit ci-dessous");
     joinCode.value = '';
     await load();
   } catch (e: any) {
@@ -219,7 +234,11 @@ async function handleDecline(linkId: number) {
   }
 }
 
-async function handlePermChange(entry: MyCoachEntry, key: keyof CoachLinkPermissions, event: Event) {
+async function handlePermChange(
+  entry: MyCoachEntry,
+  key: keyof CoachLinkPermissions,
+  event: Event
+) {
   const checked = (event.target as HTMLInputElement).checked;
   entry.permissions[key] = checked;
   try {

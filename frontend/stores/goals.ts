@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import type { UserGoal, CreateGoalPayload } from '~/types/goals';
+import { tSync } from '~/composables/useLocale';
 
 interface GoalState {
   goals: UserGoal[];
@@ -27,7 +28,7 @@ export const useGoalStore = defineStore('goals', {
         const api = useGoalApi();
         this.goals = await api.getGoals();
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors du chargement des objectifs';
+        this.error = error.message || tSync('goalsStore.errorLoad');
         logger.error('Fetch goals error:', error);
       } finally {
         this.isLoading = false;
@@ -41,7 +42,7 @@ export const useGoalStore = defineStore('goals', {
         this.goals.unshift(goal);
         return goal;
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors de la création';
+        this.error = error.message || tSync('goalsStore.errorCreate');
         throw error;
       }
     },
@@ -52,7 +53,7 @@ export const useGoalStore = defineStore('goals', {
         await api.deleteGoal(id);
         this.goals = this.goals.filter((g) => g.id !== id);
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors de la suppression';
+        this.error = error.message || tSync('goalsStore.errorDelete');
         throw error;
       }
     },
@@ -68,7 +69,7 @@ export const useGoalStore = defineStore('goals', {
         if (index !== -1) this.goals[index] = { ...this.goals[index], ...updated };
         return updated;
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors de la mise à jour';
+        this.error = error.message || tSync('goalsStore.errorUpdate');
         throw error;
       }
     },
@@ -80,7 +81,7 @@ export const useGoalStore = defineStore('goals', {
         const index = this.goals.findIndex((g) => g.id === id);
         if (index !== -1) this.goals[index] = { ...this.goals[index], ...updated };
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors de la validation';
+        this.error = error.message || tSync('goalsStore.errorValidate');
         throw error;
       }
     },

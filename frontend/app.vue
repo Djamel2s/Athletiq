@@ -4,7 +4,7 @@
     <TopNav />
     <AuthLoader>
       <div class="pt-header">
-        <Breadcrumbs :key="route.fullPath"/>
+        <Breadcrumbs :key="route.fullPath" />
         <NuxtPage />
       </div>
     </AuthLoader>
@@ -16,9 +16,10 @@
 import TopNav from '~/components/TopNav.vue';
 import Breadcrumbs from '~/components/Breadcrumbs.vue';
 const route = useRoute();
+const { locale } = useLocale();
 useHead({
   htmlAttrs: {
-    lang: 'fr',
+    lang: computed(() => locale.value),
   },
 });
 

@@ -99,7 +99,7 @@
                   v-model="usernameInput"
                   type="text"
                   class="input-primary !pl-8"
-                  placeholder="ton_pseudo"
+                  :placeholder="t('profile.usernamePlaceholder')"
                 />
               </div>
               <p v-if="usernameChecking" class="text-xs text-primary-400 mt-1">

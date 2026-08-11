@@ -7,9 +7,9 @@
     <!-- Photo Selectors -->
     <div class="flex flex-col sm:flex-row gap-3 mb-6">
       <div class="flex-1">
-        <label class="block text-xs font-semibold text-primary-500 dark:text-primary-400 mb-1"
-          >Avant</label
-        >
+        <label class="block text-xs font-semibold text-primary-500 dark:text-primary-400 mb-1">{{
+          t('photoComparison.before')
+        }}</label>
         <select v-model="beforePhotoId" class="input-primary text-sm">
           <option v-for="photo in sortedPhotos" :key="photo.id" :value="photo.id">
             {{ formatDate(photo.workout?.date || photo.createdAt)
@@ -18,9 +18,9 @@
         </select>
       </div>
       <div class="flex-1">
-        <label class="block text-xs font-semibold text-primary-500 dark:text-primary-400 mb-1"
-          >Après</label
-        >
+        <label class="block text-xs font-semibold text-primary-500 dark:text-primary-400 mb-1">{{
+          t('photoComparison.after')
+        }}</label>
         <select v-model="afterPhotoId" class="input-primary text-sm">
           <option v-for="photo in sortedPhotos" :key="photo.id" :value="photo.id">
             {{ formatDate(photo.workout?.date || photo.createdAt)
@@ -119,14 +119,16 @@
         <div class="w-1/2 h-full overflow-hidden relative">
           <img
             :src="beforePhoto.photoUrl"
-            alt="Avant"
+            :alt="t('photoComparison.before')"
             class="absolute inset-0 w-[200%] h-full object-cover"
             style="object-position: center"
           />
           <div
             class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent"
           >
-            <p class="text-white text-xs font-semibold uppercase tracking-wider">Avant</p>
+            <p class="text-white text-xs font-semibold uppercase tracking-wider">
+              {{ t('photoComparison.before') }}
+            </p>
             <p class="text-white/70 text-[10px]">
               {{ formatDateShort(beforePhoto.workout?.date || beforePhoto.createdAt) }}
             </p>
@@ -138,14 +140,16 @@
         <div class="w-1/2 h-full overflow-hidden relative">
           <img
             :src="afterPhoto.photoUrl"
-            alt="Après"
+            :alt="t('photoComparison.after')"
             class="absolute inset-0 w-[200%] h-full object-cover"
             style="object-position: center; left: -100%"
           />
           <div
             class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent text-right"
           >
-            <p class="text-white text-xs font-semibold uppercase tracking-wider">Après</p>
+            <p class="text-white text-xs font-semibold uppercase tracking-wider">
+              {{ t('photoComparison.after') }}
+            </p>
             <p class="text-white/70 text-[10px]">
               {{ formatDateShort(afterPhoto.workout?.date || afterPhoto.createdAt) }}
             </p>
@@ -232,11 +236,11 @@
             </svg>
           </button>
           <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-4">
-            Partager ma transformation
+            {{ t('photoComparison.shareTransformation') }}
           </h3>
           <ShareCard
             :type="shareMode === 'split' ? 'beforeAfterSplit' : 'beforeAfter'"
-            title="Ma transformation Athletiq"
+            :title="t('photoComparison.myTransformation')"
             :before-image="beforePhoto.photoUrl"
             :after-image="afterPhoto.photoUrl"
             :data="{
@@ -252,6 +256,7 @@
 </template>
 
 <script setup lang="ts">
+const { t, locale } = useLocale();
 import type { ProgressPhoto } from '~/types/body';
 
 interface Props {
@@ -319,7 +324,7 @@ const updateSliderPosition = (e: PointerEvent) => {
 };
 
 const formatDate = (dateString: string) => {
-  return new Intl.DateTimeFormat('fr-FR', {
+  return new Intl.DateTimeFormat(locale.value === 'fr' ? 'fr-FR' : 'en-US', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -327,7 +332,7 @@ const formatDate = (dateString: string) => {
 };
 
 const formatDateShort = (dateString: string) => {
-  return new Intl.DateTimeFormat('fr-FR', {
+  return new Intl.DateTimeFormat(locale.value === 'fr' ? 'fr-FR' : 'en-US', {
     day: 'numeric',
     month: 'short',
   }).format(new Date(dateString));

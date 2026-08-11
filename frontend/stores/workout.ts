@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import type { Workout, Exercise, Set, ExerciseLibrary } from '~/types/workout';
+import { tSync } from '~/composables/useLocale';
 
 interface WorkoutState {
   workouts: Workout[];
@@ -50,7 +51,7 @@ export const useWorkoutStore = defineStore('workout', {
         const { workouts } = await api.getWorkouts();
         this.workouts = workouts || [];
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors du chargement des workouts';
+        this.error = error.message || tSync('workoutStore.errorLoadWorkouts');
         this.workouts = [];
         logger.error('Fetch workouts error:', error);
       } finally {
@@ -66,7 +67,7 @@ export const useWorkoutStore = defineStore('workout', {
         this.currentWorkout = await api.getWorkout(id);
         return this.currentWorkout;
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors du chargement du workout';
+        this.error = error.message || tSync('workoutStore.errorLoadWorkout');
         logger.error('Fetch workout error:', error);
         throw error;
       } finally {
@@ -96,7 +97,7 @@ export const useWorkoutStore = defineStore('workout', {
           statusCode: error.statusCode,
           fullError: error,
         });
-        this.error = error.data?.error || error.message || 'Erreur lors de la création du workout';
+        this.error = error.data?.error || error.message || tSync('workoutStore.errorCreate');
         throw error;
       } finally {
         this.isLoading = false;
@@ -118,7 +119,7 @@ export const useWorkoutStore = defineStore('workout', {
         }
         return workout;
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors de la mise à jour du workout';
+        this.error = error.message || tSync('workoutStore.errorUpdate');
         logger.error('Update workout error:', error);
         throw error;
       } finally {
@@ -136,8 +137,7 @@ export const useWorkoutStore = defineStore('workout', {
         this.workouts.push(workout);
         return workout;
       } catch (error: any) {
-        this.error =
-          error.data?.error || error.message || 'Erreur lors de la duplication du workout';
+        this.error = error.data?.error || error.message || tSync('workoutStore.errorDuplicate');
         logger.error('Duplicate workout error:', error);
         throw error;
       }
@@ -154,7 +154,7 @@ export const useWorkoutStore = defineStore('workout', {
           this.currentWorkout = null;
         }
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors de la suppression du workout';
+        this.error = error.message || tSync('workoutStore.errorDelete');
         logger.error('Delete workout error:', error);
         throw error;
       } finally {
@@ -175,7 +175,7 @@ export const useWorkoutStore = defineStore('workout', {
         this.currentWorkout = workout;
         return workout;
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors du démarrage du workout';
+        this.error = error.message || tSync('workoutStore.errorStart');
         logger.error('Start workout error:', error);
         throw error;
       } finally {
@@ -198,7 +198,7 @@ export const useWorkoutStore = defineStore('workout', {
         }
         return workout;
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors de la complétion du workout';
+        this.error = error.message || tSync('workoutStore.errorComplete');
         logger.error('Complete workout error:', error);
         throw error;
       } finally {
@@ -222,7 +222,7 @@ export const useWorkoutStore = defineStore('workout', {
         this.exerciseLibrary = exercises;
         return exercises;
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors du chargement des exercices';
+        this.error = error.message || tSync('workoutStore.errorLoadExercises');
         logger.error('Fetch exercise library error:', error);
         throw error;
       } finally {
@@ -263,7 +263,7 @@ export const useWorkoutStore = defineStore('workout', {
 
         return exercise;
       } catch (error: any) {
-        this.error = error.message || "Erreur lors de l'ajout de l'exercice";
+        this.error = error.message || tSync('workoutStore.errorAddExercise');
         logger.error('Add exercise error:', error);
         throw error;
       }
@@ -290,7 +290,7 @@ export const useWorkoutStore = defineStore('workout', {
 
         return exercise;
       } catch (error: any) {
-        this.error = error.message || "Erreur lors de la mise à jour de l'exercice";
+        this.error = error.message || tSync('workoutStore.errorUpdateExercise');
         logger.error('Update exercise error:', error);
         throw error;
       }
@@ -326,7 +326,7 @@ export const useWorkoutStore = defineStore('workout', {
 
         return set;
       } catch (error: any) {
-        this.error = error.message || "Erreur lors de l'ajout du set";
+        this.error = error.message || tSync('workoutStore.errorAddSet');
         logger.error('Add set error:', error);
         throw error;
       }
@@ -350,7 +350,7 @@ export const useWorkoutStore = defineStore('workout', {
 
         return set;
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors de la mise à jour du set';
+        this.error = error.message || tSync('workoutStore.errorUpdateSet');
         logger.error('Update set error:', error);
         throw error;
       }

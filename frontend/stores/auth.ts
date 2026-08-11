@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import getSupabase from '~/composables/useSupabase';
+import { tSync } from '~/composables/useLocale';
 
 interface User {
   id: number;
@@ -61,7 +62,7 @@ export const useAuthStore = defineStore('auth', {
         logger.error('Registration error:', error);
         return {
           success: false,
-          error: error.data?.error || "Erreur lors de l'inscription",
+          error: error.data?.error || tSync('authStore.errorRegister'),
         };
       }
     },
@@ -88,7 +89,7 @@ export const useAuthStore = defineStore('auth', {
         logger.error('Login error:', error);
         return {
           success: false,
-          error: error.data?.error || 'Email ou mot de passe incorrect',
+          error: error.data?.error || tSync('authStore.wrongCredentials'),
         };
       }
     },
@@ -98,11 +99,14 @@ export const useAuthStore = defineStore('auth', {
         if (!process.client) return { success: false, error: 'Client only' };
         const supabase = getSupabase();
         const redirectTo = window.location.origin + '/auth/callback';
-        const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo } });
+        const { error } = await supabase.auth.signInWithOtp({
+          email,
+          options: { emailRedirectTo: redirectTo },
+        });
         if (error) throw error;
         return { success: true };
       } catch (error: any) {
-        return { success: false, error: error.message || 'Erreur lors de l envoi du lien magique' };
+        return { success: false, error: error.message || tSync('authStore.errorMagicLink') };
       }
     },
 
@@ -159,7 +163,7 @@ export const useAuthStore = defineStore('auth', {
         logger.error('Update profile error:', error);
         return {
           success: false,
-          error: error.data?.error || 'Erreur lors de la mise à jour du profil',
+          error: error.data?.error || tSync('authStore.errorUpdateProfile'),
         };
       }
     },
@@ -185,7 +189,7 @@ export const useAuthStore = defineStore('auth', {
         logger.error('Avatar upload error:', error);
         return {
           success: false,
-          error: error.data?.error || "Erreur lors de l'upload de la photo",
+          error: error.data?.error || tSync('authStore.errorUploadPhoto'),
         };
       }
     },
@@ -207,7 +211,7 @@ export const useAuthStore = defineStore('auth', {
         logger.error('Avatar delete error:', error);
         return {
           success: false,
-          error: error.data?.error || 'Erreur lors de la suppression de la photo',
+          error: error.data?.error || tSync('authStore.errorDeletePhoto'),
         };
       }
     },

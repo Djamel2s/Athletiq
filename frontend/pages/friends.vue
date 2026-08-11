@@ -15,7 +15,7 @@
           <h1
             class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent"
           >
-            Gym Bros
+            {{ t('settings.gymBros') }}
           </h1>
         </div>
       </div>
@@ -23,7 +23,7 @@
       <!-- Add Gym Bro section -->
       <div class="card-glass !p-4 mb-6 slide-up">
         <h2 class="text-sm font-semibold text-primary-900 dark:text-primary-100 mb-3">
-          Ajouter un Gym Bro
+          {{ t('friends.addTitle') }}
         </h2>
         <div class="flex gap-2 mb-3">
           <NuxtLink
@@ -31,14 +31,14 @@
             class="btn-glass px-3 py-2 text-xs font-medium inline-flex items-center gap-1.5"
           >
             <Icon name="lucide:qr-code" class="w-3.5 h-3.5" />
-            Afficher mon QR
+            {{ t('friends.showQr') }}
           </NuxtLink>
         </div>
         <form @submit.prevent="handleSearchUser" class="flex gap-2">
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Entrer un pseudo..."
+            :placeholder="t('friends.searchPlaceholder')"
             class="input-primary flex-1 text-sm"
           />
           <button
@@ -119,7 +119,7 @@
                 : 'text-primary-600 dark:text-primary-400',
             ]"
           >
-            Mes Gym Bros
+            {{ t('friends.tabMine') }}
           </button>
           <button
             @click="activeTab = 'requests'"
@@ -130,7 +130,7 @@
                 : 'text-primary-600 dark:text-primary-400',
             ]"
           >
-            Demandes
+            {{ t('friends.tabRequests') }}
             <span
               v-if="pendingRequests.length > 0"
               class="ml-1 inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold rounded-full"
@@ -199,12 +199,12 @@
             class="w-16 h-16 mx-auto mb-4 text-primary-300 dark:text-primary-600"
           />
           <p class="text-primary-500 dark:text-primary-400 text-sm mb-2">
-            Aucun Gym Bro pour le moment
+            {{ t('friends.emptyList') }}
           </p>
           <NuxtLink
             to="/feed"
             class="text-sand-600 dark:text-sand-400 text-sm font-medium hover:underline"
-            >Rechercher des utilisateurs</NuxtLink
+            >{{ t('friends.searchUsers') }}</NuxtLink
           >
         </div>
       </div>
@@ -262,7 +262,9 @@
             name="lucide:inbox"
             class="w-16 h-16 mx-auto mb-4 text-primary-300 dark:text-primary-600"
           />
-          <p class="text-primary-500 dark:text-primary-400 text-sm">Aucune demande en attente</p>
+          <p class="text-primary-500 dark:text-primary-400 text-sm">
+            {{ t('friends.emptyRequests') }}
+          </p>
         </div>
       </div>
     </div>
@@ -272,6 +274,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useLocale();
 /* TopNav imported and rendered globally in app.vue; per-page import removed */
 import { useSocialApi } from '~/composables/useSocialApi';
 

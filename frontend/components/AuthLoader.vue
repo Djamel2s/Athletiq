@@ -7,7 +7,7 @@
       <div
         class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-primary-200 dark:border-primary-700 border-t-sand-500 dark:border-t-sand-400 mb-4"
       ></div>
-      <p class="text-sm text-primary-500 dark:text-primary-400">Chargement...</p>
+      <p class="text-sm text-primary-500 dark:text-primary-400">{{ t('common.loading') }}</p>
     </div>
   </div>
   <slot v-else />
@@ -15,6 +15,7 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth';
+const { t } = useLocale();
 const authStore = useAuthStore();
 const route = useRoute();
 

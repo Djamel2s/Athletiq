@@ -322,7 +322,9 @@
                   class="w-4 h-4 text-primary-400 dark:text-primary-500"
                 />
               </div>
-              <p class="text-[11px] text-primary-500 dark:text-primary-400">Workouts</p>
+              <p class="text-[11px] text-primary-500 dark:text-primary-400">
+                {{ t('profile.stats.workouts') }}
+              </p>
             </button>
             <button
               @click="openGymBrosModal"
@@ -340,7 +342,9 @@
                 }}</span>
                 <Icon name="lucide:users" class="w-4 h-4 text-primary-400 dark:text-primary-500" />
               </div>
-              <p class="text-[11px] text-primary-500 dark:text-primary-400">Gym Bros</p>
+              <p class="text-[11px] text-primary-500 dark:text-primary-400">
+                {{ t('profile.stats.gymBros') }}
+              </p>
             </button>
             <button
               @click="openStreakModal"
@@ -366,7 +370,9 @@
                   "
                 />
               </div>
-              <p class="text-[11px] text-primary-500 dark:text-primary-400">Streak</p>
+              <p class="text-[11px] text-primary-500 dark:text-primary-400">
+                {{ t('profile.stats.streak') }}
+              </p>
             </button>
           </div>
 

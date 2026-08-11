@@ -13,17 +13,18 @@
             d="M15 19l-7-7 7-7"
           />
         </svg>
-        Retour
+        {{ t('common.back') }}
       </NuxtLink>
 
       <h1 class="text-3xl md:text-4xl font-bold text-primary-900 dark:text-primary-100 mb-8">
-        Conditions Générales d'Utilisation
+        {{ t('legal.cgu.title') }}
       </h1>
       <p class="text-sm text-primary-500 dark:text-primary-400 mb-8">
-        Dernière mise à jour : 8 mars 2026
+        {{ t('legal.lastUpdated') }}
       </p>
 
       <div
+        v-if="locale === 'fr'"
         class="prose prose-primary dark:prose-invert max-w-none space-y-6 text-primary-700 dark:text-primary-300"
       >
         <section>
@@ -158,6 +159,138 @@
           </p>
         </section>
       </div>
+      <div
+        v-else
+        class="prose prose-primary dark:prose-invert max-w-none space-y-6 text-primary-700 dark:text-primary-300"
+      >
+        <section>
+          <h2 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-3">
+            1. Purpose
+          </h2>
+          <p>
+            These Terms of Use govern the use of the Athletiq application, accessible via the web
+            and mobile apps. By using Athletiq, you accept these Terms in their entirety.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-3">
+            2. Service description
+          </h2>
+          <p>Athletiq is a strength training tracking app that allows you to:</p>
+          <ul class="list-disc pl-6 space-y-1 mt-2">
+            <li>Create and track workout sessions</li>
+            <li>Log performance (weight, reps, sets)</li>
+            <li>Track body measurements and progress photos</li>
+            <li>View personal statistics and goals</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-3">
+            3. Registration and account
+          </h2>
+          <p>
+            Using Athletiq requires creating an account. You are responsible for keeping your
+            credentials confidential. Any activity carried out from your account is deemed to be
+            your own.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-3">
+            4. Subscriptions and pricing
+          </h2>
+          <p>
+            Athletiq offers a free plan with limited features and paid subscriptions (monthly and
+            annual) offering full access. Pricing is shown on the subscription page. Payments are
+            securely processed via Stripe.
+          </p>
+          <p class="mt-2">
+            Subscriptions renew automatically. You can cancel at any time from your account
+            settings. Cancellation takes effect at the end of the current period.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-3">
+            5. Trial period
+          </h2>
+          <p>
+            Every new user gets a free 14-day trial giving access to all premium features. At the
+            end of this period, the account automatically switches to the free plan if no
+            subscription has been taken out.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-3">
+            6. Acceptable use
+          </h2>
+          <p>You agree to use Athletiq in compliance with applicable laws and not to:</p>
+          <ul class="list-disc pl-6 space-y-1 mt-2">
+            <li>Attempt to gain unauthorized access to the service</li>
+            <li>Use the service for fraudulent purposes</li>
+            <li>Post unlawful content through the application's features</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-3">
+            7. Intellectual property
+          </h2>
+          <p>
+            All elements making up Athletiq (code, design, brand, content) are protected by
+            intellectual property law. Any unauthorized reproduction or use is strictly prohibited.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-3">
+            8. Limitation of liability
+          </h2>
+          <p>
+            Athletiq is provided "as is". We do not guarantee the absence of interruptions or
+            errors. Athletiq does not replace professional medical advice. Consult a healthcare
+            professional before starting any training program.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-3">
+            9. Termination
+          </h2>
+          <p>
+            You can delete your account at any time. We reserve the right to suspend or delete an
+            account in the event of a breach of these Terms.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-3">
+            10. Changes
+          </h2>
+          <p>
+            We reserve the right to amend these Terms. Users will be informed of any substantial
+            change. Continued use of the service after a change constitutes acceptance of the new
+            terms.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-3">
+            11. Contact
+          </h2>
+          <p>
+            For any question regarding these Terms, you can contact us at:
+            <strong>contact@athletiq.fr</strong>
+          </p>
+        </section>
+      </div>
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+const { t, locale } = useLocale();
+</script>

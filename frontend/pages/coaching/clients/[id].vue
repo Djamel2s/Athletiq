@@ -9,7 +9,8 @@
           <Icon name="lucide:arrow-left" class="w-5 h-5 text-primary-600 dark:text-primary-400" />
         </NuxtLink>
         <h1 class="text-xl font-bold text-primary-900 dark:text-primary-100">
-          {{ overview?.athlete?.firstName || 'Client' }} {{ overview?.athlete?.lastName || '' }}
+          {{ overview?.athlete?.firstName || t('coaching.client') }}
+          {{ overview?.athlete?.lastName || '' }}
         </h1>
       </div>
 
@@ -26,13 +27,17 @@
             <p class="text-2xl font-bold text-primary-900 dark:text-primary-100">
               {{ overview.totalWorkouts ?? '—' }}
             </p>
-            <p class="text-xs text-primary-500 dark:text-primary-400">séances</p>
+            <p class="text-xs text-primary-500 dark:text-primary-400">
+              {{ t('streak.totalSessions').toLowerCase() }}
+            </p>
           </div>
           <div>
             <p class="text-2xl font-bold text-primary-900 dark:text-primary-100">
               {{ overview.assignedPrograms?.length ?? 0 }}
             </p>
-            <p class="text-xs text-primary-500 dark:text-primary-400">programmes assignés</p>
+            <p class="text-xs text-primary-500 dark:text-primary-400">
+              {{ t('coaching.assignedPrograms') }}
+            </p>
           </div>
         </div>
 
@@ -42,20 +47,20 @@
           class="card-glass !p-4 mb-6 text-xs text-primary-500 dark:text-primary-400 flex items-center gap-2"
         >
           <Icon name="lucide:lock" class="w-4 h-4 flex-shrink-0" />
-          Ce client n'a pas encore autorisé l'accès à ses séances.
+          {{ t('coaching.noWorkoutAccess') }}
         </div>
 
         <!-- Assign program -->
         <div class="card-glass !p-4 mb-6 slide-up">
           <h2 class="text-sm font-semibold text-primary-900 dark:text-primary-100 mb-3">
-            Assigner un programme
+            {{ t('coaching.assignProgram') }}
           </h2>
           <div v-if="!overview.permissions.canAssignPrograms" class="text-xs text-primary-400">
-            Ce client n'a pas autorisé l'assignation de programmes.
+            {{ t('coaching.noAssignAccess') }}
           </div>
           <div v-else class="flex gap-2">
             <select v-model="selectedProgramSlug" class="input-primary flex-1 text-sm">
-              <option value="" disabled>Choisir un programme…</option>
+              <option value="" disabled>{{ t('coaching.chooseProgram') }}</option>
               <option v-for="p in programs" :key="p.slug" :value="p.slug">
                 {{ p.name }} ({{ p.daysPerWeek }}j/sem)
               </option>
@@ -66,7 +71,7 @@
               class="btn-primary !px-4 !py-2 text-sm font-semibold disabled:opacity-50"
             >
               <Icon v-if="assigning" name="lucide:loader-2" class="w-4 h-4 animate-spin" />
-              <span v-else>Assigner</span>
+              <span v-else>{{ t('coaching.assign') }}</span>
             </button>
           </div>
         </div>
@@ -74,10 +79,13 @@
         <!-- Recent workouts -->
         <div v-if="overview.permissions.canViewWorkouts" class="mb-6">
           <h2 class="text-sm font-semibold text-primary-900 dark:text-primary-100 mb-3">
-            Séances récentes
+            {{ t('coaching.recentSessions') }}
           </h2>
-          <div v-if="!overview.recentWorkouts?.length" class="card-glass !p-4 text-center text-xs text-primary-400">
-            Aucune séance enregistrée
+          <div
+            v-if="!overview.recentWorkouts?.length"
+            class="card-glass !p-4 text-center text-xs text-primary-400"
+          >
+            {{ t('coaching.noSessionLogged') }}
           </div>
           <div v-else class="space-y-2">
             <div
@@ -92,7 +100,12 @@
                 <p class="text-xs text-primary-400">{{ formatDate(w.completedAt || w.date) }}</p>
               </div>
               <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
-                {{ w.exercises?.length || 0 }} exercice{{ (w.exercises?.length || 0) > 1 ? 's' : '' }}
+                {{
+                  t('shared.exerciseCount', {
+                    count: w.exercises?.length || 0,
+                    plural: (w.exercises?.length || 0) > 1 ? 's' : '',
+                  })
+                }}
               </p>
             </div>
           </div>
@@ -101,13 +114,13 @@
         <!-- Notes -->
         <div class="mb-6">
           <h2 class="text-sm font-semibold text-primary-900 dark:text-primary-100 mb-3">
-            Notes privées
+            {{ t('coaching.privateNotes') }}
           </h2>
           <form @submit.prevent="handleAddNote" class="flex gap-2 mb-3">
             <input
               v-model="noteContent"
               type="text"
-              placeholder="Ajouter une note pour ce client…"
+              :placeholder="t('coaching.addNotePlaceholder')"
               class="input-primary flex-1 text-sm"
             />
             <button
@@ -140,6 +153,8 @@
 <script setup lang="ts">
 import { useCoachingApi } from '~/composables/useCoachingApi';
 import { useProgramApi } from '~/composables/useProgramApi';
+
+const { t } = useLocale();
 
 definePageMeta({
   layout: false,
@@ -176,7 +191,7 @@ async function load() {
     programs.value = progs;
     notes.value = notesRes.notes;
   } catch (e: any) {
-    toast.error('Erreur', e?.data?.error || 'Impossible de charger ce client');
+    toast.error(t('common.error'), e?.data?.error || t('coaching.errorLoadClient'));
   } finally {
     loading.value = false;
   }
@@ -187,11 +202,11 @@ async function handleAssign() {
   assigning.value = true;
   try {
     await assignProgram(athleteId, selectedProgramSlug.value);
-    toast.success('Programme assigné', 'Votre client le retrouvera dans ses templates');
+    toast.success(t('coaching.toastAssigned'), t('coaching.toastAssignedDesc'));
     selectedProgramSlug.value = '';
     await load();
   } catch (e: any) {
-    toast.error('Erreur', e?.data?.error || "Impossible d'assigner le programme");
+    toast.error(t('common.error'), e?.data?.error || t('coaching.errorAssign'));
   } finally {
     assigning.value = false;
   }
@@ -206,7 +221,7 @@ async function handleAddNote() {
     const res = await getClientNotes(athleteId);
     notes.value = res.notes;
   } catch (e: any) {
-    toast.error('Erreur', e?.data?.error || "Impossible d'ajouter la note");
+    toast.error(t('common.error'), e?.data?.error || t('coaching.errorAddNote'));
   } finally {
     addingNote.value = false;
   }

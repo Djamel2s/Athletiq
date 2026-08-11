@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import type { BodyStat, Measurement, ProgressPhoto, PersonalRecord } from '~/types/body';
+import { tSync } from '~/composables/useLocale';
 
 interface BodyState {
   bodyStats: BodyStat[];
@@ -56,7 +57,7 @@ export const useBodyStore = defineStore('body', {
         const { data } = await api.getBodyStats();
         this.bodyStats = data;
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors du chargement des stats corporelles';
+        this.error = error.message || tSync('bodyStore.errorLoadStats');
         logger.error('Fetch body stats error:', error);
       } finally {
         this.isLoading = false;
@@ -70,7 +71,7 @@ export const useBodyStore = defineStore('body', {
         this.bodyStats.unshift(stat);
         return stat;
       } catch (error: any) {
-        this.error = error.message || "Erreur lors de l'ajout";
+        this.error = error.message || tSync('bodyStore.errorAddStat');
         throw error;
       }
     },
@@ -83,7 +84,7 @@ export const useBodyStore = defineStore('body', {
         if (index !== -1) this.bodyStats[index] = updated;
         return updated;
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors de la mise à jour';
+        this.error = error.message || tSync('bodyStore.errorUpdateStat');
         throw error;
       }
     },
@@ -94,7 +95,7 @@ export const useBodyStore = defineStore('body', {
         await api.deleteBodyStat(id);
         this.bodyStats = this.bodyStats.filter((s) => s.id !== id);
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors de la suppression';
+        this.error = error.message || tSync('bodyStore.errorDeleteStat');
         throw error;
       }
     },
@@ -108,7 +109,7 @@ export const useBodyStore = defineStore('body', {
         const { data } = await api.getMeasurements();
         this.measurements = data;
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors du chargement des mensurations';
+        this.error = error.message || tSync('bodyStore.errorLoadMeasurements');
         logger.error('Fetch measurements error:', error);
       } finally {
         this.isLoading = false;
@@ -122,7 +123,7 @@ export const useBodyStore = defineStore('body', {
         this.measurements.unshift(measurement);
         return measurement;
       } catch (error: any) {
-        this.error = error.message || "Erreur lors de l'ajout";
+        this.error = error.message || tSync('bodyStore.errorAddMeasurement');
         throw error;
       }
     },
@@ -135,7 +136,7 @@ export const useBodyStore = defineStore('body', {
         if (index !== -1) this.measurements[index] = updated;
         return updated;
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors de la mise à jour';
+        this.error = error.message || tSync('bodyStore.errorUpdateMeasurement');
         throw error;
       }
     },
@@ -146,7 +147,7 @@ export const useBodyStore = defineStore('body', {
         await api.deleteMeasurement(id);
         this.measurements = this.measurements.filter((m) => m.id !== id);
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors de la suppression';
+        this.error = error.message || tSync('bodyStore.errorDeleteMeasurement');
         throw error;
       }
     },
@@ -159,7 +160,7 @@ export const useBodyStore = defineStore('body', {
         const api = useBodyApi();
         this.photos = await api.getRecentPhotos(50);
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors du chargement des photos';
+        this.error = error.message || tSync('bodyStore.errorLoadPhotos');
         logger.error('Fetch photos error:', error);
       } finally {
         this.isLoading = false;
@@ -173,7 +174,7 @@ export const useBodyStore = defineStore('body', {
         this.photos.unshift(photo);
         return photo;
       } catch (error: any) {
-        this.error = error.message || "Erreur lors de l'upload";
+        this.error = error.message || tSync('bodyStore.errorUpload');
         throw error;
       }
     },
@@ -183,7 +184,7 @@ export const useBodyStore = defineStore('body', {
         const api = useBodyApi();
         return await api.getTimelapse(startDate, endDate);
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors du chargement du timelapse';
+        this.error = error.message || tSync('bodyStore.errorLoadTimelapse');
         throw error;
       }
     },
@@ -194,7 +195,7 @@ export const useBodyStore = defineStore('body', {
         await api.deletePhoto(id);
         this.photos = this.photos.filter((p) => p.id !== id);
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors de la suppression';
+        this.error = error.message || tSync('bodyStore.errorDeletePhoto');
         throw error;
       }
     },
@@ -207,7 +208,7 @@ export const useBodyStore = defineStore('body', {
         const api = useBodyApi();
         this.records = await api.getPersonalRecords();
       } catch (error: any) {
-        this.error = error.message || 'Erreur lors du chargement des records';
+        this.error = error.message || tSync('bodyStore.errorLoadRecords');
         logger.error('Fetch records error:', error);
       } finally {
         this.isLoading = false;

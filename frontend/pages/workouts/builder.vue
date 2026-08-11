@@ -24,12 +24,12 @@
         <div class="space-y-6">
           <div>
             <label class="block text-sm font-semibold text-primary-700 dark:text-primary-300 mb-2">
-              Nom du workout *
+              {{ t('workoutBuilder.nameLabel') }}
             </label>
             <input
               v-model="workoutForm.name"
               type="text"
-              placeholder="Ex: Push Day, Full Body, etc."
+              :placeholder="t('workoutBuilder.namePlaceholder')"
               class="input-primary w-full"
               maxlength="200"
               required
@@ -38,11 +38,11 @@
 
           <div>
             <label class="block text-sm font-semibold text-primary-700 dark:text-primary-300 mb-2">
-              Description (optionnel)
+              {{ t('workoutBuilder.descLabel') }}
             </label>
             <textarea
               v-model="workoutForm.description"
-              placeholder="Décrivez votre entraînement..."
+              :placeholder="t('workoutBuilder.descPlaceholder')"
               rows="3"
               class="input-primary w-full"
               maxlength="2000"
@@ -73,7 +73,7 @@
                 v-if="selectedExercises.length >= 2"
                 @click="applyOptimalOrder"
                 class="btn-outline text-sm"
-                title="Trier les exercices pour un entraînement optimal"
+                :title="t('workoutBuilder.optimizeOrderTitle')"
               >
                 <svg
                   class="w-4 h-4 inline-block mr-1"
@@ -88,18 +88,20 @@
                     d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"
                   />
                 </svg>
-                Optimiser l'ordre
+                {{ t('workoutBuilder.optimizeOrder') }}
               </button>
               <button @click="showExerciseLibrary = true" class="btn-primary">
-                + Ajouter un exercice
+                + {{ t('workoutBuilder.addExercise') }}
               </button>
             </div>
           </div>
 
           <div v-if="selectedExercises.length === 0" class="text-center py-12">
-            <p class="text-primary-500 dark:text-primary-400 text-lg mb-4">Aucun exercice ajouté</p>
+            <p class="text-primary-500 dark:text-primary-400 text-lg mb-4">
+              {{ t('workoutBuilder.noExercises') }}
+            </p>
             <button @click="showExerciseLibrary = true" class="btn-outline">
-              Parcourir la bibliothèque
+              {{ t('workoutBuilder.browseLibrary') }}
             </button>
           </div>
 
@@ -187,10 +189,12 @@
                         v-model.number="set.targetReps"
                         type="number"
                         min="1"
-                        placeholder="Reps"
+                        :placeholder="t('workoutBuilder.reps')"
                         class="w-14 px-1.5 py-1.5 border border-primary-200 dark:border-primary-700 rounded-lg text-center text-xs font-semibold bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100 focus:border-sand-500 focus:ring-1 focus:ring-sand-500/30 transition-colors"
                       />
-                      <span class="text-[10px] text-primary-400 dark:text-primary-500">reps ×</span>
+                      <span class="text-[10px] text-primary-400 dark:text-primary-500">{{
+                        t('workoutBuilder.repsX')
+                      }}</span>
                       <input
                         v-model.number="set.targetWeight"
                         type="number"
@@ -228,7 +232,7 @@
                         d="M12 4v16m8-8H4"
                       />
                     </svg>
-                    Série {{ getExerciseSets(exercise).length + 1 }}
+                    {{ t('workoutBuilder.addSet', { n: getExerciseSets(exercise).length + 1 }) }}
                   </button>
                 </div>
               </div>
@@ -241,16 +245,17 @@
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h3 class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-1">
-                Workout prêt!
+                {{ t('workoutBuilder.ready') }}
               </h3>
               <p class="text-sm text-primary-600 dark:text-primary-400">
-                {{ selectedExercises.length }} exercice(s) ajouté(s) • Ce workout sera disponible
-                dans "Lancer un entrainement" à la salle
+                {{ t('workoutBuilder.readyDesc', { count: selectedExercises.length }) }}
               </p>
             </div>
 
             <div class="flex space-x-4">
-              <button @click="navigateTo('/workouts')" class="btn-outline">Annuler</button>
+              <button @click="navigateTo('/workouts')" class="btn-outline">
+                {{ t('common.cancel') }}
+              </button>
               <button
                 @click="saveWorkout"
                 :disabled="selectedExercises.length === 0 || isSaving"
@@ -518,6 +523,7 @@ const searchQuery = ref('');
 const filterMuscleGroup = ref('');
 const filterEquipment = ref('');
 const filterDifficulty = ref('');
+const { t } = useLocale();
 
 // Auth handled by middleware
 
@@ -536,7 +542,7 @@ const createWorkout = async () => {
     workoutId.value = workout.id;
   } catch (error) {
     logger.error('Failed to create workout:', error);
-    toast.error('Erreur', 'Impossible de créer le workout');
+    toast.error(t('common.error'), t('workoutBuilder.errorCreate'));
   } finally {
     isCreating.value = false;
   }
@@ -582,7 +588,7 @@ const addExercise = async (exercise: ExerciseLibrary) => {
     showExerciseLibrary.value = false;
   } catch (error) {
     logger.error('Failed to add exercise:', error);
-    toast.error('Erreur', "Impossible d'ajouter l'exercice");
+    toast.error(t('common.error'), t('workoutBuilder.errorAddExercise'));
   }
 };
 
@@ -622,12 +628,12 @@ const removeSet = (exercise: any, index: number) => {
 
 const saveWorkout = async () => {
   if (!workoutId.value) {
-    toast.warning('Attention', "Veuillez d'abord créer le workout");
+    toast.warning(t('common.warning'), t('workoutBuilder.warnCreateFirst'));
     return;
   }
 
   if (selectedExercises.value.length === 0) {
-    toast.warning('Attention', 'Ajoutez au moins un exercice avant de sauvegarder');
+    toast.warning(t('common.warning'), t('workoutBuilder.warnAddExercise'));
     return;
   }
 
@@ -658,7 +664,7 @@ const saveWorkout = async () => {
     showSavedModal.value = true;
   } catch (error) {
     logger.error('Failed to save workout:', error);
-    toast.error('Erreur', 'Impossible de sauvegarder le workout');
+    toast.error(t('common.error'), t('workoutBuilder.errorSave'));
   } finally {
     isSaving.value = false;
   }

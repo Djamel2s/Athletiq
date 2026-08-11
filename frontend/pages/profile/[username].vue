@@ -8,7 +8,9 @@
         <div
           class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary-300 dark:border-primary-600 border-t-primary-600 dark:border-t-primary-400"
         ></div>
-        <p class="mt-4 text-primary-500 dark:text-primary-400">Chargement du profil...</p>
+        <p class="mt-4 text-primary-500 dark:text-primary-400">
+          {{ t('profilePage.loadingProfile') }}
+        </p>
       </div>
 
       <!-- Not found -->
@@ -21,11 +23,11 @@
           Utilisateur introuvable
         </h2>
         <p class="text-primary-500 dark:text-primary-400 text-sm mb-6">
-          Ce profil n'existe pas ou a ete supprime
+          {{ t('profilePage.notFound') }}
         </p>
-        <NuxtLink to="/feed" class="btn-primary px-6 py-2.5 text-sm font-medium"
-          >Retour au feed</NuxtLink
-        >
+        <NuxtLink to="/feed" class="btn-primary px-6 py-2.5 text-sm font-medium">{{
+          t('profilePage.backToFeed')
+        }}</NuxtLink>
       </div>
 
       <!-- Profile content -->
@@ -125,7 +127,7 @@
             @click="handleBlock"
             :disabled="actionLoading"
             class="btn-glass px-4 py-2.5 text-sm text-primary-400 hover:text-red-500"
-            title="Bloquer"
+            :title="t('profilePage.block')"
           >
             <Icon name="lucide:shield-off" class="w-4 h-4" />
           </button>
@@ -161,7 +163,9 @@
                   class="w-4 h-4 text-primary-400 dark:text-primary-500"
                 />
               </div>
-              <p class="text-[11px] text-primary-500 dark:text-primary-400">Workouts</p>
+              <p class="text-[11px] text-primary-500 dark:text-primary-400">
+                {{ t('profile.stats.workouts') }}
+              </p>
             </div>
             <div class="text-center">
               <div class="flex items-center justify-center gap-1.5">
@@ -170,7 +174,9 @@
                 }}</span>
                 <Icon name="lucide:weight" class="w-4 h-4 text-primary-400 dark:text-primary-500" />
               </div>
-              <p class="text-[11px] text-primary-500 dark:text-primary-400">Volume (kg)</p>
+              <p class="text-[11px] text-primary-500 dark:text-primary-400">
+                {{ t('profilePage.volumeKg') }}
+              </p>
             </div>
             <div class="text-center">
               <div class="flex items-center justify-center gap-1.5">
@@ -187,7 +193,9 @@
                   "
                 />
               </div>
-              <p class="text-[11px] text-primary-500 dark:text-primary-400">Streak</p>
+              <p class="text-[11px] text-primary-500 dark:text-primary-400">
+                {{ t('profile.stats.streak') }}
+              </p>
             </div>
           </div>
 
@@ -255,7 +263,9 @@
                 name="lucide:camera"
                 class="w-12 h-12 mx-auto mb-3 text-primary-300 dark:text-primary-600"
               />
-              <p class="text-primary-500 dark:text-primary-400 text-sm">Aucune photo</p>
+              <p class="text-primary-500 dark:text-primary-400 text-sm">
+                {{ t('profilePage.noPhoto') }}
+              </p>
             </div>
           </div>
 
@@ -301,7 +311,9 @@
                 name="lucide:file-text"
                 class="w-12 h-12 mx-auto mb-3 text-primary-300 dark:text-primary-600"
               />
-              <p class="text-primary-500 dark:text-primary-400 text-sm">Aucun post</p>
+              <p class="text-primary-500 dark:text-primary-400 text-sm">
+                {{ t('profilePage.noPost') }}
+              </p>
             </div>
           </div>
         </template>
@@ -337,6 +349,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useLocale();
 /* TopNav imported and rendered globally in app.vue; per-page import removed */
 import { useSocialApi } from '~/composables/useSocialApi';
 
@@ -404,7 +417,7 @@ const loadProfile = async () => {
     if (err?.statusCode === 404) {
       notFound.value = true;
     } else {
-      toast.error('Erreur', 'Impossible de charger le profil');
+      toast.error(t('common.error'), t('profilePage.errorLoad'));
       notFound.value = true;
     }
   } finally {
@@ -418,9 +431,12 @@ const handleSendRequest = async () => {
   try {
     await sendFriendRequest(profile.value.id);
     profile.value.requestPending = true;
-    toast.success('Demande envoyee', `Demande envoyee a ${profile.value.firstName}`);
+    toast.success(
+      t('profilePage.toastRequestSent'),
+      t('profilePage.toastRequestSentDesc', { name: profile.value.firstName })
+    );
   } catch (err: any) {
-    toast.error('Erreur', err?.data?.error || "Impossible d'envoyer la demande");
+    toast.error(t('common.error'), err?.data?.error || t('profilePage.errorSendRequest'));
   } finally {
     actionLoading.value = false;
   }
@@ -432,9 +448,9 @@ const handleRemoveFriend = async () => {
   try {
     await removeFriend(profile.value.id);
     profile.value.isFriend = false;
-    toast.info('Gym Bro retire');
+    toast.info(t('profilePage.toastGymBroRemoved'));
   } catch (err: any) {
-    toast.error('Erreur', err?.data?.error || 'Impossible de retirer le Gym Bro');
+    toast.error(t('common.error'), err?.data?.error || t('profilePage.errorRemoveGymBro'));
   } finally {
     actionLoading.value = false;
   }
@@ -445,10 +461,10 @@ const handleBlock = async () => {
   actionLoading.value = true;
   try {
     await blockUser(profile.value.id);
-    toast.info('Utilisateur bloque');
+    toast.info(t('profilePage.toastUserBlocked'));
     navigateTo('/feed');
   } catch (err: any) {
-    toast.error('Erreur', err?.data?.error || "Impossible de bloquer l'utilisateur");
+    toast.error(t('common.error'), err?.data?.error || t('profilePage.errorBlockUser'));
   } finally {
     actionLoading.value = false;
   }

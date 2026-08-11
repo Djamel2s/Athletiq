@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+const { t, locale } = useLocale();
 const props = defineProps<{
   cardType: 'progression' | 'top5' | 'records' | 'goals' | 'overview';
   data: Record<string, any>;
@@ -176,11 +177,11 @@ const drawOverview = (ctx: CanvasRenderingContext2D) => {
   ctx.font = `700 64px ${FONT}`;
   ctx.fillStyle = C.text;
   ctx.textAlign = 'center';
-  ctx.fillText('Ma Progression', W / 2, 220);
+  ctx.fillText(t('shareButton.myProgress'), W / 2, 220);
 
   ctx.font = `400 32px ${FONT}`;
   ctx.fillStyle = C.textMuted;
-  ctx.fillText(d.period || 'Depuis le debut', W / 2, 270);
+  ctx.fillText(d.period || t('shareButton.sinceStart'), W / 2, 270);
 
   // Big number - total workouts
   ctx.font = `800 220px ${FONT}`;
@@ -188,7 +189,7 @@ const drawOverview = (ctx: CanvasRenderingContext2D) => {
   ctx.fillText(String(d.totalWorkouts || 0), W / 2, 530);
   ctx.font = `500 44px ${FONT}`;
   ctx.fillStyle = C.sandDark;
-  ctx.fillText('ENTRAINEMENTS', W / 2, 590);
+  ctx.fillText(t('shareButton.workoutsUpper'), W / 2, 590);
 
   // Separator
   ctx.fillStyle = C.cardBorder;
@@ -201,9 +202,25 @@ const drawOverview = (ctx: CanvasRenderingContext2D) => {
   const startX = (W - bw * 2 - gap) / 2;
   const startY = 680;
 
-  drawStatBox(ctx, startX, startY, bw, bh, d.calories || '0', 'Calories brulees');
-  drawStatBox(ctx, startX + bw + gap, startY, bw, bh, d.totalTime || '0h', 'Temps total');
-  drawStatBox(ctx, startX, startY + bh + gap, bw, bh, d.avgDuration || '0min', 'Duree moyenne');
+  drawStatBox(ctx, startX, startY, bw, bh, d.calories || '0', t('shareButton.caloriesBurned'));
+  drawStatBox(
+    ctx,
+    startX + bw + gap,
+    startY,
+    bw,
+    bh,
+    d.totalTime || '0h',
+    t('shareButton.totalTime')
+  );
+  drawStatBox(
+    ctx,
+    startX,
+    startY + bh + gap,
+    bw,
+    bh,
+    d.avgDuration || '0min',
+    t('shareButton.avgDuration')
+  );
   drawStatBox(
     ctx,
     startX + bw + gap,
@@ -211,7 +228,7 @@ const drawOverview = (ctx: CanvasRenderingContext2D) => {
     bw,
     bh,
     String(d.streak || 0),
-    'Serie en cours'
+    t('shareButton.currentStreak')
   );
 
   // Volume - value and unit drawn separately
@@ -234,7 +251,7 @@ const drawOverview = (ctx: CanvasRenderingContext2D) => {
   ctx.font = `400 28px ${FONT}`;
   ctx.fillStyle = C.textMuted;
   ctx.textAlign = 'center';
-  ctx.fillText('de volume total souleve', W / 2, volY + 45);
+  ctx.fillText(t('shareButton.totalVolumeLifted'), W / 2, volY + 45);
 
   drawFooter(ctx);
 };
@@ -247,7 +264,7 @@ const drawTop5 = (ctx: CanvasRenderingContext2D) => {
   ctx.font = `700 64px ${FONT}`;
   ctx.fillStyle = C.text;
   ctx.textAlign = 'center';
-  ctx.fillText('Top 5 Exercices', W / 2, 220);
+  ctx.fillText(t('shareButton.top5Exercises'), W / 2, 220);
 
   const startY = 320;
   const rowH = 160;
@@ -308,12 +325,12 @@ const drawRecords = (ctx: CanvasRenderingContext2D) => {
   ctx.font = `700 64px ${FONT}`;
   ctx.fillStyle = C.text;
   ctx.textAlign = 'center';
-  ctx.fillText('Records Personnels', W / 2, 220);
+  ctx.fillText(t('shareButton.personalRecords'), W / 2, 220);
 
   // Star icon
   ctx.font = `400 28px ${FONT}`;
   ctx.fillStyle = C.textMuted;
-  ctx.fillText('Mes meilleures performances', W / 2, 268);
+  ctx.fillText(t('shareButton.bestPerformances'), W / 2, 268);
 
   const startY = 340;
   const cardW = (W - M * 2 - 24) / 2;
@@ -363,9 +380,10 @@ const drawRecords = (ctx: CanvasRenderingContext2D) => {
     if (r.date) {
       ctx.textAlign = 'right';
       const d = new Date(r.date);
-      const dateStr = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(
-        d
-      );
+      const dateStr = new Intl.DateTimeFormat(locale.value === 'fr' ? 'fr-FR' : 'en-US', {
+        day: 'numeric',
+        month: 'short',
+      }).format(d);
       ctx.fillText(dateStr, x + cardW - 28, y + 180);
     }
   });
@@ -381,7 +399,7 @@ const drawGoals = (ctx: CanvasRenderingContext2D) => {
   ctx.font = `700 64px ${FONT}`;
   ctx.fillStyle = C.text;
   ctx.textAlign = 'center';
-  ctx.fillText('Mes Objectifs', W / 2, 220);
+  ctx.fillText(t('shareButton.myGoals'), W / 2, 220);
 
   const achieved = goals.filter((g: any) => g.achieved).length;
   const total = goals.length;
@@ -431,7 +449,11 @@ const drawGoals = (ctx: CanvasRenderingContext2D) => {
     ctx.font = `700 28px ${FONT}`;
     ctx.fillStyle = g.achieved ? C.sand : C.textSoft;
     ctx.textAlign = 'left';
-    ctx.fillText(g.achieved ? 'Atteint' : `${Math.round(progress * 100)}%`, M + 30, y + 140);
+    ctx.fillText(
+      g.achieved ? t('streak.achieved') : `${Math.round(progress * 100)}%`,
+      M + 30,
+      y + 140
+    );
 
     // Target value on right
     ctx.font = `400 26px ${FONT}`;
@@ -451,18 +473,18 @@ const drawProgression = (ctx: CanvasRenderingContext2D) => {
   ctx.font = `700 64px ${FONT}`;
   ctx.fillStyle = C.text;
   ctx.textAlign = 'center';
-  ctx.fillText('Progression', W / 2, 220);
+  ctx.fillText(t('progressionChart.progress'), W / 2, 220);
 
   ctx.font = `400 30px ${FONT}`;
   ctx.fillStyle = C.textMuted;
-  ctx.fillText(d.exerciseName || 'Tous les exercices', W / 2, 270);
+  ctx.fillText(d.exerciseName || t('shareButton.allExercises'), W / 2, 270);
 
   // Draw simple chart
   const points: { date: string; weight: number }[] = d.points || [];
   if (points.length < 2) {
     ctx.font = `400 36px ${FONT}`;
     ctx.fillStyle = C.textMuted;
-    ctx.fillText('Pas assez de donnees', W / 2, H / 2);
+    ctx.fillText(t('shareButton.notEnoughData'), W / 2, H / 2);
     drawFooter(ctx);
     return;
   }
@@ -529,15 +551,17 @@ const drawProgression = (ctx: CanvasRenderingContext2D) => {
   ctx.fillStyle = C.textMuted;
   ctx.textAlign = 'center';
   if (points[0]?.date) {
-    const d1 = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(
-      new Date(points[0].date)
-    );
+    const d1 = new Intl.DateTimeFormat(locale.value === 'fr' ? 'fr-FR' : 'en-US', {
+      day: 'numeric',
+      month: 'short',
+    }).format(new Date(points[0].date));
     ctx.fillText(d1, chartX, chartY + chartH + 40);
   }
   if (points[points.length - 1]?.date) {
-    const d2 = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(
-      new Date(points[points.length - 1].date)
-    );
+    const d2 = new Intl.DateTimeFormat(locale.value === 'fr' ? 'fr-FR' : 'en-US', {
+      day: 'numeric',
+      month: 'short',
+    }).format(new Date(points[points.length - 1].date));
     ctx.fillText(d2, chartX + chartW, chartY + chartH + 40);
   }
 
@@ -548,7 +572,16 @@ const drawProgression = (ctx: CanvasRenderingContext2D) => {
     gap = 28;
   const totalBw = 3 * bw + 2 * gap;
   const sx = (W - totalBw) / 2;
-  drawStatBox(ctx, sx, sumY, bw, bh, `${points[points.length - 1]?.weight || 0}`, 'Actuel', 'kg');
+  drawStatBox(
+    ctx,
+    sx,
+    sumY,
+    bw,
+    bh,
+    `${points[points.length - 1]?.weight || 0}`,
+    t('shareButton.current'),
+    'kg'
+  );
   drawStatBox(ctx, sx + bw + gap, sumY, bw, bh, `${maxW}`, 'Max', 'kg');
   const diff =
     points.length >= 2
@@ -561,7 +594,7 @@ const drawProgression = (ctx: CanvasRenderingContext2D) => {
     bw,
     bh,
     `${diff > 0 ? '+' : ''}${diff}`,
-    'Progression',
+    t('progressionChart.progress'),
     'kg'
   );
 
@@ -605,7 +638,7 @@ const handleShare = async () => {
       if (navigator.share) {
         try {
           const file = new File([blob], fileName, { type: 'image/png' });
-          await navigator.share({ title: 'Mes stats Athletiq', files: [file] });
+          await navigator.share({ title: t('shareButton.myStatsTitle'), files: [file] });
         } catch {
           downloadBlob(blob, fileName);
         }

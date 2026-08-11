@@ -11,7 +11,7 @@
         @focus="hasFocus = true"
         @blur="hasFocus = false"
         type="search"
-        placeholder="Rechercher"
+        :placeholder="t('common.search')"
         class="w-full pl-4 pr-10 py-2 rounded-xl border border-primary-200 dark:border-primary-700 hover:shadow-lg hover:border-primary-400 dark:bg-primary-800/70 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-transparent transition"
       />
       <svg
@@ -69,6 +69,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useLocale();
 import { ref, computed } from 'vue';
 import { apiFetch } from '~/utils/apiFetch';
 import { useAuthStore } from '~/stores/auth';

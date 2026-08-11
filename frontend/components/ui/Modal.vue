@@ -24,7 +24,7 @@
             <button
               v-if="closable"
               @click="close"
-              aria-label="Fermer"
+              :aria-label="t('common.close')"
               class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/10 transition-colors"
             >
               ✕
@@ -47,6 +47,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useLocale();
 interface Props {
   show: boolean;
   title?: string;

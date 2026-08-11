@@ -10,7 +10,7 @@
         >
           Athletiq Wrapped
         </h1>
-        <p class="text-lg text-primary-600 dark:text-primary-400">Votre bilan sportif</p>
+        <p class="text-lg text-primary-600 dark:text-primary-400">{{ t('wrapped.subtitle') }}</p>
       </div>
 
       <!-- Loading -->
@@ -333,6 +333,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useLocale();
 /* TopNav imported and rendered globally in app.vue; per-page import removed */
 import type { Workout, Exercise, Set } from '~/types/workout';
 

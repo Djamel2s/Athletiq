@@ -157,7 +157,8 @@ export const useOfflineStorage = () => {
 
       if (synced > 0 && pendingCount.value === 0) {
         const toast = useToast();
-        toast.success('Donnees synchronisees !');
+        const { t } = useLocale();
+        toast.success(t('offline.dataSynced'));
       }
     } catch (error) {
       console.warn('Failed to synchronize offline queue:', error);

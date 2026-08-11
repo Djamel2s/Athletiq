@@ -99,7 +99,7 @@
               autocomplete="username"
               pattern="[a-z0-9_]{3,20}"
               class="input"
-              placeholder="mon_pseudo"
+              :placeholder="t('auth.register.usernamePlaceholder')"
               @blur="checkUsername"
             />
             <p v-if="usernameError" class="mt-2 text-xs text-red-600">{{ usernameError }}</p>
@@ -273,11 +273,7 @@
                 "
                 @click="setLocale(option.code)"
               >
-                <img
-                  :src="option.flag"
-                  :alt="option.label"
-                  class="w-5 h-5 rounded-sm object-cover"
-                />
+                <Icon :name="option.flag" class="w-5 h-5 rounded-full" />
                 {{ option.label }}
               </button>
             </div>

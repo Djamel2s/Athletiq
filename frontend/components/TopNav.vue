@@ -39,16 +39,16 @@
           <div class="relative">
             <button
               type="button"
-              class="flex h-10 w-10 items-center justify-center rounded-full border border-primary-200/70 bg-white/80 text-lg shadow-sm transition-all hover:scale-105 dark:border-primary-700 dark:bg-primary-900/70"
+              class="flex h-10 w-10 items-center justify-center rounded-full border border-primary-200/70 bg-white/80 shadow-sm transition-all hover:scale-105 dark:border-primary-700 dark:bg-primary-900/70 overflow-hidden"
               @click="isLocaleMenuOpen = !isLocaleMenuOpen"
               :aria-label="t('nav.language')"
             >
-              {{ currentLocale?.code }}
+              <Icon :name="currentLocale?.flag" class="w-6 h-6" />
             </button>
 
             <div
               v-if="isLocaleMenuOpen"
-              class="absolute right-0 mt-2 flex w-36 flex-col rounded-2xl border border-primary-200/70 bg-white/95 p-2 shadow-xl backdrop-blur dark:border-primary-700 dark:bg-primary-900/95"
+              class="absolute rounded-2xl border border-primary-200/70 bg-white/95 shadow-xl backdrop-blur dark:border-primary-700 dark:bg-primary-900/95"
             >
               <button
                 v-for="option in availableLocales"
@@ -64,7 +64,7 @@
                 "
                 @click="selectLocale(option.code)"
               >
-                <img :src="option.flag" :alt="option.label" class="w-6 h-6 object-cover" />
+                <Icon :name="option.flag" class="w-6 h-6" />
               </button>
             </div>
           </div>
@@ -86,37 +86,6 @@
         </div>
 
         <div class="flex items-center gap-2">
-          <div class="relative">
-            <button
-              type="button"
-              class="flex h-10 w-10 items-center justify-center rounded-full border border-primary-200/70 bg-white/80 text-lg shadow-sm transition-all hover:scale-105 dark:border-primary-700 dark:bg-primary-900/70"
-              @click="isLocaleMenuOpen = !isLocaleMenuOpen"
-              :aria-label="t('nav.language')"
-            >
-              {{ currentLocale?.flag }}
-            </button>
-
-            <div
-              v-if="isLocaleMenuOpen"
-              class="absolute right-0 mt-2 flex w-36 flex-col rounded-2xl border border-primary-200/70 bg-white/95 p-2 shadow-xl backdrop-blur dark:border-primary-700 dark:bg-primary-900/95"
-            >
-              <button
-                v-for="option in availableLocales"
-                :key="option.code"
-                type="button"
-                class="flex items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-medium transition-colors"
-                :class="
-                  locale === option.code
-                    ? 'bg-sand-500 text-white'
-                    : 'text-primary-700 hover:bg-primary-50 dark:text-primary-200 dark:hover:bg-primary-800'
-                "
-                @click="selectLocale(option.code)"
-              >
-                <span class="text-base">{{ option.flag }}</span>
-                <span>{{ option.label }}</span>
-              </button>
-            </div>
-          </div>
           <NavActions />
         </div>
       </div>

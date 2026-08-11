@@ -9,16 +9,18 @@
         <h1
           class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2"
         >
-          Mes Entraînements
+          {{ t('workoutsPage.title') }}
         </h1>
-        <p class="text-lg text-primary-600 dark:text-primary-400">Gérez et lancez vos workouts</p>
+        <p class="text-lg text-primary-600 dark:text-primary-400">
+          {{ t('workoutsPage.subtitle') }}
+        </p>
       </div>
 
       <!-- Créer -->
       <div class="flex items-center justify-between mb-6 fade-in">
         <div>
           <div v-if="!isPremium" class="text-xs text-primary-500 dark:text-primary-400">
-            Templates : {{ templateUsageText }}
+            {{ t('workoutsPage.templatesCount') }} : {{ templateUsageText }}
           </div>
         </div>
         <div class="flex items-center gap-2">
@@ -27,8 +29,8 @@
             :disabled="!canCreateTemplate && !isPremium"
             class="btn-primary text-sm md:text-base disabled:opacity-50"
           >
-            <span class="hidden md:inline">+ Créer un workout</span>
-            <span class="md:hidden">+ Créer</span>
+            <span class="hidden md:inline">+ {{ t('workoutBuilder.addWorkoutFull') }}</span>
+            <span class="md:hidden">+ {{ t('workoutBuilder.addWorkoutShort') }}</span>
           </button>
         </div>
       </div>
@@ -48,7 +50,7 @@
                   : 'text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100',
               ]"
             >
-              Mes workouts
+              {{ t('workoutsPage.myWorkouts') }}
             </button>
             <button
               @click="activeTab = 'history'"
@@ -59,7 +61,7 @@
                   : 'text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100',
               ]"
             >
-              Historique
+              {{ t('workoutsPage.history') }}
             </button>
           </div>
         </div>
@@ -70,7 +72,7 @@
         <div
           class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary-200 dark:border-primary-700 border-t-primary-600 dark:border-t-primary-400"
         ></div>
-        <p class="mt-4 text-primary-600 dark:text-primary-400">Chargement...</p>
+        <p class="mt-4 text-primary-600 dark:text-primary-400">{{ t('common.loading') }}</p>
       </div>
 
       <!-- Error state -->
@@ -79,14 +81,14 @@
         class="card-glass border-l-4 border-red-500 bg-red-50 dark:bg-red-900/30"
       >
         <p class="text-red-700 dark:text-red-400">{{ workoutStore.error }}</p>
-        <button @click="loadWorkouts" class="btn-outline mt-4">Réessayer</button>
+        <button @click="loadWorkouts" class="btn-outline mt-4">{{ t('common.retry') }}</button>
       </div>
 
       <!-- Upgrade banner templates -->
       <div v-if="!isPremium && !canCreateTemplate && activeTab === 'workouts'" class="mb-6">
         <ProWall
-          title="Templates illimites"
-          :message="`Vous avez ${templateUsageText} templates. Debloquez Pro pour creer tous les programmes que vous voulez.`"
+          :title="t('workoutsPage.unlimitedTemplates')"
+          :message="t('workoutsPage.unlimitedTemplatesMessage', { count: templateUsageText })"
           icon="template"
           compact
         />
@@ -111,9 +113,11 @@
               d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
             />
           </svg>
-          <p class="text-xl text-primary-600 dark:text-primary-400 mb-6">Aucun workout créé</p>
+          <p class="text-xl text-primary-600 dark:text-primary-400 mb-6">
+            {{ t('workoutsPage.noWorkouts') }}
+          </p>
           <button @click="navigateTo('/workouts/builder')" class="btn-primary px-8 py-4">
-            Créer mon premier workout
+            {{ t('workoutsPage.createFirst') }}
           </button>
         </div>
 
@@ -152,7 +156,7 @@
                     @click.stop="duplicateTemplate(workout.id)"
                     :disabled="duplicatingId === workout.id"
                     class="w-8 h-8 flex items-center justify-center rounded-lg text-primary-400 hover:text-sand-600 dark:hover:text-sand-400 hover:bg-sand-500/10 transition-colors disabled:opacity-50"
-                    title="Dupliquer"
+                    :title="t('workoutsPage.duplicate')"
                   >
                     <Icon name="lucide:copy" class="w-4 h-4" />
                   </button>
@@ -160,14 +164,14 @@
                     @click.stop="shareTemplate(workout.id)"
                     :disabled="sharingId === workout.id"
                     class="w-8 h-8 flex items-center justify-center rounded-lg text-primary-400 hover:text-sand-600 dark:hover:text-sand-400 hover:bg-sand-500/10 transition-colors disabled:opacity-50"
-                    title="Partager"
+                    :title="t('workoutsPage.share')"
                   >
                     <Icon name="lucide:share-2" class="w-4 h-4" />
                   </button>
                   <button
                     @click.stop="openPlanModal(workout)"
                     class="w-8 h-8 flex items-center justify-center rounded-lg text-primary-400 hover:text-sand-600 dark:hover:text-sand-400 hover:bg-sand-500/10 transition-colors"
-                    title="Planifier avec un Bro"
+                    :title="t('workoutsPage.planWithBro')"
                   >
                     <Icon name="lucide:calendar-plus" class="w-4 h-4" />
                   </button>
@@ -237,10 +241,10 @@
             />
           </svg>
           <p class="text-xl text-primary-600 dark:text-primary-400 mb-6">
-            Aucun entraînement terminé
+            {{ t('workoutsPage.noCompletedWorkouts') }}
           </p>
           <button @click="navigateTo('/workouts/builder')" class="btn-primary px-8 py-4">
-            Créer mon premier workout
+            {{ t('workoutsPage.createFirst') }}
           </button>
         </div>
 
@@ -354,14 +358,14 @@
           class="relative bg-white dark:bg-primary-900 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto"
         >
           <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-1">
-            Planifier avec un Bro
+            {{ t('workoutsPage.planWithBro') }}
           </h3>
           <p class="text-sm text-primary-500 dark:text-primary-400 mb-5">{{ planWorkoutName }}</p>
 
           <!-- Friend selection -->
-          <label class="block text-sm font-semibold text-primary-700 dark:text-primary-300 mb-2"
-            >Inviter un ami</label
-          >
+          <label class="block text-sm font-semibold text-primary-700 dark:text-primary-300 mb-2">{{
+            t('workoutsPage.inviteFriend')
+          }}</label>
           <div v-if="friendsLoading" class="text-center py-4">
             <div
               class="inline-block animate-spin rounded-full h-6 w-6 border-2 border-primary-200 dark:border-primary-700 border-t-primary-600"
@@ -371,7 +375,7 @@
             v-else-if="friendsList.length === 0"
             class="text-center py-4 text-sm text-primary-500 dark:text-primary-400"
           >
-            Aucun ami pour le moment
+            {{ t('workoutsPage.noFriends') }}
           </div>
           <div v-else class="space-y-2 mb-5 max-h-40 overflow-y-auto">
             <button
@@ -426,9 +430,9 @@
           </div>
 
           <!-- Date/time picker -->
-          <label class="block text-sm font-semibold text-primary-700 dark:text-primary-300 mb-2"
-            >Date et heure</label
-          >
+          <label class="block text-sm font-semibold text-primary-700 dark:text-primary-300 mb-2">{{
+            t('workoutsPage.dateTime')
+          }}</label>
           <input
             v-model="planScheduledAt"
             type="datetime-local"
@@ -436,13 +440,13 @@
           />
 
           <!-- Notes -->
-          <label class="block text-sm font-semibold text-primary-700 dark:text-primary-300 mb-2"
-            >Notes (optionnel)</label
-          >
+          <label class="block text-sm font-semibold text-primary-700 dark:text-primary-300 mb-2">{{
+            t('workoutBuilder.descLabel')
+          }}</label>
           <textarea
             v-model="planNotes"
             rows="2"
-            placeholder="Ex: On se retrouve a 18h devant la salle"
+            :placeholder="t('workoutsPage.notesPlaceholder')"
             class="w-full px-4 py-2.5 rounded-xl border border-primary-200 dark:border-primary-700 bg-white dark:bg-primary-800 text-primary-900 dark:text-primary-100 text-sm mb-6 focus:outline-none focus:border-sand-500 resize-none"
           />
 
@@ -534,6 +538,8 @@ import { useSubscriptionStore } from '~/stores/subscription';
 import { useSubscriptionLimits } from '~/composables/useSubscriptionLimits';
 import type { Workout } from '~/types/workout';
 
+const { t } = useLocale();
+
 useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] });
 
 const workoutStore = useWorkoutStore();
@@ -597,10 +603,10 @@ const sendPlanInvitation = async () => {
       workoutTemplateId: planWorkoutId.value || undefined,
       notes: planNotes.value || undefined,
     });
-    toast.success('Invitation envoyee', 'Ton bro a ete invite !');
+    toast.success(t('coaching.toastInviteSent'), t('workoutsPage.toastBroInvited'));
     showPlanModal.value = false;
   } catch (err: any) {
-    toast.error('Erreur', err?.data?.error || "Impossible d'envoyer l'invitation");
+    toast.error(t('common.error'), err?.data?.error || t('coaching.errorInvite'));
   } finally {
     planSending.value = false;
   }
@@ -618,7 +624,7 @@ const loadWorkouts = async () => {
 
 const handleCreateWorkout = () => {
   if (!canCreateTemplate.value) {
-    toast.error('Limite atteinte', 'Passez Pro pour créer plus de templates');
+    toast.error(t('workoutsPage.limitReached'), t('workoutsPage.limitReachedDesc'));
     return;
   }
   navigateTo('/workouts/builder');
@@ -667,9 +673,9 @@ const duplicateTemplate = async (id: number) => {
   duplicatingId.value = id;
   try {
     await workoutStore.duplicateWorkout(id);
-    toast.success('Dupliqué', 'Le template a été dupliqué avec succès');
+    toast.success(t('workoutsPage.toastDuplicated'), t('workoutsPage.toastDuplicatedDesc'));
   } catch (err: any) {
-    toast.error('Erreur', 'Impossible de dupliquer ce template');
+    toast.error(t('common.error'), t('workoutsPage.errorDuplicate'));
   } finally {
     duplicatingId.value = null;
   }
@@ -699,11 +705,11 @@ const shareTemplate = async (id: number) => {
       });
     } else {
       await navigator.clipboard.writeText(shareUrl);
-      toast.success('Lien copié !', 'Le lien de partage est dans ton presse-papier');
+      toast.success(t('workoutsPage.toastLinkCopied'), t('workoutsPage.toastLinkCopiedDesc'));
     }
   } catch (err: any) {
     if (err?.name === 'AbortError') return; // user cancelled share dialog
-    toast.error('Erreur', 'Impossible de partager ce template');
+    toast.error(t('common.error'), t('workoutsPage.errorShare'));
   } finally {
     sharingId.value = null;
   }
@@ -738,16 +744,16 @@ const executeDelete = async () => {
     await workoutStore.deleteWorkout(pendingDeleteId.value);
     const msg =
       pendingDeleteType.value === 'template'
-        ? 'Template supprimé avec succès'
-        : "Entraînement supprimé de l'historique";
-    toast.success('Supprimé', msg);
+        ? t('workoutsPage.toastTemplateDeleted')
+        : t('workoutsPage.toastWorkoutDeleted');
+    toast.success(t('workoutsPage.deletedTitle'), msg);
   } catch (error) {
     logger.error('Failed to delete:', error);
     const errMsg =
       pendingDeleteType.value === 'template'
-        ? 'Impossible de supprimer le template'
-        : "Impossible de supprimer l'entraînement";
-    toast.error('Erreur', errMsg);
+        ? t('workoutsPage.errorDeleteTemplate')
+        : t('workoutsPage.errorDeleteWorkout');
+    toast.error(t('common.error'), errMsg);
   } finally {
     deletingId.value = null;
     pendingDeleteId.value = null;

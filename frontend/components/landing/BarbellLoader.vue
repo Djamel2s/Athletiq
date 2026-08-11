@@ -38,7 +38,10 @@
 
     <!-- Readout -->
     <div class="flex items-baseline justify-center gap-2 mb-5">
-      <span class="font-plate text-4xl md:text-5xl font-bold" :class="isPR ? 'text-ember-500' : 'text-chalk-100'">
+      <span
+        class="font-plate text-4xl md:text-5xl font-bold"
+        :class="isPR ? 'text-ember-500' : 'text-chalk-100'"
+      >
         {{ totalWeight }}
       </span>
       <span class="font-plate text-lg text-iron-600 dark:text-chalk-100/50">kg</span>
@@ -48,8 +51,11 @@
     </div>
 
     <Transition name="fade">
-      <p v-if="isPR" class="text-center text-ember-500 font-display text-sm tracking-widest uppercase mb-5">
-        Record personnel
+      <p
+        v-if="isPR"
+        class="text-center text-ember-500 font-display text-sm tracking-widest uppercase mb-5"
+      >
+        {{ t('goalModal.personalRecord') }}
       </p>
     </Transition>
 
@@ -57,7 +63,7 @@
     <div class="max-w-sm mx-auto space-y-4">
       <div>
         <div class="flex items-center justify-between text-xs font-plate text-chalk-100/50 mb-1.5">
-          <span>Charge</span>
+          <span>{{ t('barbellLoader.load') }}</span>
           <span>20 – 220 kg</span>
         </div>
         <input
@@ -66,7 +72,7 @@
           min="20"
           max="220"
           step="2.5"
-          aria-label="Charge de la barre, en kilogrammes"
+          :aria-label="t('barbellLoader.loadAriaLabel')"
           class="w-full accent-sand-500"
         />
       </div>
@@ -74,15 +80,17 @@
         <button
           @click="reps = Math.max(1, reps - 1)"
           class="w-9 h-9 rounded-full bg-iron-800 text-chalk-100 flex items-center justify-center hover:bg-iron-700 transition-colors"
-          aria-label="Moins de répétitions"
+          :aria-label="t('barbellLoader.lessReps')"
         >
           −
         </button>
-        <span class="font-plate text-chalk-100/70 text-sm w-20 text-center">{{ reps }} rép.</span>
+        <span class="font-plate text-chalk-100/70 text-sm w-20 text-center">{{
+          t('barbellLoader.repsShort', { n: reps })
+        }}</span>
         <button
           @click="reps = Math.min(20, reps + 1)"
           class="w-9 h-9 rounded-full bg-iron-800 text-chalk-100 flex items-center justify-center hover:bg-iron-700 transition-colors"
-          aria-label="Plus de répétitions"
+          :aria-label="t('barbellLoader.moreReps')"
         >
           +
         </button>
@@ -92,6 +100,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useLocale();
 import { ref, computed } from 'vue';
 
 const BAR_WEIGHT = 20;

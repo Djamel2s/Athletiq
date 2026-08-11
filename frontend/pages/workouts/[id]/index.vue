@@ -9,9 +9,11 @@
         <h1
           class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2"
         >
-          {{ workout?.name || 'Détail' }}
+          {{ workout?.name || t('workoutDetail.detail') }}
         </h1>
-        <p class="text-lg text-primary-600 dark:text-primary-400">Détail du workout</p>
+        <p class="text-lg text-primary-600 dark:text-primary-400">
+          {{ t('workoutDetail.subtitle') }}
+        </p>
       </div>
 
       <!-- Loading -->
@@ -19,13 +21,17 @@
         <div
           class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary-300 dark:border-primary-600 border-t-primary-600 dark:border-t-primary-400"
         ></div>
-        <p class="mt-4 text-primary-600 dark:text-primary-400 text-lg">Chargement...</p>
+        <p class="mt-4 text-primary-600 dark:text-primary-400 text-lg">{{ t('common.loading') }}</p>
       </div>
 
       <!-- Error -->
       <div v-else-if="!workout" class="text-center py-20">
-        <p class="text-primary-500 dark:text-primary-400 text-lg mb-4">Entraînement introuvable</p>
-        <button @click="navigateTo('/workouts')" class="btn-primary">Retour aux workouts</button>
+        <p class="text-primary-500 dark:text-primary-400 text-lg mb-4">
+          {{ t('workoutDetail.notFound') }}
+        </p>
+        <button @click="navigateTo('/workouts')" class="btn-primary">
+          {{ t('workoutDetail.backToWorkouts') }}
+        </button>
       </div>
 
       <template v-else>
@@ -46,14 +52,14 @@
                 @click="navigateTo(`/workouts/${workout.id}/live`)"
                 class="btn-primary text-sm"
               >
-                Refaire
+                {{ t('workoutDetail.redo') }}
               </button>
               <button
                 v-else
                 @click="navigateTo(`/workouts/${workout.id}/live`)"
                 class="btn-primary text-sm"
               >
-                Lancer
+                {{ t('workoutDetail.launch') }}
               </button>
             </div>
           </div>
@@ -64,7 +70,9 @@
               v-if="workout.completedAt"
               class="text-center p-3 bg-primary-50 dark:bg-primary-800/50 rounded-xl"
             >
-              <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">Date</p>
+              <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">
+                {{ t('workoutDetail.date') }}
+              </p>
               <p class="text-sm font-bold text-primary-900 dark:text-primary-100">
                 {{ formatDate(workout.completedAt) }}
               </p>
@@ -73,7 +81,9 @@
               v-if="workout.duration"
               class="text-center p-3 bg-primary-50 dark:bg-primary-800/50 rounded-xl"
             >
-              <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">Durée</p>
+              <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">
+                {{ t('workoutDetail.duration') }}
+              </p>
               <p class="text-sm font-bold text-primary-900 dark:text-primary-100">
                 {{ formatDuration(workout.duration) }}
               </p>
@@ -82,13 +92,17 @@
               v-if="workout.duration"
               class="text-center p-3 bg-primary-50 dark:bg-primary-800/50 rounded-xl"
             >
-              <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">Calories</p>
+              <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">
+                {{ t('calendar.metrics.calories') }}
+              </p>
               <p class="text-sm font-bold text-primary-900 dark:text-primary-100">
                 {{ estimateCalories(workout.duration) }} kcal
               </p>
             </div>
             <div class="text-center p-3 bg-primary-50 dark:bg-primary-800/50 rounded-xl">
-              <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">Exercices</p>
+              <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">
+                {{ t('workoutDetail.exercises') }}
+              </p>
               <p class="text-sm font-bold text-primary-900 dark:text-primary-100">
                 {{ workout.exercises?.length || 0 }}
               </p>
@@ -97,7 +111,9 @@
               v-if="totalVolume > 0"
               class="text-center p-3 bg-primary-50 dark:bg-primary-800/50 rounded-xl"
             >
-              <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">Volume total</p>
+              <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">
+                {{ t('workoutDetail.totalVolume') }}
+              </p>
               <p class="text-sm font-bold text-primary-900 dark:text-primary-100">
                 {{ totalVolume.toLocaleString('fr-FR') }} kg
               </p>
@@ -140,7 +156,12 @@
                 v-if="exercise.sets?.length"
                 class="text-xs text-primary-500 dark:text-primary-400 flex-shrink-0"
               >
-                {{ exercise.sets.length }} série{{ exercise.sets.length > 1 ? 's' : '' }}
+                {{
+                  t('workoutDetail.setCount', {
+                    count: exercise.sets.length,
+                    plural: exercise.sets.length > 1 ? 's' : '',
+                  })
+                }}
               </span>
             </div>
 
@@ -149,10 +170,12 @@
               <table class="w-full text-sm">
                 <thead>
                   <tr class="text-primary-500 dark:text-primary-400 text-xs">
-                    <th class="text-left py-2 pr-3">Série</th>
-                    <th class="text-right py-2 px-3">Poids</th>
-                    <th class="text-right py-2 px-3">Reps</th>
-                    <th v-if="hasDuration(exercise)" class="text-right py-2 px-3">Durée</th>
+                    <th class="text-left py-2 pr-3">{{ t('workoutDetail.setCol') }}</th>
+                    <th class="text-right py-2 px-3">{{ t('workoutDetail.weightCol') }}</th>
+                    <th class="text-right py-2 px-3">{{ t('workoutBuilder.reps') }}</th>
+                    <th v-if="hasDuration(exercise)" class="text-right py-2 px-3">
+                      {{ t('workoutDetail.duration') }}
+                    </th>
                     <th v-if="hasRpe(exercise)" class="text-right py-2 pl-3">RPE</th>
                   </tr>
                 </thead>
@@ -213,6 +236,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useLocale();
 /* TopNav imported and rendered globally in app.vue; per-page import removed */
 import { useWorkoutStore } from '~/stores/workout';
 import { useAuthStore } from '~/stores/auth';

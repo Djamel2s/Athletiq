@@ -51,7 +51,7 @@
             >
               <img
                 src="/publish/apple-white.png"
-                alt="Télécharger sur l'App Store"
+                :alt="t('landing.hero.appStoreAlt')"
                 class="h-12 w-auto"
               />
             </NuxtLink>
@@ -61,7 +61,7 @@
             >
               <img
                 src="/publish/google-white.png"
-                alt="Télécharger sur Google Play"
+                :alt="t('landing.hero.playStoreAlt')"
                 class="h-12 w-auto"
               />
             </NuxtLink>
@@ -327,7 +327,7 @@
               >
                 <img
                   src="/publish/apple-white.png"
-                  alt="Télécharger sur l'App Store"
+                  :alt="t('landing.hero.appStoreAlt')"
                   class="h-12 w-auto"
                 />
               </NuxtLink>
@@ -337,7 +337,7 @@
               >
                 <img
                   src="/publish/google-white.png"
-                  alt="Télécharger sur Google Play"
+                  :alt="t('landing.hero.playStoreAlt')"
                   class="h-12 w-auto"
                 />
               </NuxtLink>

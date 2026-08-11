@@ -17,10 +17,12 @@
     <!-- Heatmap des 7 derniers jours -->
     <div class="space-y-3">
       <div class="flex justify-between items-center">
-        <span class="text-xs text-primary-500 dark:text-primary-400 font-medium"
-          >7 derniers jours</span
-        >
-        <span class="text-xs text-primary-500 dark:text-primary-400">Aujourd'hui</span>
+        <span class="text-xs text-primary-500 dark:text-primary-400 font-medium">{{
+          t('heatmap.last7Days')
+        }}</span>
+        <span class="text-xs text-primary-500 dark:text-primary-400">{{
+          t('calendar.today')
+        }}</span>
       </div>
       <div class="grid grid-cols-7 gap-2">
         <div
@@ -37,7 +39,7 @@
           >
             {{ day.label }}
             <div class="text-primary-300 dark:text-primary-600">
-              {{ day.hasWorkout ? '✓ Entraînement' : 'Repos' }}
+              {{ day.hasWorkout ? t('heatmap.trained') : t('heatmap.rest') }}
             </div>
           </div>
         </div>
@@ -54,23 +56,24 @@
     >
       <div class="text-center">
         <p class="text-2xl font-bold text-primary-900 dark:text-primary-100">{{ currentStreak }}</p>
-        <p class="text-xs text-primary-600 dark:text-primary-400">Série</p>
+        <p class="text-xs text-primary-600 dark:text-primary-400">{{ t('heatmap.streak') }}</p>
       </div>
       <div class="text-center">
         <p class="text-2xl font-bold text-primary-900 dark:text-primary-100">
           {{ workoutsThisMonth }}
         </p>
-        <p class="text-xs text-primary-600 dark:text-primary-400">Ce mois</p>
+        <p class="text-xs text-primary-600 dark:text-primary-400">{{ t('heatmap.thisMonth') }}</p>
       </div>
       <div class="text-center">
         <p class="text-2xl font-bold text-primary-900 dark:text-primary-100">{{ totalWorkouts }}</p>
-        <p class="text-xs text-primary-600 dark:text-primary-400">Total</p>
+        <p class="text-xs text-primary-600 dark:text-primary-400">{{ t('heatmap.total') }}</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+const { t, locale } = useLocale();
 interface Workout {
   id: number;
   completedAt?: string;
@@ -104,11 +107,11 @@ const last7Days = computed(() => {
     days.push({
       date,
       hasWorkout,
-      label: new Intl.DateTimeFormat('fr-FR', {
+      label: new Intl.DateTimeFormat(locale.value === 'fr' ? 'fr-FR' : 'en-US', {
         day: 'numeric',
         month: 'short',
       }).format(date),
-      dayName: new Intl.DateTimeFormat('fr-FR', {
+      dayName: new Intl.DateTimeFormat(locale.value === 'fr' ? 'fr-FR' : 'en-US', {
         weekday: 'short',
       }).format(date),
     });

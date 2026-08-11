@@ -5,7 +5,9 @@
     >
       <!-- Header -->
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-bold text-zinc-900 dark:text-white">Partager sur Instagram</h2>
+        <h2 class="text-lg font-bold text-zinc-900 dark:text-white">
+          {{ t('storyExport.title') }}
+        </h2>
         <button
           @click="emit('close')"
           class="p-1.5 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
@@ -47,7 +49,12 @@
           class="rounded-[28px] border-[3px] border-zinc-300 dark:border-zinc-600 bg-black p-1.5 shadow-xl"
         >
           <div class="rounded-[22px] overflow-hidden">
-            <img v-if="previewUrl" :src="previewUrl" alt="Story preview" class="w-full block" />
+            <img
+              v-if="previewUrl"
+              :src="previewUrl"
+              :alt="t('storyExport.previewAlt')"
+              class="w-full block"
+            />
             <div v-else class="w-full aspect-[9/16] flex items-center justify-center bg-zinc-800">
               <svg class="w-8 h-8 text-zinc-500 animate-spin" fill="none" viewBox="0 0 24 24">
                 <circle
@@ -83,7 +90,7 @@
               d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
             />
           </svg>
-          Partager
+          {{ t('workoutsPage.share') }}
         </button>
         <button
           @click="handleDownload"
@@ -97,7 +104,7 @@
               d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
             />
           </svg>
-          Telecharger
+          {{ t('storyExport.download') }}
         </button>
       </div>
     </div>
@@ -108,6 +115,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useLocale();
 interface StoryData {
   workoutName: string;
   duration: number;

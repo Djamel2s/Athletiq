@@ -10,7 +10,7 @@
       <button
         @click="dismiss"
         class="absolute top-3 right-3 w-7 h-7 flex items-center justify-center rounded-lg hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors z-10"
-        aria-label="Fermer"
+        :aria-label="t('common.close')"
       >
         <svg
           class="w-4 h-4 text-primary-400 dark:text-primary-500"
@@ -45,7 +45,7 @@
         <!-- Content -->
         <div class="flex-1 min-w-0 pr-6">
           <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100">
-            Content de te revoir, {{ userName }} !
+            {{ t('comeback.welcomeBack', { name: userName }) }}
           </h3>
 
           <div class="mt-1 mb-1">
@@ -62,8 +62,11 @@
           </p>
 
           <p class="text-xs text-primary-400 dark:text-primary-500 mt-1">
-            Dernier entraînement il y a {{ daysSinceLastWorkout }} jour{{
-              daysSinceLastWorkout > 1 ? 's' : ''
+            {{
+              t('comeback.lastWorkoutDaysAgo', {
+                count: daysSinceLastWorkout,
+                plural: daysSinceLastWorkout > 1 ? 's' : '',
+              })
             }}
           </p>
 
@@ -86,7 +89,7 @@
                 d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            Reprendre l'entraînement
+            {{ t('comeback.resumeTraining') }}
           </NuxtLink>
         </div>
       </div>
@@ -95,6 +98,8 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useLocale();
+
 interface Props {
   lastWorkoutDate: string | null;
   userName: string;
@@ -125,11 +130,11 @@ const comebackMode = computed<'gentle' | 'progressive' | 'rebuild' | null>(() =>
 const modeLabel = computed(() => {
   switch (comebackMode.value) {
     case 'gentle':
-      return 'Mode reprise douce';
+      return t('comeback.modeGentle');
     case 'progressive':
-      return 'Mode reprise progressive';
+      return t('comeback.modeProgressive');
     case 'rebuild':
-      return 'Mode reconstruction';
+      return t('comeback.modeRebuild');
     default:
       return '';
   }
@@ -151,11 +156,11 @@ const modeBadgeClass = computed(() => {
 const subtitle = computed(() => {
   switch (comebackMode.value) {
     case 'gentle':
-      return 'Commence par 70 % de ton volume habituel pour reprendre en douceur. Ton corps te remerciera !';
+      return t('comeback.subtitleGentle');
     case 'progressive':
-      return 'On y va progressivement : 50 % du volume la première semaine, puis 75 % la deuxième. Tu vas vite retrouver ton niveau !';
+      return t('comeback.subtitleProgressive');
     case 'rebuild':
-      return 'Repars sur des bases solides avec des charges légères. Chaque répétition compte pour reconstruire ta forme !';
+      return t('comeback.subtitleRebuild');
     default:
       return '';
   }

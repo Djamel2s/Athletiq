@@ -26,13 +26,14 @@
       <span :class="change >= 0 ? 'text-green-500' : 'text-red-500'">
         {{ change >= 0 ? '+' : '' }}{{ change }}%
       </span>
-      <span class="text-primary-400">vs sem. prec.</span>
+      <span class="text-primary-400">{{ t('weekComparison.vsLastWeek') }}</span>
     </div>
-    <div v-else class="text-xs text-primary-400">Pas de donnees precedentes</div>
+    <div v-else class="text-xs text-primary-400">{{ t('weekComparison.noPreviousData') }}</div>
   </div>
 </template>
 
 <script setup lang="ts">
+const { t } = useLocale();
 interface Props {
   title: string;
   value: number;

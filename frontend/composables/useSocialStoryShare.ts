@@ -9,6 +9,7 @@ export async function shareToStory(opts: {
   blob?: Blob;
   stickerUrl?: string;
   attributionLink?: string;
+  title?: string;
 }) {
   try {
     function blobToBase64(blob: Blob): Promise<string> {
@@ -68,7 +69,7 @@ export async function shareToStory(opts: {
           const nativeUri = uriRes.uri || (uriRes as any).uri;
           // Use native share with file URI when possible
           await Share.share({
-            title: 'Mon timelapse',
+            title: opts.title || 'Athletiq',
             text: opts.attributionLink || '',
             url: nativeUri,
           });
@@ -79,7 +80,7 @@ export async function shareToStory(opts: {
       }
 
       await Share.share({
-        title: 'Mon timelapse',
+        title: opts.title || 'Athletiq',
         text: opts.attributionLink || '',
         url: opts.url,
       });

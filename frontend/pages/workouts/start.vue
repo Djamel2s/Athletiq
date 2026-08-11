@@ -9,9 +9,11 @@
         <h1
           class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2"
         >
-          Lancer un entraînement
+          {{ t('workoutStart.title') }}
         </h1>
-        <p class="text-lg text-primary-600 dark:text-primary-400">Choisissez votre workout</p>
+        <p class="text-lg text-primary-600 dark:text-primary-400">
+          {{ t('workoutStart.subtitle') }}
+        </p>
       </div>
 
       <!-- Loading -->
@@ -19,7 +21,7 @@
         <div
           class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary-200 dark:border-primary-700 border-t-primary-600 dark:border-t-primary-400"
         ></div>
-        <p class="mt-4 text-primary-600 dark:text-primary-400 text-lg">Chargement...</p>
+        <p class="mt-4 text-primary-600 dark:text-primary-400 text-lg">{{ t('common.loading') }}</p>
       </div>
 
       <!-- No workouts -->
@@ -39,13 +41,13 @@
             />
           </svg>
           <h2 class="text-3xl font-bold text-primary-900 dark:text-primary-100 mb-4">
-            Aucun workout disponible
+            {{ t('workoutStart.noWorkoutAvailable') }}
           </h2>
           <p class="text-lg text-primary-600 dark:text-primary-400 mb-8">
-            Crée d'abord des workouts avant de venir à la salle!
+            {{ t('workoutStart.createFirstDesc') }}
           </p>
           <button @click="navigateTo('/workouts/builder')" class="btn-primary px-8 py-4">
-            Créer un workout
+            {{ t('workoutBuilder.addWorkoutFull') }}
           </button>
         </div>
       </div>
@@ -55,8 +57,8 @@
         <!-- Upgrade banner séances -->
         <div v-if="!isPremium && !canCreateWorkout" class="mb-8 fade-in">
           <ProWall
-            title="Entrainements illimites"
-            :message="`Vous avez fait ${workoutUsageText} seances cette semaine. Debloquez Pro pour vous entrainer sans limites.`"
+            :title="t('workoutStart.unlimitedWorkouts')"
+            :message="t('workoutStart.unlimitedWorkoutsMessage', { count: workoutUsageText })"
             icon="dumbbell"
             compact
           />
@@ -323,6 +325,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useLocale();
 /* TopNav imported and rendered globally in app.vue; per-page import removed */
 import { useWorkoutStore } from '~/stores/workout';
 import { useAuthStore } from '~/stores/auth';

@@ -19,9 +19,11 @@
       <!-- Error -->
       <div v-else-if="error" class="text-center py-16">
         <Icon name="lucide:link-2-off" class="w-16 h-16 mx-auto mb-4 text-primary-300" />
-        <h2 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-2">Lien invalide</h2>
+        <h2 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-2">
+          {{ t('shared.invalidLink') }}
+        </h2>
         <p class="text-primary-500 dark:text-primary-400 mb-6">{{ error }}</p>
-        <NuxtLink to="/" class="btn-primary px-6 py-2.5">Retour à l'accueil</NuxtLink>
+        <NuxtLink to="/" class="btn-primary px-6 py-2.5">{{ t('shared.backHome') }}</NuxtLink>
       </div>
 
       <!-- Template Content -->
@@ -34,7 +36,7 @@
               class="flex items-center gap-2 text-sm text-primary-500 dark:text-primary-400"
             >
               <Icon name="lucide:user" class="w-4 h-4" />
-              <span>Partagé par {{ template.sharedBy.firstName }}</span>
+              <span>{{ t('shared.sharedBy', { name: template.sharedBy.firstName }) }}</span>
             </div>
           </div>
           <h1 class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2">
@@ -48,7 +50,12 @@
               class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg bg-sand-500/10 text-sand-700 dark:text-sand-400"
             >
               <Icon name="lucide:dumbbell" class="w-3.5 h-3.5" />
-              {{ template.exercises.length }} exercice{{ template.exercises.length > 1 ? 's' : '' }}
+              {{
+                t('shared.exerciseCount', {
+                  count: template.exercises.length,
+                  plural: template.exercises.length > 1 ? 's' : '',
+                })
+              }}
             </span>
           </div>
         </div>
@@ -74,12 +81,14 @@
                 <div
                   class="flex items-center gap-3 mt-1 text-xs text-primary-500 dark:text-primary-400"
                 >
-                  <span v-if="exercise.targetSets">{{ exercise.targetSets }} séries</span>
+                  <span v-if="exercise.targetSets"
+                    >{{ exercise.targetSets }} {{ t('shared.sets') }}</span
+                  >
                   <span v-if="exercise.targetReps">{{ exercise.targetReps }} reps</span>
                   <span v-if="exercise.targetWeight">{{ exercise.targetWeight }}kg</span>
-                  <span v-if="exercise.restTime"
-                    >{{ Math.floor(exercise.restTime / 60) }}min repos</span
-                  >
+                  <span v-if="exercise.restTime">{{
+                    t('shared.restMin', { n: Math.floor(exercise.restTime / 60) })
+                  }}</span>
                 </div>
               </div>
             </div>
@@ -98,11 +107,11 @@
           >
             <span v-if="importing" class="inline-flex items-center gap-2">
               <Icon name="lucide:loader-2" class="w-5 h-5 animate-spin" />
-              Import en cours...
+              {{ t('shared.importing') }}
             </span>
             <span v-else class="inline-flex items-center gap-2">
               <Icon name="lucide:download" class="w-5 h-5" />
-              Ajouter à mes templates
+              {{ t('shared.addToTemplates') }}
             </span>
           </button>
         </div>
@@ -113,7 +122,7 @@
             to="/register"
             class="btn-primary w-full py-4 text-base font-semibold shadow-xl text-center block"
           >
-            Créer un compte pour importer ce template
+            {{ t('shared.createAccountToImport') }}
           </NuxtLink>
         </div>
       </div>
@@ -124,6 +133,8 @@
 <script setup lang="ts">
 /* TopNav imported and rendered globally in app.vue; per-page import removed */
 import { useAuthStore } from '~/stores/auth';
+
+const { t } = useLocale();
 
 definePageMeta({ layout: false });
 
@@ -180,7 +191,7 @@ onMounted(async () => {
   try {
     template.value = await $fetch<SharedTemplate>(`${config.public.apiUrl}/share/view/${token}`);
   } catch (err: any) {
-    error.value = err?.data?.error || "Ce template n'existe pas ou le partage a été désactivé";
+    error.value = err?.data?.error || t('shared.errorNotFound');
   } finally {
     loading.value = false;
   }
@@ -194,14 +205,14 @@ const importTemplate = async () => {
       method: 'POST',
       headers: { Authorization: `Bearer ${authStore.token}` },
     });
-    toast.success('Template importé !', 'Il a été ajouté à vos templates');
+    toast.success(t('shared.toastImported'), t('shared.toastAddedToTemplates'));
     navigateTo('/workouts');
   } catch (err: any) {
     const msg =
       err?.data?.code === 'LIMIT_TEMPLATES'
-        ? 'Limite de templates atteinte. Passez Pro pour en créer plus.'
-        : err?.data?.error || "Impossible d'importer ce template";
-    toast.error('Erreur', msg);
+        ? t('shared.errorLimitReached')
+        : err?.data?.error || t('shared.errorImport');
+    toast.error(t('common.error'), msg);
   } finally {
     importing.value = false;
   }

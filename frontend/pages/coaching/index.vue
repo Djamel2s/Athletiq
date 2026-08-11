@@ -13,11 +13,11 @@
           <h1
             class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent"
           >
-            Espace Coach
+            {{ t('coaching.title') }}
           </h1>
         </div>
         <p class="text-sm text-primary-500 dark:text-primary-400 ml-11">
-          Suivez et accompagnez vos clients directement dans Athletiq
+          {{ t('coaching.subtitle') }}
         </p>
       </div>
 
@@ -32,11 +32,10 @@
       <div v-else-if="!status?.isCoach" class="card-glass !p-6 text-center slide-up">
         <Icon name="lucide:whistle" class="w-12 h-12 mx-auto mb-3 text-sand-500" />
         <h2 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-2">
-          Vous êtes coach sportif ?
+          {{ t('coaching.notCoachTitle') }}
         </h2>
         <p class="text-sm text-primary-500 dark:text-primary-400 mb-5">
-          Activez votre espace coach pour suivre vos clients, voir leur progression et leur
-          assigner des programmes — directement dans l'app qu'ils utilisent déjà.
+          {{ t('coaching.notCoachDesc') }}
         </p>
         <button
           @click="handleBecomeCoach"
@@ -44,7 +43,7 @@
           class="btn-primary px-6 py-2.5 text-sm font-semibold disabled:opacity-50"
         >
           <Icon v-if="activating" name="lucide:loader-2" class="w-4 h-4 animate-spin inline mr-1" />
-          Activer mon espace coach
+          {{ t('coaching.activate') }}
         </button>
       </div>
 
@@ -53,7 +52,7 @@
         <!-- Invite code card -->
         <div class="card-glass !p-4 mb-6 slide-up">
           <h2 class="text-sm font-semibold text-primary-900 dark:text-primary-100 mb-3">
-            Votre code coach
+            {{ t('coaching.yourCode') }}
           </h2>
           <div class="flex items-center gap-3 mb-3">
             <div
@@ -69,22 +68,28 @@
             </button>
           </div>
           <p class="text-xs text-primary-400 dark:text-primary-500 mb-4">
-            Vos clients entrent ce code dans "Mon coach" pour rejoindre votre suivi. Aucune
-            demande d'ajout ni recherche nécessaire.
+            {{ t('coaching.codeHint') }}
           </p>
 
           <div class="flex items-center justify-between text-xs">
             <span class="text-primary-500 dark:text-primary-400">
-              {{ status.clientCount }} client{{ status.clientCount > 1 ? 's' : '' }}
-              <span v-if="status.maxClients !== null"> / {{ status.maxClients }} (plan Free)</span>
-              <span v-else> · plan Pro, illimité</span>
+              {{
+                t('coaching.clientCount', {
+                  count: status.clientCount,
+                  plural: status.clientCount > 1 ? 's' : '',
+                })
+              }}
+              <span v-if="status.maxClients !== null">
+                / {{ status.maxClients }} ({{ t('coaching.planFree') }})</span
+              >
+              <span v-else> · {{ t('coaching.planProUnlimited') }}</span>
             </span>
             <NuxtLink
               v-if="status.maxClients !== null"
               to="/subscription"
               class="text-sand-600 dark:text-sand-400 font-semibold"
             >
-              Passer Pro →
+              {{ t('coaching.goPro') }} →
             </NuxtLink>
           </div>
         </div>
@@ -92,13 +97,13 @@
         <!-- Invite by email/username -->
         <div class="card-glass !p-4 mb-6 slide-up">
           <h2 class="text-sm font-semibold text-primary-900 dark:text-primary-100 mb-3">
-            Inviter par email ou pseudo
+            {{ t('coaching.inviteTitle') }}
           </h2>
           <form @submit.prevent="handleInvite" class="flex gap-2">
             <input
               v-model="inviteIdentifier"
               type="text"
-              placeholder="email@exemple.com ou @pseudo"
+              :placeholder="t('coaching.invitePlaceholder')"
               class="input-primary flex-1 text-sm"
             />
             <button
@@ -114,7 +119,9 @@
 
         <!-- Client list -->
         <div class="flex items-center justify-between mb-3">
-          <h2 class="text-sm font-semibold text-primary-900 dark:text-primary-100">Mes clients</h2>
+          <h2 class="text-sm font-semibold text-primary-900 dark:text-primary-100">
+            {{ t('coaching.myClients') }}
+          </h2>
         </div>
 
         <div v-if="clientsLoading" class="text-center py-10">
@@ -129,7 +136,7 @@
             class="w-10 h-10 mx-auto mb-2 text-primary-300 dark:text-primary-600"
           />
           <p class="text-sm text-primary-500 dark:text-primary-400">
-            Aucun client pour l'instant. Partagez votre code coach pour commencer.
+            {{ t('coaching.noClients') }}
           </p>
         </div>
 
@@ -142,7 +149,11 @@
           >
             <div
               class="w-11 h-11 rounded-full overflow-hidden flex-shrink-0"
-              :class="client.athlete.avatarUrl ? '' : 'bg-gradient-primary flex items-center justify-center'"
+              :class="
+                client.athlete.avatarUrl
+                  ? ''
+                  : 'bg-gradient-primary flex items-center justify-center'
+              "
             >
               <img
                 v-if="client.athlete.avatarUrl"
@@ -173,7 +184,13 @@
 </template>
 
 <script setup lang="ts">
-import { useCoachingApi, type CoachStatus, type CoachClientSummary } from '~/composables/useCoachingApi';
+import {
+  useCoachingApi,
+  type CoachStatus,
+  type CoachClientSummary,
+} from '~/composables/useCoachingApi';
+
+const { t } = useLocale();
 
 definePageMeta({
   layout: false,
@@ -199,7 +216,7 @@ async function loadStatus() {
     status.value = await getCoachStatus();
     if (status.value.isCoach) await loadClients();
   } catch {
-    toast.error('Erreur', "Impossible de charger l'espace coach");
+    toast.error(t('common.error'), t('coaching.errorLoad'));
   } finally {
     loading.value = false;
   }
@@ -211,7 +228,7 @@ async function loadClients() {
     const res = await getClients();
     clients.value = res.clients;
   } catch {
-    toast.error('Erreur', 'Impossible de charger vos clients');
+    toast.error(t('common.error'), t('coaching.errorLoadClients'));
   } finally {
     clientsLoading.value = false;
   }
@@ -221,10 +238,10 @@ async function handleBecomeCoach() {
   activating.value = true;
   try {
     status.value = await becomeCoach();
-    toast.success('Espace coach activé', 'Partagez votre code pour ajouter vos premiers clients');
+    toast.success(t('coaching.toastActivated'), t('coaching.toastActivatedDesc'));
     await loadClients();
   } catch (e: any) {
-    toast.error('Erreur', e?.data?.error || "Impossible d'activer l'espace coach");
+    toast.error(t('common.error'), e?.data?.error || t('coaching.errorActivate'));
   } finally {
     activating.value = false;
   }
@@ -235,10 +252,10 @@ async function handleInvite() {
   inviting.value = true;
   try {
     await inviteClient(inviteIdentifier.value.trim());
-    toast.success('Invitation envoyée');
+    toast.success(t('coaching.toastInviteSent'));
     inviteIdentifier.value = '';
   } catch (e: any) {
-    toast.error('Erreur', e?.data?.error || "Impossible d'envoyer l'invitation");
+    toast.error(t('common.error'), e?.data?.error || t('coaching.errorInvite'));
   } finally {
     inviting.value = false;
   }
@@ -247,15 +264,15 @@ async function handleInvite() {
 function copyCode() {
   if (!status.value?.coachInviteCode) return;
   navigator.clipboard.writeText(status.value.coachInviteCode);
-  toast.success('Code copié');
+  toast.success(t('coaching.toastCodeCopied'));
 }
 
 function formatLastWorkout(date: string | null) {
-  if (!date) return "Aucune séance enregistrée";
+  if (!date) return t('coaching.noSessionLogged');
   const days = Math.floor((Date.now() - new Date(date).getTime()) / (1000 * 60 * 60 * 24));
-  if (days === 0) return "Séance aujourd'hui";
-  if (days === 1) return 'Dernière séance hier';
-  return `Dernière séance il y a ${days} jours`;
+  if (days === 0) return t('coaching.sessionToday');
+  if (days === 1) return t('coaching.sessionYesterday');
+  return t('coaching.sessionDaysAgo', { days });
 }
 
 function inactivityClass(date: string | null) {

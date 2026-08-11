@@ -11,7 +11,9 @@
         >
           {{ countdownNumber }}
         </div>
-        <p class="text-2xl text-primary-600 dark:text-primary-400 mt-4">Prépare-toi...</p>
+        <p class="text-2xl text-primary-600 dark:text-primary-400 mt-4">
+          {{ t('workoutLive.getReady') }}
+        </p>
       </div>
     </div>
 
@@ -57,11 +59,13 @@
         <div
           class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary-200 dark:border-primary-700 border-t-primary-600 dark:border-t-primary-400"
         ></div>
-        <p class="mt-4 text-primary-600 dark:text-primary-400 text-lg">Chargement...</p>
+        <p class="mt-4 text-primary-600 dark:text-primary-400 text-lg">{{ t('common.loading') }}</p>
       </div>
 
       <div v-else-if="!workout || !currentExercise" class="text-center py-20">
-        <p class="text-primary-900 dark:text-primary-100 text-lg">Workout introuvable</p>
+        <p class="text-primary-900 dark:text-primary-100 text-lg">
+          {{ t('workoutLive.workoutNotFound') }}
+        </p>
       </div>
 
       <div v-else class="space-y-4">
@@ -225,7 +229,7 @@
             <div class="flex-1">
               <label
                 class="block text-primary-900 dark:text-primary-100 text-sm mb-2 text-center font-semibold"
-                >Répétitions</label
+                >{{ t('workoutLive.repsLabel') }}</label
               >
               <input
                 v-model.number="currentSetData.reps"
@@ -240,7 +244,7 @@
             <div class="flex-1">
               <label
                 class="block text-primary-900 dark:text-primary-100 text-sm mb-2 text-center font-semibold"
-                >Poids (kg)</label
+                >{{ t('workoutLive.weightKgLabel') }}</label
               >
               <input
                 v-model.number="currentSetData.weight"
@@ -311,7 +315,7 @@
         <div v-if="completedSets.length > 0" class="space-y-2">
           <p class="text-sm text-primary-900 dark:text-primary-100 font-semibold">
             Séries complétées
-            <span class="text-primary-400 font-normal">(fleches pour modifier)</span>:
+            <span class="text-primary-400 font-normal">({{ t('workoutLive.arrowsToEdit') }})</span>:
           </p>
           <div class="flex gap-2 overflow-x-auto">
             <div
@@ -385,7 +389,7 @@
             v-model="liveSearchQuery"
             @input="searchExercisesLive"
             type="text"
-            placeholder="Rechercher un exercice..."
+            :placeholder="t('workoutLive.searchExercise')"
             class="input-primary w-full"
           />
           <div class="flex gap-2 overflow-x-auto pb-1">
@@ -394,32 +398,32 @@
               @change="searchExercisesLive"
               class="input-primary text-sm py-2"
             >
-              <option value="">Tous les muscles</option>
-              <option value="CHEST">Pectoraux</option>
-              <option value="BACK">Dos</option>
-              <option value="SHOULDERS">Épaules</option>
-              <option value="BICEPS">Biceps</option>
-              <option value="TRICEPS">Triceps</option>
-              <option value="LEGS">Jambes</option>
-              <option value="QUADS">Quadriceps</option>
-              <option value="HAMSTRINGS">Ischio-jambiers</option>
-              <option value="GLUTES">Fessiers</option>
-              <option value="CALVES">Mollets</option>
-              <option value="ABS">Abdos</option>
-              <option value="CARDIO">Cardio</option>
+              <option value="">{{ t('muscle.all') }}</option>
+              <option value="CHEST">{{ t('muscle.CHEST') }}</option>
+              <option value="BACK">{{ t('muscle.BACK') }}</option>
+              <option value="SHOULDERS">{{ t('muscle.SHOULDERS') }}</option>
+              <option value="BICEPS">{{ t('muscle.BICEPS') }}</option>
+              <option value="TRICEPS">{{ t('muscle.TRICEPS') }}</option>
+              <option value="LEGS">{{ t('muscle.LEGS') }}</option>
+              <option value="QUADS">{{ t('muscle.QUADS') }}</option>
+              <option value="HAMSTRINGS">{{ t('muscle.HAMSTRINGS') }}</option>
+              <option value="GLUTES">{{ t('muscle.GLUTES') }}</option>
+              <option value="CALVES">{{ t('muscle.CALVES') }}</option>
+              <option value="ABS">{{ t('muscle.ABS') }}</option>
+              <option value="CARDIO">{{ t('muscle.CARDIO') }}</option>
             </select>
             <select
               v-model="liveFilterEquipment"
               @change="searchExercisesLive"
               class="input-primary text-sm py-2"
             >
-              <option value="">Tout équipement</option>
-              <option value="BARBELL">Barre</option>
-              <option value="DUMBBELL">Haltères</option>
-              <option value="BODYWEIGHT">Poids du corps</option>
-              <option value="MACHINE">Machine</option>
-              <option value="CABLE">Câble</option>
-              <option value="KETTLEBELL">Kettlebell</option>
+              <option value="">{{ t('equipment.all') }}</option>
+              <option value="BARBELL">{{ t('equipment.BARBELL') }}</option>
+              <option value="DUMBBELL">{{ t('equipment.DUMBBELL') }}</option>
+              <option value="BODYWEIGHT">{{ t('equipment.BODYWEIGHT') }}</option>
+              <option value="MACHINE">{{ t('equipment.MACHINE') }}</option>
+              <option value="CABLE">{{ t('equipment.CABLE') }}</option>
+              <option value="KETTLEBELL">{{ t('equipment.KETTLEBELL') }}</option>
             </select>
           </div>
         </div>
@@ -432,7 +436,9 @@
             ></div>
           </div>
           <div v-else-if="liveExerciseLibrary.length === 0" class="text-center py-12">
-            <p class="text-primary-500 dark:text-primary-400">Aucun exercice trouvé</p>
+            <p class="text-primary-500 dark:text-primary-400">
+              {{ t('workoutLive.noExerciseFound') }}
+            </p>
           </div>
           <div v-else class="space-y-2">
             <div
@@ -568,7 +574,9 @@
           <button @click="addRestTime(-15)" class="btn-outline px-5 py-3 text-base font-mono">
             -15s
           </button>
-          <button @click="skipRest" class="btn-outline px-8 py-3 text-base">Passer</button>
+          <button @click="skipRest" class="btn-outline px-8 py-3 text-base">
+            {{ t('workoutLive.skip') }}
+          </button>
           <button @click="addRestTime(15)" class="btn-primary px-5 py-3 text-base font-mono">
             +15s
           </button>
@@ -626,7 +634,9 @@
               <h2 class="text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2">
                 Bravo !
               </h2>
-              <p class="text-primary-600 dark:text-primary-400">Entraînement terminé avec succès</p>
+              <p class="text-primary-600 dark:text-primary-400">
+                {{ t('workoutLive.completedSuccess') }}
+              </p>
             </div>
 
             <!-- Résumé -->
@@ -635,7 +645,9 @@
                 <p class="text-2xl font-bold text-primary-900 dark:text-primary-100">
                   {{ formattedTime }}
                 </p>
-                <p class="text-xs text-primary-500 dark:text-primary-400 mt-1">Durée</p>
+                <p class="text-xs text-primary-500 dark:text-primary-400 mt-1">
+                  {{ t('workoutDetail.duration') }}
+                </p>
               </div>
               <div class="card-glass !p-2 md:!p-4">
                 <p class="text-2xl font-bold text-primary-900 dark:text-primary-100">
@@ -647,7 +659,9 @@
                 <p class="text-2xl font-bold text-primary-900 dark:text-primary-100">
                   {{ workout?.exercises?.length || 0 }}
                 </p>
-                <p class="text-xs text-primary-500 dark:text-primary-400 mt-1">Exercices</p>
+                <p class="text-xs text-primary-500 dark:text-primary-400 mt-1">
+                  {{ t('workoutDetail.exercises') }}
+                </p>
               </div>
             </div>
 
@@ -758,9 +772,9 @@
                   type="checkbox"
                   class="w-5 h-5 rounded border-primary-300 dark:border-primary-600 text-sand-600 focus:ring-sand-600"
                 />
-                <span class="text-sm text-primary-700 dark:text-primary-300"
-                  >Photo principale (timelapse)</span
-                >
+                <span class="text-sm text-primary-700 dark:text-primary-300">{{
+                  t('profile.upload.primary')
+                }}</span>
               </label>
             </div>
 
@@ -827,7 +841,7 @@
           <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-4">
             Reçu de séance
           </h3>
-          <ShareCard type="receipt" title="Mon entraînement Athletiq" :data="receiptData" />
+          <ShareCard type="receipt" :title="t('workoutLive.receiptTitle')" :data="receiptData" />
         </div>
       </div>
     </Teleport>
@@ -956,6 +970,7 @@ import type { Workout, Exercise, Set } from '~/types/workout';
 
 useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] });
 
+const { t } = useLocale();
 const route = useRoute();
 const workoutStore = useWorkoutStore();
 const authStore = useAuthStore();
@@ -1873,43 +1888,19 @@ const addExerciseLive = async (exercise: any) => {
     if (!workout.value.exercises) workout.value.exercises = [];
     workout.value.exercises.push(addedExercise);
     showAddExerciseModal.value = false;
-    toast.success('Exercice ajouté !');
+    toast.success(t('workoutLive.exerciseAdded'));
   } catch (error) {
     logger.error('Failed to add exercise:', error);
-    toast.error("Erreur lors de l'ajout");
+    toast.error(t('workoutLive.errorAdding'));
   }
 };
 
 const formatMuscleGroupLive = (muscle?: string) => {
-  const labels: Record<string, string> = {
-    CHEST: 'Pectoraux',
-    BACK: 'Dos',
-    SHOULDERS: 'Épaules',
-    LEGS: 'Jambes',
-    BICEPS: 'Biceps',
-    TRICEPS: 'Triceps',
-    ABS: 'Abdos',
-    QUADS: 'Quadriceps',
-    HAMSTRINGS: 'Ischio-jambiers',
-    GLUTES: 'Fessiers',
-    CALVES: 'Mollets',
-    CARDIO: 'Cardio',
-  };
-  return muscle ? labels[muscle] || muscle : '';
+  return muscle ? t(`muscle.${muscle}`) || muscle : '';
 };
 
 const formatEquipmentLive = (equipment?: string) => {
-  const labels: Record<string, string> = {
-    BARBELL: 'Barre',
-    DUMBBELL: 'Haltères',
-    BODYWEIGHT: 'Poids du corps',
-    MACHINE: 'Machine',
-    CABLE: 'Câble',
-    KETTLEBELL: 'Kettlebell',
-    RESISTANCE_BAND: 'Élastique',
-    OTHER: 'Autre',
-  };
-  return equipment ? labels[equipment] || equipment : '';
+  return equipment ? t(`equipment.${equipment}`) || equipment : '';
 };
 
 definePageMeta({

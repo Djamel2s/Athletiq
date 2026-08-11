@@ -833,15 +833,21 @@
         >
           <div class="flex items-center gap-1.5">
             <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
-            <span class="text-primary-600 dark:text-primary-400">Récupéré</span>
+            <span class="text-primary-600 dark:text-primary-400">{{
+              t('muscleRecovery.recovered')
+            }}</span>
           </div>
           <div class="flex items-center gap-1.5">
             <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
-            <span class="text-primary-600 dark:text-primary-400">En cours</span>
+            <span class="text-primary-600 dark:text-primary-400">{{
+              t('muscleRecovery.recovering')
+            }}</span>
           </div>
           <div class="flex items-center gap-1.5">
             <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
-            <span class="text-primary-600 dark:text-primary-400">Fatigué</span>
+            <span class="text-primary-600 dark:text-primary-400">{{
+              t('muscleRecovery.fatigued')
+            }}</span>
           </div>
         </div>
 
@@ -888,6 +894,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useLocale();
 import { useAuthStore } from '~/stores/auth';
 
 interface MuscleRecoveryItem {
@@ -991,21 +998,7 @@ const barClass = (score: number): string => {
 };
 
 const muscleLabel = (muscle: string) => {
-  const labels: Record<string, string> = {
-    CHEST: 'Pectoraux',
-    BACK: 'Dos',
-    SHOULDERS: 'Epaules',
-    BICEPS: 'Biceps',
-    TRICEPS: 'Triceps',
-    ABS: 'Abdos',
-    LEGS: 'Jambes',
-    QUADS: 'Quadriceps',
-    HAMSTRINGS: 'Ischio-jambiers',
-    GLUTES: 'Fessiers',
-    CALVES: 'Mollets',
-    CARDIO: 'Cardio',
-  };
-  return labels[muscle] || muscle;
+  return t(`muscle.${muscle}`) || muscle;
 };
 </script>
 

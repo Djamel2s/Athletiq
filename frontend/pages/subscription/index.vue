@@ -11,10 +11,10 @@
         <h1
           class="text-2xl md:text-4xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-display"
         >
-          Abonnement
+          {{ t('subscription.title') }}
         </h1>
         <p class="text-primary-600 dark:text-primary-400 text-body-relaxed">
-          Gérez votre plan Athletiq
+          {{ t('subscription.subtitle') }}
         </p>
       </div>
 
@@ -24,7 +24,7 @@
         class="mb-6 p-4 rounded-2xl bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 fade-in"
       >
         <p class="text-green-700 dark:text-green-300 font-medium text-center">
-          Paiement réussi ! Votre abonnement est maintenant actif.
+          {{ t('subscription.paymentSuccess') }}
         </p>
       </div>
       <div
@@ -32,7 +32,7 @@
         class="mb-6 p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 fade-in"
       >
         <p class="text-amber-700 dark:text-amber-300 font-medium text-center">
-          Paiement annulé. Vous pouvez réessayer quand vous voulez.
+          {{ t('subscription.paymentCanceled') }}
         </p>
       </div>
 
@@ -73,13 +73,15 @@
           <!-- Trial progress bar -->
           <div v-if="subscriptionStore.isTrial" class="mt-4">
             <div class="flex justify-between text-sm mb-2">
-              <span class="text-primary-600 dark:text-primary-400">Essai gratuit</span>
-              <span class="font-semibold text-primary-900 dark:text-primary-100"
-                >{{ subscriptionStore.trialDaysLeft }} jour{{
-                  subscriptionStore.trialDaysLeft > 1 ? 's' : ''
-                }}
-                restant{{ subscriptionStore.trialDaysLeft > 1 ? 's' : '' }}</span
-              >
+              <span class="text-primary-600 dark:text-primary-400">{{
+                t('subscription.freeTrial')
+              }}</span>
+              <span class="font-semibold text-primary-900 dark:text-primary-100">{{
+                t('subscription.daysLeft', {
+                  n: subscriptionStore.trialDaysLeft,
+                  plural: subscriptionStore.trialDaysLeft > 1 ? 's' : '',
+                })
+              }}</span>
             </div>
             <div class="w-full h-2 bg-primary-200 dark:bg-primary-700 rounded-full overflow-hidden">
               <div
@@ -94,9 +96,10 @@
             v-if="subscriptionStore.status === 'ACTIVE' && subscriptionStore.currentPeriodEnd"
             class="mt-4 text-sm text-primary-600 dark:text-primary-400"
           >
-            Prochain renouvellement : {{ formatDate(subscriptionStore.currentPeriodEnd) }}
+            {{ t('subscription.nextRenewal') }} :
+            {{ formatDate(subscriptionStore.currentPeriodEnd) }}
             <span v-if="subscriptionStore.canceledAt" class="text-amber-600 dark:text-amber-400">
-              (annulé, actif jusqu'à cette date)</span
+              ({{ t('subscription.canceledActiveUntil') }})</span
             >
           </div>
         </div>
@@ -104,7 +107,7 @@
         <!-- Usage / Limites (plan gratuit) -->
         <div v-if="!isPremium" class="card-glass">
           <h3 class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-4">
-            Votre utilisation
+            {{ t('subscription.yourUsage') }}
           </h3>
           <div class="space-y-4">
             <div v-for="item in usageItems" :key="item.label">
@@ -130,18 +133,22 @@
         <!-- Pricing Cards -->
         <div v-if="showPricing">
           <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-4 text-center">
-            Passez Pro
+            {{ t('subscription.goPro') }}
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Monthly -->
             <div class="card-glass relative group hover:scale-[1.02] transition-transform">
-              <h4 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-1">Mensuel</h4>
+              <h4 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-1">
+                {{ t('subscription.monthly') }}
+              </h4>
               <div class="flex items-baseline gap-1 mb-4">
                 <span
                   class="text-3xl font-bold bg-gradient-to-r from-sand-500 to-sand-700 bg-clip-text text-transparent"
                   >5,99€</span
                 >
-                <span class="text-primary-500 dark:text-primary-400">/mois</span>
+                <span class="text-primary-500 dark:text-primary-400">{{
+                  t('subscription.perMonth')
+                }}</span>
               </div>
               <ul class="space-y-2 mb-6 text-sm text-primary-600 dark:text-primary-400">
                 <li class="flex items-center gap-2">
@@ -156,7 +163,7 @@
                       clip-rule="evenodd"
                     />
                   </svg>
-                  Tout illimité
+                  {{ t('subscription.allUnlimited') }}
                 </li>
                 <li class="flex items-center gap-2">
                   <svg
@@ -170,7 +177,7 @@
                       clip-rule="evenodd"
                     />
                   </svg>
-                  Sans engagement
+                  {{ t('subscription.noCommitment') }}
                 </li>
               </ul>
               <button
@@ -178,7 +185,7 @@
                 :disabled="checkoutLoading"
                 class="btn-primary w-full"
               >
-                {{ checkoutLoading ? 'Redirection...' : 'Choisir ce plan' }}
+                {{ checkoutLoading ? t('subscription.redirecting') : t('subscription.choosePlan') }}
               </button>
             </div>
 
@@ -191,15 +198,21 @@
               >
                 -30%
               </div>
-              <h4 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-1">Annuel</h4>
+              <h4 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-1">
+                {{ t('subscription.yearly') }}
+              </h4>
               <div class="flex items-baseline gap-1 mb-1">
                 <span
                   class="text-3xl font-bold bg-gradient-to-r from-sand-500 to-sand-700 bg-clip-text text-transparent"
                   >49,99€</span
                 >
-                <span class="text-primary-500 dark:text-primary-400">/an</span>
+                <span class="text-primary-500 dark:text-primary-400">{{
+                  t('subscription.perYear')
+                }}</span>
               </div>
-              <p class="text-sm text-primary-500 dark:text-primary-400 mb-4">soit 4,16€/mois</p>
+              <p class="text-sm text-primary-500 dark:text-primary-400 mb-4">
+                {{ t('subscription.yearlyPerMonth') }}
+              </p>
               <ul class="space-y-2 mb-6 text-sm text-primary-600 dark:text-primary-400">
                 <li class="flex items-center gap-2">
                   <svg
@@ -213,7 +226,7 @@
                       clip-rule="evenodd"
                     />
                   </svg>
-                  Tout illimité
+                  {{ t('subscription.allUnlimited') }}
                 </li>
                 <li class="flex items-center gap-2">
                   <svg
@@ -227,7 +240,7 @@
                       clip-rule="evenodd"
                     />
                   </svg>
-                  3 mois offerts
+                  {{ t('subscription.threeMonthsFree') }}
                 </li>
               </ul>
               <button
@@ -235,13 +248,13 @@
                 :disabled="checkoutLoading"
                 class="btn-primary w-full"
               >
-                {{ checkoutLoading ? 'Redirection...' : 'Choisir ce plan' }}
+                {{ checkoutLoading ? t('subscription.redirecting') : t('subscription.choosePlan') }}
               </button>
             </div>
           </div>
 
           <p class="text-center text-xs text-primary-500 dark:text-primary-400 mt-4">
-            Paiement sécurisé par Stripe — Carte bancaire, Apple Pay, Google Pay
+            {{ t('subscription.securePayment') }}
           </p>
         </div>
 
@@ -251,17 +264,17 @@
           class="card-glass"
         >
           <h3 class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-4">
-            Gérer mon abonnement
+            {{ t('subscription.manage') }}
           </h3>
           <div class="flex flex-col sm:flex-row gap-3">
             <button @click="subscriptionStore.openPortal()" class="btn-primary flex-1">
-              Modifier le moyen de paiement
+              {{ t('subscription.updatePaymentMethod') }}
             </button>
             <button
               @click="confirmCancel"
               class="px-6 py-3 rounded-xl border border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex-1"
             >
-              Annuler l'abonnement
+              {{ t('subscription.cancelSubscription') }}
             </button>
           </div>
         </div>
@@ -269,17 +282,17 @@
         <!-- Comparaison Gratuit vs Pro -->
         <div class="card-glass">
           <h3 class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-4">
-            Gratuit vs Pro
+            {{ t('subscription.freeVsPro') }}
           </h3>
           <div class="overflow-x-auto">
             <table class="w-full text-sm">
               <thead>
                 <tr class="border-b border-primary-200 dark:border-primary-700">
                   <th class="text-left py-2 text-primary-600 dark:text-primary-400 font-medium">
-                    Fonctionnalité
+                    {{ t('subscription.feature') }}
                   </th>
                   <th class="text-center py-2 text-primary-600 dark:text-primary-400 font-medium">
-                    Gratuit
+                    {{ t('subscription.free') }}
                   </th>
                   <th class="text-center py-2 font-semibold text-primary-900 dark:text-primary-100">
                     Pro
@@ -315,7 +328,7 @@
                 d="M10 19l-7-7m0 0l7-7m-7 7h18"
               />
             </svg>
-            Retour aux paramètres
+            {{ t('subscription.backToSettings') }}
           </NuxtLink>
         </div>
       </div>
@@ -340,25 +353,24 @@
             class="relative bg-white dark:bg-primary-900 rounded-2xl p-6 max-w-md w-full shadow-xl border border-primary-200 dark:border-primary-700"
           >
             <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-3">
-              Annuler l'abonnement ?
+              {{ t('subscription.cancelModalTitle') }}
             </h3>
             <p class="text-primary-600 dark:text-primary-400 mb-6">
-              Votre abonnement restera actif jusqu'à la fin de la période en cours. Vous passerez
-              ensuite au plan gratuit.
+              {{ t('subscription.cancelModalDesc') }}
             </p>
             <div class="flex gap-3">
               <button
                 @click="showCancelModal = false"
                 class="flex-1 px-4 py-3 rounded-xl border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors font-medium"
               >
-                Garder mon abonnement
+                {{ t('subscription.keepSubscription') }}
               </button>
               <button
                 @click="doCancel"
                 :disabled="isCancelling"
                 class="flex-1 px-4 py-3 rounded-xl bg-red-600 text-white hover:bg-red-700 transition-colors font-medium disabled:opacity-50"
               >
-                {{ isCancelling ? 'Annulation...' : 'Confirmer' }}
+                {{ isCancelling ? t('subscription.cancelling') : t('common.confirm') }}
               </button>
             </div>
           </div>
@@ -372,6 +384,8 @@
 import { useAuthStore } from '~/stores/auth';
 import { useSubscriptionStore } from '~/stores/subscription';
 import { useSubscriptionLimits } from '~/composables/useSubscriptionLimits';
+
+const { t } = useLocale();
 
 useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] });
 
@@ -400,36 +414,52 @@ onMounted(async () => {
   await fetchUsage();
 });
 
-const comparisonTable = [
-  { feature: 'Séances / semaine', free: '2', pro: 'Illimité' },
-  { feature: 'Templates de workout', free: '2', pro: 'Illimité' },
-  { feature: 'Historique', free: '30 jours', pro: 'Complet' },
-  { feature: 'Photos de progression', free: '3', pro: 'Illimité' },
-  { feature: 'Objectifs', free: '1', pro: 'Illimité' },
-  { feature: 'Stats avancées', free: 'Oui', pro: 'Oui' },
-  { feature: 'Suivi corporel', free: 'Oui', pro: 'Oui' },
-  { feature: 'Calendrier & streaks', free: 'Oui', pro: 'Oui' },
-  { feature: 'Partage Instagram', free: 'Oui', pro: 'Oui' },
-];
+const comparisonTable = computed(() => [
+  {
+    feature: t('subscription.table.sessionsPerWeek'),
+    free: '2',
+    pro: t('subscription.table.unlimited'),
+  },
+  {
+    feature: t('subscription.table.workoutTemplates'),
+    free: '2',
+    pro: t('subscription.table.unlimited'),
+  },
+  {
+    feature: t('subscription.table.history'),
+    free: t('subscription.table.days30'),
+    pro: t('subscription.table.full'),
+  },
+  {
+    feature: t('subscription.table.progressPhotos'),
+    free: '3',
+    pro: t('subscription.table.unlimited'),
+  },
+  { feature: t('subscription.table.goals'), free: '1', pro: t('subscription.table.unlimited') },
+  { feature: t('subscription.table.advancedStats'), free: t('common.yes'), pro: t('common.yes') },
+  { feature: t('subscription.table.bodyTracking'), free: t('common.yes'), pro: t('common.yes') },
+  { feature: t('subscription.table.calendarStreaks'), free: t('common.yes'), pro: t('common.yes') },
+  { feature: t('subscription.table.instagramShare'), free: t('common.yes'), pro: t('common.yes') },
+]);
 
 const usageItems = computed(() => [
   {
-    label: 'Séances cette semaine',
+    label: t('subscription.usage.sessionsThisWeek'),
     text: workoutUsageText.value,
     percent: (usage.value.workoutsThisWeek / 2) * 100,
   },
   {
-    label: 'Templates',
+    label: t('workoutsPage.templatesCount'),
     text: templateUsageText.value,
     percent: (usage.value.templates / 2) * 100,
   },
   {
-    label: 'Photos',
+    label: t('body.photos.gallery'),
     text: photoUsageText.value,
     percent: (usage.value.photos / 3) * 100,
   },
   {
-    label: 'Objectifs',
+    label: t('subscription.table.goals'),
     text: goalUsageText.value,
     percent: (usage.value.goals / 1) * 100,
   },
@@ -446,25 +476,25 @@ const showPricing = computed(() => {
 const planLabel = computed(() => {
   switch (subscriptionStore.plan) {
     case 'MONTHLY':
-      return 'Abonnement Mensuel';
+      return t('subscription.plan.monthly');
     case 'YEARLY':
-      return 'Abonnement Annuel';
+      return t('subscription.plan.yearly');
     case 'FREE_TRIAL':
-      return 'Essai Gratuit (14 jours Pro)';
+      return t('subscription.plan.freeTrial');
     case 'FREE':
-      return 'Plan Gratuit';
+      return t('subscription.plan.free');
     default:
-      return 'Plan Gratuit';
+      return t('subscription.plan.free');
   }
 });
 
 const statusLabel = computed(() => {
   if (subscriptionStore.isTrial)
-    return `${subscriptionStore.trialDaysLeft} jours restants — tout est illimité pendant l'essai`;
-  if (subscriptionStore.status === 'ACTIVE') return 'Votre abonnement Pro est actif';
-  if (subscriptionStore.status === 'PAST_DUE') return 'Paiement en attente';
-  if (subscriptionStore.status === 'CANCELED') return 'Abonnement annulé';
-  return 'Vous utilisez le plan gratuit';
+    return t('subscription.status.trial', { days: subscriptionStore.trialDaysLeft });
+  if (subscriptionStore.status === 'ACTIVE') return t('subscription.status.active');
+  if (subscriptionStore.status === 'PAST_DUE') return t('subscription.status.pastDue');
+  if (subscriptionStore.status === 'CANCELED') return t('subscription.status.canceled');
+  return t('subscription.status.free');
 });
 
 const statusBadgeClass = computed(() => {
@@ -478,11 +508,11 @@ const statusBadgeClass = computed(() => {
 });
 
 const statusBadgeText = computed(() => {
-  if (subscriptionStore.isTrial) return 'Essai Pro';
+  if (subscriptionStore.isTrial) return t('subscription.badge.trialPro');
   if (subscriptionStore.status === 'ACTIVE') return 'Pro';
-  if (subscriptionStore.isPastDue) return 'En attente';
-  if (subscriptionStore.plan === 'FREE') return 'Gratuit';
-  return 'Expiré';
+  if (subscriptionStore.isPastDue) return t('subscription.badge.pending');
+  if (subscriptionStore.plan === 'FREE') return t('subscription.table.free');
+  return t('subscription.badge.expired');
 });
 
 const formatDate = (dateStr: string) => {
@@ -497,7 +527,7 @@ const checkout = async (plan: 'monthly' | 'yearly') => {
   checkoutLoading.value = true;
   const result = await subscriptionStore.createCheckout(plan);
   if (result?.error) {
-    toast.error('Erreur', result.error);
+    toast.error(t('common.error'), result.error);
   }
   checkoutLoading.value = false;
 };
@@ -515,12 +545,9 @@ const doCancel = async () => {
   isCancelling.value = false;
   showCancelModal.value = false;
   if (result?.error) {
-    toast.error('Erreur', result.error);
+    toast.error(t('common.error'), result.error);
   } else {
-    toast.success(
-      'Abonnement annulé',
-      "Votre abonnement restera actif jusqu'à la fin de la période en cours."
-    );
+    toast.success(t('subscription.toastCanceled'), t('subscription.toastCanceledDesc'));
   }
 };
 </script>

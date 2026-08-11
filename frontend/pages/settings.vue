@@ -256,11 +256,7 @@
                   "
                   @click="setLocale(option.code)"
                 >
-                  <img
-                    :src="option.flag"
-                    :alt="option.label"
-                    class="w-5 h-5 rounded-sm object-cover"
-                  />
+                  <Icon :name="option.flag" class="w-5 h-5 rounded-full" />
                   {{ option.label }}
                 </button>
               </div>
@@ -431,7 +427,9 @@
           </h2>
           <div class="space-y-1">
             <div class="flex items-center justify-between p-3">
-              <span class="text-primary-800 dark:text-primary-200">Records personnels</span>
+              <span class="text-primary-800 dark:text-primary-200">{{
+                t('settings.notif.personalRecords')
+              }}</span>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" v-model="notifPR" class="sr-only peer" />
                 <div
@@ -440,7 +438,9 @@
               </label>
             </div>
             <div class="flex items-center justify-between p-3">
-              <span class="text-primary-800 dark:text-primary-200">Series consecutives</span>
+              <span class="text-primary-800 dark:text-primary-200">{{
+                t('settings.notif.streaks')
+              }}</span>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" v-model="notifStreak" class="sr-only peer" />
                 <div
@@ -449,7 +449,9 @@
               </label>
             </div>
             <div class="flex items-center justify-between p-3">
-              <span class="text-primary-800 dark:text-primary-200">Objectifs</span>
+              <span class="text-primary-800 dark:text-primary-200">{{
+                t('settings.notif.goals')
+              }}</span>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" v-model="notifGoals" class="sr-only peer" />
                 <div
@@ -461,9 +463,11 @@
             <!-- Notifications push (native only) -->
             <div v-if="isNativePlatform" class="flex items-center justify-between p-3">
               <div>
-                <span class="text-primary-800 dark:text-primary-200">Notifications push</span>
+                <span class="text-primary-800 dark:text-primary-200">{{
+                  t('settings.notif.push')
+                }}</span>
                 <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
-                  Recevez des notifications sur votre appareil
+                  {{ t('settings.notif.pushDesc') }}
                 </p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
@@ -479,9 +483,11 @@
             <!-- Rappel d'inactivite -->
             <div class="flex items-center justify-between p-3">
               <div>
-                <span class="text-primary-800 dark:text-primary-200">Rappel d'inactivité</span>
+                <span class="text-primary-800 dark:text-primary-200">{{
+                  t('settings.notif.inactivity')
+                }}</span>
                 <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
-                  Notification si pas d'entraînement
+                  {{ t('settings.notif.inactivityDesc') }}
                 </p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
@@ -493,9 +499,9 @@
             </div>
 
             <div v-if="reminderEnabled" class="flex items-center justify-between p-3 pl-6">
-              <span class="text-primary-600 dark:text-primary-400 text-sm"
-                >Après combien de jours</span
-              >
+              <span class="text-primary-600 dark:text-primary-400 text-sm">{{
+                t('settings.notif.afterHowManyDays')
+              }}</span>
               <div class="flex items-center gap-2">
                 <button
                   @click="inactivityDays = Math.max(1, inactivityDays - 1)"
@@ -562,11 +568,15 @@
           </h2>
           <div class="space-y-1">
             <div class="flex items-center justify-between p-3">
-              <span class="text-primary-800 dark:text-primary-200">Version</span>
+              <span class="text-primary-800 dark:text-primary-200">{{
+                t('settings.about.version')
+              }}</span>
               <span class="text-primary-500 dark:text-primary-400 text-sm">1.0.0</span>
             </div>
             <div class="flex items-center justify-between p-3">
-              <span class="text-primary-800 dark:text-primary-200">Confidentialite</span>
+              <span class="text-primary-800 dark:text-primary-200">{{
+                t('settings.about.privacy')
+              }}</span>
               <svg
                 class="w-5 h-5 text-primary-400"
                 fill="none"
@@ -601,14 +611,16 @@
                 />
               </svg>
             </div>
-            Exporter mes donnees
+            {{ t('settings.export.title') }}
           </h2>
           <div class="space-y-1">
             <div class="flex items-center justify-between p-3">
               <div>
-                <span class="text-primary-800 dark:text-primary-200">Historique des seances</span>
+                <span class="text-primary-800 dark:text-primary-200">{{
+                  t('settings.export.history')
+                }}</span>
                 <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
-                  Export CSV de toutes vos seances terminees
+                  {{ t('settings.export.historyDesc') }}
                 </p>
               </div>
               <button
@@ -616,7 +628,7 @@
                 :disabled="exporting"
                 class="px-4 py-2 rounded-xl bg-gradient-primary text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
               >
-                {{ exporting ? 'Export...' : 'Telecharger CSV' }}
+                {{ exporting ? t('settings.export.exporting') : t('settings.export.downloadCsv') }}
               </button>
             </div>
           </div>
@@ -639,16 +651,16 @@
                 />
               </svg>
             </div>
-            Sante
+            {{ t('settings.health.title') }}
           </h2>
           <div class="space-y-1">
             <div class="flex items-center justify-between p-3">
               <div>
-                <span class="text-primary-800 dark:text-primary-200"
-                  >Synchroniser avec Apple Sante / Health Connect</span
-                >
+                <span class="text-primary-800 dark:text-primary-200">{{
+                  t('settings.health.sync')
+                }}</span>
                 <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
-                  Enregistrez vos seances et donnees corporelles
+                  {{ t('settings.health.syncDesc') }}
                 </p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
@@ -660,11 +672,11 @@
             </div>
             <div class="flex items-center justify-between p-3">
               <div>
-                <span class="text-primary-800 dark:text-primary-200"
-                  >Synchroniser l'historique</span
-                >
+                <span class="text-primary-800 dark:text-primary-200">{{
+                  t('settings.health.syncHistory')
+                }}</span>
                 <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
-                  Exporter toutes vos seances passees
+                  {{ t('settings.health.syncHistoryDesc') }}
                 </p>
               </div>
               <button

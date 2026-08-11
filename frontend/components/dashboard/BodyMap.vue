@@ -408,8 +408,9 @@
               <span class="text-xs text-primary-600 dark:text-primary-400">
                 {{
                   getMuscleData(tooltip.muscle)?.score != null
-                    ? Math.round(getMuscleData(tooltip.muscle)!.score) + '% recupere'
-                    : 'Non entraine'
+                    ? Math.round(getMuscleData(tooltip.muscle)!.score) +
+                      t('bodyMap.percentRecovered')
+                    : t('bodyMap.notTrained')
                 }}
               </span>
             </div>
@@ -417,8 +418,11 @@
               v-if="getMuscleData(tooltip.muscle)?.daysSince != null"
               class="text-xs text-primary-500 dark:text-primary-400 mt-0.5"
             >
-              Il y a {{ getMuscleData(tooltip.muscle)!.daysSince }} jour{{
-                getMuscleData(tooltip.muscle)!.daysSince > 1 ? 's' : ''
+              {{
+                t('bodyMap.daysAgo', {
+                  count: getMuscleData(tooltip.muscle)!.daysSince,
+                  plural: getMuscleData(tooltip.muscle)!.daysSince > 1 ? 's' : '',
+                })
               }}
             </p>
           </div>
@@ -486,6 +490,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useLocale();
 interface MuscleRecovery {
   muscle: string;
   score: number;
@@ -508,29 +513,16 @@ const tooltip = reactive({
   muscle: '',
 });
 
-const legend = [
-  { label: 'Repos necessaire', color: '#ef4444' },
-  { label: 'Recuperation', color: '#f59e0b' },
-  { label: 'Presque pret', color: '#d4c4b0' },
-  { label: 'Pret', color: '#22c55e' },
-  { label: 'Non entraine', color: '#9ca3af' },
-];
-
-const muscleLabels: Record<string, string> = {
-  CHEST: 'Pectoraux',
-  BACK: 'Dos',
-  SHOULDERS: 'Epaules',
-  BICEPS: 'Biceps',
-  TRICEPS: 'Triceps',
-  ABS: 'Abdominaux',
-  QUADS: 'Quadriceps',
-  HAMSTRINGS: 'Ischio-jambiers',
-  GLUTES: 'Fessiers',
-  CALVES: 'Mollets',
-};
+const legend = computed(() => [
+  { label: t('bodyMap.restNeeded'), color: '#ef4444' },
+  { label: t('bodyMap.recovering'), color: '#f59e0b' },
+  { label: t('bodyMap.almostReady'), color: '#d4c4b0' },
+  { label: t('bodyMap.ready'), color: '#22c55e' },
+  { label: t('bodyMap.notTrained'), color: '#9ca3af' },
+]);
 
 const getMuscleLabel = (muscle: string): string => {
-  return muscleLabels[muscle] || muscle;
+  return t(`muscle.${muscle}`) || muscle;
 };
 
 const getMuscleData = (muscle: string): MuscleRecovery | undefined => {

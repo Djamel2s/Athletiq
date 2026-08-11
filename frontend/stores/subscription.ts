@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { useAuthStore } from './auth';
 import { apiFetch } from '~/utils/apiFetch';
+import { tSync } from '~/composables/useLocale';
 
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
@@ -98,19 +99,19 @@ export const useSubscriptionStore = defineStore('subscription', {
             window.location.href = data.url;
           } catch {
             logger.error('Invalid redirect URL');
-            return { error: 'URL de redirection invalide' };
+            return { error: tSync('subscriptionStore.invalidRedirect') };
           }
         } else {
-          return { error: data.error || 'Erreur' };
+          return { error: data.error || tSync('common.error') };
         }
       } catch (error) {
-        return { error: 'Erreur de connexion' };
+        return { error: tSync('subscriptionStore.connectionError') };
       }
     },
 
     async openPortal() {
       const authStore = useAuthStore();
-      if (!authStore.token) return { error: 'Non authentifié' };
+      if (!authStore.token) return { error: tSync('subscriptionStore.notAuthenticated') };
 
       try {
         const data = await apiFetch<{ url?: string; error?: string }>('/subscription/portal', {
@@ -118,7 +119,7 @@ export const useSubscriptionStore = defineStore('subscription', {
         });
 
         if (!data.url) {
-          return { error: data.error || "Impossible d'ouvrir le portail" };
+          return { error: data.error || tSync('subscriptionStore.errorOpenPortal') };
         }
         // Validate redirect URL to prevent open redirect
         try {
@@ -129,11 +130,11 @@ export const useSubscriptionStore = defineStore('subscription', {
           window.location.href = data.url;
         } catch {
           logger.error('Invalid portal redirect URL');
-          return { error: 'URL de redirection invalide' };
+          return { error: tSync('subscriptionStore.invalidRedirect') };
         }
       } catch (error) {
         logger.error('Error opening portal:', error);
-        return { error: 'Erreur de connexion' };
+        return { error: tSync('subscriptionStore.connectionError') };
       }
     },
 
@@ -148,7 +149,7 @@ export const useSubscriptionStore = defineStore('subscription', {
         await this.fetchSubscription(true);
         return { success: true };
       } catch (error: any) {
-        return { error: error.data?.error || 'Erreur de connexion' };
+        return { error: error.data?.error || tSync('subscriptionStore.connectionError') };
       }
     },
   },

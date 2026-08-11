@@ -58,9 +58,9 @@
                 />
               </svg>
             </div>
-            <span class="text-[10px] font-medium text-primary-400 dark:text-primary-500"
-              >Workouts</span
-            >
+            <span class="text-[10px] font-medium text-primary-400 dark:text-primary-500">{{
+              t('workoutsPage.myWorkouts')
+            }}</span>
           </button>
 
           <!-- Center: GO (Lancer) -->
@@ -73,9 +73,9 @@
             >
               <span class="text-white font-black text-base tracking-wider">GO</span>
             </div>
-            <span class="text-[10px] font-medium text-primary-400 dark:text-primary-500"
-              >Lancer</span
-            >
+            <span class="text-[10px] font-medium text-primary-400 dark:text-primary-500">{{
+              t('mobileNav.launch')
+            }}</span>
           </button>
 
           <!-- Right: Programmes -->
@@ -100,9 +100,9 @@
                 />
               </svg>
             </div>
-            <span class="text-[10px] font-medium text-primary-400 dark:text-primary-500"
-              >Programmes</span
-            >
+            <span class="text-[10px] font-medium text-primary-400 dark:text-primary-500">{{
+              t('mobileNav.programs')
+            }}</span>
           </button>
         </div>
       </div>
@@ -236,6 +236,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useLocale();
 import { h } from 'vue';
 
 const props = defineProps<{

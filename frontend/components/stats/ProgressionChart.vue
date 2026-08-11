@@ -13,7 +13,7 @@
         v-model="selectedExercise"
         class="w-full px-4 py-2.5 rounded-xl bg-white/50 dark:bg-primary-800/50 border border-primary-200 dark:border-primary-700 text-primary-900 dark:text-primary-100 text-sm focus:outline-none focus:ring-2 focus:ring-sand-500 transition-all"
       >
-        <option value="">Choisir un exercice...</option>
+        <option value="">{{ t('progressionChart.chooseExercise') }}</option>
         <option v-for="name in exerciseNames" :key="name" :value="name">
           {{ name }}
         </option>
@@ -82,19 +82,25 @@
       <!-- Stats Summary -->
       <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
         <div class="bg-white/30 dark:bg-primary-800/30 rounded-xl p-3 text-center">
-          <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">Poids initial</p>
+          <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">
+            {{ t('progressionChart.startWeight') }}
+          </p>
           <p class="text-lg font-bold text-primary-900 dark:text-primary-100">
             {{ stats.startWeight }} kg
           </p>
         </div>
         <div class="bg-white/30 dark:bg-primary-800/30 rounded-xl p-3 text-center">
-          <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">Poids actuel</p>
+          <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">
+            {{ t('progressionChart.currentWeight') }}
+          </p>
           <p class="text-lg font-bold text-primary-900 dark:text-primary-100">
             {{ stats.currentWeight }} kg
           </p>
         </div>
         <div class="bg-white/30 dark:bg-primary-800/30 rounded-xl p-3 text-center">
-          <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">Progression</p>
+          <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">
+            {{ t('progressionChart.progress') }}
+          </p>
           <p
             class="text-lg font-bold"
             :class="
@@ -107,7 +113,9 @@
           </p>
         </div>
         <div class="bg-white/30 dark:bg-primary-800/30 rounded-xl p-3 text-center">
-          <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">Séances</p>
+          <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">
+            {{ t('progressionChart.sessions') }}
+          </p>
           <p class="text-lg font-bold text-primary-900 dark:text-primary-100">
             {{ stats.totalSessions }}
           </p>
@@ -115,7 +123,9 @@
         <div
           class="col-span-2 sm:col-span-1 bg-white/30 dark:bg-primary-800/30 rounded-xl p-3 text-center"
         >
-          <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">Plateaux</p>
+          <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">
+            {{ t('progressionChart.plateaus') }}
+          </p>
           <p
             class="text-lg font-bold"
             :class="
@@ -133,6 +143,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useLocale();
 import type { Workout } from '~/types/workout';
 
 interface Props {

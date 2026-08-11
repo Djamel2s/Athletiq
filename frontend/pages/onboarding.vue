@@ -7,7 +7,7 @@
       <div class="max-w-lg mx-auto px-6 pt-6 pb-4">
         <div class="flex items-center justify-between mb-2">
           <span class="text-xs font-medium text-primary-600 dark:text-primary-400">
-            Etape {{ currentStep }} / {{ totalSteps }}
+            {{ t('onboarding.step', { current: currentStep, total: totalSteps }) }}
           </span>
           <span class="text-xs text-primary-500 dark:text-primary-400">
             {{ stepTitles[currentStep - 1] }}
@@ -38,10 +38,10 @@
             <h1
               class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-center"
             >
-              Quel est ton objectif ?
+              {{ t('onboarding.goal.title') }}
             </h1>
             <p class="text-primary-600 dark:text-primary-400 text-center mb-8">
-              On adapte tout selon ton objectif principal
+              {{ t('onboarding.goal.subtitle') }}
             </p>
 
             <div class="grid grid-cols-1 gap-3">
@@ -105,10 +105,10 @@
             <h1
               class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-center"
             >
-              Ton profil
+              {{ t('onboarding.profile.title') }}
             </h1>
             <p class="text-primary-600 dark:text-primary-400 text-center mb-8">
-              Choisis ton pseudo pour que tes Gym Bros te trouvent
+              {{ t('onboarding.profile.subtitle') }}
             </p>
 
             <div class="space-y-5">
@@ -116,7 +116,7 @@
               <div>
                 <label
                   class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1.5"
-                  >Pseudo</label
+                  >{{ t('onboarding.profile.username') }}</label
                 >
                 <div class="relative">
                   <span class="absolute left-3 top-1/2 -translate-y-1/2 text-primary-400 text-sm"
@@ -126,26 +126,26 @@
                     v-model="selectedUsername"
                     type="text"
                     class="w-full px-4 py-3 pl-8 rounded-2xl border-2 border-primary-200 dark:border-primary-700 bg-white/50 dark:bg-primary-800/50 text-primary-900 dark:text-primary-100 text-base font-medium focus:outline-none focus:border-sand-500 dark:focus:border-sand-600 transition-colors"
-                    placeholder="ton_pseudo"
+                    :placeholder="t('profile.usernamePlaceholder')"
                   />
                 </div>
                 <p v-if="usernameChecking" class="text-xs text-primary-400 mt-1.5">
-                  Verification...
+                  {{ t('onboarding.profile.checking') }}
                 </p>
                 <p
                   v-else-if="usernameAvailable === true && selectedUsername.length >= 3"
                   class="text-xs text-green-500 mt-1.5"
                 >
-                  Disponible
+                  {{ t('onboarding.profile.available') }}
                 </p>
                 <p v-else-if="usernameAvailable === false" class="text-xs text-red-500 mt-1.5">
-                  Deja pris
+                  {{ t('auth.register.usernameTaken') }}
                 </p>
                 <p
                   v-else-if="selectedUsername.length > 0 && selectedUsername.length < 3"
                   class="text-xs text-primary-400 mt-1.5"
                 >
-                  3 caracteres minimum
+                  {{ t('onboarding.profile.minChars') }}
                 </p>
               </div>
 
@@ -153,10 +153,10 @@
               <div class="card-glass flex items-center justify-between p-4">
                 <div>
                   <p class="text-sm font-medium text-primary-900 dark:text-primary-100">
-                    Profil public
+                    {{ t('onboarding.profile.publicProfile') }}
                   </p>
                   <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
-                    Les autres peuvent voir tes stats et photos
+                    {{ t('onboarding.profile.publicProfileDesc') }}
                   </p>
                 </div>
                 <label class="relative inline-flex items-center cursor-pointer">
@@ -168,7 +168,7 @@
               </div>
 
               <p class="text-xs text-primary-400 dark:text-primary-500 text-center">
-                Tu pourras modifier tout ca plus tard dans ton profil
+                {{ t('onboarding.profile.editLater') }}
               </p>
             </div>
           </div>
@@ -187,10 +187,10 @@
             <h1
               class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-center"
             >
-              Quel est ton niveau ?
+              {{ t('onboarding.level.title') }}
             </h1>
             <p class="text-primary-600 dark:text-primary-400 text-center mb-8">
-              Pas de jugement, on commence tous quelque part
+              {{ t('onboarding.level.subtitle') }}
             </p>
 
             <div class="grid grid-cols-1 gap-3">
@@ -254,10 +254,10 @@
             <h1
               class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-center"
             >
-              Combien de jours par semaine ?
+              {{ t('onboarding.days.title') }}
             </h1>
             <p class="text-primary-600 dark:text-primary-400 text-center mb-8">
-              La regularite compte plus que le volume
+              {{ t('onboarding.days.subtitle') }}
             </p>
 
             <div class="flex justify-center gap-3 mb-8">
@@ -283,7 +283,9 @@
               enter-to-class="opacity-100 translate-y-0"
             >
               <div v-if="selectedDays" class="card-glass p-5 text-center">
-                <p class="text-sm text-primary-600 dark:text-primary-400 mb-1">On te suggere :</p>
+                <p class="text-sm text-primary-600 dark:text-primary-400 mb-1">
+                  {{ t('onboarding.days.suggestion') }}
+                </p>
                 <p class="text-lg font-bold text-gradient-primary mb-3">
                   {{ suggestedProgram.name }}
                 </p>
@@ -326,38 +328,46 @@
               <h1
                 class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2"
               >
-                C'est parti !
+                {{ t('onboarding.recap.title') }}
               </h1>
-              <p class="text-primary-600 dark:text-primary-400">Voici un recap de tes choix</p>
+              <p class="text-primary-600 dark:text-primary-400">
+                {{ t('onboarding.recap.subtitle') }}
+              </p>
             </div>
 
             <!-- Summary -->
             <div class="card-glass p-5 mb-6 space-y-4">
               <div class="flex items-center justify-between">
-                <span class="text-sm text-primary-600 dark:text-primary-400">Objectif</span>
+                <span class="text-sm text-primary-600 dark:text-primary-400">{{
+                  t('onboarding.recap.goal')
+                }}</span>
                 <span class="font-semibold text-primary-900 dark:text-primary-100">
                   {{ goals.find((g) => g.value === selectedGoal)?.label }}
                 </span>
               </div>
               <div class="border-t border-primary-100 dark:border-primary-700/60"></div>
               <div class="flex items-center justify-between">
-                <span class="text-sm text-primary-600 dark:text-primary-400">Niveau</span>
+                <span class="text-sm text-primary-600 dark:text-primary-400">{{
+                  t('onboarding.recap.level')
+                }}</span>
                 <span class="font-semibold text-primary-900 dark:text-primary-100">
                   {{ levels.find((l) => l.value === selectedLevel)?.label }}
                 </span>
               </div>
               <div class="border-t border-primary-100 dark:border-primary-700/60"></div>
               <div class="flex items-center justify-between">
-                <span class="text-sm text-primary-600 dark:text-primary-400">Frequence</span>
+                <span class="text-sm text-primary-600 dark:text-primary-400">{{
+                  t('onboarding.recap.frequency')
+                }}</span>
                 <span class="font-semibold text-primary-900 dark:text-primary-100">
-                  {{ selectedDays }}j / semaine
+                  {{ t('onboarding.recap.daysPerWeek', { n: selectedDays }) }}
                 </span>
               </div>
               <div class="border-t border-primary-100 dark:border-primary-700/60"></div>
               <div class="flex items-center justify-between">
-                <span class="text-sm text-primary-600 dark:text-primary-400"
-                  >Programme suggere</span
-                >
+                <span class="text-sm text-primary-600 dark:text-primary-400">{{
+                  t('onboarding.recap.suggestedProgram')
+                }}</span>
                 <span class="font-semibold text-gradient-primary">
                   {{ suggestedProgram.name }}
                 </span>
@@ -387,9 +397,9 @@
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Adoption en cours...
+                  {{ t('onboarding.recap.adopting') }}
                 </span>
-                <span v-else>Adopter le programme suggere</span>
+                <span v-else>{{ t('onboarding.recap.adopt') }}</span>
               </button>
 
               <button
@@ -397,7 +407,7 @@
                 :disabled="adopting"
                 class="btn-glass w-full py-3.5 text-base font-semibold"
               >
-                Je prefere creer mes seances
+                {{ t('onboarding.recap.createOwn') }}
               </button>
             </div>
           </div>
@@ -423,7 +433,7 @@
               d="M15 19l-7-7 7-7"
             />
           </svg>
-          Retour
+          {{ t('common.back') }}
         </button>
         <div v-else></div>
 
@@ -433,7 +443,7 @@
           :disabled="!canProceed"
           class="btn-primary px-6 py-2.5 inline-flex items-center gap-2 text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          Suivant
+          {{ t('common.next') }}
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
@@ -453,6 +463,8 @@ import { apiFetch } from '~/utils/apiFetch';
 import { useProgramApi } from '~/composables/useProgramApi';
 import { useSocialApi } from '~/composables/useSocialApi';
 
+const { t } = useLocale();
+
 useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] });
 
 const { getPrograms, adoptProgram } = useProgramApi();
@@ -462,7 +474,13 @@ const toast = useToast();
 const totalSteps = 5;
 const currentStep = ref(1);
 
-const stepTitles = ['Objectif', 'Profil', 'Niveau', 'Frequence', 'Recap'];
+const stepTitles = [
+  t('onboarding.recap.goal'),
+  t('onboarding.step2Title'),
+  t('onboarding.recap.level'),
+  t('onboarding.recap.frequency'),
+  t('onboarding.recap.recapTitle'),
+];
 
 // Step 1
 const selectedGoal = ref<string | null>(null);
@@ -495,36 +513,51 @@ watch(selectedUsername, (val) => {
 const goals = [
   {
     value: 'BULK',
-    label: 'Prise de masse',
+    label: t('onboarding.goals.bulk'),
     icon: '💪',
-    description: 'Gagner du muscle et du poids',
+    description: t('onboarding.goals.bulkDesc'),
   },
   {
     value: 'STRENGTH',
-    label: 'Force',
+    label: t('onboarding.goals.strength'),
     icon: '🏋️',
-    description: 'Devenir plus fort sur les mouvements cles',
+    description: t('onboarding.goals.strengthDesc'),
   },
   {
     value: 'RECOMP',
-    label: 'Recomposition',
+    label: t('onboarding.goals.recomp'),
     icon: '🔄',
-    description: 'Perdre du gras et gagner du muscle',
+    description: t('onboarding.goals.recompDesc'),
   },
-  { value: 'CUT', label: 'Seche', icon: '🔥', description: 'Perdre du gras en gardant le muscle' },
+  {
+    value: 'CUT',
+    label: t('onboarding.goals.cut'),
+    icon: '🔥',
+    description: t('onboarding.goals.cutDesc'),
+  },
 ];
 
 // Step 2
 const selectedLevel = ref<string | null>(null);
 const levels = [
-  { value: 'BEGINNER', label: 'Debutant', icon: '🌱', description: 'Moins de 6 mois de pratique' },
+  {
+    value: 'BEGINNER',
+    label: t('onboarding.levels.beginner'),
+    icon: '🌱',
+    description: t('onboarding.levels.beginnerDesc'),
+  },
   {
     value: 'INTERMEDIATE',
-    label: 'Intermediaire',
+    label: t('onboarding.levels.intermediate'),
     icon: '⚡',
-    description: '6 mois a 2 ans de pratique',
+    description: t('onboarding.levels.intermediateDesc'),
   },
-  { value: 'ADVANCED', label: 'Avance', icon: '🏆', description: 'Plus de 2 ans de pratique' },
+  {
+    value: 'ADVANCED',
+    label: t('onboarding.levels.advanced'),
+    icon: '🏆',
+    description: t('onboarding.levels.advancedDesc'),
+  },
 ];
 
 // Step 3
@@ -535,22 +568,22 @@ const suggestedProgram = computed(() => {
   const days = selectedDays.value;
   if (!days || days <= 3) {
     return {
-      name: 'Full Body 3j',
+      name: t('onboarding.programs.fullBody'),
       slug: 'full-body-3j',
-      description: 'Chaque muscle travaille 3x par semaine pour une progression optimale',
+      description: t('onboarding.programs.fullBodyDesc'),
     };
   }
   if (days === 4) {
     return {
-      name: 'Upper/Lower 4j',
+      name: t('onboarding.programs.upperLower'),
       slug: 'upper-lower-4j',
-      description: 'Alternance haut / bas du corps pour un bon equilibre volume-recuperation',
+      description: t('onboarding.programs.upperLowerDesc'),
     };
   }
   return {
-    name: 'PPL 6j',
+    name: t('onboarding.programs.ppl'),
     slug: 'ppl-6j',
-    description: 'Push / Pull / Legs pour un maximum de volume par groupe musculaire',
+    description: t('onboarding.programs.pplDesc'),
   };
 });
 
@@ -615,17 +648,20 @@ const handleAdoptProgram = async () => {
     if (match) {
       const result = await adoptProgram(match.slug);
       toast.success(
-        'Programme adopte !',
-        `${result.workoutIds.length} templates crees pour "${match.name}"`
+        t('onboarding.toast.programAdopted'),
+        t('onboarding.toast.templatesCreated', {
+          count: result.workoutIds.length,
+          name: match.name,
+        })
       );
     } else {
       // If no exact slug match, just save profile and redirect
-      toast.success('Profil enregistre !', 'Tu peux maintenant explorer les programmes');
+      toast.success(t('onboarding.toast.profileSaved'), t('onboarding.toast.exploreProgams'));
     }
 
     navigateTo('/dashboard');
   } catch (err: any) {
-    toast.error('Erreur', err?.data?.error || "Impossible d'adopter le programme");
+    toast.error(t('common.error'), err?.data?.error || t('onboarding.toast.errorAdopt'));
   } finally {
     adopting.value = false;
   }

@@ -533,8 +533,8 @@
       <div v-else-if="activeTab === 'photos'" class="space-y-8 slide-up">
         <ProWall
           v-if="!isPremium && !canUploadPhoto"
-          title="Galerie photo illimitee"
-          :message="`Vous avez ${photoUsageText} photos. Debloquez Pro pour capturer chaque etape de votre transformation.`"
+          :title="t('body.photos.proWallTitle')"
+          :message="t('body.photos.proWallMessage', { count: photoUsageText })"
           icon="camera"
           compact
         />
@@ -542,9 +542,11 @@
         <!-- Le plus gratifiant d'abord : timelapse + comparaison -->
         <div v-if="timelapsePhotos.length > 0" class="card-glass">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-semibold text-primary-900 dark:text-primary-100">Timelapse</h3>
+            <h3 class="text-xl font-semibold text-primary-900 dark:text-primary-100">
+              {{ t('profile.photos.timelapse') }}
+            </h3>
             <button @click="showTimelapse = !showTimelapse" class="btn-outline !py-2 !px-4 text-sm">
-              {{ showTimelapse ? 'Masquer' : 'Voir le timelapse' }}
+              {{ showTimelapse ? t('body.photos.hide') : t('body.photos.showTimelapse') }}
             </button>
           </div>
           <ClientOnly>
@@ -560,7 +562,9 @@
 
         <!-- Galerie -->
         <div v-if="bodyStore.photos.length > 0" class="card-glass">
-          <h3 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">Galerie</h3>
+          <h3 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-6">
+            {{ t('body.photos.gallery') }}
+          </h3>
           <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div
               v-for="photo in bodyStore.photos"
@@ -583,7 +587,9 @@
                   <p class="text-white text-sm font-medium">
                     {{ formatDate(photo.workout?.date || photo.createdAt) }}
                   </p>
-                  <p v-if="photo.isPrimary" class="text-yellow-300 text-xs">★ Principale</p>
+                  <p v-if="photo.isPrimary" class="text-yellow-300 text-xs">
+                    ★ {{ t('body.photos.primary') }}
+                  </p>
                 </div>
               </div>
               <button
@@ -668,11 +674,14 @@
             </div>
             <div class="flex flex-col md:flex-row gap-4 items-end">
               <div class="flex-1">
-                <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1"
-                  >Workout associé</label
+                <label
+                  class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1"
+                  >{{ t('profile.upload.workoutLabel') }}</label
                 >
                 <select v-model="photoForm.workoutId" class="input-primary">
-                  <option :value="null" disabled>Sélectionner un workout</option>
+                  <option :value="null" disabled>
+                    {{ t('profile.upload.selectPlaceholder') }}
+                  </option>
                   <option v-for="w in completedWorkouts" :key="w.id" :value="w.id">
                     {{ w.name }} — {{ formatDate(w.completedAt!) }}
                   </option>
@@ -683,7 +692,7 @@
                   class="flex items-center space-x-2 text-sm text-primary-700 dark:text-primary-300 cursor-pointer"
                 >
                   <input type="checkbox" v-model="photoForm.isPrimary" class="checkbox-primary" />
-                  <span>Photo principale (timelapse)</span>
+                  <span>{{ t('profile.upload.primary') }}</span>
                 </label>
               </div>
               <div>
@@ -696,7 +705,9 @@
                       d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                     />
                   </svg>
-                  <span>{{ photoUploading ? 'Upload...' : 'Choisir photo' }}</span>
+                  <span>{{
+                    photoUploading ? t('profile.upload.uploading') : t('profile.upload.choose')
+                  }}</span>
                   <input
                     type="file"
                     accept="image/*"
@@ -748,6 +759,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useLocale();
 import { useAuthStore } from '~/stores/auth';
 import { useBodyStore } from '~/stores/body';
 import { useWorkoutStore } from '~/stores/workout';

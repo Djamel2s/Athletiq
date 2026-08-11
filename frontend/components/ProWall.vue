@@ -135,11 +135,15 @@
                 <div
                   class="flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary-50 dark:bg-primary-800/60"
                 >
-                  <span class="text-xs text-primary-500 dark:text-primary-400">A partir de</span>
+                  <span class="text-xs text-primary-500 dark:text-primary-400">{{
+                    t('proWall.startingAt')
+                  }}</span>
                   <span class="text-sm font-bold text-primary-900 dark:text-primary-100"
                     >4,16€</span
                   >
-                  <span class="text-xs text-primary-500 dark:text-primary-400">/mois</span>
+                  <span class="text-xs text-primary-500 dark:text-primary-400">{{
+                    t('subscription.perMonth')
+                  }}</span>
                 </div>
               </div>
 
@@ -164,9 +168,9 @@
                     class="relative z-10 h-full flex items-center justify-center gap-2 transition-transform duration-300"
                     :class="ctaHover ? 'scale-[1.02]' : ''"
                   >
-                    <span class="text-white font-semibold text-sm tracking-wide"
-                      >Debloquer Pro</span
-                    >
+                    <span class="text-white font-semibold text-sm tracking-wide">{{
+                      t('proWall.unlockPro')
+                    }}</span>
                     <svg
                       class="w-4 h-4 text-white/80 transition-transform duration-300"
                       :class="ctaHover ? 'translate-x-1' : ''"
@@ -198,6 +202,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useLocale();
 defineProps<{
   title?: string;
   message?: string;

@@ -13,17 +13,18 @@
             d="M15 19l-7-7 7-7"
           />
         </svg>
-        Retour
+        {{ t('common.back') }}
       </NuxtLink>
 
       <h1 class="text-3xl md:text-4xl font-bold text-primary-900 dark:text-primary-100 mb-8">
-        Mentions Légales
+        {{ t('legal.mentions.title') }}
       </h1>
       <p class="text-sm text-primary-500 dark:text-primary-400 mb-8">
-        Dernière mise à jour : 8 mars 2026
+        {{ t('legal.lastUpdated') }}
       </p>
 
       <div
+        v-if="locale === 'fr'"
         class="prose prose-primary dark:prose-invert max-w-none space-y-6 text-primary-700 dark:text-primary-300"
       >
         <section>
@@ -92,6 +93,80 @@
           <p>Pour toute question ou réclamation : <strong>contact@athletiq.fr</strong></p>
         </section>
       </div>
+      <div
+        v-else
+        class="prose prose-primary dark:prose-invert max-w-none space-y-6 text-primary-700 dark:text-primary-300"
+      >
+        <section>
+          <h2 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-3">
+            1. Application publisher
+          </h2>
+          <p>The Athletiq application is published by:</p>
+          <div class="bg-primary-100 dark:bg-primary-800 rounded-xl p-4 mt-2">
+            <p><strong>Athletiq</strong></p>
+            <p>Email: contact@athletiq.fr</p>
+            <p class="text-sm text-primary-500 dark:text-primary-400 mt-2 italic">
+              Full company details (legal name, registration number, address) will be added once the
+              company is registered.
+            </p>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-3">
+            2. Hosting
+          </h2>
+          <div class="bg-primary-100 dark:bg-primary-800 rounded-xl p-4 mt-2">
+            <p><strong>Frontend:</strong> Vercel Inc. — San Francisco, CA, USA</p>
+            <p><strong>Backend:</strong> Render Services Inc. — San Francisco, CA, USA</p>
+            <p><strong>Database:</strong> Neon Inc. — San Francisco, CA, USA</p>
+            <p><strong>Media storage:</strong> Cloudinary Ltd. — Santa Clara, CA, USA</p>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-3">
+            3. Publication director
+          </h2>
+          <p>The publication director is the legal representative of the publishing company.</p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-3">
+            4. Intellectual property
+          </h2>
+          <p>
+            All content of the Athletiq application (text, images, graphics, logo, icons, source
+            code) is the exclusive property of the publisher, unless stated otherwise. Any
+            reproduction, representation, or distribution, in whole or in part, of this site's
+            content is prohibited without prior authorization.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-3">
+            5. Personal data
+          </h2>
+          <p>
+            For any information regarding the collection and processing of your personal data,
+            please consult our
+            <NuxtLink to="/legal/privacy" class="text-sand-600 hover:underline font-medium"
+              >Privacy Policy</NuxtLink
+            >.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-3">
+            6. Contact
+          </h2>
+          <p>For any question or complaint: <strong>contact@athletiq.fr</strong></p>
+        </section>
+      </div>
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+const { t, locale } = useLocale();
+</script>

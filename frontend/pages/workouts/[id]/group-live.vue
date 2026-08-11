@@ -133,11 +133,13 @@
         <div
           class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary-200 dark:border-primary-700 border-t-primary-600 dark:border-t-primary-400"
         ></div>
-        <p class="mt-4 text-primary-600 dark:text-primary-400 text-lg">Chargement...</p>
+        <p class="mt-4 text-primary-600 dark:text-primary-400 text-lg">{{ t('common.loading') }}</p>
       </div>
 
       <div v-else-if="!workout || !currentExercise" class="text-center py-20">
-        <p class="text-primary-900 dark:text-primary-100 text-lg">Workout introuvable</p>
+        <p class="text-primary-900 dark:text-primary-100 text-lg">
+          {{ t('workoutLive.workoutNotFound') }}
+        </p>
       </div>
 
       <div v-else class="space-y-4 slide-up">
@@ -175,10 +177,10 @@
           >
             <Icon name="lucide:clock" class="w-8 h-8 text-primary-400" />
           </div>
-          <p class="text-lg text-primary-600 dark:text-primary-400">En attente...</p>
+          <p class="text-lg text-primary-600 dark:text-primary-400">{{ t('groupLive.waiting') }}</p>
           <p class="text-sm text-primary-500 dark:text-primary-400">
-            {{ currentTurnParticipant?.name }} fait
-            {{ currentTurnParticipant?.currentExerciseName || 'son exercice' }}
+            {{ t('groupLive.isDoing', { name: currentTurnParticipant?.name }) }}
+            {{ currentTurnParticipant?.currentExerciseName || t('groupLive.theirExercise') }}
           </p>
 
           <!-- My rest timer (counting in background) -->
@@ -272,7 +274,9 @@
                 <button @click="addRestTime(-15)" class="btn-outline px-5 py-3 text-base font-mono">
                   -15s
                 </button>
-                <button @click="skipRest" class="btn-outline px-8 py-3 text-base">Passer</button>
+                <button @click="skipRest" class="btn-outline px-8 py-3 text-base">
+                  {{ t('workoutLive.skip') }}
+                </button>
                 <button @click="addRestTime(15)" class="btn-primary px-5 py-3 text-base font-mono">
                   +15s
                 </button>
@@ -317,16 +321,18 @@
             <div class="card-glass space-y-6">
               <div class="text-center">
                 <p class="text-primary-900 dark:text-primary-100 font-bold text-xl mb-2">
-                  Serie {{ currentSetNumber }}
+                  {{ t('groupLive.setNumber', { n: currentSetNumber }) }}
                 </p>
-                <p class="text-primary-600 dark:text-primary-400 text-sm">Entre tes performances</p>
+                <p class="text-primary-600 dark:text-primary-400 text-sm">
+                  {{ t('groupLive.enterPerformance') }}
+                </p>
               </div>
 
               <div class="flex gap-4">
                 <div class="flex-1">
                   <label
                     class="block text-primary-900 dark:text-primary-100 text-sm mb-2 text-center font-semibold"
-                    >Repetitions</label
+                    >{{ t('workoutLive.repsLabel') }}</label
                   >
                   <input
                     v-model.number="currentSetData.reps"
@@ -339,7 +345,7 @@
                 <div class="flex-1">
                   <label
                     class="block text-primary-900 dark:text-primary-100 text-sm mb-2 text-center font-semibold"
-                    >Poids (kg)</label
+                    >{{ t('workoutLive.weightKgLabel') }}</label
                   >
                   <input
                     v-model.number="currentSetData.weight"
@@ -423,9 +429,9 @@
           </div>
           <div class="flex-1">
             <p class="text-sm font-semibold text-red-700 dark:text-red-400">
-              {{ disconnectedParticipantName }} deconnecte
+              {{ t('groupLive.disconnected', { name: disconnectedParticipantName }) }}
             </p>
-            <p class="text-xs text-red-600 dark:text-red-500">Session en pause automatiquement</p>
+            <p class="text-xs text-red-600 dark:text-red-500">{{ t('groupLive.autoPaused') }}</p>
           </div>
         </div>
       </div>
@@ -447,9 +453,11 @@
 
             <div>
               <h2 class="text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2">
-                Bravo a tous !
+                {{ t('groupLive.congrats') }}
               </h2>
-              <p class="text-primary-600 dark:text-primary-400">Session de groupe terminee</p>
+              <p class="text-primary-600 dark:text-primary-400">
+                {{ t('groupLive.sessionCompleted') }}
+              </p>
             </div>
 
             <!-- Group stats -->
@@ -458,19 +466,25 @@
                 <p class="text-2xl font-bold font-mono text-primary-900 dark:text-primary-100">
                   {{ formattedTime }}
                 </p>
-                <p class="text-xs text-primary-500 dark:text-primary-400 mt-1">Duree</p>
+                <p class="text-xs text-primary-500 dark:text-primary-400 mt-1">
+                  {{ t('workoutDetail.duration') }}
+                </p>
               </div>
               <div class="card-glass !p-2 md:!p-4">
                 <p class="text-2xl font-bold text-primary-900 dark:text-primary-100">
                   {{ participants.length }}
                 </p>
-                <p class="text-xs text-primary-500 dark:text-primary-400 mt-1">Participants</p>
+                <p class="text-xs text-primary-500 dark:text-primary-400 mt-1">
+                  {{ t('groupLive.participants') }}
+                </p>
               </div>
               <div class="card-glass !p-2 md:!p-4">
                 <p class="text-2xl font-bold text-primary-900 dark:text-primary-100">
                   {{ totalGroupSets }}
                 </p>
-                <p class="text-xs text-primary-500 dark:text-primary-400 mt-1">Series totales</p>
+                <p class="text-xs text-primary-500 dark:text-primary-400 mt-1">
+                  {{ t('groupLive.totalSets') }}
+                </p>
               </div>
             </div>
 
@@ -608,6 +622,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useLocale();
 import { useWorkoutStore } from '~/stores/workout';
 import { useAuthStore } from '~/stores/auth';
 import type { Workout, Exercise } from '~/types/workout';
@@ -1071,7 +1086,7 @@ const setupSocket = async () => {
     disconnectedParticipantName.value = p?.firstName || p?.username || 'Un participant';
     showDisconnectWarning.value = true;
     isPaused.value = true;
-    pauseReason.value = `${disconnectedParticipantName.value} s'est deconnecte`;
+    pauseReason.value = t('groupLive.hasDisconnected', { name: disconnectedParticipantName.value });
 
     setTimeout(() => {
       showDisconnectWarning.value = false;

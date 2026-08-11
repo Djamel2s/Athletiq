@@ -3,6 +3,39 @@
     <!-- Notifications -->
     <UiNotificationBell />
 
+    <div class="relative">
+      <button
+        type="button"
+        class="flex h-10 w-10 items-center justify-center rounded-full border border-primary-200/70 bg-white/80 shadow-sm transition-all hover:scale-105 dark:border-primary-700 dark:bg-primary-900/70 overflow-hidden"
+        @click="isLocaleMenuOpen = !isLocaleMenuOpen"
+        :aria-label="t('nav.language')"
+      >
+        <Icon :name="currentLocale?.flag" class="w-6 h-6" />
+      </button>
+
+      <div
+        v-if="isLocaleMenuOpen"
+        class="absolute rounded-2xl border border-primary-200/70 bg-white/95 shadow-xl backdrop-blur dark:border-primary-700 dark:bg-primary-900/95"
+      >
+        <button
+          v-for="option in availableLocales"
+          :key="option.code"
+          type="button"
+          class="flex items-center justify-center rounded-xl w-10 h-10 p-0 text-sm font-medium transition-colors overflow-hidden"
+          :title="option.label"
+          :aria-label="option.label"
+          :class="
+            locale === option.code
+              ? 'bg-sand-500 text-white'
+              : 'text-primary-700 hover:bg-primary-50 dark:text-primary-200 dark:hover:bg-primary-800'
+          "
+          @click="selectLocale(option.code)"
+        >
+          <Icon :name="option.flag" class="w-6 h-6" />
+        </button>
+      </div>
+    </div>
+
     <!-- Avatar → Profile -->
     <NuxtLink :to="profileLink" class="flex items-center">
       <div
@@ -39,4 +72,13 @@ const profileLink = computed(() => {
   const username = (authStore.user as any)?.username;
   return username ? `/profile/${username}` : '/profile';
 });
+const { locale, availableLocales, setLocale, t } = useLocale();
+const isLocaleMenuOpen = ref(false);
+const currentLocale = computed(() =>
+  availableLocales.find((option) => option.code === locale.value)
+);
+const selectLocale = (value: 'en' | 'fr') => {
+  setLocale(value);
+  isLocaleMenuOpen.value = false;
+};
 </script>

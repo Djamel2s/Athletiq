@@ -9,10 +9,10 @@
           />
         </NuxtLink>
         <h1 class="text-3xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-display">
-          Nouveau mot de passe
+          {{ t('auth.reset.title') }}
         </h1>
         <p class="text-primary-600 dark:text-primary-400 text-body-relaxed">
-          Choisissez votre nouveau mot de passe
+          {{ t('auth.reset.subtitle') }}
         </p>
       </div>
 
@@ -24,9 +24,9 @@
           >
             <p class="text-sm text-red-600">{{ error }}</p>
           </div>
-          <NuxtLink to="/forgot-password" class="btn-primary inline-block px-8 mt-6"
-            >Demander un nouveau lien</NuxtLink
-          >
+          <NuxtLink to="/forgot-password" class="btn-primary inline-block px-8 mt-6">{{
+            t('auth.reset.requestNewLink')
+          }}</NuxtLink>
         </div>
 
         <!-- Success -->
@@ -49,12 +49,14 @@
             </svg>
           </div>
           <h2 class="text-xl font-semibold text-primary-900 dark:text-primary-100 mb-2">
-            Mot de passe modifié !
+            {{ t('auth.reset.successTitle') }}
           </h2>
           <p class="text-primary-600 dark:text-primary-400 mb-6">
-            Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.
+            {{ t('auth.reset.successBody') }}
           </p>
-          <NuxtLink to="/login" class="btn-primary inline-block px-8">Se connecter</NuxtLink>
+          <NuxtLink to="/login" class="btn-primary inline-block px-8">{{
+            t('auth.login.submit')
+          }}</NuxtLink>
         </div>
 
         <!-- Form -->
@@ -63,7 +65,7 @@
             <label
               for="password"
               class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-2"
-              >Nouveau mot de passe</label
+              >{{ t('auth.reset.newPassword') }}</label
             >
             <input
               id="password"
@@ -74,14 +76,16 @@
               class="input"
               placeholder="••••••••"
             />
-            <p class="mt-2 text-xs text-primary-500 dark:text-primary-400">Minimum 8 caractères</p>
+            <p class="mt-2 text-xs text-primary-500 dark:text-primary-400">
+              {{ t('auth.register.passwordHint') }}
+            </p>
           </div>
 
           <div>
             <label
               for="confirmPassword"
               class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-2"
-              >Confirmer</label
+              >{{ t('auth.reset.confirmLabel') }}</label
             >
             <input
               id="confirmPassword"
@@ -102,8 +106,8 @@
           </div>
 
           <button type="submit" :disabled="loading" class="btn-primary w-full text-lg py-4">
-            <span v-if="!loading">Changer mon mot de passe</span>
-            <span v-else>Modification en cours...</span>
+            <span v-if="!loading">{{ t('auth.reset.submit') }}</span>
+            <span v-else>{{ t('auth.reset.submitting') }}</span>
           </button>
         </form>
       </div>
@@ -113,6 +117,8 @@
 
 <script setup lang="ts">
 definePageMeta({ layout: false });
+
+const { t } = useLocale();
 
 useSeoMeta({
   title: 'Nouveau mot de passe · Athletiq',
@@ -132,7 +138,7 @@ const token = computed(() => route.query.token as string);
 
 onMounted(() => {
   if (!token.value) {
-    error.value = 'Lien invalide. Demandez un nouveau lien de réinitialisation.';
+    error.value = t('auth.reset.errorInvalidToken');
   }
 });
 
@@ -140,12 +146,12 @@ const handleSubmit = async () => {
   error.value = '';
 
   if (password.value.length < 8) {
-    error.value = 'Le mot de passe doit contenir au moins 8 caractères';
+    error.value = t('auth.reset.errorMinLength');
     return;
   }
 
   if (password.value !== confirmPassword.value) {
-    error.value = 'Les mots de passe ne correspondent pas';
+    error.value = t('auth.reset.errorMismatch');
     return;
   }
 
@@ -167,10 +173,10 @@ const handleSubmit = async () => {
       success.value = true;
     } else {
       const data = await response.json();
-      error.value = data.error || 'Une erreur est survenue';
+      error.value = data.error || t('common.errorGeneric');
     }
   } catch {
-    error.value = 'Erreur de connexion au serveur';
+    error.value = t('auth.reset.errorConnection');
   } finally {
     loading.value = false;
   }

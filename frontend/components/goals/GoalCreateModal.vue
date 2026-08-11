@@ -1,39 +1,39 @@
 <template>
-  <UiModal :show="show" title="Nouvel objectif" @close="$emit('close')">
+  <UiModal :show="show" :title="t('goalModal.title')" @close="$emit('close')">
     <form @submit.prevent="handleSubmit" class="space-y-5">
       <!-- Type -->
       <div>
-        <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1"
-          >Type</label
-        >
+        <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1">{{
+          t('goalModal.type')
+        }}</label>
         <select v-model="form.type" class="input-primary">
-          <option value="WEIGHT">Poids cible</option>
-          <option value="PR">Record personnel</option>
-          <option value="BODY_FAT">Body fat cible</option>
+          <option value="WEIGHT">{{ t('goalModal.targetWeight') }}</option>
+          <option value="PR">{{ t('goalModal.personalRecord') }}</option>
+          <option value="BODY_FAT">{{ t('goalModal.targetBodyFat') }}</option>
         </select>
       </div>
 
       <!-- Title -->
       <div>
-        <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1"
-          >Titre</label
-        >
+        <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1">{{
+          t('goalModal.titleLabel')
+        }}</label>
         <input
           v-model="form.title"
           type="text"
           class="input-primary"
-          placeholder="Ex: Atteindre 80kg au bench press"
+          :placeholder="t('goalModal.titlePlaceholder')"
           required
         />
       </div>
 
       <!-- Exercise (only for PR) -->
       <div v-if="form.type === 'PR'">
-        <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1"
-          >Exercice</label
-        >
+        <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1">{{
+          t('goalModal.exercise')
+        }}</label>
         <select v-model="form.exerciseName" class="input-primary" required>
-          <option value="" disabled>Sélectionner un exercice</option>
+          <option value="" disabled>{{ t('goalModal.selectExercise') }}</option>
           <option v-for="name in exerciseNames" :key="name" :value="name">{{ name }}</option>
         </select>
       </div>
@@ -41,7 +41,7 @@
       <!-- Target Value -->
       <div>
         <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1">
-          Valeur cible {{ form.type === 'BODY_FAT' ? '(%)' : '(kg)' }}
+          {{ t('goalModal.targetValue') }} {{ form.type === 'BODY_FAT' ? '(%)' : '(kg)' }}
         </label>
         <input
           v-model.number="form.targetValue"
@@ -55,17 +55,19 @@
 
       <!-- Deadline -->
       <div>
-        <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1"
-          >Date limite (optionnel)</label
-        >
+        <label class="block text-sm font-medium text-primary-700 dark:text-primary-300 mb-1">{{
+          t('goalModal.deadline')
+        }}</label>
         <input v-model="form.deadline" type="date" class="input-primary" />
       </div>
 
       <!-- Submit -->
       <div class="flex justify-end gap-3 pt-2">
-        <button type="button" @click="$emit('close')" class="btn-outline">Annuler</button>
+        <button type="button" @click="$emit('close')" class="btn-outline">
+          {{ t('common.cancel') }}
+        </button>
         <button type="submit" class="btn-primary" :disabled="isSubmitting">
-          {{ isSubmitting ? 'Création...' : 'Créer' }}
+          {{ isSubmitting ? t('goalModal.creating') : t('goalModal.create') }}
         </button>
       </div>
     </form>
@@ -75,6 +77,8 @@
 <script setup lang="ts">
 import { GoalType } from '~/types/goals';
 import type { CreateGoalPayload } from '~/types/goals';
+
+const { t } = useLocale();
 
 interface Props {
   show: boolean;

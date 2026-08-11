@@ -43,7 +43,7 @@
             @click="notificationStore.markAllRead()"
             class="text-xs text-primary-500 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
           >
-            Tout marquer comme lu
+            {{ t('notifications.markAllRead') }}
           </button>
         </div>
 
@@ -53,7 +53,7 @@
             v-if="notificationStore.notifications.length === 0"
             class="p-6 text-center text-primary-400 text-sm"
           >
-            Aucune notification
+            {{ t('notifications.empty') }}
           </div>
           <div
             v-for="notif in notificationStore.notifications"
@@ -145,6 +145,7 @@
 </template>
 
 <script setup lang="ts">
+const { t, locale } = useLocale();
 import { useNotificationStore } from '~/stores/notifications';
 
 const notificationStore = useNotificationStore();
@@ -175,14 +176,17 @@ const timeAgo = (dateString: string) => {
   const date = new Date(dateString);
   const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-  if (seconds < 60) return "À l'instant";
+  if (seconds < 60) return t('notifications.justNow');
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `il y a ${minutes} min`;
+  if (minutes < 60) return t('notifications.minutesAgo', { n: minutes });
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `il y a ${hours}h`;
+  if (hours < 24) return t('notifications.hoursAgo', { n: hours });
   const days = Math.floor(hours / 24);
-  if (days < 7) return `il y a ${days}j`;
-  return new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(date);
+  if (days < 7) return t('notifications.daysAgo', { n: days });
+  return new Intl.DateTimeFormat(locale.value === 'fr' ? 'fr-FR' : 'en-US', {
+    day: 'numeric',
+    month: 'short',
+  }).format(date);
 };
 
 // Fetch unread count on mount

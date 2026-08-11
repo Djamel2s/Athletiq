@@ -29,7 +29,7 @@
             <input
               v-model="workoutForm.name"
               type="text"
-              placeholder="Ex: Push Day, Full Body, etc."
+              :placeholder="t('workoutBuilder.namePlaceholder')"
               class="input-primary w-full"
               required
             />
@@ -37,11 +37,11 @@
 
           <div>
             <label class="block text-sm font-semibold text-primary-700 dark:text-primary-300 mb-2">
-              Description (optionnel)
+              {{ t('workoutBuilder.descLabel') }}
             </label>
             <textarea
               v-model="workoutForm.description"
-              placeholder="Décrivez votre entraînement..."
+              :placeholder="t('workoutBuilder.descPlaceholder')"
               rows="3"
               class="input-primary w-full"
             ></textarea>
@@ -62,9 +62,11 @@
           </div>
 
           <div v-if="selectedExercises.length === 0" class="text-center py-12">
-            <p class="text-primary-500 dark:text-primary-400 text-lg mb-4">Aucun exercice ajouté</p>
+            <p class="text-primary-500 dark:text-primary-400 text-lg mb-4">
+              {{ t('workoutBuilder.noExercises') }}
+            </p>
             <button @click="showExerciseLibrary = true" class="btn-outline">
-              Parcourir la bibliothèque
+              {{ t('workoutBuilder.browseLibrary') }}
             </button>
           </div>
 
@@ -136,7 +138,7 @@
                           @click="moveExerciseUp(index)"
                           :disabled="index === 0"
                           class="w-7 h-7 flex items-center justify-center rounded-lg text-primary-400 dark:text-primary-500 hover:text-primary-700 dark:hover:text-primary-200 hover:bg-primary-100 dark:hover:bg-primary-700/50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                          title="Monter"
+                          :title="t('common.moveUp')"
                         >
                           <svg
                             class="w-4 h-4"
@@ -156,7 +158,7 @@
                           @click="moveExerciseDown(index)"
                           :disabled="index === selectedExercises.length - 1"
                           class="w-7 h-7 flex items-center justify-center rounded-lg text-primary-400 dark:text-primary-500 hover:text-primary-700 dark:hover:text-primary-200 hover:bg-primary-100 dark:hover:bg-primary-700/50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                          title="Descendre"
+                          :title="t('common.moveDown')"
                         >
                           <svg
                             class="w-4 h-4"
@@ -227,12 +229,12 @@
                           v-model.number="set.targetReps"
                           type="number"
                           min="1"
-                          placeholder="Reps"
+                          :placeholder="t('workoutBuilder.reps')"
                           class="w-14 px-1.5 py-1.5 border border-primary-200 dark:border-primary-700 rounded-lg text-center text-xs font-semibold bg-white dark:bg-primary-900 text-primary-900 dark:text-primary-100 focus:border-sand-500 focus:ring-1 focus:ring-sand-500/30 transition-colors"
                         />
-                        <span class="text-[10px] text-primary-400 dark:text-primary-500"
-                          >reps ×</span
-                        >
+                        <span class="text-[10px] text-primary-400 dark:text-primary-500">{{
+                          t('workoutBuilder.repsX')
+                        }}</span>
                         <input
                           v-model.number="set.targetWeight"
                           type="number"
@@ -504,6 +506,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useLocale();
 /* TopNav imported and rendered globally in app.vue; per-page import removed */
 import { useWorkoutStore } from '~/stores/workout';
 import type { ExerciseLibrary, Exercise } from '~/types/workout';
@@ -546,7 +549,7 @@ onMounted(async () => {
       }
     } catch (error) {
       logger.error('Failed to load workout:', error);
-      toast.error('Erreur', 'Impossible de charger le workout');
+      toast.error(t('common.error'), t('workoutEdit.errorLoad'));
       navigateTo('/workouts');
     }
   }
@@ -592,7 +595,7 @@ const addExercise = async (exercise: ExerciseLibrary) => {
     showExerciseLibrary.value = false;
   } catch (error) {
     logger.error('Failed to add exercise:', error);
-    toast.error('Erreur', "Impossible d'ajouter l'exercice");
+    toast.error(t('common.error'), t('workoutBuilder.errorAddExercise'));
   }
 };
 
@@ -735,12 +738,12 @@ const getNextSupersetGroup = (): number => {
 
 const saveWorkout = async () => {
   if (!workoutId.value) {
-    toast.warning('Attention', "Veuillez d'abord créer le workout");
+    toast.warning(t('common.warning'), t('workoutBuilder.warnCreateFirst'));
     return;
   }
 
   if (selectedExercises.value.length === 0) {
-    toast.warning('Attention', 'Ajoutez au moins un exercice');
+    toast.warning(t('common.warning'), t('workoutEdit.warnAddExercise'));
     return;
   }
 
@@ -779,11 +782,11 @@ const saveWorkout = async () => {
       await workoutStore.updateExercise(workoutId.value, exercise.id, updateData);
     }
 
-    toast.success('Sauvegardé', 'Workout modifié avec succès');
+    toast.success(t('workoutEdit.toastSaved'), t('workoutEdit.toastSavedDesc'));
     navigateTo('/workouts');
   } catch (error) {
     logger.error('Failed to save workout:', error);
-    toast.error('Erreur', 'Impossible de sauvegarder');
+    toast.error(t('common.error'), t('workoutEdit.errorSave'));
   } finally {
     isSaving.value = false;
   }
