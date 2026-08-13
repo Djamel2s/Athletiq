@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="min-h-screen flex items-center justify-center px-4 md:px-6 py-8 md:py-12 geometric-bg"
-  >
+  <div class="min-h-screen flex items-center justify-center geometric-bg">
     <div class="w-full max-w-md">
       <!-- Logo -->
       <div class="text-center mb-10 fade-in">

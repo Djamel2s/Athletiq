@@ -65,7 +65,7 @@
         </div>
 
         <!-- Quick Start -->
-        <div v-if="lastCompletedWorkout" class="mb-8 fade-in">
+        <div v-if="lastCompletedWorkout" class="mb-3 fade-in">
           <button
             @click="launchWorkout(lastCompletedWorkout)"
             :disabled="!!isLaunching"
@@ -118,13 +118,14 @@
               </div>
               <div class="flex-1 min-w-0">
                 <p class="text-xs font-semibold text-sand-600 uppercase tracking-wider mb-1">
-                  Relancer le dernier
+                  {{ t('workoutStart.relaunchLast') }}
                 </p>
                 <p class="text-xl font-bold text-primary-900 dark:text-primary-100 truncate">
                   {{ lastCompletedWorkout.name }}
                 </p>
                 <p class="text-sm text-primary-500 dark:text-primary-400">
-                  {{ lastCompletedWorkout.exercises?.length || 0 }} exercices
+                  {{ lastCompletedWorkout.exercises?.length || 0 }}
+                  {{ t('workoutStart.exercisesCount') }}
                 </p>
               </div>
               <svg
@@ -144,42 +145,21 @@
           </button>
         </div>
 
-        <!-- Group workout -->
-        <div class="mb-6 slide-up">
-          <button
-            @click="navigateTo('/workouts/session')"
-            class="w-full card-glass hover:shadow-xl hover:border-sand-500/40 dark:hover:border-sand-600/30 transition-all cursor-pointer text-left border-2 border-primary-200/60 dark:border-primary-700/60"
+        <!-- Rappel de régularité : discret, sous la carte principale -->
+        <p class="text-center text-sm text-primary-500 dark:text-primary-400 mb-6 fade-in">
+          <span v-if="sessionsThisWeek > 0">
+            {{ t('workoutStart.sessionsThisWeek', { count: String(sessionsThisWeek) }) }}
+          </span>
+          <span v-else>
+            {{ t('workoutStart.noSessionsThisWeek') }}
+          </span>
+          <NuxtLink
+            to="/statistics"
+            class="text-sand-600 dark:text-sand-400 font-semibold hover:underline ml-1"
           >
-            <div class="flex items-center gap-4">
-              <div
-                class="w-12 h-12 bg-gradient-primary rounded-2xl flex items-center justify-center flex-shrink-0"
-              >
-                <Icon name="lucide:users" class="w-6 h-6 text-white" />
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-base font-bold text-primary-900 dark:text-primary-100">
-                  Entrainement en groupe
-                </p>
-                <p class="text-sm text-primary-500 dark:text-primary-400">
-                  Entraine-toi avec tes Gym Bros
-                </p>
-              </div>
-              <svg
-                class="w-5 h-5 text-primary-400 flex-shrink-0"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </div>
-          </button>
-        </div>
+            {{ t('workoutStart.seeStats') }}
+          </NuxtLink>
+        </p>
 
         <!-- Workouts Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 slide-up">
@@ -279,7 +259,7 @@
                       d="M13 10V3L4 14h7v7l9-11h-7z"
                     />
                   </svg>
-                  {{ workout.exercises.length }} exercices
+                  {{ workout.exercises.length }} {{ t('workoutStart.exercisesCount') }}
                 </span>
                 <span
                   v-if="getEstimatedDuration(workout)"
@@ -300,13 +280,15 @@
           </div>
         </div>
 
-        <!-- Quick action: create new -->
-        <div class="text-center pt-8 slide-up">
+        <!-- Actions secondaires : nouveau workout + entrainement en groupe (usage plus rare, moins de poids visuel) -->
+        <div
+          class="flex flex-col sm:flex-row items-center justify-center gap-x-6 gap-y-3 pt-8 slide-up text-sm"
+        >
           <button
             @click="navigateTo('/workouts/builder')"
-            class="btn-outline inline-flex items-center space-x-2"
+            class="inline-flex items-center gap-2 text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 font-medium transition-colors"
           >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -314,7 +296,15 @@
                 d="M12 6v6m0 0v6m0-6h6m-6 0H6"
               />
             </svg>
-            <span>Créer un nouveau workout</span>
+            {{ t('workoutStart.createNew') }}
+          </button>
+          <span class="hidden sm:inline text-primary-300 dark:text-primary-700">·</span>
+          <button
+            @click="navigateTo('/workouts/session')"
+            class="inline-flex items-center gap-2 text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 font-medium transition-colors"
+          >
+            <Icon name="lucide:users" class="w-4 h-4" />
+            {{ t('workoutStart.groupWorkout') }}
           </button>
         </div>
       </div>
@@ -363,46 +353,24 @@ const lastCompletedWorkout = computed(() => {
   return availableWorkouts.value.find((t) => t.name === last.name) || null;
 });
 
+// Nombre de séances complétées depuis lundi, pour un rappel de régularité léger
+const sessionsThisWeek = computed(() => {
+  const now = new Date();
+  const day = now.getDay(); // 0 = dimanche
+  const diffToMonday = day === 0 ? 6 : day - 1;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - diffToMonday);
+  monday.setHours(0, 0, 0, 0);
+
+  return workoutStore.workouts.filter(
+    (w) => w.completedAt && !w.isTemplate && new Date(w.completedAt) >= monday
+  ).length;
+});
+
 const launchWorkout = async (workout: Workout) => {
   if (isLaunching.value) return;
-
-  if (!canCreateWorkout.value) {
-    toast.error('Limite atteinte', 'Passez Pro pour faire plus de séances cette semaine');
-    return;
-  }
-
   isLaunching.value = workout.id;
-  try {
-    const workoutToStart = await workoutStore.createWorkout({
-      name: workout.name,
-      description: workout.description,
-      isTemplate: false,
-    });
-
-    if (workout.exercises) {
-      for (const exercise of workout.exercises) {
-        await workoutStore.addExerciseToWorkout(workoutToStart.id, {
-          exerciseLibraryId: exercise.exerciseLibraryId!,
-          name: exercise.name,
-          notes: exercise.notes,
-          targetSets: exercise.targetSets,
-          targetReps: exercise.targetReps,
-          targetWeight: exercise.targetWeight,
-          restTime: exercise.restTime,
-          plannedSets: exercise.plannedSets,
-          orderIndex: exercise.orderIndex,
-        });
-      }
-    }
-
-    await workoutStore.startWorkout(workoutToStart.id);
-    navigateTo(`/workouts/${workoutToStart.id}/live`);
-  } catch (error) {
-    logger.error('Failed to launch workout:', error);
-    toast.error('Erreur', 'Impossible de lancer le workout');
-  } finally {
-    isLaunching.value = null;
-  }
+  await navigateTo(`/workouts/${workout.id}/mode`);
 };
 
 const getEstimatedDuration = (workout: Workout): number | null => {

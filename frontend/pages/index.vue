@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-cream-50 dark:bg-primary-900">
     <!-- ============ HERO ============ -->
-    <section class="relative overflow-hidden pt-16 md:pt-10 pb-24 md:pb-32 px-6">
+    <section class="relative overflow-hidden pt-16 md:pt-20 pb-24 md:pb-32 px-6">
       <div
         class="absolute inset-0 pointer-events-none"
         style="
@@ -17,7 +17,7 @@
       <div class="relative max-w-6xl mx-auto">
         <!-- Mockup gauche : en fond, derriere le texte -->
         <div
-          class="hidden lg:block absolute left-[0px] top-[0%] -rotate-[11deg] z-0 opacity-90 pointer-events-none select-none"
+          class="hidden lg:block absolute left-[-30px] xl:left-[10px] top-[2%] -rotate-[11deg] z-0 opacity-90 pointer-events-none select-none"
           aria-hidden="true"
         >
           <PhoneMockup :width="250">
@@ -28,7 +28,7 @@
         <!-- Texte -->
         <div class="relative z-10 max-w-2xl mx-auto text-center fade-in">
           <h1
-            class="font-display font-semibold text-primary-900 dark:text-primary-50 text-5xl md:text-7xl lg:text-7xl leading-[1.05] tracking-tight mb-6"
+            class="font-display font-semibold text-primary-900 dark:text-primary-50 text-4xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight mb-6"
           >
             {{ t('landing.hero.title') }}<br />
             <span class="text-sand-600 dark:text-sand-400">{{ t('landing.hero.accent') }}</span>
@@ -70,7 +70,7 @@
 
         <!-- Mockup droite : en avant, demarre au milieu du texte -->
         <div
-          class="hidden lg:block absolute right-[0px] top-[38%] rotate-[9deg] z-20 pointer-events-none select-none"
+          class="hidden lg:block absolute right-[-30px] xl:right-[10px] top-[38%] rotate-[9deg] z-20 pointer-events-none select-none"
           aria-hidden="true"
         >
           <PhoneMockup :width="260">
@@ -438,14 +438,7 @@ useSeoMeta({
 });
 
 useHead({
-  link: [
-    { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-    { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-    {
-      rel: 'stylesheet',
-      href: 'https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap',
-    },
-  ],
+  meta: [{ name: 'robots', content: 'noindex, nofollow' }],
 });
 
 const heroCompletedSets = [

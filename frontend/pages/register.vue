@@ -1,14 +1,16 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center px-6 py-12 geometric-bg">
+  <div class="min-h-screen flex items-center justify-center geometric-bg">
     <div class="w-full max-w-md">
       <!-- Logo -->
       <div class="text-center mb-10 fade-in">
         <NuxtLink to="/" class="inline-block">
           <AppLogo
-            class="h-16 w-auto mx-auto mb-4 hover:scale-105 transition-transform duration-300"
+            class="h-12 md:h-16 w-auto mx-auto mb-4 hover:scale-105 transition-transform duration-300"
           />
         </NuxtLink>
-        <h1 class="text-4xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-display">
+        <h1
+          class="text-2xl md:text-4xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-display"
+        >
           {{ t('auth.register.title') }}
         </h1>
         <p class="text-primary-600 dark:text-primary-400 text-body-relaxed">

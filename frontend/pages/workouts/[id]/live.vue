@@ -19,11 +19,11 @@
 
     <!-- Header fixe -->
     <div class="fixed top-0 left-0 right-0 z-50 nav-blur">
-      <div class="max-w-3xl mx-auto px-4 py-4">
-        <div class="flex items-center justify-between">
+      <div class="max-w-5xl mx-auto px-4 md:px-6 py-3 md:py-4">
+        <div class="flex items-center justify-between gap-3">
           <button
             @click="confirmExit"
-            class="text-primary-700 dark:text-primary-300 p-2 hover:text-primary-900 dark:hover:text-primary-100"
+            class="text-primary-700 dark:text-primary-300 p-2 -ml-2 hover:text-primary-900 dark:hover:text-primary-100 flex-shrink-0"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -35,26 +35,53 @@
             </svg>
           </button>
 
-          <div class="text-center">
-            <div class="text-2xl font-bold text-primary-900 dark:text-primary-100 font-mono">
+          <div class="text-center min-w-0 flex-1">
+            <div
+              class="text-xl md:text-2xl font-bold text-primary-900 dark:text-primary-100 font-plate tabular-nums"
+            >
               {{ formattedTime }}
             </div>
-            <p class="text-xs text-primary-600 dark:text-primary-400">{{ workout?.name }}</p>
+            <p class="text-xs text-primary-600 dark:text-primary-400 truncate">
+              {{ workout?.name }}
+            </p>
           </div>
 
           <button
             @click="confirmComplete"
             :disabled="isCompleting"
-            class="btn-primary text-sm py-2 px-4 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="btn-primary text-sm py-2 px-4 md:px-5 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
           >
-            {{ isCompleting ? '...' : 'Terminer' }}
+            {{ isCompleting ? '...' : t('workoutLive.finish') }}
           </button>
+        </div>
+
+        <!-- Barre de progression + volume de séance en direct -->
+        <div v-if="workout && currentExercise" class="mt-3 flex items-center gap-3">
+          <p
+            class="text-[11px] font-semibold text-primary-500 dark:text-primary-400 whitespace-nowrap"
+          >
+            {{ currentExerciseIndex + 1 }}/{{ workout.exercises?.length || 0 }} · S{{
+              currentSetNumber
+            }}/{{ currentExercise.targetSets || 3 }}
+          </p>
+          <div class="flex-1 bg-primary-200 dark:bg-primary-700 rounded-full h-1.5">
+            <div
+              class="bg-gradient-primary h-1.5 rounded-full transition-all duration-300"
+              :style="{ width: `${progress}%` }"
+            ></div>
+          </div>
+          <p
+            v-if="sessionVolume > 0"
+            class="text-[11px] font-bold text-sand-600 dark:text-sand-400 whitespace-nowrap font-plate flex-shrink-0"
+          >
+            {{ sessionVolume.toLocaleString('fr-FR') }} kg
+          </p>
         </div>
       </div>
     </div>
 
     <!-- Contenu principal -->
-    <div class="pb-20 px-4 max-w-3xl mx-auto">
+    <div class="pb-24 pt-28 md:pt-32 px-4 md:px-6 max-w-5xl mx-auto">
       <div v-if="isLoading" class="text-center py-20">
         <div
           class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary-200 dark:border-primary-700 border-t-primary-600 dark:border-t-primary-400"
@@ -68,266 +95,245 @@
         </p>
       </div>
 
-      <div v-else class="space-y-4">
-        <!-- Superset badge -->
-        <div v-if="currentStepIsSuperset && !isViewingPast" class="text-center mb-2">
-          <span
-            class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-sand-500/15 text-sand-700 dark:text-sand-400 border border-sand-500/30 uppercase tracking-wider"
-          >
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-              />
-            </svg>
-            Superset · Round {{ currentSupersetRound }} / {{ currentSupersetTotalRounds }}
-          </span>
-        </div>
-
-        <!-- Progress -->
-        <div class="text-center mb-6">
-          <p class="text-sm text-primary-600 dark:text-primary-400 mb-2">
-            Exercice {{ currentExerciseIndex + 1 }} / {{ workout.exercises?.length || 0 }} · Série
-            {{ currentSetNumber }} / {{ currentExercise.targetSets || 3 }}
-          </p>
-          <div class="w-full bg-primary-200 dark:bg-primary-700 rounded-full h-2">
-            <div
-              class="bg-gradient-primary h-2 rounded-full transition-all duration-300"
-              :style="{ width: `${progress}%` }"
-            ></div>
+      <div
+        v-else
+        class="lg:grid lg:grid-cols-[1.05fr_1fr] lg:gap-8 lg:items-start space-y-5 lg:space-y-0"
+      >
+        <!-- ===== Colonne gauche (desktop) : contexte exercice ===== -->
+        <div class="space-y-4">
+          <!-- Superset badge -->
+          <div v-if="currentStepIsSuperset && !isViewingPast" class="text-center lg:text-left">
+            <span
+              class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-sand-500/15 text-sand-700 dark:text-sand-400 border border-sand-500/30 uppercase tracking-wider"
+            >
+              <Icon name="lucide:link" class="w-3.5 h-3.5" />
+              {{
+                t('workoutLive.supersetRound', {
+                  current: String(currentSupersetRound),
+                  total: String(currentSupersetTotalRounds),
+                })
+              }}
+            </span>
           </div>
-        </div>
 
-        <!-- Navigation flèches + nom exercice -->
-        <div class="relative">
-          <!-- Flèche gauche -->
-          <button
-            @click="navigateBack"
-            :disabled="!canNavigateBack"
-            class="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full flex items-center justify-center transition-all"
-            :class="
-              canNavigateBack
-                ? 'bg-white/80 dark:bg-primary-800/80 text-primary-900 dark:text-primary-100 shadow-lg hover:bg-white dark:hover:bg-primary-700'
-                : 'text-primary-300 dark:text-primary-700 cursor-not-allowed'
-            "
-          >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-          </button>
+          <!-- Nom exercice + navigation -->
+          <div class="flex items-center gap-2">
+            <button
+              @click="navigateBack"
+              :disabled="!canNavigateBack"
+              class="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center transition-all"
+              :class="
+                canNavigateBack
+                  ? 'bg-white/80 dark:bg-primary-800/80 text-primary-900 dark:text-primary-100 shadow-sm hover:bg-white dark:hover:bg-primary-700'
+                  : 'text-primary-300 dark:text-primary-700 cursor-not-allowed'
+              "
+            >
+              <Icon name="lucide:chevron-left" class="w-5 h-5" />
+            </button>
 
-          <!-- Flèche droite -->
-          <button
-            @click="navigateForward"
-            :disabled="!canNavigateForward"
-            class="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full flex items-center justify-center transition-all"
-            :class="
-              canNavigateForward
-                ? 'bg-white/80 dark:bg-primary-800/80 text-primary-900 dark:text-primary-100 shadow-lg hover:bg-white dark:hover:bg-primary-700'
-                : 'text-primary-300 dark:text-primary-700 cursor-not-allowed'
-            "
-          >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </button>
-
-          <!-- Contenu central -->
-          <div class="px-12">
-            <!-- Badge si on regarde une série passée -->
-            <div v-if="isViewingPast" class="text-center mb-2">
+            <div class="flex-1 min-w-0 text-center">
               <span
-                class="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full bg-sand-500/15 text-sand-700 dark:text-sand-400 border border-sand-500/30"
+                v-if="isViewingPast"
+                class="inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-sand-500/15 text-sand-700 dark:text-sand-400 border border-sand-500/30 mb-1"
               >
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                Serie passee — modifiable
+                {{ t('workoutLive.pastSetEditable') }}
               </span>
+              <h1
+                class="text-lg md:text-2xl font-bold text-primary-900 dark:text-primary-100 truncate"
+              >
+                {{ viewingExerciseName }}
+              </h1>
             </div>
 
-            <h1
-              class="text-xl md:text-3xl font-bold text-primary-900 dark:text-primary-100 text-center mb-4"
+            <button
+              @click="navigateForward"
+              :disabled="!canNavigateForward"
+              class="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center transition-all"
+              :class="
+                canNavigateForward
+                  ? 'bg-white/80 dark:bg-primary-800/80 text-primary-900 dark:text-primary-100 shadow-sm hover:bg-white dark:hover:bg-primary-700'
+                  : 'text-primary-300 dark:text-primary-700 cursor-not-allowed'
+              "
             >
-              {{ viewingExerciseName }}
-            </h1>
+              <Icon name="lucide:chevron-right" class="w-5 h-5" />
+            </button>
+          </div>
 
-            <!-- Animation exercice -->
-            <div v-if="!showRestTimer" class="mb-4">
+          <!-- Animation exercice : grande la 1ere fois, vignette repliable ensuite -->
+          <div v-if="!showRestTimer">
+            <div
+              v-if="isImageLarge"
+              @click="toggleImageExpanded"
+              class="max-h-52 md:max-h-64 lg:max-h-[26rem] overflow-hidden rounded-2xl cursor-pointer"
+            >
               <ExerciseAnimation
                 :image-id="viewingExerciseImage"
                 :name="viewingExerciseName"
                 size="lg"
               />
             </div>
-          </div>
-        </div>
-
-        <!-- Weight progression suggestion -->
-        <div
-          v-if="weightSuggestion && currentSetNumber === 1"
-          class="rounded-2xl p-4 bg-gradient-to-r from-sand-500/15 to-sand-600/15 border border-sand-500/30 dark:border-sand-600/20"
-        >
-          <div class="flex items-center gap-3">
-            <div
-              class="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center flex-shrink-0"
+            <button
+              v-else
+              @click="toggleImageExpanded"
+              class="flex items-center gap-3 w-full p-2.5 rounded-xl bg-primary-50 dark:bg-primary-800/60 hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors text-left"
             >
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+              <div class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
+                <ExerciseAnimation
+                  :image-id="viewingExerciseImage"
+                  :name="viewingExerciseName"
+                  size="sm"
                 />
-              </svg>
-            </div>
-            <div class="flex-1">
-              <p class="text-sm font-semibold text-primary-900 dark:text-primary-100">
+              </div>
+              <span class="text-xs text-primary-500 dark:text-primary-400 flex-1">
+                {{ t('workoutLive.showAnimation') }}
+              </span>
+              <Icon name="lucide:chevron-down" class="w-4 h-4 text-primary-400 flex-shrink-0" />
+            </button>
+          </div>
+
+          <!-- Weight progression suggestion -->
+          <div
+            v-if="weightSuggestion && currentSetNumber === 1"
+            class="rounded-2xl p-3.5 bg-gradient-to-r from-sand-500/15 to-sand-600/15 border border-sand-500/30 dark:border-sand-600/20"
+          >
+            <div class="flex items-center gap-3">
+              <div
+                class="w-9 h-9 bg-gradient-primary rounded-xl flex items-center justify-center flex-shrink-0"
+              >
+                <Icon name="lucide:trending-up" class="w-4.5 h-4.5 text-white" />
+              </div>
+              <p class="text-sm font-semibold text-primary-900 dark:text-primary-100 flex-1">
                 {{ weightSuggestion.message }}
               </p>
-            </div>
-            <button
-              @click="applyWeightSuggestion"
-              class="btn-primary text-xs py-2 px-3 whitespace-nowrap"
-            >
-              Appliquer
-            </button>
-          </div>
-        </div>
-
-        <!-- Zone de saisie -->
-        <div class="card-glass space-y-6">
-          <div class="text-center">
-            <p class="text-primary-900 dark:text-primary-100 font-bold text-xl mb-2">
-              {{
-                isViewingPast ? `Serie ${viewingSetNumber} (passee)` : `Série ${currentSetNumber}`
-              }}
-            </p>
-            <p class="text-primary-600 dark:text-primary-400 text-sm">
-              {{ isViewingPast ? 'Modifie si besoin' : 'Entre tes performances' }}
-            </p>
-          </div>
-
-          <div class="flex gap-4">
-            <div class="flex-1">
-              <label
-                class="block text-primary-900 dark:text-primary-100 text-sm mb-2 text-center font-semibold"
-                >{{ t('workoutLive.repsLabel') }}</label
+              <button
+                @click="applyWeightSuggestion"
+                class="btn-primary text-xs py-2 px-3 whitespace-nowrap flex-shrink-0"
               >
-              <input
-                v-model.number="currentSetData.reps"
-                type="number"
-                min="0"
-                :disabled="showRestTimer"
-                class="w-full px-4 py-6 input text-center text-primary-900 dark:text-primary-100 text-3xl font-bold disabled:opacity-50 disabled:cursor-not-allowed"
-                placeholder="10"
-              />
+                {{ t('workoutLive.apply') }}
+              </button>
             </div>
+          </div>
+        </div>
 
-            <div class="flex-1">
-              <label
-                class="block text-primary-900 dark:text-primary-100 text-sm mb-2 text-center font-semibold"
-                >{{ t('workoutLive.weightKgLabel') }}</label
+        <!-- ===== Colonne droite (desktop) : saisie + historique ===== -->
+        <div class="space-y-4">
+          <!-- Zone de saisie -->
+          <div class="card-glass !p-5 md:!p-6 space-y-4">
+            <div class="text-center">
+              <p class="text-primary-900 dark:text-primary-100 font-bold text-lg md:text-xl">
+                {{
+                  isViewingPast
+                    ? t('workoutLive.pastSetLabel', { n: String(viewingSetNumber) })
+                    : t('workoutLive.currentSet', { n: String(currentSetNumber) })
+                }}
+              </p>
+              <!-- Dernière fois, dans le même regard que la saisie -->
+              <p
+                v-if="!isViewingPast && lastCorrespondingSet"
+                class="text-sand-600 dark:text-sand-400 text-sm font-medium mt-0.5"
               >
-              <input
-                v-model.number="currentSetData.weight"
-                type="number"
-                step="0.5"
-                min="0"
+                {{ t('workoutLive.lastTime') }} : {{ lastCorrespondingSet.reps }}×{{
+                  lastCorrespondingSet.weight
+                }}kg
+              </p>
+              <p v-else class="text-primary-500 dark:text-primary-400 text-sm">
+                {{
+                  isViewingPast ? t('workoutLive.editIfNeeded') : t('workoutLive.enterPerformance')
+                }}
+              </p>
+            </div>
+
+            <div class="flex gap-3 md:gap-4">
+              <div class="flex-1">
+                <label
+                  class="block text-primary-500 dark:text-primary-400 text-[11px] md:text-xs mb-1.5 text-center font-semibold uppercase tracking-wide"
+                >
+                  {{ t('workoutLive.repsLabel') }}
+                </label>
+                <input
+                  v-model.number="currentSetData.reps"
+                  type="number"
+                  min="0"
+                  :disabled="showRestTimer"
+                  class="w-full px-3 py-4 md:py-5 input text-center text-primary-900 dark:text-primary-100 text-2xl md:text-3xl font-bold font-plate disabled:opacity-50 disabled:cursor-not-allowed"
+                  placeholder="10"
+                />
+              </div>
+
+              <div class="flex-1">
+                <label
+                  class="block text-primary-500 dark:text-primary-400 text-[11px] md:text-xs mb-1.5 text-center font-semibold uppercase tracking-wide"
+                >
+                  {{ t('workoutLive.weightKgLabel') }}
+                </label>
+                <input
+                  v-model.number="currentSetData.weight"
+                  type="number"
+                  step="0.5"
+                  min="0"
+                  :disabled="showRestTimer"
+                  class="w-full px-3 py-4 md:py-5 input text-center text-primary-900 dark:text-primary-100 text-2xl md:text-3xl font-bold font-plate disabled:opacity-50 disabled:cursor-not-allowed"
+                  placeholder="20"
+                />
+              </div>
+            </div>
+
+            <!-- Mode passé : bouton modifier -->
+            <div v-if="isViewingPast" class="flex gap-3">
+              <button @click="returnToCurrent" class="btn-outline flex-1 py-3.5 text-sm">
+                {{ t('workoutLive.backToCurrentSet') }}
+              </button>
+              <button
+                @click="saveViewingSet"
+                class="btn-primary flex-1 py-3.5 text-base font-semibold"
+              >
+                {{ t('workoutLive.edit') }}
+              </button>
+            </div>
+
+            <!-- Mode actuel : boutons normaux -->
+            <div v-else class="flex gap-3">
+              <button
+                @click="skipCurrentSet"
                 :disabled="showRestTimer"
-                class="w-full px-4 py-6 input text-center text-primary-900 dark:text-primary-100 text-3xl font-bold disabled:opacity-50 disabled:cursor-not-allowed"
-                placeholder="20"
-              />
+                class="btn-outline py-3.5 px-5 text-sm disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+              >
+                {{ t('workoutLive.skip') }}
+              </button>
+              <button
+                @click="validateCurrentSet"
+                :disabled="showRestTimer"
+                class="btn-primary flex-1 text-lg md:text-xl py-4 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {{ nextButtonLabel }}
+              </button>
             </div>
           </div>
 
-          <!-- Mode passé : bouton modifier -->
-          <div v-if="isViewingPast" class="flex gap-3">
-            <button @click="returnToCurrent" class="btn-outline flex-1 py-4 text-sm">
-              Retour serie actuelle
-            </button>
-            <button @click="saveViewingSet" class="btn-primary flex-1 py-4 text-base font-semibold">
-              Modifier
-            </button>
-          </div>
-
-          <!-- Mode actuel : boutons normaux -->
-          <div v-else class="flex gap-3">
-            <button
-              @click="skipCurrentSet"
-              :disabled="showRestTimer"
-              class="btn-outline py-4 px-5 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          <!-- Séries complétées de cet exercice -->
+          <div v-if="completedSets.length > 0" class="card-glass !p-4">
+            <p
+              class="text-xs md:text-sm text-primary-900 dark:text-primary-100 font-semibold mb-2.5"
             >
-              Passer
-            </button>
-            <button
-              @click="validateCurrentSet"
-              :disabled="showRestTimer"
-              class="btn-primary flex-1 text-xl py-5 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {{ nextButtonLabel }}
-            </button>
-          </div>
-        </div>
-
-        <!-- Historique -->
-        <div
-          v-if="exerciseHistory?.lastSets && exerciseHistory.lastSets.length > 0"
-          class="card-glass bg-opacity-60"
-        >
-          <p class="text-sm text-primary-900 dark:text-primary-100 font-semibold mb-3">
-            Dernière fois:
-          </p>
-          <div class="flex gap-2 overflow-x-auto">
-            <div
-              v-for="(set, idx) in exerciseHistory.lastSets"
-              :key="idx"
-              class="flex-shrink-0 bg-primary-100 dark:bg-primary-800 rounded-lg p-3 text-center border border-primary-200 dark:border-primary-700 min-w-[80px]"
-            >
-              <p class="text-xs text-primary-600 dark:text-primary-400 mb-1">
-                S{{ set.setNumber || idx + 1 }}
-              </p>
-              <p class="text-primary-900 dark:text-primary-100 font-bold">
-                {{ set.reps }}×{{ set.weight }}kg
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Séries complétées (pastilles) -->
-        <div v-if="completedSets.length > 0" class="space-y-2">
-          <p class="text-sm text-primary-900 dark:text-primary-100 font-semibold">
-            Séries complétées
-            <span class="text-primary-400 font-normal">({{ t('workoutLive.arrowsToEdit') }})</span>:
-          </p>
-          <div class="flex gap-2 overflow-x-auto">
-            <div
-              v-for="(set, idx) in completedSets"
-              :key="idx"
-              class="flex-shrink-0 bg-primary-100 dark:bg-primary-800 rounded-lg p-3 text-center border border-primary-200 dark:border-primary-700 min-w-[80px]"
-              :class="{ 'ring-2 ring-sand-500': isViewingPast && viewingSet?.setId === set.id }"
-            >
-              <p class="text-xs text-primary-600 dark:text-primary-400 mb-1">S{{ idx + 1 }}</p>
-              <p class="text-primary-900 dark:text-primary-100 font-bold">
-                {{ set.reps }}x{{ set.weight }}kg
-              </p>
+              {{ t('workoutLive.completedSets') }}
+              <span class="text-primary-400 font-normal text-[10px]"
+                >({{ t('workoutLive.arrowsToEdit') }})</span
+              >
+            </p>
+            <div class="flex gap-2 overflow-x-auto">
+              <div
+                v-for="(set, idx) in completedSets"
+                :key="idx"
+                class="flex-shrink-0 bg-primary-100 dark:bg-primary-800 rounded-lg p-2.5 text-center border border-primary-200 dark:border-primary-700 min-w-[72px]"
+                :class="{ 'ring-2 ring-sand-500': isViewingPast && viewingSet?.setId === set.id }"
+              >
+                <p class="text-[10px] text-primary-600 dark:text-primary-400 mb-0.5">
+                  S{{ idx + 1 }}
+                </p>
+                <p class="text-primary-900 dark:text-primary-100 font-bold text-sm font-plate">
+                  {{ set.reps }}x{{ set.weight }}kg
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -1002,6 +1008,17 @@ const timerInterval = ref<NodeJS.Timeout | null>(null);
 const countdownInterval = ref<NodeJS.Timeout | null>(null);
 const countdownTimeout = ref<NodeJS.Timeout | null>(null);
 
+// L'illustration de l'exercice ne s'affiche en grand que la premiere fois qu'on la voit ;
+// ensuite elle se replie en vignette pour laisser la place a la saisie (repliable manuellement).
+const seenExerciseImages = ref(new Set<string>());
+const imageExpanded = ref(false);
+const isCurrentImageFirstView = ref(true);
+
+// Volume total (kg) souleve depuis le debut de la seance, toutes series confondues
+const sessionVolume = computed(() =>
+  allCompletedSets.value.reduce((sum, s) => sum + (s.reps || 0) * (s.weight || 0), 0)
+);
+
 const currentExercise = computed(() => {
   if (!workout.value?.exercises || workout.value.exercises.length === 0) return null;
   return workout.value.exercises[currentExerciseIndex.value];
@@ -1209,6 +1226,37 @@ const viewingExerciseImage = computed(() => {
 const viewingSetNumber = computed(() => {
   return viewingSet.value?.setNumber || 0;
 });
+
+// La performance de la derniere fois sur CETTE meme serie (meme numero), pour affichage inline
+const lastCorrespondingSet = computed(() => {
+  return (
+    exerciseHistory.value?.lastSets?.find((s) => s.setNumber === currentSetNumber.value) || null
+  );
+});
+
+// Grande la premiere fois qu'on voit cette image, repliee en vignette ensuite
+watch(
+  viewingExerciseImage,
+  (newVal) => {
+    imageExpanded.value = false;
+    if (!newVal) {
+      isCurrentImageFirstView.value = true;
+      return;
+    }
+    if (seenExerciseImages.value.has(newVal)) {
+      isCurrentImageFirstView.value = false;
+    } else {
+      isCurrentImageFirstView.value = true;
+      seenExerciseImages.value.add(newVal);
+    }
+  },
+  { immediate: true }
+);
+
+const isImageLarge = computed(() => imageExpanded.value || isCurrentImageFirstView.value);
+const toggleImageExpanded = () => {
+  imageExpanded.value = !imageExpanded.value;
+};
 
 const navigateBack = () => {
   if (!canNavigateBack.value) return;
@@ -1599,6 +1647,25 @@ const validateCurrentSet = async () => {
       weight: currentSetData.value.weight,
       setId: savedSet.id,
     });
+
+    // Retour positif immediat vs la derniere fois sur cette meme serie.
+    // On ne montre jamais de message si c'est en dessous : pas de comparaison decourageante.
+    const lastCorresponding = exerciseHistory.value?.lastSets?.find(
+      (s) => s.setNumber === currentSetNumber.value
+    );
+    if (lastCorresponding) {
+      const oldWeight = lastCorresponding.weight || 0;
+      const oldReps = lastCorresponding.reps || 0;
+      if (reps > 0 && weight > oldWeight) {
+        toast.success(`+${(weight - oldWeight).toFixed(1)}kg`, t('workoutLive.vsLastTime'));
+      } else if (weight === oldWeight && oldWeight > 0 && reps > oldReps) {
+        toast.success(
+          `+${reps - oldReps} ${t('workoutLive.repsLabel').toLowerCase()}`,
+          t('workoutLive.vsLastTime')
+        );
+      }
+    }
+
     // S'assurer qu'on est sur la série actuelle
     viewingIndex.value = null;
 

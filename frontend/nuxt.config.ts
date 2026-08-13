@@ -65,6 +65,12 @@ export default defineNuxtConfig({
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/athletiq-icon.svg' },
         { rel: 'apple-touch-icon', href: '/athletiq-icon.svg' },
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap',
+        },
       ],
       // Vercel Speed Insights removed - loaded automatically by Vercel platform when deployed.
       // If needed, use the @vercel/speed-insights npm package instead for proper SRI support.

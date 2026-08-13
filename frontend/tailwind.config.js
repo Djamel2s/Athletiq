@@ -65,6 +65,12 @@ export default {
         chalk: {
           100: '#f3efe6',
         },
+        // Blanc casse / carton, pour la direction "carte de match"
+        paper: {
+          DEFAULT: '#f3ede0',
+          dark: '#e8dfcb',
+        },
+        ink: '#0a0a0a',
       },
       fontFamily: {
         display: ['"Oswald"', 'sans-serif'],
@@ -84,6 +90,10 @@ export default {
         soft: '0 2px 15px 0 rgba(0, 0, 0, 0.05)',
         'soft-lg': '0 10px 40px 0 rgba(0, 0, 0, 0.08)',
         glow: '0 0 20px rgba(var(--sand-500), 0.3)',
+        hard: '5px 5px 0 0 #0a0a0a',
+        'hard-sm': '3px 3px 0 0 #0a0a0a',
+        'hard-lg': '8px 8px 0 0 #0a0a0a',
+        'hard-sand': '5px 5px 0 0 rgb(var(--sand-500))',
       },
     },
   },

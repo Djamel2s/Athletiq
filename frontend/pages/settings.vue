@@ -1,13 +1,10 @@
 <template>
   <div class="min-h-screen geometric-bg">
-    <!-- Navigation -->
-    <!-- TopNav is rendered globally in app.vue -->
-
-    <div class="px-4 md:px-6 pb-20 w-full max-w-lg mx-auto">
+    <div class="px-4 md:px-6 pb-20 w-full max-w-5xl mx-auto">
       <!-- Header -->
-      <div class="text-center mb-10 fade-in">
+      <div class="text-center lg:text-left mb-8 lg:mb-10 fade-in">
         <h1
-          class="text-3xl md:text-5xl lg:text-6xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2"
+          class="text-3xl md:text-5xl font-bold text-display bg-gradient-to-r from-sand-500 to-primary-900 dark:to-primary-100 bg-clip-text text-transparent mb-2"
         >
           {{ t('settings.title') }}
         </h1>
@@ -16,766 +13,456 @@
         </p>
       </div>
 
-      <!-- Sections -->
-      <div class="space-y-6 slide-up">
-        <!-- Compte -->
-        <div class="card-glass">
-          <h2
-            class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-5 flex items-center gap-3"
-          >
-            <div
-              class="w-10 h-10 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center"
-            >
-              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
-            </div>
-            {{ t('settings.account') }}
-          </h2>
-          <div class="space-y-1">
-            <NuxtLink
-              to="/edit-profile"
-              class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors"
-            >
-              <span class="text-primary-800 dark:text-primary-200">{{
-                t('settings.editProfile')
-              }}</span>
-              <svg
-                class="w-5 h-5 text-primary-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </NuxtLink>
-            <NuxtLink
-              to="/subscription"
-              class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors"
-            >
-              <span class="text-primary-800 dark:text-primary-200">{{
-                t('settings.subscription')
-              }}</span>
-              <svg
-                class="w-5 h-5 text-primary-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </NuxtLink>
-          </div>
-        </div>
-
-        <!-- Gym Bros -->
-        <div class="card-glass">
-          <h2
-            class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-5 flex items-center gap-3"
-          >
-            <div
-              class="w-10 h-10 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center"
-            >
-              <Icon name="lucide:users" class="w-4 h-4 text-white" />
-            </div>
-            {{ t('settings.gymBros') }}
-          </h2>
-          <div class="space-y-1">
-            <NuxtLink
-              to="/friends"
-              class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors"
-            >
-              <span class="text-primary-800 dark:text-primary-200">{{
-                t('settings.gymBrosList')
-              }}</span>
-              <div class="flex items-center gap-2">
-                <span
-                  v-if="pendingRequestsCount > 0"
-                  class="inline-flex items-center justify-center w-6 h-6 text-[10px] font-bold bg-red-500 text-white rounded-full"
-                  >{{ pendingRequestsCount }}</span
-                >
-                <svg
-                  class="w-5 h-5 text-primary-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </div>
-            </NuxtLink>
-            <NuxtLink
-              to="/feed"
-              class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors"
-            >
-              <span class="text-primary-800 dark:text-primary-200">{{
-                t('settings.activityFeed')
-              }}</span>
-              <svg
-                class="w-5 h-5 text-primary-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </NuxtLink>
-          </div>
-        </div>
-
-        <!-- Coaching -->
-        <div class="card-glass">
-          <h2
-            class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-5 flex items-center gap-3"
-          >
-            <div
-              class="w-10 h-10 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center"
-            >
-              <Icon name="lucide:whistle" class="w-4 h-4 text-white" />
-            </div>
-            {{ t('settings.coaching') }}
-          </h2>
-          <div class="space-y-1">
-            <NuxtLink
-              to="/my-coach"
-              class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors"
-            >
-              <span class="text-primary-800 dark:text-primary-200">{{
-                t('settings.myCoach')
-              }}</span>
-              <svg
-                class="w-5 h-5 text-primary-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </NuxtLink>
-            <NuxtLink
-              to="/coaching"
-              class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors"
-            >
-              <span class="text-primary-800 dark:text-primary-200">{{
-                t('settings.coachSpace')
-              }}</span>
-              <svg
-                class="w-5 h-5 text-primary-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </NuxtLink>
-          </div>
-        </div>
-
-        <!-- Preferences -->
-        <div class="card-glass">
-          <h2
-            class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-5 flex items-center gap-3"
-          >
-            <div
-              class="w-10 h-10 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center"
-            >
-              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-            </div>
-            {{ t('settings.preferences') }}
-          </h2>
-          <div class="space-y-1">
-            <div class="flex items-center justify-between p-3">
-              <div>
-                <span class="text-primary-800 dark:text-primary-200">{{
-                  t('settings.language')
-                }}</span>
-                <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
-                  {{ t('settings.languageHint') }}
-                </p>
-              </div>
-              <div
-                class="flex items-center gap-2 rounded-xl bg-primary-100 p-1 dark:bg-primary-800"
-              >
-                <button
-                  v-for="option in availableLocales"
-                  :key="option.code"
-                  type="button"
-                  class="rounded-lg px-3 py-1.5 text-sm font-medium transition-all flex items-center gap-2"
-                  :class="
-                    locale === option.code
-                      ? 'bg-white text-primary-900 shadow-sm dark:bg-primary-700 dark:text-primary-100'
-                      : 'text-primary-500 dark:text-primary-400'
-                  "
-                  @click="setLocale(option.code)"
-                >
-                  <Icon :name="option.flag" class="w-5 h-5 rounded-full" />
-                  {{ option.label }}
-                </button>
-              </div>
-            </div>
-
-            <!-- Theme -->
-            <div class="flex items-center justify-between p-3">
-              <div class="flex bg-primary-100 dark:bg-primary-800 rounded-xl p-1 w-full">
-                <button
-                  @click="setTheme('light')"
-                  class="flex-1 px-2 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-1.5"
-                  :class="
-                    $colorMode.preference === 'light'
-                      ? 'bg-white dark:bg-primary-700 shadow-sm text-primary-900 dark:text-primary-100'
-                      : 'text-primary-500 dark:text-primary-400'
-                  "
-                >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                    />
-                  </svg>
-                  <span class="hidden sm:inline">{{ t('settings.themeLight') }}</span>
-                </button>
-                <button
-                  @click="setTheme('dark')"
-                  class="flex-1 px-2 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-1.5"
-                  :class="
-                    $colorMode.preference === 'dark'
-                      ? 'bg-white dark:bg-primary-700 shadow-sm text-primary-900 dark:text-primary-100'
-                      : 'text-primary-500 dark:text-primary-400'
-                  "
-                >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                    />
-                  </svg>
-                  <span class="hidden sm:inline">{{ t('settings.themeDark') }}</span>
-                </button>
-                <button
-                  @click="setTheme('system')"
-                  class="flex-1 px-2 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-1.5"
-                  :class="
-                    $colorMode.preference === 'system'
-                      ? 'bg-white dark:bg-primary-700 shadow-sm text-primary-900 dark:text-primary-100'
-                      : 'text-primary-500 dark:text-primary-400'
-                  "
-                >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
-                  <span class="hidden sm:inline">{{ t('settings.themeSystem') }}</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Unite de poids -->
-            <div class="flex items-center justify-between p-3">
-              <span class="text-primary-800 dark:text-primary-200">{{
-                t('settings.weightUnit')
-              }}</span>
-              <div class="flex bg-primary-100 dark:bg-primary-800 rounded-xl p-1">
-                <button
-                  @click="weightUnit = 'kg'"
-                  class="px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200"
-                  :class="
-                    weightUnit === 'kg'
-                      ? 'bg-white dark:bg-primary-700 shadow-sm text-primary-900 dark:text-primary-100'
-                      : 'text-primary-500 dark:text-primary-400'
-                  "
-                >
-                  kg
-                </button>
-                <button
-                  @click="weightUnit = 'lbs'"
-                  class="px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200"
-                  :class="
-                    weightUnit === 'lbs'
-                      ? 'bg-white dark:bg-primary-700 shadow-sm text-primary-900 dark:text-primary-100'
-                      : 'text-primary-500 dark:text-primary-400'
-                  "
-                >
-                  lbs
-                </button>
-              </div>
-            </div>
-
-            <!-- Timer de repos -->
-            <div class="flex items-center justify-between p-3">
-              <span class="text-primary-800 dark:text-primary-200">{{
-                t('settings.restTimer')
-              }}</span>
-              <div class="flex items-center gap-2">
-                <button
-                  @click="restTimer = Math.max(30, restTimer - 15)"
-                  class="w-10 h-10 md:w-8 md:h-8 rounded-lg bg-primary-100 dark:bg-primary-800 hover:bg-primary-200 dark:hover:bg-primary-700 flex items-center justify-center transition-colors"
-                >
-                  <svg
-                    class="w-4 h-4 text-primary-600 dark:text-primary-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M20 12H4"
-                    />
-                  </svg>
-                </button>
-                <span class="text-primary-900 dark:text-primary-100 font-medium w-12 text-center"
-                  >{{ restTimer }}s</span
-                >
-                <button
-                  @click="restTimer = Math.min(300, restTimer + 15)"
-                  class="w-10 h-10 md:w-8 md:h-8 rounded-lg bg-primary-100 dark:bg-primary-800 hover:bg-primary-200 dark:hover:bg-primary-700 flex items-center justify-center transition-colors"
-                >
-                  <svg
-                    class="w-4 h-4 text-primary-600 dark:text-primary-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 4v16m8-8H4"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Notifications -->
-        <div class="card-glass">
-          <h2
-            class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-5 flex items-center gap-3"
-          >
-            <div
-              class="w-10 h-10 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center"
-            >
-              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                />
-              </svg>
-            </div>
-            {{ t('settings.notifications') }}
-          </h2>
-          <div class="space-y-1">
-            <div class="flex items-center justify-between p-3">
-              <span class="text-primary-800 dark:text-primary-200">{{
-                t('settings.notif.personalRecords')
-              }}</span>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" v-model="notifPR" class="sr-only peer" />
-                <div
-                  class="w-11 h-6 bg-primary-200 dark:bg-primary-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-sand-500 peer-checked:to-sand-600"
-                ></div>
-              </label>
-            </div>
-            <div class="flex items-center justify-between p-3">
-              <span class="text-primary-800 dark:text-primary-200">{{
-                t('settings.notif.streaks')
-              }}</span>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" v-model="notifStreak" class="sr-only peer" />
-                <div
-                  class="w-11 h-6 bg-primary-200 dark:bg-primary-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-sand-500 peer-checked:to-sand-600"
-                ></div>
-              </label>
-            </div>
-            <div class="flex items-center justify-between p-3">
-              <span class="text-primary-800 dark:text-primary-200">{{
-                t('settings.notif.goals')
-              }}</span>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" v-model="notifGoals" class="sr-only peer" />
-                <div
-                  class="w-11 h-6 bg-primary-200 dark:bg-primary-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-sand-500 peer-checked:to-sand-600"
-                ></div>
-              </label>
-            </div>
-
-            <!-- Notifications push (native only) -->
-            <div v-if="isNativePlatform" class="flex items-center justify-between p-3">
-              <div>
-                <span class="text-primary-800 dark:text-primary-200">{{
-                  t('settings.notif.push')
-                }}</span>
-                <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
-                  {{ t('settings.notif.pushDesc') }}
-                </p>
-              </div>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" v-model="pushEnabled" class="sr-only peer" />
-                <div
-                  class="w-11 h-6 bg-primary-200 dark:bg-primary-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-sand-500 peer-checked:to-sand-600"
-                ></div>
-              </label>
-            </div>
-
-            <div class="border-t border-primary-100 dark:border-primary-800 my-2"></div>
-
-            <!-- Rappel d'inactivite -->
-            <div class="flex items-center justify-between p-3">
-              <div>
-                <span class="text-primary-800 dark:text-primary-200">{{
-                  t('settings.notif.inactivity')
-                }}</span>
-                <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
-                  {{ t('settings.notif.inactivityDesc') }}
-                </p>
-              </div>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" v-model="reminderEnabled" class="sr-only peer" />
-                <div
-                  class="w-11 h-6 bg-primary-200 dark:bg-primary-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-sand-500 peer-checked:to-sand-600"
-                ></div>
-              </label>
-            </div>
-
-            <div v-if="reminderEnabled" class="flex items-center justify-between p-3 pl-6">
-              <span class="text-primary-600 dark:text-primary-400 text-sm">{{
-                t('settings.notif.afterHowManyDays')
-              }}</span>
-              <div class="flex items-center gap-2">
-                <button
-                  @click="inactivityDays = Math.max(1, inactivityDays - 1)"
-                  class="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-800 hover:bg-primary-200 dark:hover:bg-primary-700 flex items-center justify-center transition-colors"
-                >
-                  <svg
-                    class="w-3 h-3 text-primary-600 dark:text-primary-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M20 12H4"
-                    />
-                  </svg>
-                </button>
-                <span class="text-primary-900 dark:text-primary-100 font-medium w-10 text-center"
-                  >{{ inactivityDays }}j</span
-                >
-                <button
-                  @click="inactivityDays = Math.min(14, inactivityDays + 1)"
-                  class="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-800 hover:bg-primary-200 dark:hover:bg-primary-700 flex items-center justify-center transition-colors"
-                >
-                  <svg
-                    class="w-3 h-3 text-primary-600 dark:text-primary-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 4v16m8-8H4"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- A propos -->
-        <div class="card-glass">
-          <h2
-            class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-5 flex items-center gap-3"
-          >
-            <div
-              class="w-10 h-10 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center"
-            >
-              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-            {{ t('settings.about') }}
-          </h2>
-          <div class="space-y-1">
-            <div class="flex items-center justify-between p-3">
-              <span class="text-primary-800 dark:text-primary-200">{{
-                t('settings.about.version')
-              }}</span>
-              <span class="text-primary-500 dark:text-primary-400 text-sm">1.0.0</span>
-            </div>
-            <div class="flex items-center justify-between p-3">
-              <span class="text-primary-800 dark:text-primary-200">{{
-                t('settings.about.privacy')
-              }}</span>
-              <svg
-                class="w-5 h-5 text-primary-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <!-- Exporter mes donnees -->
-        <div class="card-glass">
-          <h2
-            class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-5 flex items-center gap-3"
-          >
-            <div
-              class="w-10 h-10 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center"
-            >
-              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
-            </div>
-            {{ t('settings.export.title') }}
-          </h2>
-          <div class="space-y-1">
-            <div class="flex items-center justify-between p-3">
-              <div>
-                <span class="text-primary-800 dark:text-primary-200">{{
-                  t('settings.export.history')
-                }}</span>
-                <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
-                  {{ t('settings.export.historyDesc') }}
-                </p>
-              </div>
-              <button
-                @click="exportCsv"
-                :disabled="exporting"
-                class="px-4 py-2 rounded-xl bg-gradient-primary text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
-              >
-                {{ exporting ? t('settings.export.exporting') : t('settings.export.downloadCsv') }}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Sante (native only) -->
-        <div v-if="isNativePlatform" class="card-glass">
-          <h2
-            class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-5 flex items-center gap-3"
-          >
-            <div
-              class="w-10 h-10 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center"
-            >
-              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                />
-              </svg>
-            </div>
-            {{ t('settings.health.title') }}
-          </h2>
-          <div class="space-y-1">
-            <div class="flex items-center justify-between p-3">
-              <div>
-                <span class="text-primary-800 dark:text-primary-200">{{
-                  t('settings.health.sync')
-                }}</span>
-                <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
-                  {{ t('settings.health.syncDesc') }}
-                </p>
-              </div>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" v-model="healthSyncEnabled" class="sr-only peer" />
-                <div
-                  class="w-11 h-6 bg-primary-200 dark:bg-primary-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-sand-500 peer-checked:to-sand-600"
-                ></div>
-              </label>
-            </div>
-            <div class="flex items-center justify-between p-3">
-              <div>
-                <span class="text-primary-800 dark:text-primary-200">{{
-                  t('settings.health.syncHistory')
-                }}</span>
-                <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
-                  {{ t('settings.health.syncHistoryDesc') }}
-                </p>
-              </div>
-              <button
-                @click="syncHealthHistory"
-                :disabled="syncingHealth"
-                class="px-4 py-2 rounded-xl bg-gradient-primary text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
-              >
-                {{ syncingHealth ? 'Sync...' : 'Synchroniser' }}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Zone danger -->
-        <div class="space-y-3">
-          <button
-            @click="handleLogout"
-            class="w-full py-4 rounded-2xl border-2 border-primary-200 dark:border-primary-700 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-800 hover:border-primary-300 dark:hover:border-primary-600 transition-all duration-300 font-medium"
-          >
-            Se deconnecter
-          </button>
-          <button
-            @click="showDeleteConfirm = true"
-            class="w-full py-4 rounded-2xl border-2 border-red-200 dark:border-red-800 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 hover:border-red-300 dark:hover:border-red-700 hover:text-red-600 transition-all duration-300 font-medium"
-          >
-            Supprimer mon compte
-          </button>
-        </div>
-
-        <!-- Modale confirmation suppression -->
-        <div
-          v-if="showDeleteConfirm"
-          class="fixed inset-0 z-50 flex items-center justify-center px-6"
-          @click.self="showDeleteConfirm = false"
+      <div class="lg:flex lg:gap-8 lg:items-start slide-up">
+        <!-- Navigation : onglets scrollables sur mobile, sidebar collante sur desktop -->
+        <nav
+          class="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 mb-6 lg:mb-0 lg:w-52 ..."
         >
-          <div class="fixed inset-0 bg-black/40 backdrop-blur-sm"></div>
-          <div
-            class="relative bg-white dark:bg-primary-900 rounded-3xl p-8 max-w-sm w-full shadow-2xl"
+          <button
+            v-for="section in sections"
+            :key="section.key"
+            @click="activeSection = section.key"
+            class="flex-1 flex items-center lg:justify-start justify-center gap-1 px-4 py-2.5 rounded-xl text-sm lg:flex-none lg:w-full"
+            :class="
+              activeSection === section.key
+                ? 'bg-gradient-primary text-white shadow-sm'
+                : 'text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-800'
+            "
           >
-            <div class="text-center">
-              <div
-                class="w-14 h-14 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center mx-auto mb-4"
-              >
-                <svg
-                  class="w-7 h-7 text-red-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
-                  />
-                </svg>
+            <Icon :name="section.icon" class="w-4 h-4 flex-shrink-0" />
+
+            <span
+              :class="activeSection === section.key ? 'inline-block' : 'hidden lg:inline-block'"
+            >
+              {{ section.label }}
+            </span>
+          </button>
+        </nav>
+
+        <!-- Panneau actif -->
+        <div class="flex-1 min-w-0">
+          <Transition name="fade" mode="out-in">
+            <div :key="activeSection" class="space-y-1">
+              <!-- ===== COMPTE ===== -->
+              <div v-if="activeSection === 'account'" class="card-glass !p-2">
+                <div class="space-y-1">
+                  <NuxtLink
+                    to="/edit-profile"
+                    class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors"
+                  >
+                    <span class="text-primary-800 dark:text-primary-200">{{
+                      t('settings.editProfile')
+                    }}</span>
+                    <Icon name="lucide:chevron-right" class="w-5 h-5 text-primary-400" />
+                  </NuxtLink>
+                  <NuxtLink
+                    to="/subscription"
+                    class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors"
+                  >
+                    <span class="text-primary-800 dark:text-primary-200">{{
+                      t('settings.subscription')
+                    }}</span>
+                    <Icon name="lucide:chevron-right" class="w-5 h-5 text-primary-400" />
+                  </NuxtLink>
+
+                  <div class="border-t border-primary-100 dark:border-primary-800 my-2"></div>
+
+                  <button
+                    @click="handleLogout"
+                    class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors text-left"
+                  >
+                    <span class="text-primary-800 dark:text-primary-200">{{
+                      t('settings.logout')
+                    }}</span>
+                    <Icon name="lucide:log-out" class="w-4.5 h-4.5 text-primary-400" />
+                  </button>
+                  <button
+                    @click="showDeleteConfirm = true"
+                    class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-left group"
+                  >
+                    <span class="text-red-500 group-hover:text-red-600">{{
+                      t('settings.deleteAccountBtn')
+                    }}</span>
+                    <Icon name="lucide:trash-2" class="w-4.5 h-4.5 text-red-400" />
+                  </button>
+                </div>
               </div>
-              <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-2">
-                Supprimer le compte
-              </h3>
-              <p class="text-primary-600 dark:text-primary-400 text-sm mb-6">
-                Cette action est irreversible. Toutes vos donnees seront supprimees definitivement.
-              </p>
-              <div class="space-y-3">
-                <button
-                  @click="handleDeleteAccount"
-                  :disabled="deleting"
-                  class="w-full py-3 rounded-2xl bg-red-500 text-white font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
-                >
-                  {{ deleting ? 'Suppression...' : 'Confirmer la suppression' }}
-                </button>
-                <button
-                  @click="showDeleteConfirm = false"
-                  class="w-full py-3 rounded-2xl bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-200 font-medium hover:bg-primary-200 dark:hover:bg-primary-700 transition-colors"
-                >
-                  Annuler
-                </button>
+
+              <!-- ===== COACHING ===== -->
+              <div v-else-if="activeSection === 'coaching'" class="card-glass !p-2">
+                <div class="space-y-1">
+                  <NuxtLink
+                    to="/my-coach"
+                    class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors"
+                  >
+                    <span class="text-primary-800 dark:text-primary-200">{{
+                      t('settings.myCoach')
+                    }}</span>
+                    <Icon name="lucide:chevron-right" class="w-5 h-5 text-primary-400" />
+                  </NuxtLink>
+                  <NuxtLink
+                    to="/coaching"
+                    class="flex items-center justify-between p-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors"
+                  >
+                    <span class="text-primary-800 dark:text-primary-200">{{
+                      t('settings.coachSpace')
+                    }}</span>
+                    <Icon name="lucide:chevron-right" class="w-5 h-5 text-primary-400" />
+                  </NuxtLink>
+                </div>
+              </div>
+
+              <!-- ===== PREFERENCES ===== -->
+              <div v-else-if="activeSection === 'preferences'" class="card-glass !p-5 space-y-5">
+                <!-- Theme -->
+                <div>
+                  <p class="text-sm font-semibold text-primary-700 dark:text-primary-300 mb-2">
+                    {{ t('settings.themeLight') }} / {{ t('settings.themeDark') }} /
+                    {{ t('settings.themeSystem') }}
+                  </p>
+                  <div class="flex bg-primary-100 dark:bg-primary-800 rounded-xl p-1 w-full">
+                    <button
+                      @click="setTheme('light')"
+                      class="flex-1 px-2 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-1.5"
+                      :class="
+                        $colorMode.preference === 'light'
+                          ? 'bg-white dark:bg-primary-700 shadow-sm text-primary-900 dark:text-primary-100'
+                          : 'text-primary-500 dark:text-primary-400'
+                      "
+                    >
+                      <Icon name="lucide:sun" class="w-4 h-4" />
+                      <span>{{ t('settings.themeLight') }}</span>
+                    </button>
+                    <button
+                      @click="setTheme('dark')"
+                      class="flex-1 px-2 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-1.5"
+                      :class="
+                        $colorMode.preference === 'dark'
+                          ? 'bg-white dark:bg-primary-700 shadow-sm text-primary-900 dark:text-primary-100'
+                          : 'text-primary-500 dark:text-primary-400'
+                      "
+                    >
+                      <Icon name="lucide:moon" class="w-4 h-4" />
+                      <span>{{ t('settings.themeDark') }}</span>
+                    </button>
+                    <button
+                      @click="setTheme('system')"
+                      class="flex-1 px-2 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-1.5"
+                      :class="
+                        $colorMode.preference === 'system'
+                          ? 'bg-white dark:bg-primary-700 shadow-sm text-primary-900 dark:text-primary-100'
+                          : 'text-primary-500 dark:text-primary-400'
+                      "
+                    >
+                      <Icon name="lucide:monitor" class="w-4 h-4" />
+                      <span>{{ t('settings.themeSystem') }}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="border-t border-primary-100 dark:border-primary-800"></div>
+
+                <!-- Langue -->
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-primary-800 dark:text-primary-200">
+                      {{ t('settings.language') }}
+                    </p>
+                    <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
+                      {{ t('settings.languageHint') }}
+                    </p>
+                  </div>
+                  <div class="flex bg-primary-100 dark:bg-primary-800 rounded-xl p-1 flex-shrink-0">
+                    <button
+                      v-for="loc in availableLocales"
+                      :key="loc.code"
+                      @click="setLocale(loc.code)"
+                      class="px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200"
+                      :class="
+                        locale === loc.code
+                          ? 'bg-white dark:bg-primary-700 shadow-sm text-primary-900 dark:text-primary-100'
+                          : 'text-primary-500 dark:text-primary-400'
+                      "
+                    >
+                      {{ loc.code.toUpperCase() }}
+                    </button>
+                  </div>
+                </div>
+
+                <div class="border-t border-primary-100 dark:border-primary-800"></div>
+
+                <!-- Unite de poids -->
+                <div class="flex items-center justify-between">
+                  <span class="text-primary-800 dark:text-primary-200">{{
+                    t('settings.weightUnit')
+                  }}</span>
+                  <div class="flex bg-primary-100 dark:bg-primary-800 rounded-xl p-1">
+                    <button
+                      @click="weightUnit = 'kg'"
+                      class="px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200"
+                      :class="
+                        weightUnit === 'kg'
+                          ? 'bg-white dark:bg-primary-700 shadow-sm text-primary-900 dark:text-primary-100'
+                          : 'text-primary-500 dark:text-primary-400'
+                      "
+                    >
+                      kg
+                    </button>
+                    <button
+                      @click="weightUnit = 'lbs'"
+                      class="px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200"
+                      :class="
+                        weightUnit === 'lbs'
+                          ? 'bg-white dark:bg-primary-700 shadow-sm text-primary-900 dark:text-primary-100'
+                          : 'text-primary-500 dark:text-primary-400'
+                      "
+                    >
+                      lbs
+                    </button>
+                  </div>
+                </div>
+
+                <div class="border-t border-primary-100 dark:border-primary-800"></div>
+
+                <!-- Timer de repos -->
+                <div class="flex items-center justify-between">
+                  <span class="text-primary-800 dark:text-primary-200">{{
+                    t('settings.restTimer')
+                  }}</span>
+                  <div class="flex items-center gap-2">
+                    <button
+                      @click="restTimer = Math.max(30, restTimer - 15)"
+                      class="w-9 h-9 rounded-lg bg-primary-100 dark:bg-primary-800 hover:bg-primary-200 dark:hover:bg-primary-700 flex items-center justify-center transition-colors"
+                    >
+                      <Icon
+                        name="lucide:minus"
+                        class="w-4 h-4 text-primary-600 dark:text-primary-400"
+                      />
+                    </button>
+                    <span
+                      class="text-primary-900 dark:text-primary-100 font-medium w-12 text-center font-plate"
+                      >{{ restTimer }}s</span
+                    >
+                    <button
+                      @click="restTimer = Math.min(300, restTimer + 15)"
+                      class="w-9 h-9 rounded-lg bg-primary-100 dark:bg-primary-800 hover:bg-primary-200 dark:hover:bg-primary-700 flex items-center justify-center transition-colors"
+                    >
+                      <Icon
+                        name="lucide:plus"
+                        class="w-4 h-4 text-primary-600 dark:text-primary-400"
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ===== NOTIFICATIONS ===== -->
+              <div v-else-if="activeSection === 'notifications'" class="card-glass !p-2">
+                <div class="space-y-1">
+                  <div class="flex items-center justify-between p-3">
+                    <span class="text-primary-800 dark:text-primary-200">{{
+                      t('settings.notif.personalRecords')
+                    }}</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" v-model="notifPR" class="sr-only peer" />
+                      <div class="toggle-track"></div>
+                    </label>
+                  </div>
+                  <div class="flex items-center justify-between p-3">
+                    <span class="text-primary-800 dark:text-primary-200">{{
+                      t('settings.notif.streaks')
+                    }}</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" v-model="notifStreak" class="sr-only peer" />
+                      <div class="toggle-track"></div>
+                    </label>
+                  </div>
+                  <div class="flex items-center justify-between p-3">
+                    <span class="text-primary-800 dark:text-primary-200">{{
+                      t('settings.notif.goals')
+                    }}</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" v-model="notifGoals" class="sr-only peer" />
+                      <div class="toggle-track"></div>
+                    </label>
+                  </div>
+
+                  <div v-if="isNativePlatform" class="flex items-center justify-between p-3">
+                    <div>
+                      <span class="text-primary-800 dark:text-primary-200">{{
+                        t('settings.notif.push')
+                      }}</span>
+                      <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
+                        {{ t('settings.notif.pushDesc') }}
+                      </p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" v-model="pushEnabled" class="sr-only peer" />
+                      <div class="toggle-track"></div>
+                    </label>
+                  </div>
+
+                  <div class="border-t border-primary-100 dark:border-primary-800 my-2"></div>
+
+                  <div class="flex items-center justify-between p-3">
+                    <div>
+                      <span class="text-primary-800 dark:text-primary-200">{{
+                        t('settings.notif.inactivity')
+                      }}</span>
+                      <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
+                        {{ t('settings.notif.inactivityDesc') }}
+                      </p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" v-model="reminderEnabled" class="sr-only peer" />
+                      <div class="toggle-track"></div>
+                    </label>
+                  </div>
+
+                  <div v-if="reminderEnabled" class="flex items-center justify-between p-3 pl-6">
+                    <span class="text-primary-600 dark:text-primary-400 text-sm">{{
+                      t('settings.notif.afterHowManyDays')
+                    }}</span>
+                    <div class="flex items-center gap-2">
+                      <button
+                        @click="inactivityDays = Math.max(1, inactivityDays - 1)"
+                        class="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-800 hover:bg-primary-200 dark:hover:bg-primary-700 flex items-center justify-center transition-colors"
+                      >
+                        <Icon
+                          name="lucide:minus"
+                          class="w-3.5 h-3.5 text-primary-600 dark:text-primary-400"
+                        />
+                      </button>
+                      <span
+                        class="text-primary-900 dark:text-primary-100 font-medium w-10 text-center font-plate"
+                        >{{ inactivityDays }}j</span
+                      >
+                      <button
+                        @click="inactivityDays = Math.min(14, inactivityDays + 1)"
+                        class="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-800 hover:bg-primary-200 dark:hover:bg-primary-700 flex items-center justify-center transition-colors"
+                      >
+                        <Icon
+                          name="lucide:plus"
+                          class="w-3.5 h-3.5 text-primary-600 dark:text-primary-400"
+                        />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ===== DONNEES ===== -->
+              <div v-else-if="activeSection === 'data'" class="card-glass !p-5">
+                <div class="flex items-center justify-between gap-4 flex-wrap">
+                  <div>
+                    <span class="text-primary-800 dark:text-primary-200">{{
+                      t('settings.export.history')
+                    }}</span>
+                    <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
+                      {{ t('settings.export.historyDesc') }}
+                    </p>
+                  </div>
+                  <button
+                    @click="exportCsv"
+                    :disabled="exporting"
+                    class="px-4 py-2 rounded-xl bg-gradient-primary text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex-shrink-0"
+                  >
+                    {{
+                      exporting ? t('settings.export.exporting') : t('settings.export.downloadCsv')
+                    }}
+                  </button>
+                </div>
+              </div>
+
+              <!-- ===== SANTE ===== -->
+              <div v-else-if="activeSection === 'health'" class="card-glass !p-2">
+                <div class="space-y-1">
+                  <div class="flex items-center justify-between p-3">
+                    <div>
+                      <span class="text-primary-800 dark:text-primary-200">{{
+                        t('settings.health.sync')
+                      }}</span>
+                      <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
+                        {{ t('settings.health.syncDesc') }}
+                      </p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" v-model="healthSyncEnabled" class="sr-only peer" />
+                      <div class="toggle-track"></div>
+                    </label>
+                  </div>
+                  <div class="flex items-center justify-between p-3 gap-4 flex-wrap">
+                    <div>
+                      <span class="text-primary-800 dark:text-primary-200">{{
+                        t('settings.health.syncHistory')
+                      }}</span>
+                      <p class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
+                        {{ t('settings.health.syncHistoryDesc') }}
+                      </p>
+                    </div>
+                    <button
+                      @click="syncHealthHistory"
+                      :disabled="syncingHealth"
+                      class="px-4 py-2 rounded-xl bg-gradient-primary text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex-shrink-0"
+                    >
+                      {{ syncingHealth ? '...' : t('settings.health.syncHistory') }}
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          </Transition>
         </div>
       </div>
 
       <!-- Retour au dashboard -->
-      <div class="text-center mt-8">
+      <div class="text-center mt-10">
         <NuxtLink
           to="/dashboard"
           class="text-sm md:text-base text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-colors inline-flex items-center gap-2"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
-          </svg>
-          Retour au dashboard
+          <Icon name="lucide:arrow-left" class="w-5 h-5" />
+          {{ t('settings.backToDashboard') }}
         </NuxtLink>
+      </div>
+    </div>
+
+    <!-- Modale confirmation suppression -->
+    <div
+      v-if="showDeleteConfirm"
+      class="fixed inset-0 z-50 flex items-center justify-center px-6"
+      @click.self="showDeleteConfirm = false"
+    >
+      <div class="fixed inset-0 bg-black/40 backdrop-blur-sm"></div>
+      <div class="relative bg-white dark:bg-primary-900 rounded-3xl p-8 max-w-sm w-full shadow-2xl">
+        <div class="text-center">
+          <div
+            class="w-14 h-14 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center mx-auto mb-4"
+          >
+            <Icon name="lucide:triangle-alert" class="w-7 h-7 text-red-500" />
+          </div>
+          <h3 class="text-xl font-bold text-primary-900 dark:text-primary-100 mb-2">
+            {{ t('settings.deleteAccountTitle') }}
+          </h3>
+          <p class="text-primary-600 dark:text-primary-400 text-sm mb-6">
+            {{ t('settings.deleteAccountWarning') }}
+          </p>
+          <div class="space-y-3">
+            <button
+              @click="handleDeleteAccount"
+              :disabled="deleting"
+              class="w-full py-3 rounded-2xl bg-red-500 text-white font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
+            >
+              {{ deleting ? t('settings.deleting') : t('settings.confirmDelete') }}
+            </button>
+            <button
+              @click="showDeleteConfirm = false"
+              class="w-full py-3 rounded-2xl bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-200 font-medium hover:bg-primary-200 dark:hover:bg-primary-700 transition-colors"
+            >
+              {{ t('settings.cancel') }}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -812,6 +499,25 @@ const isNativePlatform = ref(false);
 const showDeleteConfirm = ref(false);
 const deleting = ref(false);
 const exporting = ref(false);
+
+// Navigation par sections
+const activeSection = ref<
+  'account' | 'coaching' | 'preferences' | 'notifications' | 'data' | 'health'
+>('account');
+
+const sections = computed(() => {
+  const base: { key: typeof activeSection.value; label: string; icon: string }[] = [
+    { key: 'account', label: t('settings.navAccount'), icon: 'lucide:user' },
+    { key: 'coaching', label: t('settings.navCoaching'), icon: 'lucide:whistle' },
+    { key: 'preferences', label: t('settings.navPreferences'), icon: 'lucide:sliders-horizontal' },
+    { key: 'notifications', label: t('settings.navNotifications'), icon: 'lucide:bell' },
+    { key: 'data', label: t('settings.navData'), icon: 'lucide:download' },
+  ];
+  if (isNativePlatform.value) {
+    base.push({ key: 'health', label: t('settings.navHealth'), icon: 'lucide:heart-pulse' });
+  }
+  return base;
+});
 
 // Social profile
 const { getRequests } = useSocialApi();
@@ -1094,3 +800,43 @@ const syncReminderSettings = async () => {
   }
 };
 </script>
+
+<style scoped>
+.toggle-track {
+  width: 44px;
+  height: 24px;
+  background: rgb(var(--sand-200, 226 220 208));
+  border-radius: 9999px;
+  position: relative;
+  transition: background 0.2s ease;
+}
+.dark .toggle-track {
+  background: rgb(var(--primary-700, 68 64 60));
+}
+.toggle-track::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 9999px;
+  transition: transform 0.2s ease;
+}
+.peer:checked ~ .toggle-track {
+  background: linear-gradient(135deg, rgb(var(--sand-500)) 0%, rgb(var(--sand-600)) 100%);
+}
+.peer:checked ~ .toggle-track::after {
+  transform: translateX(20px);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
