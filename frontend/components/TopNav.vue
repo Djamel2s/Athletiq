@@ -74,9 +74,7 @@
       <!-- Reste de l'app : nav inchangée -->
       <div v-else class="flex items-center justify-between">
         <div class="flex items-center space-x-3">
-          <NuxtLink to="/dashboard">
-            <AppLogo />
-          </NuxtLink>
+          <FlipLogo />
         </div>
 
         <div class="flex items-center flex-1 px-4">
@@ -96,6 +94,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import AppLogo from '~/components/AppLogo.vue';
+import FlipLogo from '~/components/FlipLogo.vue';
 import NavActions from '~/components/NavActions.vue';
 import HeaderSearch from '~/components/HeaderSearch.vue';
 import { useAuthStore } from '~/stores/auth';

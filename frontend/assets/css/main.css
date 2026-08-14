@@ -107,6 +107,23 @@ body,
   --sand-900: 98 73 85;
 }
 
+/* Palette Coach (teal professionnel) — appliquee sur les pages /coaching.
+   Placee apres .theme-rose dans la cascade : gagne meme si les deux classes
+   sont presentes sur <html> en meme temps (l'espace coach garde son identite
+   propre, independamment du theme athlete de l'utilisateur). */
+.theme-coach {
+  --sand-50: 245 250 249;
+  --sand-100: 235 245 244;
+  --sand-200: 220 238 236;
+  --sand-300: 195 224 220;
+  --sand-400: 150 199 193;
+  --sand-500: 90 163 155;
+  --sand-600: 68 133 126;
+  --sand-700: 52 106 100;
+  --sand-800: 40 82 78;
+  --sand-900: 30 62 59;
+}
+
 /* ===== Theme Variables ===== */
 :root {
   --bg-body: linear-gradient(

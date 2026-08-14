@@ -25,6 +25,8 @@ useHead({
 
 // Apply gender-based theme (rose for female users)
 const { applyTheme } = useTheme();
+// Apply coach theme (teal) when navigating within /coaching
+useCoachTheme();
 
 function setVh() {
   const vh = window.innerHeight * 0.01;
