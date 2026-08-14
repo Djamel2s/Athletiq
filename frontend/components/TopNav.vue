@@ -3,9 +3,9 @@
     <div class="max-w-7xl mx-auto px-6 py-3">
       <!-- Landing page: nav marketing, liens centrés, pas de recherche -->
       <div v-if="isLanding || isLogin || isRegister" class="flex items-center justify-between">
-        <NuxtLink to="/" class="flex-shrink-0">
-          <AppLogo />
-        </NuxtLink>
+        <div class="flex items-center space-x-3">
+          <FlipLogo />
+        </div>
 
         <div class="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
           <a

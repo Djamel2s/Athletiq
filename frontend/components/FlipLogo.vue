@@ -30,6 +30,7 @@ const { t } = useLocale();
 const { isRose } = useTheme();
 
 const isCoachSection = computed(() => route.path.startsWith('/coaching'));
+const isLanding = computed(() => route.path === '/');
 
 const athleteLogoSrc = computed(() =>
   isRose.value ? '/athletiq-icon-rose.svg' : '/athletiq-icon.svg'
@@ -50,17 +51,22 @@ const flipping = ref(false);
 const handleFlip = () => {
   if (flipping.value) return;
   flipping.value = true;
-  setTimeout(() => {
-    navigateTo(isCoachSection.value ? '/dashboard' : '/coaching');
-    // Laisse le temps a la nouvelle route de s'appliquer avant de reinitialiser
-    setTimeout(() => (flipping.value = false), 50);
-  }, 360);
+  if (isLanding.value) {
+    setTimeout(() => (flipping.value = false), 360);
+    return;
+  } else {
+    setTimeout(() => {
+      navigateTo(isCoachSection.value ? '/dashboard' : '/coaching');
+      // Laisse le temps a la nouvelle route de s'appliquer avant de reinitialiser
+      setTimeout(() => (flipping.value = false), 50);
+    }, 360);
+  }
 };
 </script>
 
 <style scoped>
 .flip-logo-idle {
-  transform: rotate(0deg) translate(15px, -12px) scale(0.6);
+  transform: rotate(0deg) translate(15px, -12px) scale(0.5);
   opacity: 0.3;
   z-index: 20;
   transition:
