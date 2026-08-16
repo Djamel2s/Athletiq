@@ -618,8 +618,7 @@ const saveGoalToProfile = async () => {
       method: 'PUT',
       body: {
         goal: selectedGoal.value,
-        level: selectedLevel.value,
-        daysPerWeek: selectedDays.value,
+        streakGoalPerWeek: selectedDays.value,
       },
     });
     // Save social profile (username, public/private)

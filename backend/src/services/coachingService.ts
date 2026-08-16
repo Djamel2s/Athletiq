@@ -188,10 +188,7 @@ export async function joinCoachByCode(
  * Un coach invite un client par email ou nom d'utilisateur.
  * Le lien reste PENDING tant que le client n'a pas accepté.
  */
-export async function inviteClient(
-  coachId: number,
-  identifier: string
-): Promise<CoachClientLink> {
+export async function inviteClient(coachId: number, identifier: string): Promise<CoachClientLink> {
   const coach = await userRepo().findOne({ where: { id: coachId } });
   if (!coach) throw new NotFoundError('Utilisateur introuvable');
   if (coach.role !== UserRole.COACH) throw new ForbiddenError("Vous n'êtes pas coach");
@@ -203,7 +200,8 @@ export async function inviteClient(
     .getOne();
 
   if (!athlete) throw new NotFoundError('Aucun utilisateur trouvé avec cet identifiant');
-  if (athlete.id === coachId) throw new BadRequestError('Vous ne pouvez pas vous inviter vous-même');
+  if (athlete.id === coachId)
+    throw new BadRequestError('Vous ne pouvez pas vous inviter vous-même');
 
   return withUserLock(coachId, 'coach-link-capacity', async () => {
     const existing = await linkRepo().findOne({ where: { coachId, athleteId: athlete.id } });
@@ -319,14 +317,18 @@ export async function updateClientPermissions(
   perms: Partial<
     Pick<
       CoachClientLink,
-      'canViewWorkouts' | 'canViewPhotos' | 'canViewMeasurements' | 'canViewBodyStats' | 'canAssignPrograms'
+      | 'canViewWorkouts'
+      | 'canViewPhotos'
+      | 'canViewMeasurements'
+      | 'canViewBodyStats'
+      | 'canAssignPrograms'
     >
   >
 ): Promise<CoachClientLink> {
   const link = await linkRepo().findOne({ where: { id: linkId, athleteId } });
   if (!link) throw new NotFoundError('Lien introuvable');
   if (link.status !== CoachLinkStatus.ACTIVE) {
-    throw new BadRequestError('Ce lien n\'est pas actif');
+    throw new BadRequestError("Ce lien n'est pas actif");
   }
 
   Object.assign(link, perms);
@@ -339,11 +341,20 @@ export async function listClients(coachId: number) {
     order: { createdAt: 'DESC' },
   });
 
+  const now = new Date();
+  const startOfWeek = new Date(now);
+  const dayOfWeek = startOfWeek.getDay() || 7; // dimanche -> 7
+  startOfWeek.setDate(startOfWeek.getDate() - (dayOfWeek - 1));
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+  const twentyEightDaysAgo = new Date(now.getTime() - 28 * 24 * 60 * 60 * 1000);
+
   const results = [];
   for (const link of links) {
     const athlete = await userRepo().findOne({
       where: { id: link.athleteId },
-      select: ['id', 'firstName', 'lastName', 'username', 'avatarUrl'],
+      select: ['id', 'firstName', 'lastName', 'username', 'avatarUrl', 'streakGoalPerWeek'],
     });
     if (!athlete) continue;
 
@@ -354,9 +365,56 @@ export async function listClients(coachId: number) {
       .orderBy('w.completedAt', 'DESC')
       .getOne();
 
+    // Observance : seances realisees cette semaine (lun-dim) vs objectif hebdo du client
+    const sessionsThisWeek = await workoutRepo()
+      .createQueryBuilder('w')
+      .where('w.userId = :id', { id: link.athleteId })
+      .andWhere('w.completedAt >= :start', { start: startOfWeek })
+      .getCount();
+
+    // Tendance de volume : 14 derniers jours vs les 14 jours precedents
+    let volumeTrend: 'up' | 'down' | 'flat' | null = null;
+    if (link.canViewWorkouts) {
+      const recentVolumeRaw = await workoutRepo()
+        .createQueryBuilder('w')
+        .select('COALESCE(SUM(w.totalVolume), 0)', 'sum')
+        .where('w.userId = :id', { id: link.athleteId })
+        .andWhere('w.completedAt >= :from', { from: fourteenDaysAgo })
+        .getRawOne();
+      const previousVolumeRaw = await workoutRepo()
+        .createQueryBuilder('w')
+        .select('COALESCE(SUM(w.totalVolume), 0)', 'sum')
+        .where('w.userId = :id', { id: link.athleteId })
+        .andWhere('w.completedAt >= :from AND w.completedAt < :to', {
+          from: twentyEightDaysAgo,
+          to: fourteenDaysAgo,
+        })
+        .getRawOne();
+
+      const recentVolume = Number(recentVolumeRaw?.sum || 0);
+      const previousVolume = Number(previousVolumeRaw?.sum || 0);
+
+      if (previousVolume === 0 && recentVolume === 0) {
+        volumeTrend = null;
+      } else if (previousVolume === 0) {
+        volumeTrend = 'up';
+      } else {
+        const change = (recentVolume - previousVolume) / previousVolume;
+        if (change > 0.05) volumeTrend = 'up';
+        else if (change < -0.05) volumeTrend = 'down';
+        else volumeTrend = 'flat';
+      }
+    }
+
     results.push({
       linkId: link.id,
-      athlete,
+      athlete: {
+        id: athlete.id,
+        firstName: athlete.firstName,
+        lastName: athlete.lastName,
+        username: athlete.username,
+        avatarUrl: athlete.avatarUrl,
+      },
       permissions: {
         canViewWorkouts: link.canViewWorkouts,
         canViewPhotos: link.canViewPhotos,
@@ -366,6 +424,9 @@ export async function listClients(coachId: number) {
       },
       lastWorkoutAt: lastWorkout?.completedAt ?? null,
       clientSince: link.acceptedAt ?? link.createdAt,
+      sessionsThisWeek,
+      weeklyTarget: athlete.streakGoalPerWeek || 2,
+      volumeTrend,
     });
   }
 
@@ -400,10 +461,12 @@ export async function getClientOverview(coachId: number, athleteId: number) {
   };
 
   if (link.canViewWorkouts) {
+    // 200 seances (pas juste les 10 dernieres) : necessaire pour calculer des courbes
+    // de progression et tendances cote coach, pas juste afficher une liste
     overview.recentWorkouts = await workoutRepo().find({
       where: { userId: athleteId, isTemplate: false },
       order: { completedAt: 'DESC' },
-      take: 10,
+      take: 200,
       relations: ['exercises', 'exercises.sets'],
     });
 
@@ -491,7 +554,9 @@ export async function assignCatalogProgram(
 
     for (let i = 0; i < day.exercises.length; i++) {
       const ex = day.exercises[i];
-      const libraryExercise = await exerciseLibraryRepo.findOne({ where: { name: ex.exerciseName } });
+      const libraryExercise = await exerciseLibraryRepo.findOne({
+        where: { name: ex.exerciseName },
+      });
       const exercise = exerciseRepo.create({
         workoutId: workout.id,
         name: ex.exerciseName,

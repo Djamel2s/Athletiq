@@ -48,6 +48,8 @@ const nameMap: Record<string, string> = {
   body: 'Corps',
   streak: 'Motivation',
   wrapped: 'Wrapped',
+  coaching: 'Espace Coach',
+  clients: 'Clients',
 };
 
 const normalizedPath = computed(() => {

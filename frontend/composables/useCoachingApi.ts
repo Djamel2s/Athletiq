@@ -29,6 +29,9 @@ export interface CoachClientSummary {
   permissions: CoachLinkPermissions;
   lastWorkoutAt: string | null;
   clientSince: string;
+  sessionsThisWeek: number;
+  weeklyTarget: number;
+  volumeTrend: 'up' | 'down' | 'flat' | null;
 }
 
 export interface MyCoachEntry {
@@ -54,8 +57,7 @@ export const useCoachingApi = () => {
     apiFetch('/coaching/profile', { method: 'PATCH', body: data });
 
   const getClients = () => apiFetch<{ clients: CoachClientSummary[] }>('/coaching/clients');
-  const getClientOverview = (athleteId: number) =>
-    apiFetch<any>(`/coaching/clients/${athleteId}`);
+  const getClientOverview = (athleteId: number) => apiFetch<any>(`/coaching/clients/${athleteId}`);
   const inviteClient = (identifier: string) =>
     apiFetch('/coaching/invite', { method: 'POST', body: { identifier } });
   const assignProgram = (athleteId: number, slug: string, note?: string) =>
