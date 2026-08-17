@@ -44,7 +44,7 @@ const { t } = useLocale();
 const { isRose } = useTheme();
 
 const isCoachSection = computed(() => route.path.startsWith('/coaching'));
-const isLanding = computed(() => route.path === '/');
+const isLanding = computed(() => route.path === '/' || route.path === '/coach-landing');
 
 const athleteLogoSrc = computed(() =>
   isRose.value ? '/athletiq-icon-rose.svg' : '/athletiq-icon.svg'
@@ -74,6 +74,7 @@ const handleFlip = () => {
   flipping.value = true;
   if (isLanding.value) {
     setTimeout(() => {
+      navigateTo(isCoachSection.value ? '/' : '/coach-landing');
       resetting.value = true;
       flipping.value = false;
       requestAnimationFrame(() => {
@@ -82,8 +83,8 @@ const handleFlip = () => {
     }, 300);
     return;
   }
-  setTimeout(async () => {
-    await navigateTo(isCoachSection.value ? '/dashboard' : '/coaching');
+  setTimeout(() => {
+    navigateTo(isCoachSection.value ? '/dashboard' : '/coaching');
     // On remet l'état normal SANS jouer l'animation inverse
     resetting.value = true;
     flipping.value = false;

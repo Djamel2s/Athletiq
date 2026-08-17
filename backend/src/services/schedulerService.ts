@@ -192,6 +192,86 @@ async function checkCoachClientInactivity() {
 }
 
 /**
+ * Alerte intelligente basee sur la tendance de volume plutot que sur la seule inactivite :
+ * un client qui vient toujours a la salle mais souleve nettement moins qu'avant merite
+ * une attention differente qu'un client qui a simplement disparu (deja couvert ci-dessus).
+ */
+async function checkCoachClientVolumeDrop() {
+  try {
+    const links = await AppDataSource.getRepository(CoachClientLink).find({
+      where: { status: CoachLinkStatus.ACTIVE, canViewWorkouts: true },
+    });
+
+    const now = new Date();
+    const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+    const twentyEightDaysAgo = new Date(now.getTime() - 28 * 24 * 60 * 60 * 1000);
+
+    for (const link of links) {
+      const athlete = await AppDataSource.getRepository(User).findOne({
+        where: { id: link.athleteId },
+      });
+      if (!athlete) continue;
+
+      const recentRaw = await AppDataSource.getRepository(Workout)
+        .createQueryBuilder('w')
+        .select('COALESCE(SUM(w.totalVolume), 0)', 'sum')
+        .addSelect('COUNT(*)', 'count')
+        .where('w.userId = :id', { id: link.athleteId })
+        .andWhere('w.completedAt >= :from', { from: fourteenDaysAgo })
+        .getRawOne();
+
+      const previousRaw = await AppDataSource.getRepository(Workout)
+        .createQueryBuilder('w')
+        .select('COALESCE(SUM(w.totalVolume), 0)', 'sum')
+        .where('w.userId = :id', { id: link.athleteId })
+        .andWhere('w.completedAt >= :from AND w.completedAt < :to', {
+          from: twentyEightDaysAgo,
+          to: fourteenDaysAgo,
+        })
+        .getRawOne();
+
+      const recentVolume = Number(recentRaw?.sum || 0);
+      const recentCount = Number(recentRaw?.count || 0);
+      const previousVolume = Number(previousRaw?.sum || 0);
+
+      // Le client doit avoir continue a s'entrainer recemment (sinon c'est de l'inactivite,
+      // deja couvert par checkCoachClientInactivity) et avoir un historique suffisant pour comparer
+      if (recentCount === 0 || previousVolume < 500) continue;
+
+      const change = (recentVolume - previousVolume) / previousVolume;
+      if (change > -0.2) continue; // seuil : baisse d'au moins 20% pour eviter le bruit
+
+      const twoDaysAgo = new Date();
+      twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+
+      const recentNotif = await AppDataSource.getRepository(Notification)
+        .createQueryBuilder('n')
+        .where('n.userId = :userId', { userId: link.coachId })
+        .andWhere('n.type = :type', { type: NotificationType.COACH_CLIENT_VOLUME_DROP })
+        .andWhere('n.message LIKE :name', { name: `%#${link.athleteId}%` })
+        .andWhere('n.createdAt >= :twoDaysAgo', { twoDaysAgo })
+        .getCount();
+
+      if (recentNotif > 0) continue;
+
+      const pct = Math.round(Math.abs(change) * 100);
+      const title = 'Volume en baisse';
+      const message = `${athlete.firstName || 'Un client'} (#${link.athleteId}) souleve ${pct}% de moins que les 2 semaines precedentes, malgre des seances toujours actives.`;
+
+      await createNotification(
+        link.coachId,
+        NotificationType.COACH_CLIENT_VOLUME_DROP,
+        title,
+        message
+      );
+      sendPushToUser(link.coachId, title, message).catch(() => {});
+    }
+  } catch (error) {
+    logger.error({ err: error, route: 'scheduler' }, 'Coach client volume drop check error');
+  }
+}
+
+/**
  * Session cleanup: runs every hour.
  * Deletes completed sessions older than 7 days and
  * waiting/paused sessions older than 24 hours.
@@ -223,6 +303,7 @@ async function cleanupSessions() {
 let reminderInterval: ReturnType<typeof setInterval> | null = null;
 let inactivityInterval: ReturnType<typeof setInterval> | null = null;
 let coachInactivityInterval: ReturnType<typeof setInterval> | null = null;
+let coachVolumeDropInterval: ReturnType<typeof setInterval> | null = null;
 let sessionCleanupInterval: ReturnType<typeof setInterval> | null = null;
 let analyticsInterval: ReturnType<typeof setInterval> | null = null;
 
@@ -237,6 +318,7 @@ export async function startScheduler() {
 
   // Coach client inactivity alerts: every 6 hours
   coachInactivityInterval = setInterval(checkCoachClientInactivity, 6 * 60 * 60 * 1000);
+  coachVolumeDropInterval = setInterval(checkCoachClientVolumeDrop, 6 * 60 * 60 * 1000);
 
   // Session cleanup: every hour
   sessionCleanupInterval = setInterval(cleanupSessions, 60 * 60 * 1000);
@@ -244,6 +326,7 @@ export async function startScheduler() {
   // Run inactivity check once on startup (delayed by 30s to let things settle)
   setTimeout(checkInactivity, 30 * 1000);
   setTimeout(checkCoachClientInactivity, 45 * 1000);
+  setTimeout(checkCoachClientVolumeDrop, 60 * 1000);
   // Run session cleanup once on startup (delayed by 60s)
   setTimeout(cleanupSessions, 60 * 1000);
   // Analytics: compute daily (every 24h). Run once after 2 minutes on startup.
@@ -261,11 +344,13 @@ export function stopScheduler() {
   if (reminderInterval) clearInterval(reminderInterval);
   if (inactivityInterval) clearInterval(inactivityInterval);
   if (coachInactivityInterval) clearInterval(coachInactivityInterval);
+  if (coachVolumeDropInterval) clearInterval(coachVolumeDropInterval);
   if (sessionCleanupInterval) clearInterval(sessionCleanupInterval);
   if (analyticsInterval) clearInterval(analyticsInterval);
   reminderInterval = null;
   inactivityInterval = null;
   coachInactivityInterval = null;
+  coachVolumeDropInterval = null;
   sessionCleanupInterval = null;
   logger.info('Scheduler stopped');
 }

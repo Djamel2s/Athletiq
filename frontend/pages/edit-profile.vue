@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen geometric-bg">
+  <div class="flex-1 flex flex-col geometric-bg">
     <!-- TopNav is rendered globally in app.vue -->
 
-    <div class="px-4 md:px-6 pb-8 md:pb-12">
+    <div class="px-4 md:px-6 pb-8 md:pb-12 flex-1">
       <div class="w-full max-w-lg mx-auto">
         <!-- Page Header -->
         <div class="text-center mb-4 fade-in">

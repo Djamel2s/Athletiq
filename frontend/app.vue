@@ -1,11 +1,11 @@
 <template>
-  <div class="min-h-screen bg-primary-900">
+  <div class="min-h-screen flex flex-col bg-primary-900">
     <OfflineBanner />
     <TopNav />
-    <AuthLoader>
-      <div class="pt-header">
+    <AuthLoader class="flex-1 flex flex-col">
+      <div class="pt-header flex-1 flex flex-col">
         <Breadcrumbs :key="route.fullPath" />
-        <NuxtPage />
+        <NuxtPage class="flex-1" />
       </div>
     </AuthLoader>
     <UiToastContainer />

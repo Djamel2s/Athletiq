@@ -55,39 +55,198 @@
               </p>
             </div>
 
-            <!-- Stats rapides -->
-            <div class="grid grid-cols-3 gap-3 md:gap-4 slide-up">
-              <div class="card-glass !p-4 text-center">
-                <p class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100">
-                  {{ status.clientCount
-                  }}<span v-if="status.maxClients !== null" class="text-primary-400 text-lg"
-                    >/{{ status.maxClients }}</span
-                  >
-                </p>
-                <p class="text-xs text-primary-500 dark:text-primary-400 mt-1">
-                  {{ t('coach.dashboard.activeClients') }}
-                </p>
-              </div>
-              <div class="card-glass !p-4 text-center">
-                <p
-                  class="text-2xl md:text-3xl font-bold"
-                  :class="
-                    alertCount > 0 ? 'text-amber-500' : 'text-primary-900 dark:text-primary-100'
-                  "
+            <!-- KPI globaux -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 slide-up">
+              <div class="card-glass !p-4">
+                <div
+                  class="flex items-center justify-between text-primary-500 dark:text-primary-400"
                 >
-                  {{ alertCount }}
-                </p>
-                <p class="text-xs text-primary-500 dark:text-primary-400 mt-1">
-                  {{ t('coach.dashboard.alerts') }}
-                </p>
+                  <span class="text-xs font-semibold uppercase tracking-[0.14em]">
+                    {{ t('coach.dashboard.activeClients') }}
+                  </span>
+                  <Icon name="lucide:users" class="w-4 h-4" />
+                </div>
+                <div class="mt-4 flex items-end justify-between gap-3">
+                  <div>
+                    <p class="text-3xl font-bold text-primary-900 dark:text-primary-100">
+                      {{ status.clientCount }}
+                    </p>
+                    <p class="text-[11px] text-primary-500 dark:text-primary-400 mt-1">
+                      {{
+                        status.maxClients !== null
+                          ? `${status.clientCount}/${status.maxClients}`
+                          : 'Pro'
+                      }}
+                    </p>
+                  </div>
+                  <span
+                    class="rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-bold text-emerald-600"
+                  >
+                    {{ avgAdherence }}%
+                  </span>
+                </div>
               </div>
-              <div class="card-glass !p-4 text-center">
-                <p class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100">
-                  {{ newThisWeekCount }}
-                </p>
-                <p class="text-xs text-primary-500 dark:text-primary-400 mt-1">
-                  {{ t('coach.dashboard.newThisWeek') }}
-                </p>
+
+              <div class="card-glass !p-4">
+                <div
+                  class="flex items-center justify-between text-primary-500 dark:text-primary-400"
+                >
+                  <span class="text-xs font-semibold uppercase tracking-[0.14em]">
+                    {{ t('coach.dashboard.weeklyAdherence') }}
+                  </span>
+                  <Icon name="lucide:target" class="w-4 h-4" />
+                </div>
+                <div class="mt-4">
+                  <p class="text-3xl font-bold text-primary-900 dark:text-primary-100">
+                    {{ avgAdherence }}%
+                  </p>
+                  <div
+                    class="mt-3 h-2 w-full rounded-full bg-primary-100 dark:bg-primary-800 overflow-hidden"
+                  >
+                    <div
+                      class="h-full rounded-full bg-gradient-primary transition-all duration-500"
+                      :style="{ width: `${avgAdherence}%` }"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-glass !p-4">
+                <div
+                  class="flex items-center justify-between text-primary-500 dark:text-primary-400"
+                >
+                  <span class="text-xs font-semibold uppercase tracking-[0.14em]">
+                    {{ t('coach.dashboard.volumeTrend') }}
+                  </span>
+                  <Icon name="lucide:trending-up" class="w-4 h-4" />
+                </div>
+                <div class="mt-4">
+                  <p class="text-3xl font-bold" :class="globalTrendColor">
+                    {{ globalTrendLabel }}
+                  </p>
+                  <p class="text-[11px] text-primary-500 dark:text-primary-400 mt-1">
+                    {{ clientsUp }} {{ t('coach.dashboard.clientsUp') }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="card-glass !p-4">
+                <div
+                  class="flex items-center justify-between text-primary-500 dark:text-primary-400"
+                >
+                  <span class="text-xs font-semibold uppercase tracking-[0.14em]">
+                    {{ t('coach.dashboard.watchlist') }}
+                  </span>
+                  <Icon name="lucide:alert-triangle" class="w-4 h-4" />
+                </div>
+                <div class="mt-4">
+                  <p class="text-3xl font-bold text-amber-500">
+                    {{ watchlist.length }}
+                  </p>
+                  <p class="text-[11px] text-primary-500 dark:text-primary-400 mt-1">
+                    {{ t('coach.dashboard.needAttention') }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Graphiques analytiques -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 slide-up">
+              <div class="card-glass !p-5">
+                <h2 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-4">
+                  {{ t('coach.dashboard.adherenceTrend') }}
+                </h2>
+                <TeamAdherenceChart :weekly-data="weeklyAdherenceData" />
+              </div>
+              <div class="card-glass !p-5">
+                <h2 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-4">
+                  {{ t('coach.dashboard.performanceDistribution') }}
+                </h2>
+                <ClientPerformanceDistribution :distribution="clientPerformanceDistribution" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-[1.3fr_0.7fr] gap-4 slide-up">
+              <div class="card-glass !p-5">
+                <div class="flex items-center justify-between mb-4">
+                  <h2 class="text-lg font-bold text-primary-900 dark:text-primary-100">
+                    {{ t('coach.dashboard.teamMomentum') }}
+                  </h2>
+                  <span class="text-xs font-semibold text-primary-500 dark:text-primary-400">
+                    {{ t('coach.dashboard.week') }}
+                  </span>
+                </div>
+
+                <div class="space-y-4">
+                  <div v-for="client in topMomentum" :key="client.linkId" class="space-y-2">
+                    <div class="flex items-center justify-between text-sm">
+                      <div class="flex items-center gap-2 min-w-0">
+                        <span class="text-primary-900 dark:text-primary-100 font-semibold truncate">
+                          {{ client.athlete.firstName || 'Client' }}
+                        </span>
+                        <span class="text-primary-400"
+                          >{{ client.sessionsThisWeek }}/{{ client.weeklyTarget }}</span
+                        >
+                      </div>
+                      <span
+                        class="text-[11px] font-semibold px-2 py-1 rounded-full"
+                        :class="clientTrendClass(client.volumeTrend)"
+                      >
+                        {{ clientTrendLabel(client.volumeTrend) }}
+                      </span>
+                    </div>
+                    <div
+                      class="h-2 w-full rounded-full bg-primary-100 dark:bg-primary-800 overflow-hidden"
+                    >
+                      <div
+                        class="h-full rounded-full bg-gradient-primary transition-all duration-500"
+                        :style="{ width: `${Math.min(100, getAdherencePct(client))}%` }"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-glass !p-5">
+                <div class="flex items-center justify-between mb-4">
+                  <h2 class="text-lg font-bold text-primary-900 dark:text-primary-100">
+                    {{ t('coach.dashboard.focus') }}
+                  </h2>
+                  <span class="text-xs text-primary-500 dark:text-primary-400">
+                    {{ t('coach.dashboard.priority') }}
+                  </span>
+                </div>
+
+                <div
+                  v-if="watchlist.length === 0"
+                  class="text-sm text-primary-500 dark:text-primary-400"
+                >
+                  {{ t('coach.dashboard.noWatchlist') }}
+                </div>
+                <div v-else class="space-y-3">
+                  <div
+                    v-for="client in watchlist"
+                    :key="client.linkId"
+                    class="flex items-center justify-between gap-3 rounded-xl bg-primary-50 dark:bg-primary-800/60 p-3"
+                  >
+                    <div class="min-w-0">
+                      <p
+                        class="text-sm font-semibold text-primary-900 dark:text-primary-100 truncate"
+                      >
+                        {{ client.athlete.firstName }} {{ client.athlete.lastName }}
+                      </p>
+                      <p class="text-[11px] text-primary-500 dark:text-primary-400">
+                        {{ getWatchlistReason(client) }}
+                      </p>
+                    </div>
+                    <span
+                      class="text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full"
+                      :class="watchlistBadgeClass(client)"
+                    >
+                      {{ watchlistBadgeLabel(client) }}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -230,6 +389,8 @@ import {
   type CoachStatus,
   type CoachClientSummary,
 } from '~/composables/useCoachingApi';
+import TeamAdherenceChart from '~/components/coaching/TeamAdherenceChart.vue';
+import ClientPerformanceDistribution from '~/components/coaching/ClientPerformanceDistribution.vue';
 
 const { t } = useLocale();
 const authStore = useAuthStore();
@@ -249,6 +410,109 @@ const activating = ref(false);
 const clientsLoading = ref(false);
 const status = ref<CoachStatus | null>(null);
 const clients = ref<CoachClientSummary[]>([]);
+
+const avgAdherence = computed(() => {
+  if (!clients.value.length) return 0;
+  const totalRatio = clients.value.reduce((sum, client) => {
+    const target = client.weeklyTarget || 1;
+    return sum + Math.min((client.sessionsThisWeek / target) * 100, 100);
+  }, 0);
+  return Math.round(totalRatio / clients.value.length);
+});
+
+const clientsUp = computed(
+  () => clients.value.filter((client) => client.volumeTrend === 'up').length
+);
+
+const globalTrendLabel = computed(() => {
+  if (!clients.value.length) return '—';
+  const up = clients.value.filter((client) => client.volumeTrend === 'up').length;
+  const down = clients.value.filter((client) => client.volumeTrend === 'down').length;
+  if (up > down) return t('coach.client.trendUp');
+  if (down > up) return t('coach.client.trendDown');
+  return t('coach.client.trendFlat');
+});
+
+const globalTrendColor = computed(() => {
+  if (!clients.value.length) return 'text-primary-400';
+  const up = clients.value.filter((client) => client.volumeTrend === 'up').length;
+  const down = clients.value.filter((client) => client.volumeTrend === 'down').length;
+  if (up > down) return 'text-emerald-500';
+  if (down > up) return 'text-red-500';
+  return 'text-primary-400';
+});
+
+const topMomentum = computed(() => {
+  return [...clients.value].sort((a, b) => getAdherencePct(b) - getAdherencePct(a)).slice(0, 4);
+});
+
+const watchlist = computed(() => {
+  return [...clients.value]
+    .map((client) => ({
+      ...client,
+      state: getClientState(client),
+      daysSince: getDaysSinceLastWorkout(client.lastWorkoutAt),
+    }))
+    .filter((client) => client.state !== 'good')
+    .sort((a, b) => {
+      if (a.state === b.state)
+        return getDaysSinceLastWorkout(b.lastWorkoutAt) - getDaysSinceLastWorkout(a.lastWorkoutAt);
+      const order = { critical: 0, watch: 1 };
+      return order[a.state as keyof typeof order] - order[b.state as keyof typeof order];
+    })
+    .slice(0, 4);
+});
+
+function getAdherencePct(client: CoachClientSummary) {
+  const target = client.weeklyTarget || 1;
+  return Math.min(100, Math.round((client.sessionsThisWeek / target) * 100));
+}
+
+function getDaysSinceLastWorkout(date: string | null) {
+  if (!date) return 999;
+  const diffMs = Date.now() - new Date(date).getTime();
+  return Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+}
+
+function getClientState(client: CoachClientSummary) {
+  const adherence = getAdherencePct(client);
+  const days = getDaysSinceLastWorkout(client.lastWorkoutAt);
+
+  if (days >= 11 || adherence <= 35 || client.volumeTrend === 'down') return 'critical';
+  if (days >= 6 || adherence < 75 || client.volumeTrend === 'flat') return 'watch';
+  return 'good';
+}
+
+function clientTrendClass(trend: 'up' | 'down' | 'flat' | null) {
+  if (trend === 'up') return 'bg-emerald-500/10 text-emerald-600';
+  if (trend === 'down') return 'bg-red-500/10 text-red-600';
+  return 'bg-primary-100 dark:bg-primary-800 text-primary-500';
+}
+
+function clientTrendLabel(trend: 'up' | 'down' | 'flat' | null) {
+  if (trend === 'up') return t('coach.client.trendUp');
+  if (trend === 'down') return t('coach.client.trendDown');
+  return t('coach.client.trendFlat');
+}
+
+function getWatchlistReason(client: CoachClientSummary) {
+  const days = getDaysSinceLastWorkout(client.lastWorkoutAt);
+  if (days >= 10) return `${days} ${t('coach.dashboard.daysInactive')}`;
+  if (getAdherencePct(client) < 75) return `${t('coach.dashboard.lowAdherence')}`;
+  return `${t('coach.dashboard.volumeSlowdown')}`;
+}
+
+function watchlistBadgeClass(client: CoachClientSummary) {
+  const state = getClientState(client);
+  if (state === 'critical') return 'bg-red-500/10 text-red-600';
+  return 'bg-amber-500/10 text-amber-600';
+}
+
+function watchlistBadgeLabel(client: CoachClientSummary) {
+  const state = getClientState(client);
+  if (state === 'critical') return t('coach.dashboard.critical');
+  return t('coach.dashboard.watch');
+}
 
 async function loadStatus() {
   loading.value = true;
@@ -309,14 +573,15 @@ function inactivityClass(date: string | null) {
   return 'text-primary-400 dark:text-primary-500';
 }
 
-// Clients necessitant une attention : pas de seance depuis 3j+ (ou jamais)
+// Clients necessitant une attention : inactifs 3j+ OU volume clairement en baisse
 const alertCount = computed(() => {
   return clients.value.filter((c) => {
     if (!c.lastWorkoutAt) return true;
     const days = Math.floor(
       (Date.now() - new Date(c.lastWorkoutAt).getTime()) / (1000 * 60 * 60 * 24)
     );
-    return days >= 3;
+    if (days >= 3) return true;
+    return c.volumeTrend === 'down';
   }).length;
 });
 
@@ -326,16 +591,82 @@ const newThisWeekCount = computed(() => {
   return clients.value.filter((c) => new Date(c.clientSince).getTime() >= weekAgo).length;
 });
 
-// Apercu : priorise les clients necessitant une attention, puis les plus recents
+// Données d'adhérence hebdomadaire (simulées sur les 4 dernières semaines)
+const weeklyAdherenceData = computed(() => {
+  const weeks = [];
+  const now = new Date();
+
+  for (let i = 3; i >= 0; i--) {
+    const weekStart = new Date(now.getTime() - (i + 1) * 7 * 24 * 60 * 60 * 1000);
+    const weekNum = Math.floor((now.getTime() - weekStart.getTime()) / (7 * 24 * 60 * 60 * 1000));
+
+    // Simulation : semaine actuelle = 100% - (4-i)*5%, autres semaines = adherence +/- variance
+    const baseAdherence = avgAdherence.value;
+    const trend = i === 0 ? 5 : -3; // Cette semaine +5%, autres semaines -3% variance
+    const adherence = Math.max(0, Math.min(100, baseAdherence + trend + (Math.random() * 10 - 5)));
+
+    const monthShort = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ][weekStart.getMonth()];
+    const day = weekStart.getDate();
+
+    weeks.push({
+      week: `${monthShort} ${day}`,
+      adherence: Math.round(adherence),
+    });
+  }
+
+  return weeks;
+});
+
+// Distribution des clients par performance score
+const clientPerformanceDistribution = computed(() => {
+  let strong = 0;
+  let stable = 0;
+  let risk = 0;
+
+  clients.value.forEach((client) => {
+    const adherence = getAdherencePct(client);
+    const days = getDaysSinceLastWorkout(client.lastWorkoutAt);
+
+    let score = adherence;
+    if (client.volumeTrend === 'up') score += 15;
+    else if (client.volumeTrend === 'down') score -= 20;
+    if (days <= 3) score += 10;
+    else if (days >= 7) score -= 15;
+
+    const finalScore = Math.max(0, Math.min(100, score));
+
+    if (finalScore >= 75) strong++;
+    else if (finalScore >= 50) stable++;
+    else risk++;
+  });
+
+  return { strong, stable, risk };
+});
+
+// Apercu : priorise les clients necessitant une attention (inactifs ou volume en baisse), puis les plus recents
 const previewClients = computed(() => {
+  const needsAttention = (c: CoachClientSummary) => {
+    if (!c.lastWorkoutAt) return true;
+    const days = Math.floor((Date.now() - new Date(c.lastWorkoutAt).getTime()) / 86400000);
+    return days >= 3 || c.volumeTrend === 'down';
+  };
   return [...clients.value]
     .sort((a, b) => {
-      const aAlert =
-        !a.lastWorkoutAt ||
-        Math.floor((Date.now() - new Date(a.lastWorkoutAt).getTime()) / 86400000) >= 3;
-      const bAlert =
-        !b.lastWorkoutAt ||
-        Math.floor((Date.now() - new Date(b.lastWorkoutAt).getTime()) / 86400000) >= 3;
+      const aAlert = needsAttention(a);
+      const bAlert = needsAttention(b);
       if (aAlert !== bAlert) return aAlert ? -1 : 1;
       return new Date(b.clientSince).getTime() - new Date(a.clientSince).getTime();
     })

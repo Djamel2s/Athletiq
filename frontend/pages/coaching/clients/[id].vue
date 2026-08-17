@@ -92,6 +92,98 @@
                   </p>
                 </div>
               </div>
+
+              <div class="grid grid-cols-1 xl:grid-cols-[1.2fr_0.8fr] gap-4 mb-6 slide-up">
+                <div class="card-glass !p-5">
+                  <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-bold text-primary-900 dark:text-primary-100">
+                      {{ t('coach.dashboard.performancePulse') }}
+                    </h2>
+                    <span class="text-xs font-semibold text-primary-500 dark:text-primary-400">
+                      {{ healthScore }} / 100
+                    </span>
+                  </div>
+
+                  <div class="space-y-4">
+                    <div>
+                      <div class="flex items-center justify-between text-sm mb-2">
+                        <span class="text-primary-500 dark:text-primary-400">
+                          {{ t('coach.dashboard.performanceStatus') }}
+                        </span>
+                        <span class="font-semibold" :class="healthScoreColor">
+                          {{ healthScoreLabel }}
+                        </span>
+                      </div>
+                      <div
+                        class="h-2.5 rounded-full bg-primary-100 dark:bg-primary-800 overflow-hidden"
+                      >
+                        <div
+                          class="h-full rounded-full bg-gradient-to-r from-emerald-500 via-amber-400 to-red-500 transition-all duration-500"
+                          :style="{ width: `${healthScore}%` }"
+                        ></div>
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                      <div class="rounded-xl bg-primary-50 dark:bg-primary-800/60 p-3">
+                        <p
+                          class="text-[11px] uppercase tracking-[0.12em] text-primary-500 dark:text-primary-400"
+                        >
+                          {{ t('coach.dashboard.adherence') }}
+                        </p>
+                        <p class="mt-2 text-xl font-bold text-primary-900 dark:text-primary-100">
+                          {{ adherencePct }}%
+                        </p>
+                      </div>
+                      <div class="rounded-xl bg-primary-50 dark:bg-primary-800/60 p-3">
+                        <p
+                          class="text-[11px] uppercase tracking-[0.12em] text-primary-500 dark:text-primary-400"
+                        >
+                          {{ t('coach.dashboard.recovery') }}
+                        </p>
+                        <p class="mt-2 text-xl font-bold text-primary-900 dark:text-primary-100">
+                          {{ recoveryLabel }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-glass !p-5">
+                  <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-bold text-primary-900 dark:text-primary-100">
+                      {{ t('coach.dashboard.focusArea') }}
+                    </h2>
+                    <Icon
+                      name="lucide:brain"
+                      class="w-4 h-4 text-primary-500 dark:text-primary-400"
+                    />
+                  </div>
+
+                  <div class="space-y-3">
+                    <div class="rounded-xl bg-primary-50 dark:bg-primary-800/60 p-3">
+                      <p
+                        class="text-[11px] uppercase tracking-[0.12em] text-primary-500 dark:text-primary-400"
+                      >
+                        {{ t('coach.dashboard.topMuscle') }}
+                      </p>
+                      <p class="mt-2 text-sm font-semibold text-primary-900 dark:text-primary-100">
+                        {{ topMuscleLabel }}
+                      </p>
+                    </div>
+                    <div class="rounded-xl bg-primary-50 dark:bg-primary-800/60 p-3">
+                      <p
+                        class="text-[11px] uppercase tracking-[0.12em] text-primary-500 dark:text-primary-400"
+                      >
+                        {{ t('coach.dashboard.coachAction') }}
+                      </p>
+                      <p class="mt-2 text-sm text-primary-700 dark:text-primary-200">
+                        {{ coachAction }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </template>
 
             <!-- Onglets -->
@@ -410,6 +502,66 @@ const trendLabel = computed(() => {
   if (v === 'down') return t('coach.client.trendDown');
   if (v === 'flat') return t('coach.client.trendFlat');
   return '—';
+});
+
+const adherencePct = computed(() => {
+  if (!clientSummary.value) return 0;
+  const target = clientSummary.value.weeklyTarget || 1;
+  return Math.min(100, Math.round((clientSummary.value.sessionsThisWeek / target) * 100));
+});
+
+const daysSinceLastSession = computed(() => {
+  if (!clientSummary.value?.lastWorkoutAt) return 999;
+  const diff = Date.now() - new Date(clientSummary.value.lastWorkoutAt).getTime();
+  return Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
+});
+
+const healthScore = computed(() => {
+  if (!clientSummary.value) return 0;
+  let score = adherencePct.value;
+
+  if (clientSummary.value.volumeTrend === 'up') score += 15;
+  else if (clientSummary.value.volumeTrend === 'down') score -= 20;
+  if (daysSinceLastSession.value <= 3) score += 10;
+  else if (daysSinceLastSession.value >= 7) score -= 15;
+
+  return Math.max(0, Math.min(100, Math.round(score)));
+});
+
+const healthScoreColor = computed(() => {
+  if (healthScore.value >= 75) return 'text-emerald-500';
+  if (healthScore.value >= 50) return 'text-amber-500';
+  return 'text-red-500';
+});
+
+const healthScoreLabel = computed(() => {
+  if (healthScore.value >= 75) return t('coach.dashboard.strong');
+  if (healthScore.value >= 50) return t('coach.dashboard.stable');
+  return t('coach.dashboard.risk');
+});
+
+const recoveryLabel = computed(() => {
+  if (daysSinceLastSession.value <= 2) return t('coach.dashboard.recovered');
+  if (daysSinceLastSession.value <= 5) return t('coach.dashboard.loading');
+  return t('coach.dashboard.needsRest');
+});
+
+const topMuscleLabel = computed(() => {
+  if (!muscleGroupBars.value.length) return t('coach.dashboard.noFocusData');
+  return muscleGroupBars.value[0]?.label || t('coach.dashboard.noFocusData');
+});
+
+const coachAction = computed(() => {
+  if (healthScore.value < 50) {
+    return t('coach.dashboard.actionRecovery');
+  }
+  if (clientSummary.value?.volumeTrend === 'down') {
+    return t('coach.dashboard.actionVolume');
+  }
+  if (adherencePct.value < 80) {
+    return t('coach.dashboard.actionConsistency');
+  }
+  return t('coach.dashboard.actionKeep');
 });
 
 async function load() {
