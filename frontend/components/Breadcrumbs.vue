@@ -1,16 +1,18 @@
 <template>
-  <nav v-if="allCrumbs.length" class="px-4 text-sm text-primary-500 dark:text-primary-400 mb-4">
-    <ol :class="['flex items-center gap-2', showAccueilFirst ? 'pl-3 md:pl-3' : '']">
-      <li v-for="(c, i) in allCrumbs" :key="c.to" class="flex items-center gap-2">
-        <span v-if="i !== 0" class="opacity-40 chevron">❯</span>
-        <NuxtLink v-if="i !== allCrumbs.length - 1" :to="c.to" class="hover:underline">{{
-          c.text
-        }}</NuxtLink>
-        <span v-else class="font-semibold text-primary-900 dark:text-primary-100">{{
-          c.text
-        }}</span>
-      </li>
-    </ol>
+  <nav v-if="allCrumbs.length" class="text-sm text-primary-500 dark:text-primary-400 mb-4">
+    <div class="max-w-7xl mx-auto px-6">
+      <ol class="flex items-center gap-2">
+        <li v-for="(c, i) in allCrumbs" :key="c.to" class="flex items-center gap-2">
+          <span v-if="i !== 0" class="opacity-40 chevron">❯</span>
+          <NuxtLink v-if="i !== allCrumbs.length - 1" :to="c.to" class="hover:underline">{{
+            c.text
+          }}</NuxtLink>
+          <span v-else class="font-semibold text-primary-900 dark:text-primary-100">{{
+            c.text
+          }}</span>
+        </li>
+      </ol>
+    </div>
   </nav>
 </template>
 
@@ -118,12 +120,6 @@ const allCrumbs = computed(() => {
   }
 
   return [...head, ...crumbs.value];
-});
-
-// When the first crumb is 'Accueil' we add a small left padding so the breadcrumb
-// aligns visually with the logo like when 'Dashboard' is present.
-const showAccueilFirst = computed(() => {
-  return allCrumbs.value.length > 0 && allCrumbs.value[0].text === 'Accueil';
 });
 </script>
 

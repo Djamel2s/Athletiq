@@ -4,17 +4,17 @@
 
 /* ===== Mobile viewport fix ===== */
 html {
+  overflow-y: auto;
+  overflow-x: hidden;
   height: -webkit-fill-available;
+  -webkit-overflow-scrolling: touch;
 }
+
 body {
   /* Use dynamic --vh to avoid mobile 100vh issues */
   min-height: calc(var(--vh, 1vh) * 100);
   min-height: -webkit-fill-available;
-}
-
-/* Prevent horizontal page scroll caused by decorative elements or overflows */
-html,
-body {
+  overflow-y: hidden;
   overflow-x: hidden;
 }
 
@@ -46,15 +46,10 @@ canvas {
   max-width: 100%;
 }
 
-/* Force root containers to avoid accidental viewport overflow (Nuxt/SSR) */
-#__nuxt,
-#__layout,
-#nuxt,
-#app,
-.nuxt,
-.app {
-  overflow-x: hidden !important;
-  max-width: 100vw !important;
+#__nuxt {
+  height: auto !important;
+  min-height: 100vh;
+  overflow-y: visible !important;
 }
 
 /* Defensive: ensure fixed/absolute elements don't create horizontal scroll
@@ -62,20 +57,6 @@ canvas {
 .fixed,
 .absolute {
   max-width: 100vw;
-}
-
-/* Force a single vertical scroll container: use body as the sole scrollable element.
-   This prevents duplicate scrollbars when both html and body can scroll in some browsers. */
-html {
-  height: 100%;
-  overflow-y: hidden;
-}
-
-body,
-#__nuxt {
-  height: 100%;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 /* ===== Sand Color Palette (CSS Variables for theme switching) ===== */
@@ -569,4 +550,21 @@ body,
     animation: float 10s ease-in-out infinite reverse;
     pointer-events: none;
   }
+}
+
+body::-webkit-scrollbar {
+  width: 0px;
+}
+
+body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: rgba(var(--sand-500), 0.5);
+  border-radius: 10px;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--sand-500), 0.8);
 }
