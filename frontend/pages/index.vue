@@ -190,9 +190,9 @@
     </section>
 
     <!-- ============ COACH ============ -->
-    <section id="coach" class="py-20 md:py-28 px-6">
+    <section class="py-20 md:py-28 px-6">
       <div class="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-        <div class="text-center lg:text-left order-2 lg:order-2">
+        <div class="text-center lg:text-left order-2 lg:order-1">
           <p
             class="font-display text-sand-600 dark:text-sand-400 text-sm tracking-[0.2em] uppercase mb-3"
           >
@@ -216,10 +216,10 @@
           </NuxtLink>
         </div>
         <div
-          class="order-1 lg:order-1 gap-6 flex justify-center -rotate-[11deg] z-0 opacity-90 pointer-events-none select-none"
+          class="order-1 lg:order-2 flex justify-center gap-5 -rotate-[-8deg] pointer-events-none select-none"
         >
           <PhoneMockup :width="260"> </PhoneMockup>
-          <PhoneMockup :width="260"> </PhoneMockup>
+          <PhoneMockup :width="260" class="mt-10"> </PhoneMockup>
         </div>
       </div>
     </section>

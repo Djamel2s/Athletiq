@@ -761,7 +761,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
     'friends.addGymBro': 'Add as Gym Bro',
     'workoutSharing.sharing': 'Sharing...',
     'workoutSharing.sendInvite': 'Send invitation',
-    'coaching.landingTitle': 'Manage your athletes from one place.',
+    'coaching.landingTitle': 'Manage your athletes',
+    'coaching.landingAccent': 'from one place.',
     'coaching.landingSubtitle':
       'Real-time visibility into every client, data-driven coaching decisions, and personalized program delivery.',
     'coaching.coachFeature1': 'Live athlete feed',
