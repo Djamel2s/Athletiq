@@ -20,8 +20,8 @@
 
         <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           <template v-if="authStore.isAuthenticated">
-            <NuxtLink to="/dashboard" class="btn-primary !py-2 !px-5 text-sm">
-              {{ t('nav.dashboard') }}
+            <NuxtLink :to="isCoachLanding ? '/coaching' : '/dashboard'" class="btn-primary !py-2 !px-5 text-sm">
+              {{ isCoachLanding ? t('coachLanding.hero.ctaAccess') : t('nav.dashboard') }}
             </NuxtLink>
           </template>
           <template v-else>
@@ -29,10 +29,10 @@
               to="/login"
               class="hidden sm:block text-sm font-semibold text-primary-700 dark:text-primary-300 hover:text-primary-900 dark:hover:text-primary-100 transition-colors"
             >
-              {{ t('nav.login') }}
+              {{ isCoachLanding ? t('coachLanding.nav.login') : t('nav.login') }}
             </NuxtLink>
             <NuxtLink to="/register" class="btn-primary !py-2 !px-5 text-sm">
-              {{ t('nav.register') }}
+              {{ isCoachLanding ? t('coachLanding.nav.register') : t('nav.register') }}
             </NuxtLink>
           </template>
 
@@ -107,15 +107,24 @@ const isLocaleMenuOpen = ref(false);
 const currentLocale = computed(() =>
   availableLocales.find((option) => option.code === locale.value)
 );
-const isLanding = computed(() => route.path === '/');
+const isLanding = computed(() => route.path === '/' || route.path === '/coach-landing');
 const isLogin = computed(() => route.path === '/login');
 const isRegister = computed(() => route.path === '/register');
+const isCoachLanding = computed(() => route.path === '/coach-landing');
 
-const marketingLinks = computed(() => [
-  { href: '#features', label: t('nav.marketing.features') },
-  { href: '#coach', label: t('nav.marketing.coach') },
-  { href: '#pricing', label: t('nav.marketing.pricing') },
-]);
+const marketingLinks = computed(() =>
+  isCoachLanding.value
+    ? [
+        { href: '#features', label: t('coachLanding.nav.features') },
+        { href: '#how-it-works', label: t('coachLanding.nav.howItWorks') },
+        { href: '#pricing', label: t('coachLanding.nav.pricing') },
+      ]
+    : [
+        { href: '#features', label: t('nav.marketing.features') },
+        { href: '#coach', label: t('nav.marketing.coach') },
+        { href: '#pricing', label: t('nav.marketing.pricing') },
+      ]
+);
 
 const selectLocale = (value: 'en' | 'fr') => {
   setLocale(value);

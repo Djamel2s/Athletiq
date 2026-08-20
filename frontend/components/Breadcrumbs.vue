@@ -4,7 +4,7 @@
       <ol class="flex items-center gap-2">
         <li v-for="(c, i) in allCrumbs" :key="c.to" class="flex items-center gap-2">
           <span v-if="i !== 0" class="opacity-40 chevron">❯</span>
-          <NuxtLink v-if="i !== allCrumbs.length - 1" :to="c.to" class="hover:underline">{{
+ <NuxtLink v-if="i !== allCrumbs.length - 1" :to="c.to" class="hover:underline">{{
             c.text
           }}</NuxtLink>
           <span v-else class="font-semibold text-primary-900 dark:text-primary-100">{{
@@ -23,6 +23,8 @@ import { useAuthStore } from '~/stores/auth';
 
 const router = useRouter();
 const authStore = useAuthStore();
+const { isCoachMode, homePath } = useAppMode();
+const { t } = useLocale();
 
 const currentFullPath = ref('/');
 watch(
@@ -34,21 +36,21 @@ watch(
 );
 
 const nameMap: Record<string, string> = {
-  dashboard: 'Dashboard',
-  programs: 'Programmes',
-  workouts: 'Workouts',
-  statistics: 'Statistiques',
-  profile: 'Profil',
-  settings: 'Paramètres',
-  feed: 'Fil',
-  friends: 'Gym Bros',
-  achievements: 'Trophées',
-  calendar: 'Calendrier',
-  body: 'Corps',
-  streak: 'Motivation',
-  wrapped: 'Wrapped',
-  coaching: 'Espace Coach',
-  clients: 'Clients',
+  dashboard: t('nav.dashboard'),
+  programs: t('programs.title'),
+  workouts: t('nav.workouts'),
+  statistics: t('statistics.title'),
+  profile: t('nav.profile'),
+  settings: t('settings.title'),
+  feed: t('nav.feed'),
+  friends: t('nav.friends'),
+  achievements: t('nav.achievements'),
+  calendar: t('nav.calendar'),
+  body: t('nav.body'),
+  streak: t('nav.streak'),
+  wrapped: t('nav.wrapped'),
+  coaching: t('nav.coaching'),
+  clients: t('nav.clients'),
 };
 
 const normalizedPath = computed(() => {
@@ -77,11 +79,10 @@ const crumbs = computed(() => {
     acc += `/${part}`;
     let text = nameMap[part] || part;
 
-    // Route-derived dynamic labels are more reliable than route.params during fast nav transitions.
     if (parts[0] === 'profile' && i === 1) {
       text = `@${part}`;
     } else if (/^\d+$/.test(part)) {
-      text = 'Détail';
+      text = t('common.detail');
     }
 
     if (!nameMap[part] && !(parts[0] === 'profile' && i === 1) && !/^\d+$/.test(part)) {
@@ -104,19 +105,22 @@ const crumbs = computed(() => {
   return results;
 });
 
-// Build full crumbs with a leading root based on auth state.
+// Build full crumbs with a leading root based on auth state and mode.
 const allCrumbs = computed(() => {
-  // If on root, just show Accueil
   if (normalizedPath.value === '/' || crumbs.value.length === 0) {
-    return [{ text: 'Accueil', to: '/' }];
+    return [{ text: t('nav.home'), to: '/' }];
   }
 
   const head: Array<{ text: string; to: string }> = [];
   if (authStore.isAuthenticated) {
     const firstPart = normalizedPath.value.split('/').filter(Boolean)[0];
-    if (firstPart !== 'dashboard') head.push({ text: 'Dashboard', to: '/dashboard' });
+    const rootPath = homePath.value;
+    const rootLabel = isCoachMode.value ? t('nav.coaching') : t('nav.dashboard');
+    if (firstPart !== 'dashboard' && firstPart !== 'coaching') {
+      head.push({ text: rootLabel, to: rootPath });
+    }
   } else {
-    head.push({ text: 'Accueil', to: '/' });
+    head.push({ text: t('nav.home'), to: '/' });
   }
 
   return [...head, ...crumbs.value];

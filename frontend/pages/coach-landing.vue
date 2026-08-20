@@ -28,23 +28,23 @@
           <h1
             class="font-display font-semibold text-primary-900 dark:text-primary-50 text-4xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight mb-6"
           >
-            {{ t('coaching.landingTitle') || 'Coachez avec' }}<br />
+            {{ t('coachLanding.hero.titlePrefix') }}<br />
             <span class="text-teal-600 dark:text-teal-400">{{
-              t('coaching.landingAccent') || 'clarté, pas au feeling'
+              t('coachLanding.hero.titleAccent')
             }}</span>
           </h1>
 
           <p
             class="text-primary-600 dark:text-primary-300 text-base md:text-xl max-w-xl mx-auto mb-9 leading-relaxed"
           >
-            {{ t('coaching.landingSubtitle') || 'clarté, pas au feeling' }}
+            {{ t('coachLanding.hero.subtitle') }}
           </p>
 
           <NuxtLink
             :to="authStore.isAuthenticated ? '/coaching' : '/register'"
             class="btn-primary text-base px-8 py-3.5 inline-block !bg-gradient-to-r !from-teal-500 !to-teal-600 hover:!from-teal-600 hover:!to-teal-700"
           >
-            {{ authStore.isAuthenticated ? 'Accéder à mon espace' : 'Créer mon espace coach' }}
+            {{ authStore.isAuthenticated ? t('coachLanding.hero.ctaAccess') : t('coachLanding.hero.ctaCreate') }}
           </NuxtLink>
           <div class="flex justify-center gap-4">
             <NuxtLink
@@ -87,42 +87,41 @@
       >
         <span class="flex items-center gap-2">
           <Icon name="lucide:activity" class="w-4 h-4 text-teal-600" />
-          Suivi en temps réel
+          {{ t('coachLanding.trust.realtime') }}
         </span>
         <span class="flex items-center gap-2">
           <Icon name="lucide:shield-check" class="w-4 h-4 text-teal-600" />
-          {{ t('landing.trust.stripe') || 'Données sécurisées' }}
+          {{ t('coachLanding.trust.secure') }}
         </span>
         <span class="flex items-center gap-2">
           <Icon name="lucide:infinity" class="w-4 h-4 text-teal-600" />
-          Athlètes illimités
+          {{ t('coachLanding.trust.unlimited') }}
         </span>
         <span class="flex items-center gap-2">
           <Icon name="lucide:clock" class="w-4 h-4 text-teal-600" />
-          Essai gratuit 14 jours
+          {{ t('coachLanding.trust.trial') }}
         </span>
       </div>
     </section>
 
     <!-- ============ FEED EN DIRECT ============ -->
-    <section id="fonctionnalites" class="py-10 md:py-18 px-6">
+    <section id="features" class="py-10 md:py-18 px-6">
       <div class="max-w-2xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
         <div class="text-center lg:text-left order-2 lg:order-1">
           <p
             class="font-display text-teal-600 dark:text-teal-400 text-sm tracking-[0.2em] uppercase mb-3"
           >
-            Pilotage
+            {{ t('coachLanding.features.pilotLabel') }}
           </p>
           <h2
             class="font-display font-semibold text-3xl md:text-5xl text-primary-900 dark:text-primary-50 mb-5 tracking-tight leading-tight"
           >
-            {{ t('coaching.coachFeature1') || 'Suivez chaque athlète en un coup d’œil' }}
+            {{ t('coachLanding.features.pilotTitle') }}
           </h2>
           <p
             class="text-primary-600 dark:text-primary-300 text-lg leading-relaxed mb-8 max-w-md mx-auto lg:mx-0"
           >
-            Une visibilité en temps réel sur les séances, l'adhérence et la performance de chaque
-            athlète. Plus aucune séance manquée, plus aucun plateau ignoré.
+            {{ t('coachLanding.features.pilotDesc') }}
           </p>
           <ul class="space-y-3 max-w-sm mx-auto lg:mx-0">
             <li
@@ -148,14 +147,14 @@
     </section>
 
     <!-- ============ ANALYTICS ============ -->
-    <section class="py-20 md:py-28 px-6 bg-white dark:bg-primary-950/40">
+    <section id="how-it-works" class="py-20 md:py-28 px-6 bg-white dark:bg-primary-950/40">
       <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
         <div class="flex justify-center order-1">
           <div class="w-full max-w-md rounded-3xl bg-primary-900 p-6 md:p-8 text-white">
             <div class="flex items-center justify-between mb-6">
-              <span class="text-xs font-semibold tracking-wide text-primary-300 uppercase"
-                >Tableau de bord</span
-              >
+              <span class="text-xs font-semibold tracking-wide text-primary-300 uppercase">{{
+                t('coachLanding.dashboard.label')
+              }}</span>
               <Icon name="lucide:bar-chart-3" class="w-5 h-5 text-teal-400" />
             </div>
             <div class="grid grid-cols-2 gap-3 mb-6">
@@ -182,19 +181,17 @@
           <p
             class="font-display text-teal-600 dark:text-teal-400 text-sm tracking-[0.2em] uppercase mb-3"
           >
-            Analyse
+            {{ t('coachLanding.features.analyticsLabel') }}
           </p>
           <h2
             class="font-display font-semibold text-3xl md:text-5xl text-primary-900 dark:text-primary-50 mb-5 tracking-tight leading-tight"
           >
-            {{ t('coaching.coachFeature2') || 'Des décisions appuyées sur la donnée' }}
+            {{ t('coachLanding.features.analyticsTitle') }}
           </h2>
           <p
             class="text-primary-600 dark:text-primary-300 text-lg leading-relaxed mb-8 max-w-md mx-auto lg:mx-0"
           >
-            Des tableaux de bord clairs pour visualiser les tendances de votre roster, la courbe de
-            progression de chaque athlète et repérer la fatigue avant qu'elle ne devienne une
-            blessure.
+            {{ t('coachLanding.features.analyticsDesc') }}
           </p>
           <ul class="space-y-3 max-w-sm mx-auto lg:mx-0">
             <li
@@ -223,24 +220,23 @@
           <p
             class="font-display text-teal-600 dark:text-teal-400 text-sm tracking-[0.2em] uppercase mb-3"
           >
-            Équipe
+            {{ t('coachLanding.features.teamLabel') }}
           </p>
           <h2
             class="font-display font-semibold text-3xl md:text-5xl text-primary-900 dark:text-primary-50 mb-5 tracking-tight leading-tight"
           >
-            {{ t('coaching.coachFeature4') || 'Un roster facile à gérer' }}
+            {{ t('coachLanding.features.teamTitle') }}
           </h2>
           <p
             class="text-primary-600 dark:text-primary-300 text-lg leading-relaxed mb-8 max-w-md mx-auto lg:mx-0"
           >
-            Invitez vos athlètes avec un simple code, gérez les permissions, assignez des programmes
-            et gardez des notes privées pour chaque client.
+            {{ t('coachLanding.features.teamDesc') }}
           </p>
           <NuxtLink
             :to="authStore.isAuthenticated ? '/coaching' : '/register'"
             class="btn-primary px-8 py-3.5 inline-block !bg-gradient-to-r !from-teal-500 !to-teal-600 hover:!from-teal-600 hover:!to-teal-700"
           >
-            {{ authStore.isAuthenticated ? 'Gérer mes athlètes' : 'Inviter mon premier athlète' }}
+            {{ authStore.isAuthenticated ? t('coachLanding.features.teamCtaManage') : t('coachLanding.features.teamCtaInvite') }}
           </NuxtLink>
         </div>
         <div
@@ -259,12 +255,12 @@
           <p
             class="font-display text-teal-600 dark:text-teal-400 text-sm tracking-[0.2em] uppercase mb-3"
           >
-            En plus
+            {{ t('coachLanding.features.extraLabel') }}
           </p>
           <h2
             class="font-display font-semibold text-3xl md:text-5xl text-primary-900 dark:text-primary-50 mb-4 tracking-tight"
           >
-            Tout ce qu'il faut pour scaler votre coaching
+            {{ t('coachLanding.features.extraTitle') }}
           </h2>
         </div>
 
@@ -301,21 +297,21 @@
     </section>
 
     <!-- ============ CTA FINAL ============ -->
-    <section class="py-20 md:py-28 px-6">
+    <section id="pricing" class="py-20 md:py-28 px-6">
       <div class="max-w-2xl mx-auto text-center">
         <h2
           class="font-display font-semibold text-3xl md:text-5xl text-primary-900 dark:text-primary-50 mb-5 tracking-tight"
         >
-          Prêt à transformer votre coaching ?
+          {{ t('coachLanding.cta.title') }}
         </h2>
         <p class="text-primary-600 dark:text-primary-400 text-lg mb-8">
-          Créez votre espace coach gratuitement. Aucune carte bancaire requise.
+          {{ t('coachLanding.cta.subtitle') }}
         </p>
         <NuxtLink
           :to="authStore.isAuthenticated ? '/coaching' : '/register'"
           class="btn-primary text-base md:text-lg px-10 md:px-12 py-4 !bg-gradient-to-r !from-teal-500 !to-teal-600 hover:!from-teal-600 hover:!to-teal-700"
         >
-          {{ authStore.isAuthenticated ? 'Accéder à mon espace' : 'Créer mon espace coach' }}
+          {{ authStore.isAuthenticated ? t('coachLanding.cta.access') : t('coachLanding.cta.create') }}
         </NuxtLink>
       </div>
     </section>
@@ -327,7 +323,7 @@
           <div class="col-span-2">
             <img src="/athletiq-full-icon.svg" alt="Athletiq" class="h-8 w-auto mb-3" />
             <p class="text-s text-primary-500 dark:text-primary-400 max-w-xs">
-              {{ t('landing.footer.description') }}
+              {{ t('coachLanding.footer.description') }}
             </p>
             <div class="flex">
               <NuxtLink
@@ -356,28 +352,28 @@
             <p
               class="text-xs font-bold uppercase tracking-wide text-primary-400 dark:text-primary-500 mb-3"
             >
-              {{ t('landing.footer.product') }}
+              {{ t('coachLanding.footer.product') }}
             </p>
             <ul class="space-y-2 text-sm">
               <li>
                 <a
                   href="#features"
                   class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-colors"
-                  >{{ t('landing.footer.features') }}</a
+                  >{{ t('coachLanding.footer.features') }}</a
                 >
               </li>
               <li>
                 <a
-                  href="#coach"
+                  href="#how-it-works"
                   class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-colors"
-                  >{{ t('landing.footer.coach') }}</a
+                  >{{ t('coachLanding.footer.coach') }}</a
                 >
               </li>
               <li>
                 <a
                   href="#pricing"
                   class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-colors"
-                  >{{ t('landing.footer.pricing') }}</a
+                  >{{ t('coachLanding.footer.pricing') }}</a
                 >
               </li>
             </ul>
@@ -386,35 +382,35 @@
             <p
               class="text-xs font-bold uppercase tracking-wide text-primary-400 dark:text-primary-500 mb-3"
             >
-              {{ t('landing.footer.legal') }}
+              {{ t('coachLanding.footer.legal') }}
             </p>
             <ul class="space-y-2 text-sm">
               <li>
                 <NuxtLink
                   to="/legal/cgu"
                   class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-colors"
-                  >{{ t('landing.footer.cgu') }}</NuxtLink
+                  >{{ t('coachLanding.footer.cgu') }}</NuxtLink
                 >
               </li>
               <li>
                 <NuxtLink
                   to="/legal/privacy"
                   class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-colors"
-                  >{{ t('landing.footer.privacy') }}</NuxtLink
+                  >{{ t('coachLanding.footer.privacy') }}</NuxtLink
                 >
               </li>
               <li>
                 <NuxtLink
                   to="/legal/mentions"
                   class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-colors"
-                  >{{ t('landing.footer.mentions') }}</NuxtLink
+                  >{{ t('coachLanding.footer.mentions') }}</NuxtLink
                 >
               </li>
               <li>
                 <a
                   href="mailto:contact@athletiq.fr"
                   class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-colors"
-                  >{{ t('landing.footer.contact') }}</a
+                  >{{ t('coachLanding.footer.contact') }}</a
                 >
               </li>
             </ul>
@@ -440,28 +436,14 @@ definePageMeta({
 });
 
 useHead({
-  title: 'Athletiq Coach — Pilotez vos athlètes avec clarté',
+  title: t('coachLanding.seo.title'),
   meta: [
     {
       name: 'description',
-      content:
-        "L'espace coach d'Athletiq : suivi en temps réel, analytics d'équipe et gestion de roster, pour transformer les données de vos athlètes en décisions.",
+      content: t('coachLanding.seo.description'),
     },
   ],
 });
-
-const roster = [
-  { name: 'Léa M.', initials: 'LM', status: "Aujourd'hui", active: true, color: 'bg-teal-600' },
-  { name: 'Karim B.', initials: 'KB', status: 'Hier', active: false, color: 'bg-sand-600' },
-  {
-    name: 'Sofia R.',
-    initials: 'SR',
-    status: 'Il y a 3 jours',
-    active: false,
-    color: 'bg-primary-600',
-  },
-  { name: 'Nathan D.', initials: 'ND', status: "Aujourd'hui", active: true, color: 'bg-teal-700' },
-];
 
 const analyticsBars = [
   { label: 'L', height: '40%' },
@@ -473,55 +455,53 @@ const analyticsBars = [
   { label: 'D', height: '20%' },
 ];
 
-const dashboardStats = [
-  { value: '24', label: 'Athlètes actifs' },
-  { value: '94%', label: 'Adhérence' },
-  { value: '3', label: 'Alertes fatigue' },
-  { value: '+18%', label: 'Volume moyen' },
-];
+const dashboardStats = computed(() => [
+  { value: '24', label: t('coachLanding.dashboard.activeAthletes') },
+  { value: '94%', label: t('coachLanding.dashboard.adherence') },
+  { value: '3', label: t('coachLanding.dashboard.fatigueAlerts') },
+  { value: '+18%', label: t('coachLanding.dashboard.avgVolume') },
+]);
 
-const feedPoints = [
-  'Complétion des séances en direct',
-  'Détection des tendances de volume',
-  "Alertes d'adhérence",
-  'Historique complet par athlète',
-];
+const feedPoints = computed(() => [
+  t('coachLanding.features.pilotPoint1'),
+  t('coachLanding.features.pilotPoint2'),
+  t('coachLanding.features.pilotPoint3'),
+  t('coachLanding.features.pilotPoint4'),
+]);
 
-const analyticsPoints = [
-  "Répartition de la performance de l'équipe",
-  'Courbes de progression individuelles',
-  'Suivi de la récupération et de la fatigue',
-  'Comparaison entre athlètes',
-];
+const analyticsPoints = computed(() => [
+  t('coachLanding.features.analyticsPoint1'),
+  t('coachLanding.features.analyticsPoint2'),
+  t('coachLanding.features.analyticsPoint3'),
+  t('coachLanding.features.analyticsPoint4'),
+]);
 
-const extraFeatures = [
+const extraFeatures = computed(() => [
   {
     icon: 'lucide:bell',
-    title: 'Alertes intelligentes',
-    description:
-      "Soyez prévenu avant qu'un problème n'apparaisse : chute d'adhérence, fatigue en hausse, séance manquée.",
+    title: t('coachLanding.features.extra1Title'),
+    description: t('coachLanding.features.extra1Desc'),
   },
   {
     icon: 'lucide:shield-check',
-    title: 'Permissions fines',
-    description:
-      'Décidez ce que chaque athlète voit et partage. Vos notes de coaching restent privées.',
+    title: t('coachLanding.features.extra2Title'),
+    description: t('coachLanding.features.extra2Desc'),
   },
   {
     icon: 'lucide:history',
-    title: 'Historique complet',
-    description: 'Retrouvez chaque séance, chaque note et chaque évolution, sans limite de durée.',
+    title: t('coachLanding.features.extra3Title'),
+    description: t('coachLanding.features.extra3Desc'),
   },
   {
     icon: 'lucide:file-down',
-    title: 'Export & rapports',
-    description: 'Exportez les données de vos athlètes pour vos bilans et suivis personnalisés.',
+    title: t('coachLanding.features.extra4Title'),
+    description: t('coachLanding.features.extra4Desc'),
   },
-];
+]);
 
-const statHighlights = [
-  { value: '∞', label: 'Athlètes illimités, aucune restriction' },
-  { value: 'Temps réel', label: 'Mises à jour dès qu’un athlète s’entraîne' },
-  { value: '100%', label: 'Décisions appuyées sur la donnée' },
-];
+const statHighlights = computed(() => [
+  { value: '∞', label: t('coachLanding.stats.unlimited') },
+  { value: t('coachLanding.trust.realtime'), label: t('coachLanding.stats.realtime') },
+  { value: '100%', label: t('coachLanding.stats.dataDriven') },
+]);
 </script>
