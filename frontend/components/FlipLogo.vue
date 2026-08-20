@@ -42,9 +42,13 @@
 const route = useRoute();
 const { t } = useLocale();
 const { isRose } = useTheme();
+const { isCoachMode: appIsCoachMode } = useAppMode();
 
-const isCoachSection = computed(() => route.path.startsWith('/coaching'));
 const isLanding = computed(() => route.path === '/' || route.path === '/coach-landing');
+const isCoachLandingPage = computed(() => route.path === '/coach-landing');
+const isCoachSection = computed(() =>
+  isLanding.value ? isCoachLandingPage.value : appIsCoachMode.value
+);
 
 const athleteLogoSrc = computed(() =>
   isRose.value ? '/athletiq-icon-rose.svg' : '/athletiq-icon.svg'
@@ -54,7 +58,10 @@ const coachLogoSrc = '/coach-athletiq-icon.svg';
 const currentLogoSrc = computed(() => (isCoachSection.value ? coachLogoSrc : athleteLogoSrc.value));
 const otherLogoSrc = computed(() => (isCoachSection.value ? athleteLogoSrc.value : coachLogoSrc));
 
-const currentHome = computed(() => (isCoachSection.value ? '/coaching' : '/dashboard'));
+const currentHome = computed(() => {
+  if (isLanding.value) return isCoachSection.value ? '/coach-landing' : '/';
+  return isCoachSection.value ? '/coaching' : '/dashboard';
+});
 const currentLabel = computed(() => (isCoachSection.value ? 'Coach Athletiq' : 'Athletiq'));
 const switchLabel = computed(() =>
   isCoachSection.value ? t('nav.switchToAthlete') : t('nav.switchToCoach')
@@ -66,32 +73,32 @@ const resetting = ref(false);
 const animatingCurrentLogo = ref('');
 const animatingOtherLogo = ref('');
 
-const handleFlip = () => {
+const handleFlip = async () => {
   if (flipping.value) return;
+
   // On mémorise les logos AVANT le changement de route
   animatingCurrentLogo.value = currentLogoSrc.value;
   animatingOtherLogo.value = otherLogoSrc.value;
   flipping.value = true;
-  if (isLanding.value) {
-    setTimeout(() => {
-      navigateTo(isCoachSection.value ? '/' : '/coach-landing');
-      resetting.value = true;
-      flipping.value = false;
-      requestAnimationFrame(() => {
-        resetting.value = false;
-      });
-    }, 300);
-    return;
-  }
-  setTimeout(() => {
-    navigateTo(isCoachSection.value ? '/dashboard' : '/coaching');
-    // On remet l'état normal SANS jouer l'animation inverse
-    resetting.value = true;
-    flipping.value = false;
-    requestAnimationFrame(() => {
-      resetting.value = false;
-    });
-  }, 300);
+
+  const target = isLanding.value
+    ? isCoachSection.value
+      ? '/'
+      : '/coach-landing'
+    : isCoachSection.value
+      ? '/dashboard'
+      : '/coaching';
+
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  await navigateTo(target);
+  await nextTick();
+
+  resetting.value = true;
+  flipping.value = false;
+  await nextTick();
+  requestAnimationFrame(() => {
+    resetting.value = false;
+  });
 };
 </script>
 
