@@ -14,7 +14,8 @@ function handle(fn: (req: AuthRequest, res: express.Response) => Promise<void>) 
       await fn(req, res);
     } catch (error) {
       if (isHttpError(error)) {
-        return res.status(error.statusCode).json({ error: error.message });
+        res.status(error.statusCode).json({ error: error.message });
+        return;
       }
       logger.error({ err: error, route: 'coaching' }, 'Coaching route error');
       res.status(500).json({ error: 'Une erreur est survenue' });
@@ -84,7 +85,8 @@ router.post(
   handle(async (req, res) => {
     const { identifier } = req.body ?? {};
     if (!identifier || typeof identifier !== 'string') {
-      return res.status(400).json({ error: 'Identifiant requis (email ou pseudo)' });
+      res.status(400).json({ error: 'Identifiant requis (email ou pseudo)' });
+      return;
     }
     const link = await coachingService.inviteClient(req.user!.id, identifier);
     res.status(201).json({ link });
@@ -99,7 +101,8 @@ router.post(
     const athleteId = parseId(req.params.athleteId);
     const { slug, note } = req.body ?? {};
     if (!slug || typeof slug !== 'string') {
-      return res.status(400).json({ error: 'slug du programme requis' });
+      res.status(400).json({ error: 'slug du programme requis' });
+      return;
     }
     const workouts = await coachingService.assignCatalogProgram(
       req.user!.id,
@@ -119,7 +122,8 @@ router.post(
     const athleteId = parseId(req.params.athleteId);
     const { content, workoutId } = req.body ?? {};
     if (!content || typeof content !== 'string') {
-      return res.status(400).json({ error: 'Contenu requis' });
+      res.status(400).json({ error: 'Contenu requis' });
+      return;
     }
     const note = await coachingService.addCoachNote(
       req.user!.id,
@@ -202,8 +206,13 @@ router.patch(
   authenticate,
   handle(async (req, res) => {
     const linkId = parseId(req.params.linkId);
-    const { canViewWorkouts, canViewPhotos, canViewMeasurements, canViewBodyStats, canAssignPrograms } =
-      req.body ?? {};
+    const {
+      canViewWorkouts,
+      canViewPhotos,
+      canViewMeasurements,
+      canViewBodyStats,
+      canAssignPrograms,
+    } = req.body ?? {};
     const link = await coachingService.updateClientPermissions(req.user!.id, linkId, {
       canViewWorkouts,
       canViewPhotos,
