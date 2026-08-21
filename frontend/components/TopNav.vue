@@ -21,24 +21,26 @@
         <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           <template v-if="authStore.isAuthenticated">
             <NuxtLink
-              :to="isCoachLanding ? '/coaching' : '/dashboard'"
-              class="btn-primary !py-2 !px-5 text-sm"
+              :to="isCoachSpace ? '/coaching' : '/dashboard'"
+              class="!py-2 !px-5 text-sm"
+              :class="isCoachSpace ? 'btn-metallic' : 'btn-primary'"
             >
-              {{ isCoachLanding ? t('coachLanding.hero.ctaAccess') : t('nav.dashboard') }}
+              {{ isCoachSpace ? t('coachLanding.hero.ctaAccess') : t('nav.dashboard') }}
             </NuxtLink>
           </template>
           <template v-else>
             <NuxtLink
-              :to="isCoachLanding ? '/login?mode=coach' : '/login'"
+              :to="isCoachSpace ? '/login?mode=coach' : '/login'"
               class="hidden sm:block text-sm font-semibold text-primary-700 dark:text-primary-300 hover:text-primary-900 dark:hover:text-primary-100 transition-colors"
             >
-              {{ isCoachLanding ? t('coachLanding.nav.login') : t('nav.login') }}
+              {{ isCoachSpace ? t('coachLanding.nav.login') : t('nav.login') }}
             </NuxtLink>
             <NuxtLink
-              :to="isCoachLanding ? '/register?mode=coach' : '/register'"
-              class="btn-primary !py-2 !px-5 text-sm"
+              :to="isCoachSpace ? '/register?mode=coach' : '/register'"
+              class="!py-2 !px-5 text-sm"
+              :class="isCoachSpace ? 'btn-metallic' : 'btn-primary'"
             >
-              {{ isCoachLanding ? t('coachLanding.nav.register') : t('nav.register') }}
+              {{ isCoachSpace ? t('coachLanding.nav.register') : t('nav.register') }}
             </NuxtLink>
           </template>
 
@@ -108,6 +110,7 @@ import { useAuthStore } from '~/stores/auth';
 const route = useRoute();
 const authStore = useAuthStore();
 const { locale, availableLocales, setLocale, t } = useLocale();
+const { isCoachMode } = useAppMode();
 const isLocaleMenuOpen = ref(false);
 
 const currentLocale = computed(() =>
@@ -117,6 +120,11 @@ const isLanding = computed(() => route.path === '/' || route.path === '/coach-la
 const isLogin = computed(() => route.path === '/login');
 const isRegister = computed(() => route.path === '/register');
 const isCoachLanding = computed(() => route.path === '/coach-landing');
+const isCoachSpace = computed(() => {
+  if (isCoachLanding.value) return true;
+  if (isLogin.value || isRegister.value) return isCoachMode.value;
+  return false;
+});
 
 const marketingLinks = computed(() =>
   isCoachLanding.value

@@ -102,7 +102,12 @@
             </div>
 
             <!-- Submit button -->
-            <button type="submit" :disabled="loading" class="btn-primary w-full text-lg py-4">
+            <button
+              type="submit"
+              :disabled="loading"
+              class="w-full text-lg py-4"
+              :class="isCoachMode ? 'btn-metallic' : 'btn-primary'"
+            >
               <span v-if="!loading">{{ t('auth.login.submit') }}</span>
               <span v-else>{{ t('auth.login.loading') }}</span>
             </button>

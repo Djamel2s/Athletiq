@@ -14,7 +14,7 @@
             />
           </NuxtLink>
           <span class="text-2xl md:text-3xl font-bold text-primary-400 dark:text-primary-500"
-            >\</span
+            >&</span
           >
           <NuxtLink to="/coach-landing" class="inline-block" :aria-label="t('nav.coaching')">
             <img
@@ -306,7 +306,12 @@
           </div>
 
           <!-- Submit button -->
-          <button type="submit" :disabled="loading" class="btn-primary w-full text-lg py-4">
+          <button
+            type="submit"
+            :disabled="loading"
+            class="w-full text-lg py-4"
+            :class="isCoachMode ? 'btn-metallic' : 'btn-primary'"
+          >
             <span v-if="!loading">{{ t('auth.register.submit') }}</span>
             <span v-else>{{ t('auth.register.loading') }}</span>
           </button>
