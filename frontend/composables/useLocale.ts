@@ -19,7 +19,7 @@ const translations: Record<AppLocale, Record<string, string>> = {
     'nav.body': 'Body',
     'nav.streak': 'Motivation',
     'nav.wrapped': 'Wrapped',
-    'nav.coaching': 'Coach space',
+    'nav.coaching': 'Dashboard',
     'nav.clients': 'Clients',
     'common.detail': 'Detail',
     'coachLanding.nav.features': 'Features',
