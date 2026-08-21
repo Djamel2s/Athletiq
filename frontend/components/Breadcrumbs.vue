@@ -1,6 +1,6 @@
 <template>
   <nav v-if="allCrumbs.length" class="text-sm text-primary-500 dark:text-primary-400 mb-4">
-    <div class="max-w-7xl mx-auto px-6">
+    <div class="max-w-7xl mx-auto" :class="isHome ? 'px-4' : 'px-8'">
       <ol class="flex items-center gap-2">
         <li v-for="(c, i) in allCrumbs" :key="c.to" class="flex items-center gap-2">
           <span v-if="i !== 0" class="opacity-40 chevron">❯</span>
@@ -58,6 +58,11 @@ const normalizedPath = computed(() => {
   const noQuery = raw.split('?')[0].split('#')[0] || '/';
   if (noQuery === '/') return '/';
   return noQuery.endsWith('/') ? noQuery.slice(0, -1) : noQuery;
+});
+
+const isHome = computed(() => {
+  const path = normalizedPath.value;
+  return !['/', '/coach-landing', '/register', '/login'].includes(path);
 });
 
 const ownUsername = computed(() => {
