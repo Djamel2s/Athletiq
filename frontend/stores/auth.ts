@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import getSupabase from '~/composables/useSupabase';
-import { tSync } from '~/composables/useLocale';
+import { tSync, applyLocaleFromUser } from '~/composables/useLocale';
 
 interface User {
   id: number;
@@ -11,6 +11,7 @@ interface User {
   avatarUrl?: string | null;
   goal?: string | null;
   gender?: string | null;
+  locale?: string | null;
 }
 
 interface AuthState {
@@ -221,6 +222,7 @@ export const useAuthStore = defineStore('auth', {
       this.token = data.token;
       this.isAuthenticated = true;
       this.saveUserToLocalStorage();
+      applyLocaleFromUser(data.user.locale);
     },
 
     logout() {
@@ -253,6 +255,7 @@ export const useAuthStore = defineStore('auth', {
             avatarUrl: this.user.avatarUrl,
             goal: this.user.goal,
             gender: this.user.gender,
+            locale: this.user.locale,
           })
         );
       }
@@ -283,8 +286,9 @@ export const useAuthStore = defineStore('auth', {
                 avatarUrl: user.avatarUrl ?? null,
                 goal: user.goal ?? null,
                 gender: user.gender ?? null,
+                locale: user.locale ?? null,
               };
-              // Don't set isAuthenticated yet - need to refresh token first
+              applyLocaleFromUser(this.user.locale);
             } else {
               this.clearLocalStorage();
             }

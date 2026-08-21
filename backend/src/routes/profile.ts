@@ -60,6 +60,7 @@ router.get('/me', authenticate, async (req: AuthRequest, res) => {
       firstName: user.firstName,
       lastName: user.lastName,
       avatarUrl: user.avatarUrl,
+      locale: user.locale,
     });
   } catch (error) {
     logger.error({ err: error, route: 'profile' }, 'Error fetching own profile');
@@ -89,7 +90,7 @@ router.get('/check-username/:username', usernameCheckLimiter, async (req, res) =
 router.put('/', authenticate, async (req: AuthRequest, res) => {
   try {
     const userId = req.user!.id;
-    const { username, bio, isPublic } = req.body;
+    const { username, bio, isPublic, locale } = req.body;
 
     const user = await userRepo().findOne({ where: { id: userId } });
     if (!user) {
@@ -119,6 +120,13 @@ router.put('/', authenticate, async (req: AuthRequest, res) => {
       user.isPublic = isPublic;
     }
 
+    if (locale !== undefined) {
+      if (locale !== 'en' && locale !== 'fr') {
+        return res.status(400).json({ error: 'locale must be "en" or "fr"' });
+      }
+      user.locale = locale;
+    }
+
     await userRepo().save(user);
 
     res.json({
@@ -129,6 +137,7 @@ router.put('/', authenticate, async (req: AuthRequest, res) => {
       firstName: user.firstName,
       lastName: user.lastName,
       avatarUrl: user.avatarUrl,
+      locale: user.locale,
     });
   } catch (error) {
     logger.error({ err: error, route: 'profile' }, 'Error updating profile');

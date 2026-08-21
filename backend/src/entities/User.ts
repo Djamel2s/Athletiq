@@ -95,6 +95,9 @@ export class User {
   @Column({ type: 'int', default: 3 })
   inactivityThresholdDays!: number;
 
+  @Column({ type: 'varchar', default: 'en' })
+  locale!: string;
+
   // Email verification
   @Column({ type: 'boolean', default: false })
   emailVerified!: boolean;

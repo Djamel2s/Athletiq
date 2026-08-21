@@ -2535,6 +2535,21 @@ export function tSync(key: string, params?: Record<string, string | number>) {
   return value.replace(/\{(\w+)\}/g, (_match, p1) => String(params[p1] ?? `{${p1}}`));
 }
 
+// Applique la langue renvoyee par le backend (login/register/refresh) sans
+// la re-sauvegarder cote serveur (on vient justement de la recevoir de la).
+// Safe hors composant (appele depuis le store d'auth).
+export function applyLocaleFromUser(userLocale?: string | null) {
+  if (!process.client) return;
+  if (userLocale !== 'en' && userLocale !== 'fr') return;
+
+  const locale = useState<AppLocale>('app-locale', () => 'en');
+  if (locale.value === userLocale) return;
+
+  locale.value = userLocale;
+  localStorage.setItem('app_locale', userLocale);
+  document.documentElement.lang = userLocale;
+}
+
 export function useLocale() {
   const locale = useState<AppLocale>('app-locale', () => 'en');
 
@@ -2547,10 +2562,27 @@ export function useLocale() {
   const isFrench = computed(() => locale.value === 'fr');
 
   const setLocale = (value: AppLocale) => {
+    const previous = locale.value;
     locale.value = value;
     if (process.client) {
       localStorage.setItem('app_locale', value);
       document.documentElement.lang = value;
+    }
+
+    if (process.client && previous !== value) {
+      const authStore = useAuthStore();
+      if (authStore.isAuthenticated && authStore.token) {
+        const config = useRuntimeConfig();
+        $fetch(`${config.public.apiUrl}/profile`, {
+          method: 'PUT',
+          headers: { Authorization: `Bearer ${authStore.token}` },
+          body: { locale: value },
+        })
+          .then(() => {
+            if (authStore.user) authStore.user.locale = value;
+          })
+          .catch(() => {});
+      }
     }
   };
 

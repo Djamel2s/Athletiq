@@ -110,6 +110,7 @@ router.post('/register', async (req, res) => {
       goal: newUser.goal,
       gender: newUser.gender,
       avatarUrl: newUser.avatarUrl,
+      locale: newUser.locale,
       createdAt: newUser.createdAt,
     };
 
@@ -171,6 +172,7 @@ router.post('/login', async (req, res) => {
         goal: user.goal,
         gender: user.gender,
         avatarUrl: user.avatarUrl,
+        locale: user.locale,
       },
       token,
     });
@@ -320,6 +322,7 @@ router.post('/migrate-complete', async (req, res) => {
         goal: user.goal,
         gender: user.gender,
         avatarUrl: user.avatarUrl,
+        locale: user.locale,
       },
       token: tokenLocal,
     });
