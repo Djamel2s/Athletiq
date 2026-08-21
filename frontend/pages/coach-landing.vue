@@ -29,9 +29,7 @@
             class="font-display font-semibold text-primary-900 dark:text-primary-50 text-4xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight mb-6"
           >
             {{ t('coachLanding.hero.titlePrefix') }}<br />
-            <span class="text-teal-600 dark:text-teal-400">{{
-              t('coachLanding.hero.titleAccent')
-            }}</span>
+            <span class="text-metallic font-bold">{{ t('coachLanding.hero.titleAccent') }}</span>
           </h1>
 
           <p
@@ -42,9 +40,13 @@
 
           <NuxtLink
             :to="authStore.isAuthenticated ? '/coaching' : '/register'"
-            class="btn-primary text-base px-8 py-3.5 inline-block !bg-gradient-to-r !from-teal-500 !to-teal-600 hover:!from-teal-600 hover:!to-teal-700"
+            class="btn-metallic text-base px-8 py-3.5 inline-block"
           >
-            {{ authStore.isAuthenticated ? t('coachLanding.hero.ctaAccess') : t('coachLanding.hero.ctaCreate') }}
+            {{
+              authStore.isAuthenticated
+                ? t('coachLanding.hero.ctaAccess')
+                : t('coachLanding.hero.ctaCreate')
+            }}
           </NuxtLink>
           <div class="flex justify-center gap-4">
             <NuxtLink
@@ -86,19 +88,19 @@
         class="max-w-4xl mx-auto flex flex-wrap justify-center gap-x-10 gap-y-3 text-sm text-primary-500 dark:text-primary-400"
       >
         <span class="flex items-center gap-2">
-          <Icon name="lucide:activity" class="w-4 h-4 text-teal-600" />
+          <Icon name="lucide:activity" class="w-4 h-4 text-slate-600" />
           {{ t('coachLanding.trust.realtime') }}
         </span>
         <span class="flex items-center gap-2">
-          <Icon name="lucide:shield-check" class="w-4 h-4 text-teal-600" />
+          <Icon name="lucide:shield-check" class="w-4 h-4 text-slate-600" />
           {{ t('coachLanding.trust.secure') }}
         </span>
         <span class="flex items-center gap-2">
-          <Icon name="lucide:infinity" class="w-4 h-4 text-teal-600" />
+          <Icon name="lucide:infinity" class="w-4 h-4 text-slate-600" />
           {{ t('coachLanding.trust.unlimited') }}
         </span>
         <span class="flex items-center gap-2">
-          <Icon name="lucide:clock" class="w-4 h-4 text-teal-600" />
+          <Icon name="lucide:clock" class="w-4 h-4 text-slate-600" />
           {{ t('coachLanding.trust.trial') }}
         </span>
       </div>
@@ -109,7 +111,7 @@
       <div class="max-w-2xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
         <div class="text-center lg:text-left order-2 lg:order-1">
           <p
-            class="font-display text-teal-600 dark:text-teal-400 text-sm tracking-[0.2em] uppercase mb-3"
+            class="font-display text-slate-600 dark:text-slate-400 text-sm tracking-[0.2em] uppercase mb-3"
           >
             {{ t('coachLanding.features.pilotLabel') }}
           </p>
@@ -130,9 +132,9 @@
               class="flex items-center gap-3 justify-center lg:justify-start"
             >
               <span
-                class="w-5 h-5 rounded-full bg-teal-50 dark:bg-teal-900/40 flex items-center justify-center flex-shrink-0"
+                class="w-5 h-5 rounded-full bg-slate-50 dark:bg-slate-900/40 flex items-center justify-center flex-shrink-0"
               >
-                <Icon name="lucide:check" class="w-3 h-3 text-teal-700 dark:text-teal-400" />
+                <Icon name="lucide:check" class="w-3 h-3 text-slate-700 dark:text-slate-400" />
               </span>
               <span class="text-primary-700 dark:text-primary-300 text-sm font-medium">{{
                 item
@@ -155,7 +157,7 @@
               <span class="text-xs font-semibold tracking-wide text-primary-300 uppercase">{{
                 t('coachLanding.dashboard.label')
               }}</span>
-              <Icon name="lucide:bar-chart-3" class="w-5 h-5 text-teal-400" />
+              <Icon name="lucide:bar-chart-3" class="w-5 h-5 text-slate-400" />
             </div>
             <div class="grid grid-cols-2 gap-3 mb-6">
               <div
@@ -171,7 +173,7 @@
               <div
                 v-for="bar in analyticsBars"
                 :key="bar.label + '-bento'"
-                class="flex-1 rounded-t bg-gradient-to-t from-teal-600 to-teal-400"
+                class="flex-1 rounded-t bg-gradient-to-t from-slate-600 to-slate-400"
                 :style="{ height: bar.height }"
               />
             </div>
@@ -179,7 +181,7 @@
         </div>
         <div class="text-center lg:text-left order-2">
           <p
-            class="font-display text-teal-600 dark:text-teal-400 text-sm tracking-[0.2em] uppercase mb-3"
+            class="font-display text-slate-600 dark:text-slate-400 text-sm tracking-[0.2em] uppercase mb-3"
           >
             {{ t('coachLanding.features.analyticsLabel') }}
           </p>
@@ -200,9 +202,9 @@
               class="flex items-center gap-3 justify-center lg:justify-start"
             >
               <span
-                class="w-5 h-5 rounded-full bg-teal-50 dark:bg-teal-900/40 flex items-center justify-center flex-shrink-0"
+                class="w-5 h-5 rounded-full bg-slate-50 dark:bg-slate-900/40 flex items-center justify-center flex-shrink-0"
               >
-                <Icon name="lucide:check" class="w-3 h-3 text-teal-700 dark:text-teal-400" />
+                <Icon name="lucide:check" class="w-3 h-3 text-slate-700 dark:text-slate-400" />
               </span>
               <span class="text-primary-700 dark:text-primary-300 text-sm font-medium">{{
                 item
@@ -218,7 +220,7 @@
       <div class="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
         <div class="text-center lg:text-left order-2 lg:order-2">
           <p
-            class="font-display text-teal-600 dark:text-teal-400 text-sm tracking-[0.2em] uppercase mb-3"
+            class="font-display text-slate-600 dark:text-slate-400 text-sm tracking-[0.2em] uppercase mb-3"
           >
             {{ t('coachLanding.features.teamLabel') }}
           </p>
@@ -234,9 +236,13 @@
           </p>
           <NuxtLink
             :to="authStore.isAuthenticated ? '/coaching' : '/register'"
-            class="btn-primary px-8 py-3.5 inline-block !bg-gradient-to-r !from-teal-500 !to-teal-600 hover:!from-teal-600 hover:!to-teal-700"
+            class="btn-metallic px-8 py-3.5 inline-block"
           >
-            {{ authStore.isAuthenticated ? t('coachLanding.features.teamCtaManage') : t('coachLanding.features.teamCtaInvite') }}
+            {{
+              authStore.isAuthenticated
+                ? t('coachLanding.features.teamCtaManage')
+                : t('coachLanding.features.teamCtaInvite')
+            }}
           </NuxtLink>
         </div>
         <div
@@ -253,7 +259,7 @@
       <div class="max-w-5xl mx-auto">
         <div class="text-center mb-14">
           <p
-            class="font-display text-teal-600 dark:text-teal-400 text-sm tracking-[0.2em] uppercase mb-3"
+            class="font-display text-slate-600 dark:text-slate-400 text-sm tracking-[0.2em] uppercase mb-3"
           >
             {{ t('coachLanding.features.extraLabel') }}
           </p>
@@ -267,9 +273,9 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-6 slide-up">
           <div v-for="card in extraFeatures" :key="card.title" class="card-glass !p-6">
             <div
-              class="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-900/30 border border-teal-100 dark:border-teal-800/50 flex items-center justify-center mb-4"
+              class="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800/50 flex items-center justify-center mb-4"
             >
-              <Icon :name="card.icon" class="w-6 h-6 text-teal-600 dark:text-teal-400" />
+              <Icon :name="card.icon" class="w-6 h-6 text-slate-600 dark:text-slate-400" />
             </div>
             <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100 mb-1.5">
               {{ card.title }}
@@ -309,9 +315,11 @@
         </p>
         <NuxtLink
           :to="authStore.isAuthenticated ? '/coaching' : '/register'"
-          class="btn-primary text-base md:text-lg px-10 md:px-12 py-4 !bg-gradient-to-r !from-teal-500 !to-teal-600 hover:!from-teal-600 hover:!to-teal-700"
+          class="btn-metallic text-base md:text-lg px-10 md:px-12 py-4"
         >
-          {{ authStore.isAuthenticated ? t('coachLanding.cta.access') : t('coachLanding.cta.create') }}
+          {{
+            authStore.isAuthenticated ? t('coachLanding.cta.access') : t('coachLanding.cta.create')
+          }}
         </NuxtLink>
       </div>
     </section>
