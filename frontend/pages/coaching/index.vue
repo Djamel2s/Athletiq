@@ -18,7 +18,7 @@
               <div
                 class="w-16 h-16 rounded-2xl bg-gradient-primary flex items-center justify-center mx-auto mb-5"
               >
-                <Icon name="lucide:whistle" class="w-8 h-8 text-white" />
+                <Icon name="lucide:megaphone" class="w-8 h-8 text-white" />
               </div>
               <h1 class="text-2xl font-bold text-primary-900 dark:text-primary-100 mb-2">
                 {{ t('coaching.notCoachTitle') }}

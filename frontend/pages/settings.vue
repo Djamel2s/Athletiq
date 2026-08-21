@@ -508,7 +508,7 @@ const activeSection = ref<
 const sections = computed(() => {
   const base: { key: typeof activeSection.value; label: string; icon: string }[] = [
     { key: 'account', label: t('settings.navAccount'), icon: 'lucide:user' },
-    { key: 'coaching', label: t('settings.navCoaching'), icon: 'lucide:whistle' },
+    { key: 'coaching', label: t('settings.navCoaching'), icon: 'lucide:megaphone' },
     { key: 'preferences', label: t('settings.navPreferences'), icon: 'lucide:sliders-horizontal' },
     { key: 'notifications', label: t('settings.navNotifications'), icon: 'lucide:bell' },
     { key: 'data', label: t('settings.navData'), icon: 'lucide:download' },
