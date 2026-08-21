@@ -16,6 +16,9 @@ export default defineNuxtConfig({
   icon: {
     provider: 'server',
     localApiEndpoint: '/_nuxt_icon',
+    clientBundle: {
+      icons: ['circle-flags:us', 'circle-flags:fr'],
+    },
   },
 
   colorMode: {

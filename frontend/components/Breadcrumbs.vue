@@ -1,6 +1,6 @@
 <template>
   <nav v-if="allCrumbs.length" class="text-sm text-primary-500 dark:text-primary-400 mb-4">
-    <div class="max-w-7xl mx-auto" :class="isHome ? 'px-4' : 'px-8'">
+    <div class="max-w-7xl mx-auto px-6">
       <ol class="flex items-center gap-2">
         <li v-for="(c, i) in allCrumbs" :key="c.to" class="flex items-center gap-2">
           <span v-if="i !== 0" class="opacity-40 chevron">❯</span>
@@ -35,7 +35,7 @@ watch(
   { immediate: true }
 );
 
-const nameMap: Record<string, string> = {
+const nameMap = computed<Record<string, string>>(() => ({
   dashboard: t('nav.dashboard'),
   programs: t('programs.title'),
   workouts: t('nav.workouts'),
@@ -51,18 +51,13 @@ const nameMap: Record<string, string> = {
   wrapped: t('nav.wrapped'),
   coaching: t('nav.coaching'),
   clients: t('nav.clients'),
-};
+}));
 
 const normalizedPath = computed(() => {
   const raw = currentFullPath.value;
   const noQuery = raw.split('?')[0].split('#')[0] || '/';
   if (noQuery === '/') return '/';
   return noQuery.endsWith('/') ? noQuery.slice(0, -1) : noQuery;
-});
-
-const isHome = computed(() => {
-  const path = normalizedPath.value;
-  return !['/', '/coach-landing', '/register', '/login'].includes(path);
 });
 
 const ownUsername = computed(() => {
@@ -82,7 +77,7 @@ const crumbs = computed(() => {
   for (let i = 0; i < parts.length; i++) {
     const part = parts[i];
     acc += `/${part}`;
-    let text = nameMap[part] || part;
+    let text = nameMap.value[part] || part;
 
     if (parts[0] === 'profile' && i === 1) {
       text = `@${part}`;
@@ -90,7 +85,7 @@ const crumbs = computed(() => {
       text = t('common.detail');
     }
 
-    if (!nameMap[part] && !(parts[0] === 'profile' && i === 1) && !/^\d+$/.test(part)) {
+    if (!nameMap.value[part] && !(parts[0] === 'profile' && i === 1) && !/^\d+$/.test(part)) {
       text = text.replace(/-/g, ' ');
       text = text.charAt(0).toUpperCase() + text.slice(1);
     }

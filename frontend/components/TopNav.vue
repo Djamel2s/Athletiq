@@ -51,7 +51,7 @@
               @click="isLocaleMenuOpen = !isLocaleMenuOpen"
               :aria-label="t('nav.language')"
             >
-              <Icon :name="currentLocale?.flag" class="w-6 h-6" />
+              <Icon :key="currentLocale?.flag" :name="currentLocale?.flag" class="w-6 h-6" />
             </button>
 
             <div
@@ -120,6 +120,7 @@ const isLanding = computed(() => route.path === '/' || route.path === '/coach-la
 const isLogin = computed(() => route.path === '/login');
 const isRegister = computed(() => route.path === '/register');
 const isCoachLanding = computed(() => route.path === '/coach-landing');
+
 const isCoachSpace = computed(() => {
   if (isCoachLanding.value) return true;
   if (isLogin.value || isRegister.value) return isCoachMode.value;
