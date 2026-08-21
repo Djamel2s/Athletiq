@@ -1272,7 +1272,7 @@ const translations: Record<AppLocale, Record<string, string>> = {
     'nav.body': 'Corps',
     'nav.streak': 'Motivation',
     'nav.wrapped': 'Wrapped',
-    'nav.coaching': 'Espace Coach',
+    'nav.coaching': 'Tableau de bord',
     'nav.clients': 'Clients',
     'common.detail': 'Détail',
     'coachLanding.nav.features': 'Fonctionnalités',
