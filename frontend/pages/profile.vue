@@ -275,9 +275,24 @@
                   class="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"
                 ></div>
               </div>
+              <!-- Badge visibilite (public/prive), a moitie hors de l'avatar sur la droite -->
+              <div
+                v-if="profileData?.username"
+                class="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/2 w-9 h-9 rounded-full flex items-center justify-center z-10"
+                :class="profileVisibility.textClass"
+                :title="profileVisibility.label"
+                style="
+                  background: var(--card-bg);
+                  border: 1px solid var(--card-border);
+                  backdrop-filter: blur(20px);
+                  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+                "
+              >
+                <Icon :name="profileVisibility.icon" class="w-4 h-4" />
+              </div>
             </div>
 
-            <!-- Username + privacy badge -->
+            <!-- Username -->
             <div class="flex items-center justify-center gap-2 flex-wrap">
               <h1
                 v-if="profileData?.username"
@@ -288,13 +303,6 @@
               <h1 v-else class="text-2xl font-bold text-primary-900 dark:text-primary-100">
                 {{ displayedUser?.firstName || displayedUser?.email }}
               </h1>
-              <span
-                v-if="profileData?.username"
-                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-semibold tracking-wide uppercase"
-                :class="profileVisibility.badgeClass"
-              >
-                <Icon :name="profileVisibility.icon" class="w-3.5 h-3.5" />
-              </span>
             </div>
             <p v-if="profileData?.bio" class="text-sm text-primary-500 dark:text-primary-400 mt-1">
               {{ profileData.bio }}
@@ -726,18 +734,35 @@
           @click="showWorkoutsModal = false"
         >
           <div
-            class="relative w-full max-w-lg overflow-hidden rounded-3xl border border-primary-200/70 bg-white/95 text-primary-900 shadow-[0_30px_80px_rgba(15,23,42,0.18)] backdrop-blur-xl dark:border-primary-800/70 dark:bg-primary-950/95 dark:text-primary-100"
+            class="modal-surface relative w-full max-w-lg overflow-hidden rounded-3xl text-primary-900 dark:text-primary-100"
             @click.stop
           >
-            <div class="flex justify-end px-3 pt-3">
+            <div
+              class="flex items-center justify-between gap-3 px-5 pt-5 pb-4 border-b border-primary-200/60 dark:border-primary-800/60"
+            >
+              <div class="flex items-center gap-3 min-w-0">
+                <div
+                  class="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center shrink-0"
+                >
+                  <Icon name="lucide:dumbbell" class="w-5 h-5 text-white" />
+                </div>
+                <div class="min-w-0">
+                  <h3 class="font-semibold text-primary-950 dark:text-white truncate">
+                    {{ t('profile.stats.workouts') }}
+                  </h3>
+                  <p class="text-xs text-primary-500 dark:text-primary-400">
+                    {{ workoutsList.length }} séance{{ workoutsList.length > 1 ? 's' : '' }}
+                  </p>
+                </div>
+              </div>
               <button
                 @click="showWorkoutsModal = false"
-                class="w-10 h-10 rounded-2xl bg-primary-50 flex items-center justify-center text-primary-500 transition-colors hover:bg-primary-100 hover:text-primary-900 dark:bg-primary-900/70 dark:text-primary-300 dark:hover:bg-primary-800 dark:hover:text-white"
+                class="w-9 h-9 rounded-xl flex items-center justify-center text-primary-500 transition-colors hover:bg-primary-100 hover:text-primary-900 dark:hover:bg-primary-800 dark:hover:text-white shrink-0"
               >
                 <Icon name="lucide:x" class="w-5 h-5" />
               </button>
             </div>
-            <div class="max-h-[70vh] overflow-y-auto px-4 pb-4 custom-scrollbar">
+            <div class="max-h-[70vh] overflow-y-auto px-4 pb-4 pt-4 custom-scrollbar">
               <div v-if="workoutsLoading" class="text-center py-10">
                 <div
                   class="inline-block animate-spin rounded-full h-9 w-9 border-2 border-primary-200 border-t-sand-500 dark:border-primary-700"
@@ -748,7 +773,7 @@
                   <div
                     v-for="w in workoutsList"
                     :key="w.id"
-                    class="flex items-start justify-between gap-4 rounded-2xl border border-primary-200/80 bg-primary-50/70 p-4 shadow-sm transition-colors hover:border-sand-300 hover:bg-sand-50/70 dark:border-primary-800 dark:bg-primary-900/60 dark:hover:border-sand-500/30"
+                    class="flex items-start justify-between gap-4 rounded-2xl border border-primary-200/70 bg-primary-50/60 p-4 transition-colors hover:border-sand-400/50 hover:bg-sand-50/60 dark:border-primary-800/70 dark:bg-primary-900/40 dark:hover:border-sand-500/30 dark:hover:bg-primary-900/60"
                   >
                     <div class="min-w-0">
                       <div class="flex items-center gap-2">
@@ -763,7 +788,7 @@
                       </div>
                     </div>
                     <div
-                      class="shrink-0 rounded-full bg-white px-3 py-1 text-xs font-semibold text-primary-600 shadow-sm dark:bg-primary-800 dark:text-primary-200"
+                      class="shrink-0 rounded-full bg-sand-100 px-3 py-1 text-xs font-semibold text-sand-700 dark:bg-sand-500/15 dark:text-sand-300"
                     >
                       {{ w.totalVolume ? `${Math.round(w.totalVolume)} kg` : '—' }}
                     </div>
@@ -797,18 +822,35 @@
           @click="showGymBrosModal = false"
         >
           <div
-            class="relative w-full max-w-md overflow-hidden rounded-3xl border border-primary-200/70 bg-white/95 text-primary-900 shadow-[0_30px_80px_rgba(15,23,42,0.18)] backdrop-blur-xl dark:border-primary-800/70 dark:bg-primary-950/95 dark:text-primary-100"
+            class="modal-surface relative w-full max-w-md overflow-hidden rounded-3xl text-primary-900 dark:text-primary-100"
             @click.stop
           >
-            <div class="flex justify-end px-3 pt-3">
+            <div
+              class="flex items-center justify-between gap-3 px-5 pt-5 pb-4 border-b border-primary-200/60 dark:border-primary-800/60"
+            >
+              <div class="flex items-center gap-3 min-w-0">
+                <div
+                  class="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center shrink-0"
+                >
+                  <Icon name="lucide:users" class="w-5 h-5 text-white" />
+                </div>
+                <div class="min-w-0">
+                  <h3 class="font-semibold text-primary-950 dark:text-white truncate">
+                    {{ t('profile.stats.gymBros') }}
+                  </h3>
+                  <p class="text-xs text-primary-500 dark:text-primary-400">
+                    {{ gymBrosList.length }} ami{{ gymBrosList.length > 1 ? 's' : '' }}
+                  </p>
+                </div>
+              </div>
               <button
                 @click="showGymBrosModal = false"
-                class="w-10 h-10 rounded-2xl bg-primary-50 flex items-center justify-center text-primary-500 transition-colors hover:bg-primary-100 hover:text-primary-900 dark:bg-primary-900/70 dark:text-primary-300 dark:hover:bg-primary-800 dark:hover:text-white"
+                class="w-9 h-9 rounded-xl flex items-center justify-center text-primary-500 transition-colors hover:bg-primary-100 hover:text-primary-900 dark:hover:bg-primary-800 dark:hover:text-white shrink-0"
               >
                 <Icon name="lucide:x" class="w-5 h-5" />
               </button>
             </div>
-            <div class="max-h-[70vh] overflow-y-auto px-4 pb-4 custom-scrollbar">
+            <div class="max-h-[70vh] overflow-y-auto px-4 pb-4 pt-4 custom-scrollbar">
               <div v-if="gymBrosLoading" class="text-center py-10">
                 <div
                   class="inline-block animate-spin rounded-full h-9 w-9 border-2 border-primary-200 border-t-sand-500 dark:border-primary-700"
@@ -819,10 +861,10 @@
                   <div
                     v-for="g in gymBrosList"
                     :key="g.id"
-                    class="group flex items-center gap-3 rounded-2xl border border-primary-200/80 bg-primary-50/70 p-3 shadow-sm transition hover:border-sand-300 hover:bg-sand-50/70 dark:border-primary-800 dark:bg-primary-900/60 dark:hover:border-sand-500/30"
+                    class="group flex items-center gap-3 rounded-2xl border border-primary-200/70 bg-primary-50/60 p-3 transition hover:border-sand-400/50 hover:bg-sand-50/60 dark:border-primary-800/70 dark:bg-primary-900/40 dark:hover:border-sand-500/30 dark:hover:bg-primary-900/60"
                   >
                     <div
-                      class="w-12 h-12 rounded-2xl overflow-hidden bg-gradient-primary flex items-center justify-center ring-2 ring-white/60 dark:ring-primary-900"
+                      class="w-12 h-12 rounded-2xl overflow-hidden bg-gradient-primary flex items-center justify-center ring-2 ring-white/60 dark:ring-primary-900 shrink-0"
                     >
                       <img
                         v-if="g.avatarUrl"
@@ -838,7 +880,7 @@
                     </div>
                     <button
                       @click.prevent="navigateTo(`/profile/${g.username || g.id}`)"
-                      class="shrink-0 rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-primary-700 shadow-sm transition hover:bg-primary-950 hover:text-white dark:bg-primary-800 dark:text-primary-100 dark:hover:bg-primary-700 dark:hover:text-white"
+                      class="shrink-0 rounded-full bg-sand-500/10 px-3 py-1.5 text-sm font-semibold text-sand-700 transition hover:bg-sand-500 hover:text-white dark:bg-sand-500/15 dark:text-sand-300 dark:hover:bg-sand-500 dark:hover:text-white"
                     >
                       {{ t('common.view') }}
                     </button>
@@ -872,33 +914,57 @@
           @click="showStreakModal = false"
         >
           <div
-            class="relative w-full max-w-md overflow-hidden rounded-3xl border border-primary-200/70 bg-white/95 text-primary-900 shadow-[0_30px_80px_rgba(15,23,42,0.18)] backdrop-blur-xl dark:border-primary-800/70 dark:bg-primary-950/95 dark:text-primary-100"
+            class="modal-surface relative w-full max-w-md overflow-hidden rounded-3xl text-primary-900 dark:text-primary-100"
             @click.stop
           >
-            <div class="flex justify-end px-3 pt-3">
+            <div
+              class="flex items-center justify-between gap-3 px-5 pt-5 pb-4 border-b border-primary-200/60 dark:border-primary-800/60"
+            >
+              <div class="flex items-center gap-3 min-w-0">
+                <div
+                  class="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center shrink-0"
+                >
+                  <Icon name="lucide:flame" class="w-5 h-5 text-white" />
+                </div>
+                <div class="min-w-0">
+                  <h3 class="font-semibold text-primary-950 dark:text-white truncate">
+                    {{ t('profile.stats.streak') }}
+                  </h3>
+                  <p class="text-xs text-primary-500 dark:text-primary-400">
+                    {{ streakData?.currentStreak ?? 0 }} séance{{
+                      (streakData?.currentStreak ?? 0) > 1 ? 's' : ''
+                    }}
+                    d'affilée
+                  </p>
+                </div>
+              </div>
               <button
                 @click="showStreakModal = false"
-                class="w-10 h-10 rounded-2xl bg-primary-50 flex items-center justify-center text-primary-500 transition-colors hover:bg-primary-100 hover:text-primary-900 dark:bg-primary-900/70 dark:text-primary-300 dark:hover:bg-primary-800 dark:hover:text-white"
+                class="w-9 h-9 rounded-xl flex items-center justify-center text-primary-500 transition-colors hover:bg-primary-100 hover:text-primary-900 dark:hover:bg-primary-800 dark:hover:text-white shrink-0"
               >
                 <Icon name="lucide:x" class="w-5 h-5" />
               </button>
             </div>
-            <div class="max-h-[70vh] overflow-y-auto px-4 pb-4 custom-scrollbar">
+            <div class="max-h-[70vh] overflow-y-auto px-4 pb-4 pt-4 custom-scrollbar">
               <div v-if="streakLoading" class="text-center py-10">
                 <div
                   class="inline-block animate-spin rounded-full h-9 w-9 border-2 border-primary-200 border-t-sand-500 dark:border-primary-700"
                 ></div>
               </div>
               <div v-else>
-                <div v-if="streakData" class="space-y-4">
+                <div v-if="streakData" class="space-y-3">
                   <div class="grid grid-cols-2 gap-3">
-                    <div class="card-glass !p-4">
+                    <div
+                      class="rounded-2xl border border-primary-200/70 bg-primary-50/60 p-4 dark:border-primary-800/70 dark:bg-primary-900/40"
+                    >
                       <p class="text-xs text-primary-500 dark:text-primary-400">Streak actuel</p>
                       <p class="mt-2 text-3xl font-bold text-primary-950 dark:text-white">
                         {{ streakData.currentStreak }}
                       </p>
                     </div>
-                    <div class="card-glass !p-4">
+                    <div
+                      class="rounded-2xl border border-primary-200/70 bg-primary-50/60 p-4 dark:border-primary-800/70 dark:bg-primary-900/40"
+                    >
                       <p class="text-xs text-primary-500 dark:text-primary-400">
                         Objectif / semaine
                       </p>
@@ -909,7 +975,9 @@
                   </div>
 
                   <div class="grid grid-cols-2 gap-3">
-                    <div class="card-glass !p-4">
+                    <div
+                      class="rounded-2xl border border-primary-200/70 bg-primary-50/60 p-4 dark:border-primary-800/70 dark:bg-primary-900/40"
+                    >
                       <p class="text-xs text-primary-500 dark:text-primary-400">
                         Workouts cette semaine
                       </p>
@@ -917,7 +985,9 @@
                         {{ streakData.currentWeekWorkouts ?? '—' }}
                       </p>
                     </div>
-                    <div class="card-glass !p-4">
+                    <div
+                      class="rounded-2xl border border-primary-200/70 bg-primary-50/60 p-4 dark:border-primary-800/70 dark:bg-primary-900/40"
+                    >
                       <p class="text-xs text-primary-500 dark:text-primary-400">
                         Dernier entraînement
                       </p>
@@ -933,24 +1003,34 @@
 
                   <div
                     v-if="streakData.weeklyHistory && streakData.weeklyHistory.length"
-                    class="card-glass !p-4"
+                    class="rounded-2xl border border-primary-200/70 bg-primary-50/60 p-4 dark:border-primary-800/70 dark:bg-primary-900/40"
                   >
+                    <p
+                      class="text-xs font-semibold uppercase tracking-wide text-primary-500 dark:text-primary-400 mb-3"
+                    >
+                      Historique
+                    </p>
                     <ul class="space-y-2 text-sm">
                       <li
                         v-for="w in streakData.weeklyHistory.slice(-8)"
                         :key="w.week"
-                        class="flex items-center justify-between rounded-xl bg-primary-50 px-3 py-2 dark:bg-primary-800/50"
+                        class="flex items-center justify-between rounded-xl bg-white/70 px-3 py-2 dark:bg-primary-800/40"
                       >
                         <span class="text-primary-600 dark:text-primary-300">{{ w.week }}</span>
                         <span
-                          class="font-semibold"
+                          class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold"
                           :class="
                             w.metGoal
-                              ? 'text-emerald-600 dark:text-emerald-300'
-                              : 'text-rose-500 dark:text-rose-300'
+                              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-300'
+                              : 'bg-primary-500/10 text-primary-500 dark:text-primary-400'
                           "
-                          >{{ w.count }} {{ w.metGoal ? '✓' : '✗' }}</span
                         >
+                          <Icon
+                            :name="w.metGoal ? 'lucide:check' : 'lucide:minus'"
+                            class="w-3 h-3"
+                          />
+                          {{ w.count }}
+                        </span>
                       </li>
                     </ul>
                   </div>
@@ -1677,9 +1757,9 @@ const profileVisibility = computed(() => {
   return {
     label: isPrivate ? 'Privé' : 'Public',
     icon: isPrivate ? 'lucide:lock' : 'lucide:globe',
-    badgeClass: isPrivate
-      ? 'border-rose-500/20 bg-rose-500/10 text-rose-600 dark:text-rose-300'
-      : 'border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
+    textClass: isPrivate
+      ? 'text-primary-500 dark:text-primary-400'
+      : 'text-sand-700 dark:text-sand-300',
   };
 });
 

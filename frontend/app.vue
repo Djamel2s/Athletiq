@@ -3,7 +3,7 @@
     <OfflineBanner />
     <TopNav />
     <AuthLoader class="flex-1 flex flex-col">
-      <div class="pt-header flex-1 flex flex-col bg-primary-900">
+      <div class="pt-header flex-1 flex flex-col dark:bg-primary-900">
         <Breadcrumbs :key="route.fullPath" />
         <NuxtPage class="flex-1" />
       </div>

@@ -373,7 +373,7 @@
             <!-- Nouvel entraînement - caché sur mobile (déjà dans la bottom nav) -->
             <div class="hidden lg:block card-glass group text-center">
               <div
-                class="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 mx-auto icon-container"
+                class="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 mx-auto icon-container bg-gradient-primary"
               >
                 <svg
                   class="w-20 h-20 text-white"

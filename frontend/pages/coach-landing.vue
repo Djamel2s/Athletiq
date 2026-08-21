@@ -7,7 +7,7 @@
         style="
           background: radial-gradient(
             ellipse 80% 50% at 50% 80%,
-            rgba(45, 141, 128, 0.18),
+            rgba(128, 134, 140, 0.18),
             transparent
           );
         "
@@ -54,9 +54,14 @@
               class="inline-block mt-6"
             >
               <img
+                src="/publish/apple-black.png"
+                :alt="t('landing.hero.appStoreAlt')"
+                class="h-12 w-auto dark:hidden"
+              />
+              <img
                 src="/publish/apple-white.png"
                 :alt="t('landing.hero.appStoreAlt')"
-                class="h-12 w-auto"
+                class="h-12 w-auto hidden dark:block"
               />
             </NuxtLink>
             <NuxtLink
@@ -64,9 +69,14 @@
               class="inline-block mt-6"
             >
               <img
+                src="/publish/google-black.png"
+                :alt="t('landing.hero.playStoreAlt')"
+                class="h-12 w-auto dark:hidden"
+              />
+              <img
                 src="/publish/google-white.png"
                 :alt="t('landing.hero.playStoreAlt')"
-                class="h-12 w-auto"
+                class="h-12 w-auto hidden dark:block"
               />
             </NuxtLink>
           </div>
@@ -339,9 +349,14 @@
                 class="inline-block mt-6"
               >
                 <img
+                  src="/publish/apple-black.png"
+                  :alt="t('landing.hero.appStoreAlt')"
+                  class="h-12 w-auto dark:hidden"
+                />
+                <img
                   src="/publish/apple-white.png"
                   :alt="t('landing.hero.appStoreAlt')"
-                  class="h-12 w-auto"
+                  class="h-12 w-auto hidden dark:block"
                 />
               </NuxtLink>
               <NuxtLink
@@ -349,9 +364,14 @@
                 class="inline-block mt-6"
               >
                 <img
+                  src="/publish/google-black.png"
+                  :alt="t('landing.hero.playStoreAlt')"
+                  class="h-12 w-auto dark:hidden"
+                />
+                <img
                   src="/publish/google-white.png"
                   :alt="t('landing.hero.playStoreAlt')"
-                  class="h-12 w-auto"
+                  class="h-12 w-auto hidden dark:block"
                 />
               </NuxtLink>
             </div>

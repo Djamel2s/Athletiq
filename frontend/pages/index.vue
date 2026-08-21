@@ -50,9 +50,14 @@
               class="inline-block mt-6"
             >
               <img
+                src="/publish/apple-black.png"
+                :alt="t('landing.hero.appStoreAlt')"
+                class="h-12 w-auto dark:hidden"
+              />
+              <img
                 src="/publish/apple-white.png"
                 :alt="t('landing.hero.appStoreAlt')"
-                class="h-12 w-auto"
+                class="h-12 w-auto hidden dark:block"
               />
             </NuxtLink>
             <NuxtLink
@@ -60,9 +65,14 @@
               class="inline-block mt-6"
             >
               <img
+                src="/publish/google-black.png"
+                :alt="t('landing.hero.playStoreAlt')"
+                class="h-12 w-auto dark:hidden"
+              />
+              <img
                 src="/publish/google-white.png"
                 :alt="t('landing.hero.playStoreAlt')"
-                class="h-12 w-auto"
+                class="h-12 w-auto hidden dark:block"
               />
             </NuxtLink>
           </div>
@@ -320,15 +330,20 @@
             <p class="text-s text-primary-500 dark:text-primary-400 max-w-xs">
               {{ t('landing.footer.description') }}
             </p>
-            <div class="flex">
+            <div class="flex gap-3">
               <NuxtLink
                 :to="authStore.isAuthenticated ? '/dashboard' : '/register'"
                 class="inline-block mt-6"
               >
                 <img
+                  src="/publish/apple-black.png"
+                  :alt="t('landing.hero.appStoreAlt')"
+                  class="h-12 w-auto dark:hidden"
+                />
+                <img
                   src="/publish/apple-white.png"
                   :alt="t('landing.hero.appStoreAlt')"
-                  class="h-12 w-auto"
+                  class="h-12 w-auto hidden dark:block"
                 />
               </NuxtLink>
               <NuxtLink
@@ -336,9 +351,14 @@
                 class="inline-block mt-6"
               >
                 <img
+                  src="/publish/google-black.png"
+                  :alt="t('landing.hero.playStoreAlt')"
+                  class="h-12 w-auto dark:hidden"
+                />
+                <img
                   src="/publish/google-white.png"
                   :alt="t('landing.hero.playStoreAlt')"
-                  class="h-12 w-auto"
+                  class="h-12 w-auto hidden dark:block"
                 />
               </NuxtLink>
             </div>
