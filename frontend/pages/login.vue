@@ -3,8 +3,10 @@
     <div class="w-full max-w-md">
       <!-- Logo -->
       <div class="text-center mb-10 fade-in">
-        <NuxtLink to="/" class="inline-block">
-          <AppLogo
+        <NuxtLink :to="logoHome" class="inline-block">
+          <img
+            :src="logoSrc"
+            :alt="logoAlt"
             class="h-12 md:h-16 w-auto mx-auto mb-4 hover:scale-105 transition-transform duration-300"
           />
         </NuxtLink>
@@ -123,7 +125,7 @@
         <!-- Retour à l'accueil -->
         <div class="text-center mt-8">
           <NuxtLink
-            to="/"
+            :to="logoHome"
             class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-colors inline-flex items-center gap-2"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -160,6 +162,8 @@ useSeoMeta({
 
 const authStore = useAuthStore();
 const route = useRoute();
+const { setCoachMode, isCoachMode } = useAppMode();
+const { isRose } = useTheme();
 
 const email = ref('');
 const password = ref('');
@@ -167,6 +171,20 @@ const loading = ref(false);
 const error = ref('');
 const checking = ref(true);
 const emailVerified = computed(() => route.query.verified === 'true');
+
+if (route.query.mode === 'coach') {
+  setCoachMode();
+}
+
+const logoSrc = computed(() =>
+  isCoachMode.value
+    ? '/coach-athletiq-icon.svg'
+    : isRose.value
+      ? '/athletiq-icon-rose.svg'
+      : '/athletiq-icon.svg'
+);
+const logoAlt = computed(() => (isCoachMode.value ? 'Coach Athletiq' : 'Athletiq'));
+const logoHome = computed(() => (isCoachMode.value ? '/coach-landing' : '/'));
 
 const handleLogin = async () => {
   error.value = '';
@@ -176,7 +194,7 @@ const handleLogin = async () => {
     const result = await authStore.login(email.value, password.value);
 
     if (result.success) {
-      navigateTo('/dashboard');
+      navigateTo(isCoachMode.value ? '/coaching' : '/dashboard');
     } else {
       error.value = result.error || t('auth.login.errorGeneric');
     }
@@ -191,7 +209,7 @@ const handleLogin = async () => {
 onMounted(async () => {
   await authStore.initAuth();
   if (authStore.isAuthenticated) {
-    navigateTo('/dashboard');
+    navigateTo(isCoachMode.value ? '/coaching' : '/dashboard');
   }
   checking.value = false;
 });

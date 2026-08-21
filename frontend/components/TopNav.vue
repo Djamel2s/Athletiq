@@ -20,18 +20,24 @@
 
         <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           <template v-if="authStore.isAuthenticated">
-            <NuxtLink :to="isCoachLanding ? '/coaching' : '/dashboard'" class="btn-primary !py-2 !px-5 text-sm">
+            <NuxtLink
+              :to="isCoachLanding ? '/coaching' : '/dashboard'"
+              class="btn-primary !py-2 !px-5 text-sm"
+            >
               {{ isCoachLanding ? t('coachLanding.hero.ctaAccess') : t('nav.dashboard') }}
             </NuxtLink>
           </template>
           <template v-else>
             <NuxtLink
-              to="/login"
+              :to="isCoachLanding ? '/login?mode=coach' : '/login'"
               class="hidden sm:block text-sm font-semibold text-primary-700 dark:text-primary-300 hover:text-primary-900 dark:hover:text-primary-100 transition-colors"
             >
               {{ isCoachLanding ? t('coachLanding.nav.login') : t('nav.login') }}
             </NuxtLink>
-            <NuxtLink to="/register" class="btn-primary !py-2 !px-5 text-sm">
+            <NuxtLink
+              :to="isCoachLanding ? '/register?mode=coach' : '/register'"
+              class="btn-primary !py-2 !px-5 text-sm"
+            >
               {{ isCoachLanding ? t('coachLanding.nav.register') : t('nav.register') }}
             </NuxtLink>
           </template>

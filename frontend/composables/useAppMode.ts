@@ -29,31 +29,29 @@ const ATHLETE_ONLY_BASES = [
 const isAthleteOnlyRoute = (path: string) =>
   ATHLETE_ONLY_BASES.some((base) => path === base || path.startsWith(`${base}/`));
 
+let hasHydratedFromStorage = false;
+let hasStorageWatcher = false;
+
 export const useAppMode = () => {
   const route = useRoute();
 
   const mode = useState<AppMode>('athletiq-app-mode', () => 'athlete');
 
-  // Récupère le dernier espace utilisé côté client. Sert de valeur par
-  // défaut pour les routes partagées ; les routes exclusives (ci-dessous)
-  // reprennent toujours la main dessus.
-  if (import.meta.client) {
+  if (import.meta.client && !hasHydratedFromStorage) {
+    hasHydratedFromStorage = true;
     const savedMode = localStorage.getItem(STORAGE_KEY);
-
     if (savedMode === 'coach' || savedMode === 'athlete') {
       mode.value = savedMode;
     }
+  }
 
+  if (import.meta.client && !hasStorageWatcher) {
+    hasStorageWatcher = true;
     watch(mode, (value) => {
       localStorage.setItem(STORAGE_KEY, value);
     });
   }
 
-  // Synchronise le mode avec la route courante. Une route exclusive à un
-  // espace force toujours le mode correspondant (ex: /workouts force
-  // "athlete" même si le dernier espace visité/mémorisé était "coach") :
-  // c'est ce qui évite la fuite d'un espace vers l'autre (logo, thème,
-  // fil d'Ariane...). Les routes partagées ne touchent pas au mode.
   watch(
     () => route.path,
     (path) => {

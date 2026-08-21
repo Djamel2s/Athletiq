@@ -3,7 +3,7 @@
     <!-- Carte arriere : l'autre espace, en biais et attenuee, vient devant au clic -->
     <button
       type="button"
-      class="absolute inset-0"
+      class="absolute inset-0 flex items-center justify-center"
       :class="[
         flipping ? 'flip-logo-active' : 'flip-logo-idle',
         resetting ? 'no-logo-transition' : '',
@@ -22,7 +22,7 @@
     <!-- Carte avant : espace courant, lien normal -->
     <NuxtLink
       :to="currentHome"
-      class="absolute inset-0 block"
+      class="absolute inset-0 flex items-center justify-center"
       :class="[
         flipping ? 'flip-logo-fading' : 'flip-logo-front',
         resetting ? 'no-logo-transition' : '',
@@ -42,10 +42,12 @@
 const route = useRoute();
 const { t } = useLocale();
 const { isRose } = useTheme();
-const { isCoachMode: appIsCoachMode } = useAppMode();
+const { isCoachMode: appIsCoachMode, setCoachMode, setAthleteMode } = useAppMode();
 
 const isLanding = computed(() => route.path === '/' || route.path === '/coach-landing');
 const isCoachLandingPage = computed(() => route.path === '/coach-landing');
+const isAuthPage = computed(() => route.path === '/login' || route.path === '/register');
+
 const isCoachSection = computed(() =>
   isLanding.value ? isCoachLandingPage.value : appIsCoachMode.value
 );
@@ -60,6 +62,7 @@ const otherLogoSrc = computed(() => (isCoachSection.value ? athleteLogoSrc.value
 
 const currentHome = computed(() => {
   if (isLanding.value) return isCoachSection.value ? '/coach-landing' : '/';
+  if (isAuthPage.value) return isCoachSection.value ? '/coach-landing' : '/';
   return isCoachSection.value ? '/coaching' : '/dashboard';
 });
 const currentLabel = computed(() => (isCoachSection.value ? 'Coach Athletiq' : 'Athletiq'));
@@ -76,21 +79,30 @@ const animatingOtherLogo = ref('');
 const handleFlip = async () => {
   if (flipping.value) return;
 
-  // On mémorise les logos AVANT le changement de route
   animatingCurrentLogo.value = currentLogoSrc.value;
   animatingOtherLogo.value = otherLogoSrc.value;
   flipping.value = true;
 
-  const target = isLanding.value
-    ? isCoachSection.value
-      ? '/'
-      : '/coach-landing'
-    : isCoachSection.value
-      ? '/dashboard'
-      : '/coaching';
-
   await new Promise((resolve) => setTimeout(resolve, 300));
-  await navigateTo(target);
+
+  if (isAuthPage.value) {
+    if (isCoachSection.value) setAthleteMode();
+    else setCoachMode();
+  } else {
+    const target = isLanding.value
+      ? isCoachSection.value
+        ? '/'
+        : '/coach-landing'
+      : isCoachSection.value
+        ? '/dashboard'
+        : '/coaching';
+
+    if (isCoachSection.value) setAthleteMode();
+    else setCoachMode();
+
+    await navigateTo(target);
+  }
+
   await nextTick();
 
   resetting.value = true;

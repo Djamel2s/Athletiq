@@ -3,11 +3,27 @@
     <div class="w-full max-w-md">
       <!-- Logo -->
       <div class="text-center mb-10 fade-in">
-        <NuxtLink to="/" class="inline-block">
-          <AppLogo
-            class="h-12 md:h-16 w-auto mx-auto mb-4 hover:scale-105 transition-transform duration-300"
-          />
-        </NuxtLink>
+        <!-- Un compte peut devenir aussi bien un espace athlète qu'un espace
+             coach : on montre toujours les deux, quel que soit le mode. -->
+        <div class="flex items-center justify-center gap-3 mb-4">
+          <NuxtLink to="/" class="inline-block" :aria-label="t('nav.dashboard')">
+            <img
+              :src="athleteLogoSrc"
+              alt="Athletiq"
+              class="h-12 md:h-14 w-auto hover:scale-105 transition-transform duration-300"
+            />
+          </NuxtLink>
+          <span class="text-2xl md:text-3xl font-bold text-primary-400 dark:text-primary-500"
+            >\</span
+          >
+          <NuxtLink to="/coach-landing" class="inline-block" :aria-label="t('nav.coaching')">
+            <img
+              src="/coach-athletiq-icon.svg"
+              alt="Coach Athletiq"
+              class="h-12 md:h-14 w-auto hover:scale-105 transition-transform duration-300"
+            />
+          </NuxtLink>
+        </div>
         <h1
           class="text-2xl md:text-4xl font-bold text-primary-900 dark:text-primary-100 mb-2 text-display"
         >
@@ -313,7 +329,7 @@
       <!-- Retour à l'accueil -->
       <div class="text-center mt-8">
         <NuxtLink
-          to="/"
+          :to="backHome"
           class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-100 transition-colors inline-flex items-center gap-2"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -348,6 +364,18 @@ useSeoMeta({
 
 const authStore = useAuthStore();
 const { locale, availableLocales, setLocale, t } = useLocale();
+const route = useRoute();
+const { setCoachMode, isCoachMode } = useAppMode();
+const { isRose } = useTheme();
+
+if (route.query.mode === 'coach') {
+  setCoachMode();
+}
+
+const athleteLogoSrc = computed(() =>
+  isRose.value ? '/athletiq-icon-rose.svg' : '/athletiq-icon.svg'
+);
+const backHome = computed(() => (isCoachMode.value ? '/coach-landing' : '/'));
 
 const firstName = ref('');
 const lastName = ref('');
@@ -476,7 +504,7 @@ const handleRegister = async () => {
       if (avatarFile.value) {
         await authStore.uploadAvatar(avatarFile.value);
       }
-      navigateTo('/dashboard');
+      navigateTo(isCoachMode.value ? '/coaching' : '/dashboard');
     } else {
       error.value = result.error || 'Une erreur est survenue';
     }
@@ -491,7 +519,7 @@ const handleRegister = async () => {
 onMounted(async () => {
   await authStore.initAuth();
   if (authStore.isAuthenticated) {
-    navigateTo('/dashboard');
+    navigateTo(isCoachMode.value ? '/coaching' : '/dashboard');
   }
 });
 

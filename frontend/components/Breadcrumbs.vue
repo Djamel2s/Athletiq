@@ -4,7 +4,7 @@
       <ol class="flex items-center gap-2">
         <li v-for="(c, i) in allCrumbs" :key="c.to" class="flex items-center gap-2">
           <span v-if="i !== 0" class="opacity-40 chevron">❯</span>
- <NuxtLink v-if="i !== allCrumbs.length - 1" :to="c.to" class="hover:underline">{{
+          <NuxtLink v-if="i !== allCrumbs.length - 1" :to="c.to" class="hover:underline">{{
             c.text
           }}</NuxtLink>
           <span v-else class="font-semibold text-primary-900 dark:text-primary-100">{{
@@ -107,7 +107,11 @@ const crumbs = computed(() => {
 
 // Build full crumbs with a leading root based on auth state and mode.
 const allCrumbs = computed(() => {
-  if (normalizedPath.value === '/' || crumbs.value.length === 0) {
+  if (normalizedPath.value === '/' || normalizedPath.value === '/coach-landing') {
+    return [{ text: t('nav.home'), to: normalizedPath.value }];
+  }
+
+  if (crumbs.value.length === 0) {
     return [{ text: t('nav.home'), to: '/' }];
   }
 
@@ -120,7 +124,7 @@ const allCrumbs = computed(() => {
       head.push({ text: rootLabel, to: rootPath });
     }
   } else {
-    head.push({ text: t('nav.home'), to: '/' });
+    head.push({ text: t('nav.home'), to: isCoachMode.value ? '/coach-landing' : '/' });
   }
 
   return [...head, ...crumbs.value];
