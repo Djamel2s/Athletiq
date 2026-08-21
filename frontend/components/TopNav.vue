@@ -44,7 +44,7 @@
             </NuxtLink>
           </template>
 
-          <div class="relative">
+          <div class="relative" ref="localeMenuRef">
             <button
               type="button"
               class="flex h-10 w-10 items-center justify-center rounded-full border border-primary-200/70 bg-white/80 shadow-sm transition-all hover:scale-105 dark:border-primary-700 dark:bg-primary-900/70 overflow-hidden"
@@ -112,6 +112,7 @@ const authStore = useAuthStore();
 const { locale, availableLocales, setLocale, t } = useLocale();
 const { isCoachMode } = useAppMode();
 const isLocaleMenuOpen = ref(false);
+const localeMenuRef = ref<HTMLElement | null>(null);
 
 const currentLocale = computed(() =>
   availableLocales.find((option) => option.code === locale.value)
@@ -145,4 +146,20 @@ const selectLocale = (value: 'en' | 'fr') => {
   setLocale(value);
   isLocaleMenuOpen.value = false;
 };
+
+const handleClickOutsideLocaleMenu = (event: MouseEvent) => {
+  if (!isLocaleMenuOpen.value) return;
+  const target = event.target as Node;
+  if (localeMenuRef.value && !localeMenuRef.value.contains(target)) {
+    isLocaleMenuOpen.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutsideLocaleMenu);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutsideLocaleMenu);
+});
 </script>
