@@ -1638,7 +1638,8 @@
       </Transition>
     </Teleport>
 
-    <MobileBottomNav active-path="/profile" />
+    <CoachMobileNav v-if="isCoachMode" active="/profile" />
+    <MobileBottomNav v-else active-path="/profile" />
   </div>
 </template>
 
@@ -1647,6 +1648,8 @@ import { useAuthStore } from '~/stores/auth';
 import { useSocialApi } from '~/composables/useSocialApi';
 import { apiFetch } from '~/utils/apiFetch';
 import { useBodyApi } from '~/composables/useBodyApi';
+
+const { isCoachMode } = useAppMode();
 /* TopNav imported and rendered globally in app.vue; per-page import removed */
 
 definePageMeta({

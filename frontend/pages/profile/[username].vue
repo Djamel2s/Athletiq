@@ -344,7 +344,8 @@
       </Transition>
     </Teleport>
 
-    <MobileBottomNav active-path="/feed" />
+    <CoachMobileNav v-if="isCoachMode" active="/profile" />
+    <MobileBottomNav v-else active-path="/feed" />
   </div>
 </template>
 
@@ -352,6 +353,8 @@
 const { t } = useLocale();
 /* TopNav imported and rendered globally in app.vue; per-page import removed */
 import { useSocialApi } from '~/composables/useSocialApi';
+
+const { isCoachMode } = useAppMode();
 
 definePageMeta({
   layout: false,
