@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && rm -rf /var/lib/apt/lists/*
 
 COPY package.json package-lock.json* ./
+COPY prisma ./prisma
 RUN npm ci
 
 COPY tsconfig.json ./
@@ -20,8 +21,9 @@ FROM node:20-bullseye-slim AS runner
 WORKDIR /app
 
 COPY package.json package-lock.json* ./
-# Install production deps only for a smaller runtime image
+COPY prisma ./prisma
 RUN npm ci --omit=dev
+RUN npx prisma generate
 
 COPY --from=builder /app/dist ./dist
 
