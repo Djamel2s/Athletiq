@@ -49,14 +49,27 @@
       <div class="border-t border-primary-200 dark:border-primary-700 my-4"></div>
 
       <!-- Retour Athletiq -->
-      <button @click="navigateTo('/dashboard')" class="flex items-center space-x-3 transition-all">
+      <!-- Logout Button -->
+      <button @click="handleLogout" class="flex items-center space-x-0 transition-all group/logout">
         <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0">
-          <Icon name="lucide:arrow-left" class="w-5 h-5 text-primary-700 dark:text-primary-300" />
+          <svg
+            class="w-5 h-5 text-primary-700 dark:text-primary-300"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+            />
+          </svg>
         </div>
         <span
           class="text-primary-900 dark:text-primary-100 font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300"
         >
-          {{ t('coach.nav.backToAthletiq') }}
+          {{ t('nav.logout') }}
         </span>
       </button>
     </div>
@@ -64,6 +77,8 @@
 </template>
 
 <script setup lang="ts">
+import { useAuthStore } from '~/stores/auth';
+const authStore = useAuthStore();
 const props = defineProps<{ active: string }>();
 const { t } = useLocale();
 
@@ -75,4 +90,8 @@ const navItems = computed(() => [
 ]);
 
 const isActive = (path: string) => props.active === path;
+
+const handleLogout = () => {
+  authStore.logout();
+};
 </script>
