@@ -153,7 +153,11 @@
         <template v-if="profile.isPublic || profile.isFriend">
           <!-- Stats Row -->
           <div class="flex justify-center gap-8 mb-6 slide-up">
-            <div class="text-center">
+            <button
+              type="button"
+              @click="showWorkoutsModal = true"
+              class="text-center transition-opacity hover:opacity-70"
+            >
               <div class="flex items-center justify-center gap-1.5">
                 <span class="text-lg font-bold text-primary-900 dark:text-primary-100">{{
                   profile.stats?.workoutCount ?? 0
@@ -166,7 +170,7 @@
               <p class="text-[11px] text-primary-500 dark:text-primary-400">
                 {{ t('profile.stats.workouts') }}
               </p>
-            </div>
+            </button>
             <div class="text-center">
               <div class="flex items-center justify-center gap-1.5">
                 <span class="text-lg font-bold text-primary-900 dark:text-primary-100">{{
@@ -344,6 +348,71 @@
       </Transition>
     </Teleport>
 
+    <Teleport to="body">
+      <Transition name="modal">
+        <div
+          v-if="showWorkoutsModal"
+          class="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          @click="showWorkoutsModal = false"
+        >
+          <div
+            class="modal-surface-solid relative w-full max-w-lg overflow-hidden rounded-3xl text-primary-900 dark:text-primary-100"
+            @click.stop
+          >
+            <div class="flex justify-end px-3 pt-3">
+              <button
+                @click="showWorkoutsModal = false"
+                class="w-9 h-9 rounded-xl flex items-center justify-center text-primary-500 transition-colors hover:bg-primary-100 hover:text-primary-900 dark:hover:bg-primary-800 dark:hover:text-white"
+              >
+                <Icon name="lucide:x" class="w-5 h-5" />
+              </button>
+            </div>
+            <div class="max-h-[70vh] overflow-y-auto px-4 pb-4 custom-scrollbar">
+              <div v-if="profile?.workouts?.length" class="space-y-3">
+                <button
+                  v-for="w in profile.workouts"
+                  :key="w.id"
+                  type="button"
+                  @click="goToWorkout(w.id)"
+                  class="flex items-start justify-between gap-4 w-full text-left rounded-2xl border border-primary-200/70 bg-primary-50/60 p-4 transition-colors hover:border-sand-400/50 hover:bg-sand-50/60 dark:border-primary-800/70 dark:bg-primary-900/40 dark:hover:border-sand-500/30 dark:hover:bg-primary-900/60"
+                >
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                      <Icon name="lucide:calendar-check-2" class="w-4 h-4 text-sand-500" />
+                      <div class="font-semibold text-primary-950 dark:text-white truncate">
+                        {{ w.name }}
+                      </div>
+                    </div>
+                    <div class="mt-1 text-xs text-primary-500 dark:text-primary-400">
+                      {{ formatWorkoutDate(w.completedAt) }} ·
+                      {{ Math.max(1, Math.round((w.duration || 0) / 60)) }} min
+                    </div>
+                  </div>
+                  <div
+                    class="shrink-0 rounded-full bg-sand-100 px-3 py-1 text-xs font-semibold text-sand-700 dark:bg-sand-500/15 dark:text-sand-300"
+                  >
+                    {{ w.totalVolume ? `${Math.round(w.totalVolume)} kg` : '—' }}
+                  </div>
+                </button>
+              </div>
+              <div
+                v-else
+                class="rounded-2xl border border-dashed border-primary-200 bg-primary-50/60 py-12 text-center dark:border-primary-800 dark:bg-primary-900/40"
+              >
+                <Icon
+                  name="lucide:dumbbell"
+                  class="w-12 h-12 mx-auto mb-3 text-primary-300 dark:text-primary-600"
+                />
+                <p class="text-primary-600 dark:text-primary-300 font-medium">
+                  Aucun workout disponible
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
     <CoachMobileNav v-if="isCoachMode" active="/profile" />
     <MobileBottomNav v-else active-path="/feed" />
   </div>
@@ -374,6 +443,21 @@ const profile = ref<any>(null);
 const activeTab = ref<'photos' | 'posts'>('photos');
 const selectedPhoto = ref<any>(null);
 const actionLoading = ref(false);
+const showWorkoutsModal = ref(false);
+
+const goToWorkout = (workoutId: number) => {
+  showWorkoutsModal.value = false;
+  navigateTo(`/profile/${username.value}/workout/${workoutId}`);
+};
+
+const formatWorkoutDate = (dateStr?: string | null) => {
+  if (!dateStr) return '';
+  return new Intl.DateTimeFormat('fr-FR', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(new Date(dateStr));
+};
 
 const profileInitials = computed(() => {
   if (!profile.value) return '?';
