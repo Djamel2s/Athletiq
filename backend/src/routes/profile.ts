@@ -354,4 +354,46 @@ router.get('/:username/photos', optionalAuth, async (req: AuthRequest, res) => {
   }
 });
 
+router.get('/:username/workouts/:workoutId', optionalAuth, async (req: AuthRequest, res) => {
+  try {
+    const { username, workoutId } = req.params;
+    const parsedWorkoutId = Number(workoutId);
+    if (!Number.isInteger(parsedWorkoutId)) {
+      return res.status(400).json({ error: 'Invalid workout id' });
+    }
+
+    const user = await userRepo().findOne({ where: { username } });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const viewerId = req.user?.id;
+    const isOwnProfile = viewerId === user.id;
+    const isFriendOfUser = viewerId && !isOwnProfile ? await isFriend(viewerId, user.id) : false;
+    const isPublicProfile = user.isPublic !== false;
+
+    if (!isPublicProfile && !isOwnProfile && !isFriendOfUser) {
+      return res.status(403).json({ error: 'This profile is private' });
+    }
+
+    const workout = await workoutRepo().findOne({
+      where: { id: parsedWorkoutId, userId: user.id },
+      relations: ['exercises', 'exercises.sets', 'exercises.exerciseLibrary', 'photos'],
+    });
+
+    if (!workout) {
+      return res.status(404).json({ error: 'Workout not found' });
+    }
+
+    if (workout.exercises) {
+      workout.exercises.sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0));
+    }
+
+    res.json(workout);
+  } catch (error) {
+    logger.error({ err: error, route: 'profile' }, 'Error fetching profile workout');
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 export default router;

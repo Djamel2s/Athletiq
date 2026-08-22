@@ -354,10 +354,7 @@
                 {{ t('profile.stats.gymBros') }}
               </p>
             </button>
-            <button
-              @click="navigateTo('/streak')"
-              class="text-center transition-opacity cursor-pointer hover:opacity-70"
-            >
+            <div class="text-center">
               <div class="flex items-center justify-center gap-1.5">
                 <span class="text-lg font-bold text-primary-900 dark:text-primary-100">{{
                   profileData?.stats?.streak ?? 0
@@ -375,7 +372,7 @@
               <p class="text-[11px] text-primary-500 dark:text-primary-400">
                 {{ t('profile.stats.streak') }}
               </p>
-            </button>
+            </div>
           </div>
 
           <!-- Action Buttons -->
@@ -1500,7 +1497,11 @@ const closeAllModals = () => {
 
 const goToWorkout = (workoutId: number) => {
   closeAllModals();
-  navigateTo(`/workouts/${workoutId}`);
+  if (isOwnProfile.value) {
+    navigateTo(`/workouts/${workoutId}`);
+  } else if (profileData.value?.username) {
+    navigateTo(`/profile/${profileData.value.username}/workout/${workoutId}`);
+  }
 };
 
 const goToGymBro = (g: { username?: string | null; id: number }) => {
