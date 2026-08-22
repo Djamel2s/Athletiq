@@ -355,14 +355,8 @@
               </p>
             </button>
             <button
-              @click="openStreakModal"
-              :disabled="!canOpenProfileModals"
-              class="text-center transition-opacity cursor-pointer"
-              :class="
-                canOpenProfileModals
-                  ? 'hover:opacity-70'
-                  : 'cursor-not-allowed opacity-50 hover:opacity-50'
-              "
+              @click="navigateTo('/streak')"
+              class="text-center transition-opacity cursor-pointer hover:opacity-70"
             >
               <div class="flex items-center justify-center gap-1.5">
                 <span class="text-lg font-bold text-primary-900 dark:text-primary-100">{{
@@ -725,44 +719,27 @@
       </Transition>
     </Teleport>
 
-    <!-- Workouts Modal -->
+    <!-- Workouts Modal : liste seule, ligne entiere cliquable vers l'historique -->
     <Teleport to="body">
       <Transition name="modal">
         <div
           v-if="showWorkoutsModal"
           class="fixed inset-0 z-[100] flex items-center justify-center p-4"
-          @click="showWorkoutsModal = false"
+          @click="closeAllModals"
         >
           <div
-            class="modal-surface relative w-full max-w-lg overflow-hidden rounded-3xl text-primary-900 dark:text-primary-100"
+            class="modal-surface-solid relative w-full max-w-lg overflow-hidden rounded-3xl text-primary-900 dark:text-primary-100"
             @click.stop
           >
-            <div
-              class="flex items-center justify-between gap-3 px-5 pt-5 pb-4 border-b border-primary-200/60 dark:border-primary-800/60"
-            >
-              <div class="flex items-center gap-3 min-w-0">
-                <div
-                  class="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center shrink-0"
-                >
-                  <Icon name="lucide:dumbbell" class="w-5 h-5 text-white" />
-                </div>
-                <div class="min-w-0">
-                  <h3 class="font-semibold text-primary-950 dark:text-white truncate">
-                    {{ t('profile.stats.workouts') }}
-                  </h3>
-                  <p class="text-xs text-primary-500 dark:text-primary-400">
-                    {{ workoutsList.length }} séance{{ workoutsList.length > 1 ? 's' : '' }}
-                  </p>
-                </div>
-              </div>
+            <div class="flex justify-end px-3 pt-3">
               <button
-                @click="showWorkoutsModal = false"
-                class="w-9 h-9 rounded-xl flex items-center justify-center text-primary-500 transition-colors hover:bg-primary-100 hover:text-primary-900 dark:hover:bg-primary-800 dark:hover:text-white shrink-0"
+                @click="closeAllModals"
+                class="w-9 h-9 rounded-xl flex items-center justify-center text-primary-500 transition-colors hover:bg-primary-100 hover:text-primary-900 dark:hover:bg-primary-800 dark:hover:text-white"
               >
                 <Icon name="lucide:x" class="w-5 h-5" />
               </button>
             </div>
-            <div class="max-h-[70vh] overflow-y-auto px-4 pb-4 pt-4 custom-scrollbar">
+            <div class="max-h-[70vh] overflow-y-auto px-4 pb-4 custom-scrollbar">
               <div v-if="workoutsLoading" class="text-center py-10">
                 <div
                   class="inline-block animate-spin rounded-full h-9 w-9 border-2 border-primary-200 border-t-sand-500 dark:border-primary-700"
@@ -770,10 +747,12 @@
               </div>
               <div v-else>
                 <div v-if="workoutsList.length" class="space-y-3">
-                  <div
+                  <button
                     v-for="w in workoutsList"
                     :key="w.id"
-                    class="flex items-start justify-between gap-4 rounded-2xl border border-primary-200/70 bg-primary-50/60 p-4 transition-colors hover:border-sand-400/50 hover:bg-sand-50/60 dark:border-primary-800/70 dark:bg-primary-900/40 dark:hover:border-sand-500/30 dark:hover:bg-primary-900/60"
+                    type="button"
+                    @click="goToWorkout(w.id)"
+                    class="flex items-start justify-between gap-4 w-full text-left rounded-2xl border border-primary-200/70 bg-primary-50/60 p-4 transition-colors hover:border-sand-400/50 hover:bg-sand-50/60 dark:border-primary-800/70 dark:bg-primary-900/40 dark:hover:border-sand-500/30 dark:hover:bg-primary-900/60"
                   >
                     <div class="min-w-0">
                       <div class="flex items-center gap-2">
@@ -792,7 +771,7 @@
                     >
                       {{ w.totalVolume ? `${Math.round(w.totalVolume)} kg` : '—' }}
                     </div>
-                  </div>
+                  </button>
                 </div>
                 <div
                   v-else
@@ -813,44 +792,27 @@
       </Transition>
     </Teleport>
 
-    <!-- GymBros Modal -->
+    <!-- GymBros Modal : liste seule, ligne entiere cliquable vers le profil -->
     <Teleport to="body">
       <Transition name="modal">
         <div
           v-if="showGymBrosModal"
           class="fixed inset-0 z-[100] flex items-center justify-center p-4"
-          @click="showGymBrosModal = false"
+          @click="closeAllModals"
         >
           <div
-            class="modal-surface relative w-full max-w-md overflow-hidden rounded-3xl text-primary-900 dark:text-primary-100"
+            class="modal-surface-solid relative w-full max-w-md overflow-hidden rounded-3xl text-primary-900 dark:text-primary-100"
             @click.stop
           >
-            <div
-              class="flex items-center justify-between gap-3 px-5 pt-5 pb-4 border-b border-primary-200/60 dark:border-primary-800/60"
-            >
-              <div class="flex items-center gap-3 min-w-0">
-                <div
-                  class="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center shrink-0"
-                >
-                  <Icon name="lucide:users" class="w-5 h-5 text-white" />
-                </div>
-                <div class="min-w-0">
-                  <h3 class="font-semibold text-primary-950 dark:text-white truncate">
-                    {{ t('profile.stats.gymBros') }}
-                  </h3>
-                  <p class="text-xs text-primary-500 dark:text-primary-400">
-                    {{ gymBrosList.length }} ami{{ gymBrosList.length > 1 ? 's' : '' }}
-                  </p>
-                </div>
-              </div>
+            <div class="flex justify-end px-3 pt-3">
               <button
-                @click="showGymBrosModal = false"
-                class="w-9 h-9 rounded-xl flex items-center justify-center text-primary-500 transition-colors hover:bg-primary-100 hover:text-primary-900 dark:hover:bg-primary-800 dark:hover:text-white shrink-0"
+                @click="closeAllModals"
+                class="w-9 h-9 rounded-xl flex items-center justify-center text-primary-500 transition-colors hover:bg-primary-100 hover:text-primary-900 dark:hover:bg-primary-800 dark:hover:text-white"
               >
                 <Icon name="lucide:x" class="w-5 h-5" />
               </button>
             </div>
-            <div class="max-h-[70vh] overflow-y-auto px-4 pb-4 pt-4 custom-scrollbar">
+            <div class="max-h-[70vh] overflow-y-auto px-4 pb-4 custom-scrollbar">
               <div v-if="gymBrosLoading" class="text-center py-10">
                 <div
                   class="inline-block animate-spin rounded-full h-9 w-9 border-2 border-primary-200 border-t-sand-500 dark:border-primary-700"
@@ -858,10 +820,12 @@
               </div>
               <div v-else>
                 <div v-if="gymBrosList.length" class="space-y-3">
-                  <div
+                  <button
                     v-for="g in gymBrosList"
                     :key="g.id"
-                    class="group flex items-center gap-3 rounded-2xl border border-primary-200/70 bg-primary-50/60 p-3 transition hover:border-sand-400/50 hover:bg-sand-50/60 dark:border-primary-800/70 dark:bg-primary-900/40 dark:hover:border-sand-500/30 dark:hover:bg-primary-900/60"
+                    type="button"
+                    @click="goToGymBro(g)"
+                    class="flex items-center gap-3 w-full text-left rounded-2xl border border-primary-200/70 bg-primary-50/60 p-3 transition hover:border-sand-400/50 hover:bg-sand-50/60 dark:border-primary-800/70 dark:bg-primary-900/40 dark:hover:border-sand-500/30 dark:hover:bg-primary-900/60"
                   >
                     <div
                       class="w-12 h-12 rounded-2xl overflow-hidden bg-gradient-primary flex items-center justify-center ring-2 ring-white/60 dark:ring-primary-900 shrink-0"
@@ -878,13 +842,7 @@
                         {{ g.username || g.firstName || g.email }}
                       </div>
                     </div>
-                    <button
-                      @click.prevent="navigateTo(`/profile/${g.username || g.id}`)"
-                      class="shrink-0 rounded-full bg-sand-500/10 px-3 py-1.5 text-sm font-semibold text-sand-700 transition hover:bg-sand-500 hover:text-white dark:bg-sand-500/15 dark:text-sand-300 dark:hover:bg-sand-500 dark:hover:text-white"
-                    >
-                      {{ t('common.view') }}
-                    </button>
-                  </div>
+                  </button>
                 </div>
                 <div
                   v-else
@@ -896,155 +854,6 @@
                   />
                   <p class="text-primary-600 dark:text-primary-300 font-medium">
                     Aucun Gym Bro disponible
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Transition>
-    </Teleport>
-
-    <!-- Streak Modal -->
-    <Teleport to="body">
-      <Transition name="modal">
-        <div
-          v-if="showStreakModal"
-          class="fixed inset-0 z-[100] flex items-center justify-center p-4"
-          @click="showStreakModal = false"
-        >
-          <div
-            class="modal-surface relative w-full max-w-md overflow-hidden rounded-3xl text-primary-900 dark:text-primary-100"
-            @click.stop
-          >
-            <div
-              class="flex items-center justify-between gap-3 px-5 pt-5 pb-4 border-b border-primary-200/60 dark:border-primary-800/60"
-            >
-              <div class="flex items-center gap-3 min-w-0">
-                <div
-                  class="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center shrink-0"
-                >
-                  <Icon name="lucide:flame" class="w-5 h-5 text-white" />
-                </div>
-                <div class="min-w-0">
-                  <h3 class="font-semibold text-primary-950 dark:text-white truncate">
-                    {{ t('profile.stats.streak') }}
-                  </h3>
-                  <p class="text-xs text-primary-500 dark:text-primary-400">
-                    {{ streakData?.currentStreak ?? 0 }} séance{{
-                      (streakData?.currentStreak ?? 0) > 1 ? 's' : ''
-                    }}
-                    d'affilée
-                  </p>
-                </div>
-              </div>
-              <button
-                @click="showStreakModal = false"
-                class="w-9 h-9 rounded-xl flex items-center justify-center text-primary-500 transition-colors hover:bg-primary-100 hover:text-primary-900 dark:hover:bg-primary-800 dark:hover:text-white shrink-0"
-              >
-                <Icon name="lucide:x" class="w-5 h-5" />
-              </button>
-            </div>
-            <div class="max-h-[70vh] overflow-y-auto px-4 pb-4 pt-4 custom-scrollbar">
-              <div v-if="streakLoading" class="text-center py-10">
-                <div
-                  class="inline-block animate-spin rounded-full h-9 w-9 border-2 border-primary-200 border-t-sand-500 dark:border-primary-700"
-                ></div>
-              </div>
-              <div v-else>
-                <div v-if="streakData" class="space-y-3">
-                  <div class="grid grid-cols-2 gap-3">
-                    <div
-                      class="rounded-2xl border border-primary-200/70 bg-primary-50/60 p-4 dark:border-primary-800/70 dark:bg-primary-900/40"
-                    >
-                      <p class="text-xs text-primary-500 dark:text-primary-400">Streak actuel</p>
-                      <p class="mt-2 text-3xl font-bold text-primary-950 dark:text-white">
-                        {{ streakData.currentStreak }}
-                      </p>
-                    </div>
-                    <div
-                      class="rounded-2xl border border-primary-200/70 bg-primary-50/60 p-4 dark:border-primary-800/70 dark:bg-primary-900/40"
-                    >
-                      <p class="text-xs text-primary-500 dark:text-primary-400">
-                        Objectif / semaine
-                      </p>
-                      <p class="mt-2 text-3xl font-bold text-primary-950 dark:text-white">
-                        {{ streakData.streakGoalPerWeek ?? '—' }}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div class="grid grid-cols-2 gap-3">
-                    <div
-                      class="rounded-2xl border border-primary-200/70 bg-primary-50/60 p-4 dark:border-primary-800/70 dark:bg-primary-900/40"
-                    >
-                      <p class="text-xs text-primary-500 dark:text-primary-400">
-                        Workouts cette semaine
-                      </p>
-                      <p class="mt-2 text-xl font-bold text-primary-950 dark:text-white">
-                        {{ streakData.currentWeekWorkouts ?? '—' }}
-                      </p>
-                    </div>
-                    <div
-                      class="rounded-2xl border border-primary-200/70 bg-primary-50/60 p-4 dark:border-primary-800/70 dark:bg-primary-900/40"
-                    >
-                      <p class="text-xs text-primary-500 dark:text-primary-400">
-                        Dernier entraînement
-                      </p>
-                      <p class="mt-2 text-xl font-bold text-primary-950 dark:text-white">
-                        {{
-                          streakData.daysSinceLastWorkout === null
-                            ? '—'
-                            : `${streakData.daysSinceLastWorkout} j`
-                        }}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div
-                    v-if="streakData.weeklyHistory && streakData.weeklyHistory.length"
-                    class="rounded-2xl border border-primary-200/70 bg-primary-50/60 p-4 dark:border-primary-800/70 dark:bg-primary-900/40"
-                  >
-                    <p
-                      class="text-xs font-semibold uppercase tracking-wide text-primary-500 dark:text-primary-400 mb-3"
-                    >
-                      Historique
-                    </p>
-                    <ul class="space-y-2 text-sm">
-                      <li
-                        v-for="w in streakData.weeklyHistory.slice(-8)"
-                        :key="w.week"
-                        class="flex items-center justify-between rounded-xl bg-white/70 px-3 py-2 dark:bg-primary-800/40"
-                      >
-                        <span class="text-primary-600 dark:text-primary-300">{{ w.week }}</span>
-                        <span
-                          class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                          :class="
-                            w.metGoal
-                              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-300'
-                              : 'bg-primary-500/10 text-primary-500 dark:text-primary-400'
-                          "
-                        >
-                          <Icon
-                            :name="w.metGoal ? 'lucide:check' : 'lucide:minus'"
-                            class="w-3 h-3"
-                          />
-                          {{ w.count }}
-                        </span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div
-                  v-else
-                  class="rounded-2xl border border-dashed border-primary-200 bg-primary-50/60 py-12 text-center dark:border-primary-800 dark:bg-primary-900/40"
-                >
-                  <Icon
-                    name="lucide:flame"
-                    class="w-12 h-12 mx-auto mb-3 text-primary-300 dark:text-primary-600"
-                  />
-                  <p class="text-primary-600 dark:text-primary-300 font-medium">
-                    Aucune donnée de streak disponible
                   </p>
                 </div>
               </div>
@@ -1679,12 +1488,25 @@ const bodyApi = useBodyApi();
 const { getRecentPhotos } = bodyApi;
 const toast = useToast();
 const workoutStore = useWorkoutStore();
-const statsApi = useStatsApi();
 
 // Modals for stats
 const showWorkoutsModal = ref(false);
 const showGymBrosModal = ref(false);
-const showStreakModal = ref(false);
+
+const closeAllModals = () => {
+  showWorkoutsModal.value = false;
+  showGymBrosModal.value = false;
+};
+
+const goToWorkout = (workoutId: number) => {
+  closeAllModals();
+  navigateTo(`/workouts/${workoutId}`);
+};
+
+const goToGymBro = (g: { username?: string | null; id: number }) => {
+  closeAllModals();
+  navigateTo(`/profile/${g.username || g.id}`);
+};
 
 // Gym bro requests (carousel)
 const requestsLoading = ref(false);
@@ -1749,11 +1571,9 @@ const ignoreRequest = () => {
 
 const workoutsLoading = ref(false);
 const gymBrosLoading = ref(false);
-const streakLoading = ref(false);
 
 const workoutsList = ref<any[]>([]);
 const gymBrosList = ref<any[]>([]);
-const streakData = ref<any | null>(null);
 
 const profileVisibility = computed(() => {
   const isPrivate = profileData.value?.isPublic === false;
@@ -1823,52 +1643,6 @@ const openGymBrosModal = async () => {
     gymBrosList.value = [];
   } finally {
     gymBrosLoading.value = false;
-  }
-};
-
-const openStreakModal = async () => {
-  if (!canOpenProfileModals.value) {
-    toast.error('Profil prive — contenu indisponible');
-    return;
-  }
-
-  showStreakModal.value = true;
-  streakLoading.value = true;
-  try {
-    if (isOwnProfile.value) {
-      try {
-        streakData.value = await statsApi.getStreak();
-      } catch {
-        const stats = profileData.value?.stats || {};
-        streakData.value = {
-          currentStreak: stats.streak || 0,
-          bestStreak: stats.bestStreak || stats.streak || 0,
-          streakGoalPerWeek: stats.streakGoalPerWeek ?? stats.goalPerWeek ?? null,
-          currentWeekWorkouts: stats.currentWeekWorkouts ?? null,
-          daysSinceLastWorkout: stats.daysSinceLastWorkout ?? null,
-          weeklyHistory: stats.weeklyHistory || [],
-          milestones: stats.milestones || [],
-          nextMilestone: stats.nextMilestone ?? null,
-        };
-      }
-    } else {
-      const stats = profileData.value?.stats || {};
-      streakData.value = {
-        currentStreak: stats.streak || 0,
-        bestStreak: stats.bestStreak || stats.streak || 0,
-        streakGoalPerWeek: stats.streakGoalPerWeek ?? stats.goalPerWeek ?? null,
-        currentWeekWorkouts: stats.currentWeekWorkouts ?? null,
-        daysSinceLastWorkout: stats.daysSinceLastWorkout ?? null,
-        weeklyHistory: stats.weeklyHistory || [],
-        milestones: stats.milestones || [],
-        nextMilestone: stats.nextMilestone ?? null,
-      };
-    }
-  } catch (e) {
-    toast.error('Impossible de charger le résumé de streak');
-    streakData.value = null;
-  } finally {
-    streakLoading.value = false;
   }
 };
 
@@ -2721,7 +2495,6 @@ const loadProfileFor = async (requestedUsername?: string) => {
   posts.value = [];
   workoutsList.value = [];
   gymBrosList.value = [];
-  streakData.value = null;
   pageLoading.value = true;
   // Try cached username first (for offline)
   const cachedUsername = process.client ? localStorage.getItem('athletiq_username') : null;

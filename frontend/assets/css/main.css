@@ -166,6 +166,14 @@ canvas {
     inset 0 1px 0 0 var(--glass-inset);
 }
 
+.modal-surface-solid {
+  background: var(--modal-bg-solid);
+  border: 1px solid var(--card-border);
+  box-shadow:
+    0 30px 80px 0 var(--card-shadow-1),
+    0 8px 20px 0 var(--card-shadow-2);
+}
+
 /* ===== Theme Variables ===== */
 :root {
   --bg-body: linear-gradient(
@@ -205,6 +213,7 @@ canvas {
   --scrollbar-track: rgba(var(--sand-200), 0.5);
   --scrollbar-thumb: rgba(var(--sand-500), 0.5);
   --scrollbar-thumb-hover: rgba(var(--sand-500), 0.7);
+  --modal-bg-solid: #fdfcfb;
   color-scheme: light;
 }
 
@@ -241,6 +250,7 @@ canvas {
   --scrollbar-track: rgba(30, 30, 30, 0.5);
   --scrollbar-thumb: rgba(80, 70, 60, 0.5);
   --scrollbar-thumb-hover: rgba(100, 90, 75, 0.7);
+  --modal-bg-solid: #1c1c1c;
   color-scheme: dark;
 }
 
