@@ -35,197 +35,233 @@
       </div>
 
       <template v-else>
-        <!-- Header Card -->
-        <div class="card-glass mb-6 fade-in">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <div>
-              <h2 class="text-2xl md:text-3xl font-bold text-primary-900 dark:text-primary-100">
+        <div class="grid lg:grid-cols-[280px_1fr] gap-6 items-start">
+          <!-- Colonne stats, verticale, fixe a gauche -->
+          <div class="space-y-4 fade-in lg:sticky lg:top-24">
+            <div class="card-glass">
+              <h2 class="text-xl font-bold text-primary-900 dark:text-primary-100">
                 {{ workout.name }}
               </h2>
-              <p v-if="workout.description" class="text-primary-600 dark:text-primary-400 mt-1">
+              <p
+                v-if="workout.description"
+                class="text-sm text-primary-600 dark:text-primary-400 mt-1"
+              >
                 {{ workout.description }}
               </p>
+              <div class="mt-4 flex flex-col gap-1">
+                <button
+                  v-if="workout.completedAt"
+                  @click="navigateTo(`/workouts/${workout.id}/live`)"
+                  class="btn-primary text-sm w-full"
+                >
+                  {{ t('workoutDetail.redo') }}
+                </button>
+                <button
+                  v-else
+                  @click="navigateTo(`/workouts/${workout.id}/live`)"
+                  class="btn-primary text-sm w-full"
+                >
+                  {{ t('workoutDetail.launch') }}
+                </button>
+              </div>
             </div>
-            <div class="flex gap-3">
-              <button
+
+            <div class="card-glass space-y-1">
+              <div
                 v-if="workout.completedAt"
-                @click="navigateTo(`/workouts/${workout.id}/live`)"
-                class="btn-primary text-sm"
+                class="flex items-center justify-between py-2.5 border-b border-primary-100 dark:border-primary-800"
               >
-                {{ t('workoutDetail.redo') }}
-              </button>
+                <span
+                  class="flex items-center gap-2 text-sm text-primary-500 dark:text-primary-400"
+                >
+                  <Icon name="lucide:calendar" class="w-4 h-4" />
+                  {{ t('workoutDetail.date') }}
+                </span>
+                <span class="text-sm font-semibold text-primary-900 dark:text-primary-100">
+                  {{ formatDate(workout.completedAt) }}
+                </span>
+              </div>
+              <div
+                v-if="workout.duration"
+                class="flex items-center justify-between py-2.5 border-b border-primary-100 dark:border-primary-800"
+              >
+                <span
+                  class="flex items-center gap-2 text-sm text-primary-500 dark:text-primary-400"
+                >
+                  <Icon name="lucide:clock" class="w-4 h-4" />
+                  {{ t('workoutDetail.duration') }}
+                </span>
+                <span class="text-sm font-semibold text-primary-900 dark:text-primary-100">
+                  {{ formatDuration(workout.duration) }}
+                </span>
+              </div>
+              <div
+                v-if="workout.duration"
+                class="flex items-center justify-between py-2.5 border-b border-primary-100 dark:border-primary-800"
+              >
+                <span
+                  class="flex items-center gap-2 text-sm text-primary-500 dark:text-primary-400"
+                >
+                  <Icon name="lucide:flame" class="w-4 h-4" />
+                  {{ t('calendar.metrics.calories') }}
+                </span>
+                <span class="text-sm font-semibold text-primary-900 dark:text-primary-100">
+                  {{ estimateCalories(workout.duration) }} kcal
+                </span>
+              </div>
+              <div
+                class="flex items-center justify-between py-2.5 border-b border-primary-100 dark:border-primary-800"
+              >
+                <span
+                  class="flex items-center gap-2 text-sm text-primary-500 dark:text-primary-400"
+                >
+                  <Icon name="lucide:dumbbell" class="w-4 h-4" />
+                  {{ t('workoutDetail.exercises') }}
+                </span>
+                <span class="text-sm font-semibold text-primary-900 dark:text-primary-100">
+                  {{ workout.exercises?.length || 0 }}
+                </span>
+              </div>
+              <div v-if="totalVolume > 0" class="flex items-center justify-between py-2.5">
+                <span
+                  class="flex items-center gap-2 text-sm text-primary-500 dark:text-primary-400"
+                >
+                  <Icon name="lucide:trending-up" class="w-4 h-4" />
+                  {{ t('workoutDetail.totalVolume') }}
+                </span>
+                <span class="text-sm font-semibold text-primary-900 dark:text-primary-100">
+                  {{ totalVolume.toLocaleString('fr-FR') }} kg
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tuiles d'exercices + detail de l'exercice selectionne -->
+          <div class="slide-up min-w-0">
+            <div class="flex gap-3 overflow-x-auto pb-3 mb-6 -mx-1 px-1 custom-scrollbar">
               <button
-                v-else
-                @click="navigateTo(`/workouts/${workout.id}/live`)"
-                class="btn-primary text-sm"
+                v-for="(exercise, index) in sortedExercises"
+                :key="exercise.id"
+                type="button"
+                @click="selectedExerciseIndex = index"
+                class="shrink-0 w-40 text-left rounded-2xl border-2 p-3 transition-all"
+                :class="
+                  selectedExerciseIndex === index
+                    ? 'border-sand-500 bg-sand-50 dark:bg-sand-500/10'
+                    : 'border-primary-200/70 dark:border-primary-800/70 bg-primary-50/60 dark:bg-primary-900/40 hover:border-primary-300 dark:hover:border-primary-700'
+                "
               >
-                {{ t('workoutDetail.launch') }}
+                <div class="font-semibold text-sm text-primary-900 dark:text-primary-100 truncate">
+                  {{ exercise.exerciseLibrary?.name || exercise.name }}
+                </div>
+                <div class="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
+                  {{
+                    exercise.sets?.length
+                      ? t('workoutDetail.setCount', {
+                          count: exercise.sets.length,
+                          plural: exercise.sets.length > 1 ? 's' : '',
+                        })
+                      : '—'
+                  }}
+                </div>
               </button>
             </div>
-          </div>
 
-          <!-- Stats Grid -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div
-              v-if="workout.completedAt"
-              class="text-center p-3 bg-primary-50 dark:bg-primary-800/50 rounded-xl"
-            >
-              <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">
-                {{ t('workoutDetail.date') }}
-              </p>
-              <p class="text-sm font-bold text-primary-900 dark:text-primary-100">
-                {{ formatDate(workout.completedAt) }}
-              </p>
-            </div>
-            <div
-              v-if="workout.duration"
-              class="text-center p-3 bg-primary-50 dark:bg-primary-800/50 rounded-xl"
-            >
-              <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">
-                {{ t('workoutDetail.duration') }}
-              </p>
-              <p class="text-sm font-bold text-primary-900 dark:text-primary-100">
-                {{ formatDuration(workout.duration) }}
-              </p>
-            </div>
-            <div
-              v-if="workout.duration"
-              class="text-center p-3 bg-primary-50 dark:bg-primary-800/50 rounded-xl"
-            >
-              <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">
-                {{ t('calendar.metrics.calories') }}
-              </p>
-              <p class="text-sm font-bold text-primary-900 dark:text-primary-100">
-                {{ estimateCalories(workout.duration) }} kcal
-              </p>
-            </div>
-            <div class="text-center p-3 bg-primary-50 dark:bg-primary-800/50 rounded-xl">
-              <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">
-                {{ t('workoutDetail.exercises') }}
-              </p>
-              <p class="text-sm font-bold text-primary-900 dark:text-primary-100">
-                {{ workout.exercises?.length || 0 }}
-              </p>
-            </div>
-            <div
-              v-if="totalVolume > 0"
-              class="text-center p-3 bg-primary-50 dark:bg-primary-800/50 rounded-xl"
-            >
-              <p class="text-xs text-primary-500 dark:text-primary-400 mb-1">
-                {{ t('workoutDetail.totalVolume') }}
-              </p>
-              <p class="text-sm font-bold text-primary-900 dark:text-primary-100">
-                {{ totalVolume.toLocaleString('fr-FR') }} kg
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Exercises -->
-        <div class="space-y-4 slide-up">
-          <div v-for="exercise in sortedExercises" :key="exercise.id" class="card-glass">
-            <!-- Exercise Image -->
-            <ExerciseAnimation
-              :image-id="exercise.exerciseLibrary?.imageUrl"
-              :name="exercise.exerciseLibrary?.name || exercise.name"
-              size="sm"
-              class="mb-4"
-            />
-
-            <div class="flex items-start justify-between gap-3 mb-4">
-              <div>
-                <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100">
-                  {{ exercise.exerciseLibrary?.name || exercise.name }}
-                </h3>
-                <div class="flex flex-wrap gap-2 mt-1">
-                  <span
-                    v-if="exercise.exerciseLibrary?.primaryMuscle"
-                    class="px-2 py-0.5 bg-primary-100 dark:bg-primary-800 rounded-full text-xs text-primary-600 dark:text-primary-400"
+            <div v-if="selectedExercise" :key="selectedExercise.id" class="card-glass fade-in">
+              <div class="grid md:grid-cols-[220px_1fr] gap-6">
+                <div>
+                  <ExerciseAnimation
+                    :image-id="selectedExercise.exerciseLibrary?.imageUrl"
+                    :name="selectedExercise.exerciseLibrary?.name || selectedExercise.name"
+                    size="lg"
+                    class="mb-4 w-full"
+                  />
+                  <h3 class="text-lg font-bold text-primary-900 dark:text-primary-100">
+                    {{ selectedExercise.exerciseLibrary?.name || selectedExercise.name }}
+                  </h3>
+                  <div class="flex flex-wrap gap-2 mt-2">
+                    <span
+                      v-if="selectedExercise.exerciseLibrary?.primaryMuscle"
+                      class="px-2 py-0.5 bg-primary-100 dark:bg-primary-800 rounded-full text-xs text-primary-600 dark:text-primary-400"
+                    >
+                      {{ formatMuscle(selectedExercise.exerciseLibrary.primaryMuscle) }}
+                    </span>
+                    <span
+                      v-if="selectedExercise.exerciseLibrary?.equipment"
+                      class="px-2 py-0.5 bg-primary-100 dark:bg-primary-800 rounded-full text-xs text-primary-600 dark:text-primary-400"
+                    >
+                      {{ formatEquipment(selectedExercise.exerciseLibrary.equipment) }}
+                    </span>
+                  </div>
+                  <p
+                    v-if="selectedExercise.notes"
+                    class="mt-3 text-sm text-primary-500 dark:text-primary-400 italic"
                   >
-                    {{ formatMuscle(exercise.exerciseLibrary.primaryMuscle) }}
-                  </span>
-                  <span
-                    v-if="exercise.exerciseLibrary?.equipment"
-                    class="px-2 py-0.5 bg-primary-100 dark:bg-primary-800 rounded-full text-xs text-primary-600 dark:text-primary-400"
+                    {{ selectedExercise.notes }}
+                  </p>
+                </div>
+
+                <div>
+                  <div v-if="selectedExercise.sets?.length" class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                      <thead>
+                        <tr class="text-primary-500 dark:text-primary-400 text-xs">
+                          <th class="text-left py-2 pr-3">{{ t('workoutDetail.setCol') }}</th>
+                          <th class="text-right py-2 px-3">{{ t('workoutDetail.weightCol') }}</th>
+                          <th class="text-right py-2 px-3">{{ t('workoutBuilder.reps') }}</th>
+                          <th v-if="hasDuration(selectedExercise)" class="text-right py-2 px-3">
+                            {{ t('workoutDetail.duration') }}
+                          </th>
+                          <th v-if="hasRpe(selectedExercise)" class="text-right py-2 pl-3">RPE</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr
+                          v-for="set in sortedSets(selectedExercise)"
+                          :key="set.id"
+                          class="border-t border-primary-100 dark:border-primary-800"
+                        >
+                          <td
+                            class="py-2.5 pr-3 font-medium text-primary-900 dark:text-primary-100"
+                          >
+                            {{ set.setNumber }}
+                          </td>
+                          <td class="text-right py-2.5 px-3 text-primary-700 dark:text-primary-300">
+                            {{ set.weight ? `${set.weight} kg` : '—' }}
+                          </td>
+                          <td class="text-right py-2.5 px-3 text-primary-700 dark:text-primary-300">
+                            {{ set.reps ?? '—' }}
+                          </td>
+                          <td
+                            v-if="hasDuration(selectedExercise)"
+                            class="text-right py-2.5 px-3 text-primary-700 dark:text-primary-300"
+                          >
+                            {{ set.duration ? `${set.duration}s` : '—' }}
+                          </td>
+                          <td
+                            v-if="hasRpe(selectedExercise)"
+                            class="text-right py-2.5 pl-3 text-primary-700 dark:text-primary-300"
+                          >
+                            {{ set.rpe ?? '—' }}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div
+                    v-else-if="selectedExercise.targetSets"
+                    class="text-sm text-primary-500 dark:text-primary-400"
                   >
-                    {{ formatEquipment(exercise.exerciseLibrary.equipment) }}
-                  </span>
+                    {{ selectedExercise.targetSets }} séries ×
+                    {{ selectedExercise.targetReps }} reps
+                    {{
+                      selectedExercise.targetWeight ? `@ ${selectedExercise.targetWeight} kg` : ''
+                    }}
+                  </div>
+                  <div v-else class="text-sm text-primary-500 dark:text-primary-400">—</div>
                 </div>
               </div>
-              <span
-                v-if="exercise.sets?.length"
-                class="text-xs text-primary-500 dark:text-primary-400 flex-shrink-0"
-              >
-                {{
-                  t('workoutDetail.setCount', {
-                    count: exercise.sets.length,
-                    plural: exercise.sets.length > 1 ? 's' : '',
-                  })
-                }}
-              </span>
             </div>
-
-            <!-- Sets Table -->
-            <div v-if="exercise.sets?.length" class="overflow-x-auto">
-              <table class="w-full text-sm">
-                <thead>
-                  <tr class="text-primary-500 dark:text-primary-400 text-xs">
-                    <th class="text-left py-2 pr-3">{{ t('workoutDetail.setCol') }}</th>
-                    <th class="text-right py-2 px-3">{{ t('workoutDetail.weightCol') }}</th>
-                    <th class="text-right py-2 px-3">{{ t('workoutBuilder.reps') }}</th>
-                    <th v-if="hasDuration(exercise)" class="text-right py-2 px-3">
-                      {{ t('workoutDetail.duration') }}
-                    </th>
-                    <th v-if="hasRpe(exercise)" class="text-right py-2 pl-3">RPE</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    v-for="set in sortedSets(exercise)"
-                    :key="set.id"
-                    class="border-t border-primary-100 dark:border-primary-800"
-                  >
-                    <td class="py-2 pr-3 font-medium text-primary-900 dark:text-primary-100">
-                      {{ set.setNumber }}
-                    </td>
-                    <td class="text-right py-2 px-3 text-primary-700 dark:text-primary-300">
-                      {{ set.weight ? `${set.weight} kg` : '—' }}
-                    </td>
-                    <td class="text-right py-2 px-3 text-primary-700 dark:text-primary-300">
-                      {{ set.reps ?? '—' }}
-                    </td>
-                    <td
-                      v-if="hasDuration(exercise)"
-                      class="text-right py-2 px-3 text-primary-700 dark:text-primary-300"
-                    >
-                      {{ set.duration ? `${set.duration}s` : '—' }}
-                    </td>
-                    <td
-                      v-if="hasRpe(exercise)"
-                      class="text-right py-2 pl-3 text-primary-700 dark:text-primary-300"
-                    >
-                      {{ set.rpe ?? '—' }}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <!-- Planned sets if no actual sets -->
-            <div
-              v-else-if="exercise.targetSets"
-              class="text-sm text-primary-500 dark:text-primary-400"
-            >
-              {{ exercise.targetSets }} séries × {{ exercise.targetReps }} reps
-              {{ exercise.targetWeight ? `@ ${exercise.targetWeight} kg` : '' }}
-            </div>
-
-            <p
-              v-if="exercise.notes"
-              class="mt-3 text-sm text-primary-500 dark:text-primary-400 italic"
-            >
-              {{ exercise.notes }}
-            </p>
           </div>
         </div>
       </template>
@@ -270,6 +306,9 @@ onMounted(async () => {
 const sortedExercises = computed(() =>
   [...(workout.value?.exercises || [])].sort((a, b) => a.orderIndex - b.orderIndex)
 );
+
+const selectedExerciseIndex = ref(0);
+const selectedExercise = computed(() => sortedExercises.value[selectedExerciseIndex.value] ?? null);
 
 const totalVolume = computed(() => {
   if (workout.value?.totalVolume) return workout.value.totalVolume;

@@ -2445,7 +2445,10 @@ const handleAvatarUpload = async (event: Event) => {
   }
   avatarUploading.value = true;
   try {
-    await authStore.uploadAvatar(file);
+    const result = await authStore.uploadAvatar(file);
+    if (result?.success && result.avatarUrl && profileData.value) {
+      profileData.value = { ...profileData.value, avatarUrl: result.avatarUrl };
+    }
   } finally {
     avatarUploading.value = false;
     input.value = '';
